@@ -525,7 +525,7 @@ export function FilesClient() {
 
           <div
             className={cn(
-              "flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-0 xl:pr-[40px]",
+              "flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-10",
               minWidth1280 && "w-full self-start",
             )}
             style={
@@ -541,11 +541,9 @@ export function FilesClient() {
                 ref={desktopScrollRef}
                 className="min-h-0 w-full min-w-0 flex-1 overflow-y-auto"
               >
-                <div
-                  className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
-                >
-                  <div className="px-4 md:px-6">
-                    <div className="flex w-full min-w-0 flex-col gap-4 p-4 md:p-6">
+                <div className="flex w-full min-w-0 flex-col items-center pt-6 text-left">
+                  <div className="w-full min-w-0 max-w-[1000px] px-4 md:px-6">
+                    <div className="flex w-full min-w-0 flex-col gap-4 py-4 md:py-6">
                       {filesMainInner("desktop", true)}
                     </div>
                   </div>
@@ -567,8 +565,8 @@ export function FilesClient() {
             ref={mobileScrollRef}
             className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
           >
-            <main className="flex w-full min-w-0 flex-col px-4 pt-3">
-              <div className="flex w-full min-w-0 flex-col gap-4">
+            <main className="flex w-full min-w-0 flex-col items-center px-4 pt-3">
+              <div className="flex w-full min-w-0 max-w-[1000px] flex-col gap-4">
                 {filesMainInner("mobile", false)}
               </div>
             </main>

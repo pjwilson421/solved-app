@@ -7,10 +7,7 @@ import { useShellNav } from "@/lib/use-shell-nav";
 import { useShellNavReset } from "@/lib/shell-nav-reset-context";
 import { Header } from "../create-image/Header";
 import { Sidebar } from "../create-image/Sidebar";
-import {
-  CREATE_IMAGE_SCROLL_RESERVE,
-  SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX,
-} from "../create-image/preview-frame-layout";
+import { CREATE_IMAGE_SCROLL_RESERVE } from "../create-image/preview-frame-layout";
 import { useMinWidth1280 } from "../create-image/use-create-image-preview-prompt-layout";
 import { MobileCreateImageDrawer } from "../create-image/MobileCreateImageDrawer";
 import type { HistoryItem } from "../create-image/types";
@@ -701,7 +698,12 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
           />
         </div>
 
-        <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden xl:grid xl:grid-cols-[300px_minmax(0,1fr)]">
+        <div
+          className={cn(
+            "flex min-h-0 min-w-0 flex-1 overflow-hidden",
+            page !== "history" && "xl:grid xl:grid-cols-[300px_minmax(0,1fr)]",
+          )}
+        >
           <Sidebar
             className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
             activeId={activeMainNav}
@@ -709,36 +711,61 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
           />
 
-          {/* xl: History & Liked — same bottom clearance as Sidebar (`fixedDockClearancePx`). */}
-          <div
-            className={cn(
-              "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 pt-6 md:px-8 xl:px-10",
-              minWidth1280 && "min-h-0 w-full self-start",
-            )}
-            style={
-              minWidth1280
-                ? {
-                    height:
-                      page === "history" || page === "liked"
-                        ? `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`
-                        : `calc(100% - ${SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX}px)`,
-                  }
-                : undefined
-            }
-          >
+          {page === "history" ? (
             <div
               className={cn(
-                "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
-                page !== "history" &&
-                  page !== "liked" &&
-                  "rounded-[18px] border border-[#2A2A2E] bg-[#141418]",
+                "flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-10",
+                minWidth1280 && "w-full self-start",
               )}
+              style={
+                minWidth1280
+                  ? {
+                      height: `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`,
+                    }
+                  : undefined
+              }
             >
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 md:p-6">
-                {wrapScroll(scrollableInner("desktop", true, isGridView))}
+              <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
+                <div className="min-h-0 w-full min-w-0 flex-1 overflow-y-auto">
+                  <div className="flex w-full min-w-0 flex-col items-center pt-6 text-left">
+                    <div className="w-full min-w-0 max-w-[1000px] px-4 md:px-6">
+                      <div className="flex w-full min-w-0 flex-col gap-4 py-4 md:py-6">
+                        {wrapScroll(
+                          scrollableInner("desktop", true, isGridView),
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div
+              className={cn(
+                "flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-10",
+                minWidth1280 && "w-full self-start",
+              )}
+              style={
+                minWidth1280
+                  ? {
+                      height: `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`,
+                    }
+                  : undefined
+              }
+            >
+              <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
+                <div className="min-h-0 w-full min-w-0 flex-1 overflow-y-auto overscroll-y-contain">
+                  <div className="flex w-full min-w-0 flex-col items-center pt-6 text-left">
+                    <div className="w-full min-w-0 max-w-[1000px] px-4 md:px-6">
+                      <div className="flex w-full min-w-0 flex-col gap-4 py-4 md:py-6">
+                        {wrapScroll(scrollableInner("desktop", true, isGridView))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -755,18 +782,27 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
           mobileTitle={page === "liked" ? "LIKED" : "HISTORY"}
           onMenuClick={() => setMobileMenuOpen(true)}
         />
-        <div
-          className={cn(
-            "mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
-            page !== "history" &&
-              page !== "liked" &&
-              "rounded-[22px] border border-[#2A2A2E] bg-[#141418]",
-          )}
-        >
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 pt-4">
-            {wrapScroll(scrollableInner("mobile", false, isGridView))}
+        {page === "history" ? (
+          <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
+              <main className="flex w-full min-w-0 flex-col items-center px-4 pt-3">
+                <div className="flex w-full min-w-0 max-w-[1000px] flex-col gap-4">
+                  {wrapScroll(scrollableInner("mobile", false, isGridView))}
+                </div>
+              </main>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
+              <main className="flex w-full min-w-0 flex-col items-center px-4 pt-3">
+                <div className="flex w-full min-w-0 max-w-[1000px] flex-col gap-4">
+                  {wrapScroll(scrollableInner("mobile", false, isGridView))}
+                </div>
+              </main>
+            </div>
+          </div>
+        )}
       </div>
 
       <MobileCreateImageDrawer
