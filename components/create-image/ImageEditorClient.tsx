@@ -50,9 +50,6 @@ const MOBILE_FILE_INFO: [string, string] = [
   "add content, draw, and update text before export.",
 ];
 
-/** Fixed dock: tool strip above settings (`gap-3`) + wrapped chip rows (~2 lines). */
-const IMAGE_EDITOR_DOCK_TOOLS_RESERVE_PX = 12 + 96;
-
 type ImageEditorClientProps = {
   initialImageUrl: string | null;
   /** Catalog file id — resolved against shared `fileEntries` (generated images in Files). */
@@ -127,15 +124,13 @@ export function ImageEditorClient({
       mobileColumnRef,
       aspectRatio,
       templatesOpen: false,
-      extraFixedDockReservePx: IMAGE_EDITOR_DOCK_TOOLS_RESERVE_PX,
     });
 
   const minWidth1280 = useMinWidth1280();
   const desktopScrollBottomPadPx =
-    (minWidth1280
+    minWidth1280
       ? createImageScrollContentBottomPaddingPxDesktopXl()
-      : createImageScrollContentBottomPaddingPx("desktop")) +
-    IMAGE_EDITOR_DOCK_TOOLS_RESERVE_PX;
+      : createImageScrollContentBottomPaddingPx("desktop");
 
   const generateDisabled = !barPrompt.trim();
 
@@ -438,18 +433,14 @@ export function ImageEditorClient({
             ref={mobileScrollRef}
             className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
             style={{
-              scrollPaddingBottom:
-                createImageScrollContentBottomPaddingPx("mobile") +
-                IMAGE_EDITOR_DOCK_TOOLS_RESERVE_PX,
+              scrollPaddingBottom: createImageScrollContentBottomPaddingPx("mobile"),
             }}
           >
             <main
               ref={mobileColumnRef}
               className="flex w-full min-w-0 flex-col px-4 pt-3"
               style={{
-                paddingBottom:
-                  createImageScrollContentBottomPaddingPx("mobile") +
-                  IMAGE_EDITOR_DOCK_TOOLS_RESERVE_PX,
+                paddingBottom: createImageScrollContentBottomPaddingPx("mobile"),
               }}
             >
               <p
