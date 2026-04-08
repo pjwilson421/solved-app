@@ -16,6 +16,13 @@ type HistoryGridCardProps = {
   rowIndex: number;
   onMenuAction?: (id: string, action: FileRowMenuAction) => void;
   onItemOpen?: (id: string) => void;
+  enableTitleInlineRename?: boolean;
+  isTitleRenaming?: boolean;
+  titleRenameValue?: string;
+  onStartTitleRename?: () => void;
+  onTitleRenameChange?: (next: string) => void;
+  onTitleRenameSubmit?: () => void;
+  onTitleRenameCancel?: () => void;
 };
 
 export function HistoryGridCard({
@@ -23,6 +30,13 @@ export function HistoryGridCard({
   rowIndex,
   onMenuAction,
   onItemOpen,
+  enableTitleInlineRename = false,
+  isTitleRenaming = false,
+  titleRenameValue = "",
+  onStartTitleRename,
+  onTitleRenameChange,
+  onTitleRenameSubmit,
+  onTitleRenameCancel,
 }: HistoryGridCardProps) {
   const meta = formatHistoryRowMeta(entry);
   const surface =
@@ -62,9 +76,44 @@ export function HistoryGridCard({
         </div>
       </div>
       <div className="min-w-0 px-2.5 pb-2.5 pt-2 sm:px-3 sm:pb-3 sm:pt-2.5">
-        <p className="truncate text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]">
-          {entry.title}
-        </p>
+        {enableTitleInlineRename ? (
+          isTitleRenaming ? (
+            <input
+              autoFocus
+              value={titleRenameValue}
+              onChange={(e) => onTitleRenameChange?.(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onTitleRenameSubmit?.();
+                }
+                if (e.key === "Escape") {
+                  e.preventDefault();
+                  onTitleRenameCancel?.();
+                }
+              }}
+              onBlur={() => onTitleRenameSubmit?.()}
+              className="w-full rounded bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+              aria-label={`Rename ${entry.title}`}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onStartTitleRename?.();
+              }}
+              className="w-full truncate text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]"
+            >
+              {entry.title}
+            </button>
+          )
+        ) : (
+          <p className="truncate text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]">
+            {entry.title}
+          </p>
+        )}
         <p className="mt-0.5 truncate text-left text-[11px] text-[#A1A1AA]">
           {entry.subtitle}
         </p>

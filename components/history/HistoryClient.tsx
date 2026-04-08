@@ -7,7 +7,10 @@ import { useShellNav } from "@/lib/use-shell-nav";
 import { useShellNavReset } from "@/lib/shell-nav-reset-context";
 import { Header } from "../create-image/Header";
 import { Sidebar } from "../create-image/Sidebar";
-import { SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX } from "../create-image/preview-frame-layout";
+import {
+  CREATE_IMAGE_SCROLL_RESERVE,
+  SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX,
+} from "../create-image/preview-frame-layout";
 import { useMinWidth1280 } from "../create-image/use-create-image-preview-prompt-layout";
 import { MobileCreateImageDrawer } from "../create-image/MobileCreateImageDrawer";
 import type { HistoryItem } from "../create-image/types";
@@ -19,6 +22,7 @@ import { FilesGrid } from "../files/FilesGrid";
 import { FilesDesktopHeaderActions } from "../files/FilesToolbar";
 import type { FileRowMenuAction } from "../files/FileRowActionsMenu";
 import { likedChatTitle } from "../chat/liked-chats-storage";
+import { chatTitleEditSeed } from "@/lib/app-data/chat-thread";
 import { LikedChatEntryRow } from "../chat/LikedChatEntryRow";
 import { LikedChatGridCard } from "../chat/LikedChatGridCard";
 import { useAppData } from "@/lib/app-data/app-data-context";
@@ -42,7 +46,11 @@ type HistoryViewMode = "grid" | "list";
 
 function historyViewModeFromSearchParams(
   params: ReturnType<typeof useSearchParams>,
+  page: HistoryClientPage,
 ): HistoryViewMode {
+  if (page === "history") {
+    return params.get("view") === "grid" ? "grid" : "list";
+  }
   return params.get("view") === "list" ? "list" : "grid";
 }
 
@@ -80,7 +88,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
   const searchParams = useSearchParams();
   const { navigate, activeMainNav } = useShellNav();
   const { historyResetVersion, likedResetVersion } = useShellNavReset();
-  const viewFromUrl = historyViewModeFromSearchParams(searchParams);
+  const viewFromUrl = historyViewModeFromSearchParams(searchParams, page);
   const [historyViewMode, setHistoryViewMode] =
     useState<HistoryViewMode>(viewFromUrl);
 
@@ -105,18 +113,26 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
   const setHistoryGridView = useCallback(() => {
     setHistoryViewMode("grid");
     const q = new URLSearchParams(searchParams.toString());
-    q.delete("view");
+    if (page === "history") {
+      q.set("view", "grid");
+    } else {
+      q.delete("view");
+    }
     const qs = q.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [pathname, router, searchParams]);
+  }, [page, pathname, router, searchParams]);
 
   const setHistoryListView = useCallback(() => {
     setHistoryViewMode("list");
     const q = new URLSearchParams(searchParams.toString());
-    q.set("view", "list");
+    if (page === "history") {
+      q.delete("view");
+    } else {
+      q.set("view", "list");
+    }
     const qs = q.toString();
-    router.replace(`${pathname}?${qs}`, { scroll: false });
-  }, [pathname, router, searchParams]);
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [page, pathname, router, searchParams]);
 
   const isGridView = historyViewMode === "grid";
 
@@ -125,6 +141,10 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
   const [activityFilter, setActivityFilter] =
     useState<HistoryActivityFilter>("all");
   const [sortOption, setSortOption] = useState<SortOption>("date-desc");
+  const [historyTitleRenamingId, setHistoryTitleRenamingId] = useState<
+    string | null
+  >(null);
+  const [historyTitleRenameValue, setHistoryTitleRenameValue] = useState("");
 
   const minWidth1280 = useMinWidth1280();
 
@@ -136,7 +156,19 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     [isLiked],
   );
 
-  const { activityEntries, fileEntries, chatThreads } = useAppData();
+  const {
+    activityEntries,
+    fileEntries,
+    chatThreads,
+    updateActivityEntries,
+    updateChatThreads,
+  } = useAppData();
+
+  useEffect(() => {
+    if (page === "history") return;
+    setHistoryTitleRenamingId(null);
+    setHistoryTitleRenameValue("");
+  }, [page]);
 
   const folderHasChildItems = useCallback(
     (folderId: string) => fileEntries.some((e) => e.parentId === folderId),
@@ -261,6 +293,63 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     openItem(appItemRef.activity(id));
   }, [openItem]);
 
+  const startHistoryTitleRename = useCallback(
+    (id: string) => {
+      if (page !== "history") return;
+      const thread = chatThreads.find((t) => t.id === id);
+      if (thread) {
+        setHistoryTitleRenameValue(chatTitleEditSeed(thread));
+        setHistoryTitleRenamingId(id);
+        return;
+      }
+      const entry = activityEntries.find((e) => e.id === id);
+      if (entry) {
+        setHistoryTitleRenameValue(entry.title);
+        setHistoryTitleRenamingId(id);
+      }
+    },
+    [page, chatThreads, activityEntries],
+  );
+
+  const cancelHistoryTitleRename = useCallback(() => {
+    setHistoryTitleRenamingId(null);
+    setHistoryTitleRenameValue("");
+  }, []);
+
+  const submitHistoryTitleRename = useCallback(() => {
+    if (page !== "history" || !historyTitleRenamingId) return;
+    const trimmed = historyTitleRenameValue.trim();
+    const thread = chatThreads.find((t) => t.id === historyTitleRenamingId);
+    if (thread) {
+      updateChatThreads((prev) =>
+        prev.map((t) =>
+          t.id === historyTitleRenamingId
+            ? { ...t, displayTitle: trimmed || undefined }
+            : t,
+        ),
+      );
+    } else {
+      const entry = activityEntries.find((e) => e.id === historyTitleRenamingId);
+      if (entry && trimmed && trimmed !== entry.title) {
+        updateActivityEntries((prev) =>
+          prev.map((e) =>
+            e.id === historyTitleRenamingId ? { ...e, title: trimmed } : e,
+          ),
+        );
+      }
+    }
+    setHistoryTitleRenamingId(null);
+    setHistoryTitleRenameValue("");
+  }, [
+    page,
+    historyTitleRenamingId,
+    historyTitleRenameValue,
+    chatThreads,
+    activityEntries,
+    updateChatThreads,
+    updateActivityEntries,
+  ]);
+
   const emptyListCopy =
     page === "liked"
       ? searchQuery.trim() || activityFilter !== "all"
@@ -323,6 +412,13 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             entries={visibleEntries}
             onMenuAction={handleMenu}
             onItemOpen={handleItemOpen}
+            enableTitleInlineRename={page === "history"}
+            titleRenamingId={historyTitleRenamingId}
+            titleRenameValue={historyTitleRenameValue}
+            onStartTitleRename={startHistoryTitleRename}
+            onTitleRenameChange={setHistoryTitleRenameValue}
+            onTitleRenameSubmit={submitHistoryTitleRename}
+            onTitleRenameCancel={cancelHistoryTitleRename}
           />
         ) : (
           <div className="flex flex-col gap-6">
@@ -356,6 +452,19 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                                 `/chat?openChat=${encodeURIComponent(record.id)}`
                               )
                             }
+                            enableTitleInlineRename={page === "history"}
+                            isTitleRenaming={historyTitleRenamingId === entry.id}
+                            titleRenameValue={
+                              historyTitleRenamingId === entry.id
+                                ? historyTitleRenameValue
+                                : ""
+                            }
+                            onStartTitleRename={() =>
+                              startHistoryTitleRename(entry.id)
+                            }
+                            onTitleRenameChange={setHistoryTitleRenameValue}
+                            onTitleRenameSubmit={submitHistoryTitleRename}
+                            onTitleRenameCancel={cancelHistoryTitleRename}
                           />
                         </li>
                       );
@@ -368,6 +477,19 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                           rowIndex={i}
                           onMenuAction={handleMenu}
                           onItemOpen={handleItemOpen}
+                          enableTitleInlineRename={page === "history"}
+                          isTitleRenaming={historyTitleRenamingId === entry.id}
+                          titleRenameValue={
+                            historyTitleRenamingId === entry.id
+                              ? historyTitleRenameValue
+                              : ""
+                          }
+                          onStartTitleRename={() =>
+                            startHistoryTitleRename(entry.id)
+                          }
+                          onTitleRenameChange={setHistoryTitleRenameValue}
+                          onTitleRenameSubmit={submitHistoryTitleRename}
+                          onTitleRenameCancel={cancelHistoryTitleRename}
                         />
                       </li>
                     );
@@ -479,7 +601,8 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-[#0F0F10] text-[#FAFAFA]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden text-[#FAFAFA]",
+        page === "history" ? "bg-app-canvas" : "bg-[#0F0F10]",
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
     >
@@ -500,9 +623,10 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
             activeId={activeMainNav}
             onNavigate={navigate}
+            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
           />
 
-          {/* xl: same height + self-start as Sidebar so panel background bottoms align (Sidebar uses calc(100% - dock clearance)). */}
+          {/* xl: History — same bottom clearance as Sidebar (`fixedDockClearancePx`); Liked — full dock reserve. */}
           <div
             className={cn(
               "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 pt-6 md:px-8 xl:px-10",
@@ -511,14 +635,19 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             style={
               minWidth1280
                 ? {
-                    height: `calc(100% - ${SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX}px)`,
+                    height:
+                      page === "history"
+                        ? `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`
+                        : `calc(100% - ${SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX}px)`,
                   }
                 : undefined
             }
           >
             <div
               className={cn(
-                "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[18px] border border-[#2A2A2E] bg-[#141418]",
+                "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+                page !== "history" &&
+                  "rounded-[18px] border border-[#2A2A2E] bg-[#141418]",
               )}
             >
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 md:p-6">
@@ -529,13 +658,24 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#0F0F10] md:hidden">
+      <div
+        className={cn(
+          "flex min-h-0 flex-1 flex-col overflow-hidden md:hidden",
+          page === "history" ? "bg-app-canvas" : "bg-[#0F0F10]",
+        )}
+      >
         <Header
           variant="mobile"
           mobileTitle={page === "liked" ? "LIKED" : "HISTORY"}
           onMenuClick={() => setMobileMenuOpen(true)}
         />
-        <div className="mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] border border-[#2A2A2E] bg-[#141418]">
+        <div
+          className={cn(
+            "mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+            page !== "history" &&
+              "rounded-[22px] border border-[#2A2A2E] bg-[#141418]",
+          )}
+        >
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 pt-4">
             {wrapScroll(scrollableInner("mobile", false, isGridView))}
           </div>

@@ -17,6 +17,13 @@ type HistoryListRowProps = {
   rowIndex: number;
   onMenuAction?: (id: string, action: FileRowMenuAction) => void;
   onItemOpen?: (id: string) => void;
+  enableTitleInlineRename?: boolean;
+  isTitleRenaming?: boolean;
+  titleRenameValue?: string;
+  onStartTitleRename?: () => void;
+  onTitleRenameChange?: (next: string) => void;
+  onTitleRenameSubmit?: () => void;
+  onTitleRenameCancel?: () => void;
 };
 
 function rowSurfaceClass(index: number) {
@@ -31,9 +38,104 @@ export function HistoryListRow({
   rowIndex,
   onMenuAction,
   onItemOpen,
+  enableTitleInlineRename = false,
+  isTitleRenaming = false,
+  titleRenameValue = "",
+  onStartTitleRename,
+  onTitleRenameChange,
+  onTitleRenameSubmit,
+  onTitleRenameCancel,
 }: HistoryListRowProps) {
   const meta = formatHistoryRowMeta(entry);
   const surface = rowSurfaceClass(rowIndex);
+
+  const titleNameBlockMobile = enableTitleInlineRename ? (
+    isTitleRenaming ? (
+      <input
+        autoFocus
+        value={titleRenameValue}
+        onChange={(e) => onTitleRenameChange?.(e.target.value)}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            onTitleRenameSubmit?.();
+          }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            onTitleRenameCancel?.();
+          }
+        }}
+        onBlur={() => onTitleRenameSubmit?.()}
+        className="w-full rounded bg-transparent text-left text-[12px] font-medium leading-snug text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+        aria-label={`Rename ${entry.title}`}
+      />
+    ) : (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onStartTitleRename?.();
+        }}
+        className="w-full truncate text-left text-[12px] font-medium text-white"
+      >
+        {entry.title}
+      </button>
+    )
+  ) : (
+    <p className="truncate text-left text-[12px] font-medium text-white">
+      {entry.title}
+    </p>
+  );
+
+  const titleNameBlockDesktop = enableTitleInlineRename ? (
+    isTitleRenaming ? (
+      <div className="flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5">
+        <input
+          autoFocus
+          value={titleRenameValue}
+          onChange={(e) => onTitleRenameChange?.(e.target.value)}
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onTitleRenameSubmit?.();
+            }
+            if (e.key === "Escape") {
+              e.preventDefault();
+              onTitleRenameCancel?.();
+            }
+          }}
+          onBlur={() => onTitleRenameSubmit?.()}
+          className="min-w-0 max-w-full flex-1 rounded bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+          aria-label={`Rename ${entry.title}`}
+        />
+        <span className="shrink-0 text-[13px] text-[#71717A]">—</span>
+        <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-[#A1A1AA]">
+          {entry.subtitle}
+        </span>
+      </div>
+    ) : (
+      <div className="truncate text-left text-[13px] font-medium text-white">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onStartTitleRename?.();
+          }}
+          className="text-left font-medium text-white hover:underline"
+        >
+          {entry.title}
+        </button>
+        <span className="text-[#71717A]"> — </span>
+        <span className="text-[#A1A1AA]">{entry.subtitle}</span>
+      </div>
+    )
+  ) : (
+    <p className="truncate text-left text-[13px] font-medium text-white">
+      {entry.title} — {entry.subtitle}
+    </p>
+  );
 
   if (variant === "mobile") {
     return (
@@ -58,9 +160,7 @@ export function HistoryListRow({
           imageUrl={entry.thumbnailUrl}
         />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-left text-[12px] font-medium text-white">
-            {entry.title}
-          </p>
+          {titleNameBlockMobile}
           <p className="mt-0.5 truncate text-left text-[11px] text-[#A1A1AA]">
             {entry.subtitle}
           </p>
@@ -105,9 +205,7 @@ export function HistoryListRow({
         imageUrl={entry.thumbnailUrl}
       />
       <div className="min-w-0">
-        <p className="truncate text-left text-[13px] font-medium text-white">
-          {entry.title} — {entry.subtitle}
-        </p>
+        {titleNameBlockDesktop}
         <p className="mt-1 truncate text-left text-[11px] text-[#A1A1AA]">
           {meta}
         </p>

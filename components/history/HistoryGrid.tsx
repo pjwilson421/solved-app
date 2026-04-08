@@ -11,9 +11,27 @@ type HistoryGridProps = {
   entries: ActivityHistoryEntry[];
   onMenuAction?: (id: string, action: FileRowMenuAction) => void;
   onItemOpen?: (id: string) => void;
+  enableTitleInlineRename?: boolean;
+  titleRenamingId?: string | null;
+  titleRenameValue?: string;
+  onStartTitleRename?: (id: string) => void;
+  onTitleRenameChange?: (next: string) => void;
+  onTitleRenameSubmit?: () => void;
+  onTitleRenameCancel?: () => void;
 };
 
-export function HistoryGrid({ entries, onMenuAction, onItemOpen }: HistoryGridProps) {
+export function HistoryGrid({
+  entries,
+  onMenuAction,
+  onItemOpen,
+  enableTitleInlineRename = false,
+  titleRenamingId = null,
+  titleRenameValue = "",
+  onStartTitleRename,
+  onTitleRenameChange,
+  onTitleRenameSubmit,
+  onTitleRenameCancel,
+}: HistoryGridProps) {
   const { chatThreads } = useAppData();
   const router = useRouter();
 
@@ -34,6 +52,15 @@ export function HistoryGrid({ entries, onMenuAction, onItemOpen }: HistoryGridPr
                 onOpen={() =>
                   router.push(`/chat?openChat=${encodeURIComponent(record.id)}`)
                 }
+                enableTitleInlineRename={enableTitleInlineRename}
+                isTitleRenaming={titleRenamingId === entry.id}
+                titleRenameValue={
+                  titleRenamingId === entry.id ? titleRenameValue : ""
+                }
+                onStartTitleRename={() => onStartTitleRename?.(entry.id)}
+                onTitleRenameChange={onTitleRenameChange}
+                onTitleRenameSubmit={onTitleRenameSubmit}
+                onTitleRenameCancel={onTitleRenameCancel}
               />
             </li>
           );
@@ -45,6 +72,15 @@ export function HistoryGrid({ entries, onMenuAction, onItemOpen }: HistoryGridPr
               rowIndex={i}
               onMenuAction={onMenuAction}
               onItemOpen={onItemOpen}
+              enableTitleInlineRename={enableTitleInlineRename}
+              isTitleRenaming={titleRenamingId === entry.id}
+              titleRenameValue={
+                titleRenamingId === entry.id ? titleRenameValue : ""
+              }
+              onStartTitleRename={() => onStartTitleRename?.(entry.id)}
+              onTitleRenameChange={onTitleRenameChange}
+              onTitleRenameSubmit={onTitleRenameSubmit}
+              onTitleRenameCancel={onTitleRenameCancel}
             />
           </li>
         );

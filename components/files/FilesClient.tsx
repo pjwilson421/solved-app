@@ -14,6 +14,7 @@ import { useShellNavReset } from "@/lib/shell-nav-reset-context";
 import { Header } from "../create-image/Header";
 import { Sidebar } from "../create-image/Sidebar";
 import { MobileCreateImageDrawer } from "../create-image/MobileCreateImageDrawer";
+import { CREATE_IMAGE_SCROLL_RESERVE } from "../create-image/preview-frame-layout";
 import type { HistoryItem } from "../create-image/types";
 import { cn } from "@/lib/utils";
 import { useAppData } from "@/lib/app-data/app-data-context";
@@ -517,6 +518,7 @@ export function FilesClient() {
             className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
             activeId={activeMainNav}
             onNavigate={navigate}
+            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
           />
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-0 xl:pr-[40px]">
