@@ -92,7 +92,7 @@ function DateSeparator({ label }: { label: string }) {
       aria-label={label}
     >
       <span
-        className="rounded-full px-3 py-0.5 text-[11px] font-medium"
+        className="rounded-input px-3 py-0.5 text-[11px] font-medium"
         style={{ color: CHAT_META, backgroundColor: "rgba(255,255,255,0.05)" }}
       >
         {label}
@@ -145,7 +145,7 @@ function UserBubble({ m, stackMarginClass }: BubbleProps) {
   return (
     <div
       className={cn(
-        "relative max-w-[min(100%,420px)] rounded-[20px] border border-[#1EA7E1]/50 bg-[#3ABEFF]/90",
+        "relative max-w-[min(100%,420px)] rounded-card border border-[#1EA7E1]/50 bg-[#3ABEFF]/90",
         "pl-4 pr-10 pb-3 pt-3 text-left text-[16px] leading-[22px] text-[#FAFAFA]",
         stackMarginClass,
       )}
@@ -154,7 +154,7 @@ function UserBubble({ m, stackMarginClass }: BubbleProps) {
         type="button"
         onClick={(e) => handleCopyClick(e, m.text)}
         className={cn(
-          "absolute right-1.5 top-1.5 z-[1] flex h-7 w-7 items-center justify-center rounded-md",
+          "absolute right-1.5 top-1.5 z-[1] flex h-7 w-7 items-center justify-center rounded-menu-item",
           "text-[#A1A1AA] opacity-90 transition-colors hover:bg-white/10 hover:text-white",
         )}
         aria-label="Copy message"
@@ -174,7 +174,7 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
   return (
     <div
       className={cn(
-        "relative max-w-[min(100%,620px)] rounded-[20px] border border-app-border bg-app-inset",
+        "relative max-w-[min(100%,620px)] rounded-card border border-app-border bg-app-inset",
         "pl-4 pr-10 pb-3 pt-3 text-left text-[16px] leading-[22px] text-[#E4E4E7]",
         stackMarginClass,
       )}
@@ -183,7 +183,7 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
         type="button"
         onClick={(e) => handleCopyClick(e, m.text)}
         className={cn(
-          "absolute right-1.5 top-1.5 z-[1] flex h-7 w-7 items-center justify-center rounded-md",
+          "absolute right-1.5 top-1.5 z-[1] flex h-7 w-7 items-center justify-center rounded-menu-item",
           "text-[#A1A1AA] opacity-90 transition-colors hover:bg-white/10 hover:text-white",
         )}
         aria-label="Copy message"
@@ -284,7 +284,7 @@ export function ChatMessageThread({
               type="button"
               onClick={() => onChipClick?.(label)}
               className={cn(
-                "rounded-lg border border-app-border bg-app-card px-3 py-1.5",
+                "rounded-card border border-app-border bg-app-card px-3 py-1.5",
                 "text-[11px] font-medium text-[#A1A1AA] transition-colors",
                 "hover:border-app-border-hover hover:text-white",
               )}

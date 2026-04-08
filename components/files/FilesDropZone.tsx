@@ -64,7 +64,7 @@ export function FilesDropZone({
             className="sr-only"
             onChange={onInputChange}
           />
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-app-canvas shrink-0">
+          <span className="flex h-10 w-10 items-center justify-center rounded-action bg-app-canvas shrink-0">
             <IconAsset src={ICONS.attachPrompt} size={28} />
           </span>
           <span>

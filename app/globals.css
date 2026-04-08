@@ -36,6 +36,26 @@
   --color-app-border-hover: #5c4d88;
   --color-app-input: #14082f;
   --color-app-thumb: #241848;
+
+  /* Overflow / “⋯” menu trigger (neutral; matches app canvas family) */
+  --color-app-menu-trigger: #272727;
+  --color-app-menu-trigger-hover: #303030;
+  --color-app-menu-trigger-active: #363636;
+
+  /*
+   * Corner radius scale — design system (use rounded-* utilities).
+   * panel / card: structural surfaces & tiles (12px)
+   * control: toolbars, dropdowns, chips (14px)
+   * input: pill-shaped primary bars (9999px)
+   * action: circular icon buttons (9999px)
+   * menu-item: nav rows & compact controls (10px)
+   */
+  --radius-panel: 12px;
+  --radius-card: 12px;
+  --radius-control: 14px;
+  --radius-input: 9999px;
+  --radius-action: 9999px;
+  --radius-menu-item: 10px;
 }
 
 body {

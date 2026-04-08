@@ -123,7 +123,7 @@ function PreviewDescriptionText({
         <button
           type="button"
           className={cn(
-            "mt-0.5 shrink-0 self-start rounded p-0.5 outline-none",
+            "mt-0.5 shrink-0 self-start rounded-menu-item p-0.5 outline-none",
             "hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-[#3ABEFF]",
           )}
           aria-expanded={expanded}
@@ -476,7 +476,7 @@ export function PreviewPanel({
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center bg-[#0F0F10]/80 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-3">
-              <div className="h-9 w-9 animate-spin rounded-full border-2 border-[#3ABEFF] border-t-transparent" />
+              <div className="h-9 w-9 animate-spin rounded-action border-2 border-[#3ABEFF] border-t-transparent" />
               <span className="text-[11px] font-medium tracking-wide text-[#A1A1AA]">
                 Generating…
               </span>

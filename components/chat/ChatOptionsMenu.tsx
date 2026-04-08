@@ -18,8 +18,8 @@ const CHAT_TOOLBAR_ICON_CLASS =
   "pointer-events-none [&_img]:!h-6 [&_img]:!w-6 [&_img]:!max-h-6 [&_img]:!max-w-6 [&_img]:object-contain [&_img]:opacity-100";
 
 const triggerClass = cn(
-  "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
-  "text-[#A1A1AA] transition-colors hover:bg-app-hover-strong hover:text-white",
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-control",
+  "bg-app-menu-trigger text-[#A1A1AA] transition-colors hover:bg-app-menu-trigger-hover active:bg-app-menu-trigger-active hover:text-white",
 );
 
 type ChatOptionsMenuProps = {
@@ -71,7 +71,7 @@ export function ChatOptionsMenu({ onSelect }: ChatOptionsMenuProps) {
           role="menu"
           className="absolute right-0 top-full z-[60] min-w-[200px] pt-1"
         >
-          <div className="rounded-xl border border-app-border bg-app-card py-1.5 shadow-xl">
+          <div className="rounded-card border border-app-border bg-app-card py-1.5 shadow-xl">
             {CHAT_MENU_ITEMS.map((label) => (
               <button
                 key={label}

@@ -9,11 +9,11 @@ import { SortDropdown } from "@/components/global/SortDropdown";
 import { type SortOption, SORT_OPTIONS, SORT_LABEL_BY_VALUE } from "@/lib/app-data/sort-filter-utils";
 
 const filesToolbarPrimaryBtnClass =
-  "inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#3ABEFF] px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-[#1EA7E1] active:bg-[#0D8FD1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]";
+  "inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-control bg-[#3ABEFF] px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-[#1EA7E1] active:bg-[#0D8FD1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]";
 
 const filterIconBtnClass = (active: boolean) =>
   cn(
-    "inline-flex h-[30px] w-[30px] shrink-0 cursor-pointer items-center justify-center rounded-lg border transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]",
+    "inline-flex h-[30px] w-[30px] shrink-0 cursor-pointer items-center justify-center rounded-control border transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]",
     active
       ? "border-[#1EA7E1]/80 bg-[#3ABEFF] hover:bg-[#0D8FD1]"
       : "border-[#2A2A2E] bg-[#1E1E22] hover:border-[#3F3F46] hover:bg-[#2A2A2E]",
@@ -53,7 +53,7 @@ export function FilesDesktopHeaderActions({
         aria-label="List view"
         aria-pressed={listViewActive}
         className={cn(
-          "flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]",
+          "flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]",
           onListViewClick ? "" : "cursor-default",
           listViewActive
             ? "bg-[#3ABEFF] hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
@@ -77,7 +77,7 @@ export function FilesDesktopHeaderActions({
           aria-label="Grid view"
           aria-pressed={gridViewActive}
           className={cn(
-            "flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]",
+            "flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]",
             gridViewActive
               ? "bg-[#3ABEFF] hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
               : "hover:bg-[#2A2A2E] active:bg-[#323238]",
@@ -93,7 +93,7 @@ export function FilesDesktopHeaderActions({
       ) : null}
       <button
         type="button"
-        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#2A2A2E] transition-colors duration-150 hover:bg-[#323238] active:bg-[#3a3a42] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]"
+        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-action bg-[#2A2A2E] transition-colors duration-150 hover:bg-[#323238] active:bg-[#3a3a42] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]"
         aria-label="Add user"
       >
         <IconAsset
@@ -232,7 +232,7 @@ export function FilesToolbar({
           <>
             <button
               type="button"
-              className="inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center rounded-lg bg-[#3ABEFF] px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-[#1EA7E1] active:bg-[#0D8FD1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]"
+              className="inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center rounded-control bg-[#3ABEFF] px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-[#1EA7E1] active:bg-[#0D8FD1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]"
             >
               + New
             </button>
@@ -257,7 +257,7 @@ export function FilesToolbar({
         <label className="sr-only" htmlFor="files-search">
           Search files
         </label>
-        <div className="flex h-[30px] w-full min-w-0 items-center gap-2 rounded-full border border-[#2A2A2E] bg-[#15151A] px-3 transition-[border-color,box-shadow] duration-150 hover:border-[#3F3F46] focus-within:border-[#1EA7E1]/55 focus-within:shadow-[0_0_0_1px_rgba(108,212,255,0.25)]">
+        <div className="flex h-[30px] w-full min-w-0 items-center gap-2 rounded-input border border-[#2A2A2E] bg-[#15151A] px-3 transition-[border-color,box-shadow] duration-150 hover:border-[#3F3F46] focus-within:border-[#1EA7E1]/55 focus-within:shadow-[0_0_0_1px_rgba(108,212,255,0.25)]">
           <svg
             className="h-3.5 w-3.5 shrink-0 text-[#8A8A93]"
             viewBox="0 0 12 12"

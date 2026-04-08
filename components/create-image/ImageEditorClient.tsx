@@ -428,7 +428,7 @@ export function ImageEditorClient({
           mobileTitle="EDIT"
           onMenuClick={() => setMobileMenuOpen(true)}
         />
-        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] border border-app-border bg-app-panel">
+        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-panel border border-app-border bg-app-panel">
           <div
             ref={mobileScrollRef}
             className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
@@ -555,7 +555,7 @@ export function ImageEditorClient({
         <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
           <button
             type="button"
-            className="mb-4 self-end rounded-lg px-4 py-2 text-sm text-white hover:bg-white/10"
+            className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"
             onClick={() => setFullScreenUrl(null)}
           >
             Close

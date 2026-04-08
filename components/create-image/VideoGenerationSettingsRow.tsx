@@ -10,7 +10,7 @@ import { ASPECT_RATIOS, QUALITIES, VIDEO_DURATIONS } from "./types";
 const CONTROL_ICON_SIZE = 16;
 
 const templatesControlStyle =
-  "rounded-lg bg-app-hover-strong/90 px-3 text-[11px] font-normal leading-8 text-white transition-colors hover:bg-app-pressed/95 outline-none focus:outline-none";
+  "rounded-control bg-app-hover-strong/90 px-3 text-[11px] font-normal leading-8 text-white transition-colors hover:bg-app-pressed/95 outline-none focus:outline-none";
 
 const selectBase = cn(
   "h-8 min-w-0 cursor-pointer appearance-none py-0 pr-7 text-[11px] font-normal leading-8 outline-none focus:outline-none",

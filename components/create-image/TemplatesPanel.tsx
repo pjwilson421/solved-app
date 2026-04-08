@@ -27,7 +27,7 @@ export function TemplatesPanel({
       <button
         type="button"
         onClick={onToggle}
-        className="flex h-8 items-center gap-2 rounded-lg bg-app-hover-strong px-3 text-[11px] font-normal text-white transition-colors hover:bg-app-pressed"
+        className="flex h-8 items-center gap-2 rounded-control bg-app-hover-strong px-3 text-[11px] font-normal text-white transition-colors hover:bg-app-pressed"
       >
         <IconAsset src={ICONS.templates} size={16} className="opacity-90" />
         Templates
@@ -39,7 +39,7 @@ export function TemplatesPanel({
             type="button"
             onClick={() => onSelect(null)}
             className={cn(
-              "flex h-[64px] w-[92px] shrink-0 items-center justify-center rounded-[10px] border border-app-border bg-app-inset text-[10px] text-[#8A8A93] transition-colors hover:border-app-border-hover",
+              "flex h-[64px] w-[92px] shrink-0 items-center justify-center rounded-card border border-app-border bg-app-inset text-[10px] text-[#8A8A93] transition-colors hover:border-app-border-hover",
               selectedId === null &&
                 "border-app-border-hover bg-app-elevated text-white",
             )}
@@ -52,7 +52,7 @@ export function TemplatesPanel({
               type="button"
               onClick={() => onSelect(t.id)}
               className={cn(
-                "group flex h-[64px] w-[92px] shrink-0 flex-col overflow-hidden rounded-[10px] border border-app-border transition-colors hover:border-app-border-hover",
+                "group flex h-[64px] w-[92px] shrink-0 flex-col overflow-hidden rounded-card border border-app-border transition-colors hover:border-app-border-hover",
                 selectedId === t.id && "border-[#3ABEFF]",
               )}
             >

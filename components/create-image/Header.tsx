@@ -37,7 +37,7 @@ export function Header({
         <div className="flex items-center gap-3">
           <Link
             href="/chat"
-            className="shrink-0 rounded-md outline-none transition-opacity duration-150 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-canvas"
+            className="shrink-0 rounded-menu-item outline-none transition-opacity duration-150 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-canvas"
             aria-label="Go to chat"
           >
             <IconAsset
@@ -73,7 +73,7 @@ export function Header({
           <button
             type="button"
             onClick={onMenuClick}
-            className="mr-2 flex h-8 w-8 items-center justify-center rounded-lg text-[#A1A1AA] transition-colors hover:bg-app-hover-strong hover:text-white"
+            className="mr-2 flex h-8 w-8 items-center justify-center rounded-control text-[#A1A1AA] transition-colors hover:bg-app-hover-strong hover:text-white"
             aria-label="Open menu"
           >
             <IconMenu className="h-5 w-5" />

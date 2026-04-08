@@ -114,7 +114,7 @@ export function FileListRow({
             : undefined
         }
         className={cn(
-          "group rounded-[10px] border px-3 py-3 transition-[background-color,border-color] duration-150",
+          "group rounded-card border px-3 py-3 transition-[background-color,border-color] duration-150",
           rowActivate ? "cursor-pointer" : "cursor-default",
           rowSurfaceClass(rowIndex, accent),
           rowHoverClass(accent),
@@ -145,7 +145,7 @@ export function FileListRow({
                   }
                 }}
                 onBlur={() => onRenameSubmit?.()}
-                className="w-full rounded bg-transparent text-left text-[12px] font-medium leading-snug text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+                className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
                 aria-label={`Rename ${entry.name}`}
               />
             ) : (
@@ -215,7 +215,7 @@ export function FileListRow({
           : undefined
       }
       className={cn(
-        "group grid min-h-[48px] items-center gap-2 rounded-[10px] border px-3 py-2 transition-[background-color,border-color] duration-150 sm:gap-3 sm:px-4",
+        "group grid min-h-[48px] items-center gap-2 rounded-card border px-3 py-2 transition-[background-color,border-color] duration-150 sm:gap-3 sm:px-4",
         "sm:grid-cols-[minmax(0,1fr)_72px_112px_64px_auto]",
         rowActivate ? "cursor-pointer" : "cursor-default",
         rowSurfaceClass(rowIndex, accent),
@@ -255,7 +255,7 @@ export function FileListRow({
               }
             }}
             onBlur={() => onRenameSubmit?.()}
-            className="min-w-0 w-full rounded bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+            className="min-w-0 w-full rounded-menu-item bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
             aria-label={`Rename ${entry.name}`}
           />
         ) : (

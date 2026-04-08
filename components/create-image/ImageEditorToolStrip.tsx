@@ -42,7 +42,7 @@ const ICONS_BY_TOOL: Record<
 const ICON_PX = 16;
 
 const chip = cn(
-  "flex min-h-[38px] min-w-0 shrink-0 items-center justify-center gap-2 rounded-lg border border-app-border/90",
+  "flex min-h-[38px] min-w-0 shrink-0 items-center justify-center gap-2 rounded-control border border-app-border/90",
   "bg-app-inset pl-2.5 pr-3 text-[11px] font-medium leading-none text-white transition-colors",
   "hover:bg-app-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/60",
 );

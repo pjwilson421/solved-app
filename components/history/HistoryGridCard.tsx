@@ -56,7 +56,7 @@ export function HistoryGridCard({
         }
       }}
       className={cn(
-        "group flex h-full cursor-pointer flex-col overflow-hidden rounded-xl border transition-[background-color,border-color,box-shadow] duration-150",
+        "group flex h-full cursor-pointer flex-col overflow-hidden rounded-card border transition-[background-color,border-color,box-shadow] duration-150",
         surface,
         "hover:border-[#3F3F46] hover:bg-[#1c1c1f] hover:shadow-md",
       )}
@@ -94,7 +94,7 @@ export function HistoryGridCard({
                 }
               }}
               onBlur={() => onTitleRenameSubmit?.()}
-              className="w-full rounded bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+              className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
               aria-label={`Rename ${entry.title}`}
             />
           ) : (

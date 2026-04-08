@@ -43,7 +43,7 @@ export function FileRowActionsMenu({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-[10px] bg-[#18181B] text-[#A1A1AA] transition-colors duration-150 hover:bg-[#2A2A2E] hover:text-white active:bg-[#323238] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#18181B]"
+        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-menu-item bg-app-menu-trigger text-[#A1A1AA] transition-colors duration-150 hover:bg-app-menu-trigger-hover hover:text-white active:bg-app-menu-trigger-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-menu-trigger"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={menuAriaLabel}
@@ -54,7 +54,7 @@ export function FileRowActionsMenu({
         <div
           role="menu"
           className={cn(
-            "absolute top-10 z-50 min-w-[160px] rounded-xl border border-[#2A2A2E] bg-[#18181B] py-1.5 shadow-xl",
+            "absolute top-10 z-50 min-w-[160px] rounded-card border border-[#2A2A2E] bg-[#18181B] py-1.5 shadow-xl",
             align === "right" ? "right-0" : "left-0",
           )}
         >

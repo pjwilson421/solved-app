@@ -59,7 +59,7 @@ export function SettingsRouteClient({
               className={cn(
                 "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
                 !flatMainContent &&
-                  "rounded-[18px] border border-[#2A2A2E] bg-[#141418]",
+                  "rounded-panel border border-[#2A2A2E] bg-[#141418]",
               )}
             >
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 md:p-6">
@@ -90,7 +90,7 @@ export function SettingsRouteClient({
           className={cn(
             "mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
             !flatMainContent &&
-              "rounded-[22px] border border-[#2A2A2E] bg-[#141418]",
+              "rounded-panel border border-[#2A2A2E] bg-[#141418]",
           )}
         >
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-5">

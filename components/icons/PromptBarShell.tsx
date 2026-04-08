@@ -12,7 +12,7 @@ export function PromptBarShell({
   variant?: "desktop" | "mobile";
 }) {
   const shellClass = cn(
-    "relative h-[76px] w-full shrink-0 overflow-visible rounded-[12px]",
+    "relative h-[76px] w-full shrink-0 overflow-visible rounded-input",
     "bg-[#18181B]",
     "transition-[background-color] duration-200 ease-out",
     "hover:bg-[#1E1E22]",

@@ -127,7 +127,7 @@ export function MobileCreateImageDrawer({
 
   const subBtn = (selected: boolean) =>
     cn(
-      "w-full rounded-md py-2 pl-3 pr-2 text-left text-[12px] leading-snug transition-colors active:bg-[#2A2A2E]/90",
+      "w-full rounded-menu-item py-2 pl-3 pr-2 text-left text-[12px] leading-snug transition-colors active:bg-[#2A2A2E]/90",
       selected
         ? "bg-[#3ABEFF]/60 text-white"
         : "text-[#A1A1AA] hover:bg-[#2A2A2E]/90 hover:text-white",
@@ -279,7 +279,7 @@ export function MobileCreateImageDrawer({
               </div>
               {likedScopeOpen ? (
                 <ul
-                  className="mx-3 mb-1 mt-0.5 rounded-lg border border-[#2A2A2E]/80 bg-[#1A1A1F] py-1.5 pl-2 pr-1"
+                  className="mx-3 mb-1 mt-0.5 rounded-card border border-[#2A2A2E]/80 bg-[#1A1A1F] py-1.5 pl-2 pr-1"
                   role="list"
                 >
                   {SCOPE_ROWS.map((row) => (
@@ -312,7 +312,7 @@ export function MobileCreateImageDrawer({
               </button>
               {settingsScopeOpen ? (
                 <ul
-                  className="mx-3 mb-1 mt-0.5 rounded-lg border border-[#2A2A2E]/80 bg-[#1A1A1F] py-1.5 pl-2 pr-1"
+                  className="mx-3 mb-1 mt-0.5 rounded-card border border-[#2A2A2E]/80 bg-[#1A1A1F] py-1.5 pl-2 pr-1"
                   role="list"
                 >
                   {(

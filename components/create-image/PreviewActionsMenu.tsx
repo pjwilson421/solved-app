@@ -42,7 +42,7 @@ export function PreviewActionsMenu({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-app-card text-[#A1A1AA] transition-colors hover:bg-app-hover hover:text-white"
+        className="flex h-8 w-8 items-center justify-center rounded-menu-item bg-app-menu-trigger text-[#A1A1AA] transition-colors hover:bg-app-menu-trigger-hover active:bg-app-menu-trigger-active hover:text-white"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Preview actions"
@@ -53,7 +53,7 @@ export function PreviewActionsMenu({
         <div
           role="menu"
           className={cn(
-            "absolute top-10 z-50 min-w-[180px] rounded-xl border border-app-border bg-app-card py-1.5 shadow-xl",
+            "absolute top-10 z-50 min-w-[180px] rounded-card border border-app-border bg-app-card py-1.5 shadow-xl",
             align === "right" ? "right-0" : "left-0",
           )}
         >

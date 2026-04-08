@@ -50,19 +50,19 @@ export function PromptBar({
       onClick={onGenerate}
       disabled={generateDisabled || isGenerating}
       className={cn(
-        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 p-0 opacity-100 disabled:opacity-100",
+        "flex h-10 w-10 shrink-0 items-center justify-center rounded-action border-0 p-0 opacity-100 disabled:opacity-100",
         generateDisabled || isGenerating ? "cursor-not-allowed" : "",
       )}
       aria-label={generateAriaLabel}
     >
       {isGenerating ? (
         isDesktop ? (
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3ABEFF]">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          <span className="flex h-10 w-10 items-center justify-center rounded-action bg-[#3ABEFF]">
+            <span className="h-4 w-4 animate-spin rounded-action border-2 border-white border-t-transparent" />
           </span>
         ) : (
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#3ABEFF]">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-action bg-[#3ABEFF]">
+            <span className="h-4 w-4 animate-spin rounded-action border-2 border-white border-t-transparent" />
           </span>
         )
       ) : (
@@ -96,7 +96,7 @@ export function PromptBar({
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-app-canvas p-0 transition-opacity hover:opacity-90"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-action border-0 bg-app-canvas p-0 transition-opacity hover:opacity-90"
           aria-label="Add reference images"
         >
           <IconAsset src={ICONS.attachPrompt} size={28} />
@@ -124,7 +124,7 @@ export function PromptBar({
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-app-canvas p-0 transition-opacity hover:opacity-90"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-action border-0 bg-app-canvas p-0 transition-opacity hover:opacity-90"
           aria-label="Add reference images"
         >
           <IconAsset src={ICONS.attachPrompt} size={28} />
@@ -142,7 +142,7 @@ export function PromptBar({
           }}
           placeholder={placeholder}
           rows={1}
-          className="min-h-11 max-h-11 min-w-0 flex-1 resize-none rounded-lg border-0 bg-transparent px-1.5 py-0 text-[16px] leading-11 text-[#3ABEFF] caret-[#3ABEFF] [padding-block:0] placeholder:text-[#3ABEFF] placeholder:leading-11 outline-none focus:outline-none focus:ring-0"
+          className="min-h-11 max-h-11 min-w-0 flex-1 resize-none rounded-control border-0 bg-transparent px-1.5 py-0 text-[16px] leading-11 text-[#3ABEFF] caret-[#3ABEFF] [padding-block:0] placeholder:text-[#3ABEFF] placeholder:leading-11 outline-none focus:outline-none focus:ring-0"
         />
         <div className="flex shrink-0 pl-0.5">{generateBtn}</div>
       </div>
@@ -154,14 +154,14 @@ export function PromptBar({
         {references.map((r) => (
           <div
             key={r.id}
-            className="relative h-11 w-11 overflow-hidden rounded-md border border-app-border/40 bg-app-canvas"
+            className="relative h-11 w-11 overflow-hidden rounded-card border border-app-border/40 bg-app-canvas"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={r.url} alt="" className="h-full w-full object-cover" />
             <button
               type="button"
               onClick={() => onRemoveReference(r.id)}
-              className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-app-canvas text-[9px] text-white"
+              className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-action bg-app-canvas text-[9px] text-white"
               aria-label="Remove reference"
             >
               ×

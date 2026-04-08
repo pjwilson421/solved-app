@@ -352,7 +352,7 @@ export function FilesClient() {
           <button
             type="button"
             onClick={goFolderUp}
-            className="shrink-0 flex items-center gap-1 rounded-md py-1 pr-2 text-[11px] font-medium text-[#A1A1AA] transition-colors hover:text-white"
+            className="shrink-0 flex items-center gap-1 rounded-menu-item py-1 pr-2 text-[11px] font-medium text-[#A1A1AA] transition-colors hover:text-white"
           >
             <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M7.5 9L4.5 6L7.5 3" />
@@ -406,12 +406,12 @@ export function FilesClient() {
       />
 
       {filterOpen ? (
-        <div className="flex flex-wrap gap-2 rounded-lg border border-[#2A2A2E]/80 bg-[#18181B]/80 px-3 py-2">
+        <div className="flex flex-wrap gap-2 rounded-card border border-[#2A2A2E]/80 bg-[#18181B]/80 px-3 py-2">
           <button
             type="button"
             onClick={() => setTypeFilter(null)}
             className={cn(
-              "cursor-pointer rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors duration-150",
+              "cursor-pointer rounded-menu-item px-2.5 py-1 text-[10px] font-medium transition-colors duration-150",
               typeFilter === null
                 ? "bg-[#3ABEFF] text-white hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
                 : "text-[#A1A1AA] hover:bg-[#2A2A2E] hover:text-white active:bg-[#252528]",
@@ -425,7 +425,7 @@ export function FilesClient() {
               type="button"
               onClick={() => setTypeFilter(t)}
               className={cn(
-                "cursor-pointer rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors duration-150",
+                "cursor-pointer rounded-menu-item px-2.5 py-1 text-[10px] font-medium transition-colors duration-150",
                 typeFilter === t
                   ? "bg-[#3ABEFF] text-white hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
                   : "text-[#A1A1AA] hover:bg-[#2A2A2E] hover:text-white active:bg-[#252528]",

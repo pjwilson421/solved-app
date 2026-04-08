@@ -56,14 +56,14 @@ export function FileImagePreviewModal({
             type="button"
             onClick={onClose}
             className={cn(
-              "shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-medium text-[#A1A1AA]",
+              "shrink-0 rounded-control px-3 py-1.5 text-[11px] font-medium text-[#A1A1AA]",
               "transition-colors hover:bg-app-hover-strong hover:text-white",
             )}
           >
             Close
           </button>
         </div>
-        <div className="overflow-hidden rounded-xl border border-app-border bg-app-panel shadow-xl shadow-black/40">
+        <div className="overflow-hidden rounded-card border border-app-border bg-app-panel shadow-xl shadow-black/40">
           {videoSrc ? (
             <video
               src={videoSrc}

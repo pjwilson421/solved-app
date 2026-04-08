@@ -11,7 +11,7 @@ export function FilesListHeader({ className }: FilesListHeaderProps) {
     <div className={cn("w-full shrink-0", className)}>
       <div
         className={cn(
-          "grid grid-cols-[minmax(0,1fr)_48px_40px] gap-2 rounded-[10px] border border-app-border bg-app-inset px-3 py-2",
+          "grid grid-cols-[minmax(0,1fr)_48px_40px] gap-2 rounded-card border border-app-border bg-app-inset px-3 py-2",
           "text-[10px] font-bold uppercase tracking-[0.08em] text-[#8A8A93]",
           "sm:hidden",
         )}
@@ -22,7 +22,7 @@ export function FilesListHeader({ className }: FilesListHeaderProps) {
       </div>
       <div
         className={cn(
-          "hidden sm:grid sm:grid-cols-[minmax(0,1fr)_72px_112px_64px_40px] sm:gap-3 sm:rounded-[10px] sm:border sm:border-app-border sm:bg-app-inset sm:px-4 sm:py-2.5",
+          "hidden sm:grid sm:grid-cols-[minmax(0,1fr)_72px_112px_64px_40px] sm:gap-3 sm:rounded-card sm:border sm:border-app-border sm:bg-app-inset sm:px-4 sm:py-2.5",
           "text-[10px] font-bold uppercase tracking-[0.08em] text-[#8A8A93]",
         )}
       >

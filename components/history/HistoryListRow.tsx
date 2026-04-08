@@ -67,7 +67,7 @@ export function HistoryListRow({
           }
         }}
         onBlur={() => onTitleRenameSubmit?.()}
-        className="w-full rounded bg-transparent text-left text-[12px] font-medium leading-snug text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+        className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
         aria-label={`Rename ${entry.title}`}
       />
     ) : (
@@ -107,7 +107,7 @@ export function HistoryListRow({
             }
           }}
           onBlur={() => onTitleRenameSubmit?.()}
-          className="min-w-0 max-w-full flex-1 rounded bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+          className="min-w-0 max-w-full flex-1 rounded-menu-item bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
           aria-label={`Rename ${entry.title}`}
         />
         <span className="shrink-0 text-[13px] text-[#71717A]">—</span>
@@ -150,7 +150,7 @@ export function HistoryListRow({
           }
         }}
         className={cn(
-          "group flex cursor-pointer gap-3 rounded-xl border px-3 py-3 transition-[background-color,border-color] duration-150",
+          "group flex cursor-pointer gap-3 rounded-card border px-3 py-3 transition-[background-color,border-color] duration-150",
           surface,
           "hover:border-app-border-hover hover:bg-app-panel",
         )}
@@ -195,7 +195,7 @@ export function HistoryListRow({
         }
       }}
       className={cn(
-        "group grid min-h-0 cursor-pointer grid-cols-[120px_minmax(0,1fr)_auto] items-center gap-3 rounded-[10px] border px-4 py-3 transition-[background-color,border-color] duration-150",
+        "group grid min-h-0 cursor-pointer grid-cols-[120px_minmax(0,1fr)_auto] items-center gap-3 rounded-card border px-4 py-3 transition-[background-color,border-color] duration-150",
         surface,
         "hover:border-app-border-hover hover:bg-app-panel",
       )}

@@ -56,7 +56,7 @@ type SidebarProps = {
 
 const navRowClass = (active: boolean) =>
   cn(
-    "flex h-9 w-full min-w-0 items-center gap-3 rounded-[6.66px] pl-3 pr-3 text-left text-[14px] leading-none transition-colors",
+    "flex h-9 w-full min-w-0 items-center gap-3 rounded-menu-item pl-3 pr-3 text-left text-[14px] leading-none transition-colors",
     active
       ? "bg-[#3ABEFF] text-white"
       : "bg-transparent text-[#8A8A93] hover:bg-[#2A2A2E] hover:text-white",
@@ -144,7 +144,7 @@ function SettingsNavDropdown({
       </button>
       {open ? (
         <ul
-          className="absolute bottom-full left-0 right-0 z-10 mb-1 rounded-[6.66px] border border-[#2A2A2E] bg-[#18181B] py-1 shadow-lg"
+          className="absolute bottom-full left-0 right-0 z-10 mb-1 rounded-menu-item border border-[#2A2A2E] bg-[#18181B] py-1 shadow-lg"
           role="menu"
         >
           {SETTINGS_MENU_ITEMS.map((row) => (
@@ -202,7 +202,7 @@ export function Sidebar({
         <section
           className={cn(
             "flex min-h-0 flex-1 flex-col overflow-hidden",
-            "w-full rounded-[11px] border border-[#2A2A2E] bg-[#18181B]",
+            "w-full rounded-panel border border-[#2A2A2E] bg-[#18181B]",
             "py-3",
           )}
         >

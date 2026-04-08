@@ -47,7 +47,7 @@ export function HistoryToolbar({
         <label className="sr-only" htmlFor="history-search">
           Search history
         </label>
-        <div className="flex h-[30px] min-w-0 max-w-full flex-[1_1_200px] items-center gap-2 rounded-full border border-app-border bg-app-input px-3 transition-[border-color,box-shadow] duration-150 hover:border-app-border-hover focus-within:border-[#1EA7E1]/55 focus-within:shadow-[0_0_0_1px_rgba(108,212,255,0.25)]">
+        <div className="flex h-[30px] min-w-0 max-w-full flex-[1_1_200px] items-center gap-2 rounded-input border border-app-border bg-app-input px-3 transition-[border-color,box-shadow] duration-150 hover:border-app-border-hover focus-within:border-[#1EA7E1]/55 focus-within:shadow-[0_0_0_1px_rgba(108,212,255,0.25)]">
           <svg
             className="h-3.5 w-3.5 shrink-0 text-[#8A8A93]"
             viewBox="0 0 12 12"

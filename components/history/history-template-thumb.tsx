@@ -16,7 +16,7 @@ type HistoryListTemplateThumbProps = {
 
 /**
  * Square placeholder matching xl+ `DesktopTemplatesStrip` template tiles:
- * `rounded-[10px]`, `border-app-border`, preview `bg-app-thumb` / `bg-app-hover-strong/80`.
+ * `rounded-card`, `border-app-border`, preview `bg-app-thumb` / `bg-app-hover-strong/80`.
  */
 export function HistoryListTemplateThumb({
   variant,
@@ -31,7 +31,7 @@ export function HistoryListTemplateThumb({
   return (
     <div
       className={cn(
-        "relative flex shrink-0 flex-col overflow-hidden rounded-[10px] border border-app-border bg-app-inset",
+        "relative flex shrink-0 flex-col overflow-hidden rounded-card border border-app-border bg-app-inset",
         className,
       )}
       style={{ width: px, height: px }}
@@ -67,7 +67,7 @@ export function HistoryGridTemplateThumb({
   return (
     <div
       className={cn(
-        "relative w-full overflow-hidden rounded-t-xl bg-app-inset",
+        "relative w-full overflow-hidden rounded-t-card bg-app-inset",
         "aspect-square",
         className,
       )}

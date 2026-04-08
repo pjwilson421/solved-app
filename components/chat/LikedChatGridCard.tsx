@@ -67,7 +67,7 @@ export function LikedChatGridCard({
           }
         }}
         onBlur={() => onTitleRenameSubmit?.()}
-        className="line-clamp-2 w-full rounded bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+        className="line-clamp-2 w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
         aria-label={`Rename ${title}`}
       />
     ) : (
@@ -89,7 +89,7 @@ export function LikedChatGridCard({
   );
 
   const shellClass = cn(
-    "group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-xl border text-left transition-[background-color,border-color,box-shadow] duration-150",
+    "group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-card border text-left transition-[background-color,border-color,box-shadow] duration-150",
     surface,
     "hover:border-[#3F3F46] hover:bg-[#1c1c1f] hover:shadow-md",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]",

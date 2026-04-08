@@ -27,7 +27,7 @@ export function LikeToggleButton({ itemKey, className }: LikeToggleButtonProps) 
     <button
       type="button"
       className={cn(
-        "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[10px] transition-[background-color,box-shadow,color] duration-150",
+        "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-menu-item transition-[background-color,box-shadow,color] duration-150",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-panel",
         liked
           ? "bg-[#3ABEFF]/55 text-white ring-1 ring-inset ring-[#3ABEFF]/35 hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"

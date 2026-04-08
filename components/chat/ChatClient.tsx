@@ -63,7 +63,7 @@ const CHAT_TOOLBAR_ICON_CLASS =
 
 function chatLikeButtonClass(liked: boolean) {
   return cn(
-    "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-[background-color,box-shadow,color]",
+    "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,box-shadow,color]",
     liked
       ? "bg-[#3ABEFF]/55 text-white ring-1 ring-inset ring-[#3ABEFF]/35 hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
       : "text-[#A1A1AA] hover:bg-[#2A2A2E] hover:text-white",
@@ -455,7 +455,7 @@ export function ChatClient() {
             }}
           >
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden pb-0 pl-5 pr-5 pt-6">
-              <section className="flex min-h-0 flex-1 flex-col overflow-hidden w-full rounded-[11px] border border-[#2A2A2E] bg-[#18181B] py-3">
+              <section className="flex min-h-0 flex-1 flex-col overflow-hidden w-full rounded-panel border border-[#2A2A2E] bg-[#18181B] py-3">
                 <div className="shrink-0 px-4 pb-3">
                   <h2 className="text-left text-[10px] font-bold uppercase tracking-[0.08em] text-white">
                     HISTORY
@@ -616,7 +616,7 @@ export function ChatClient() {
         <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
           <button
             type="button"
-            className="mb-4 self-end rounded-lg px-4 py-2 text-sm text-white hover:bg-white/10"
+            className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"
             onClick={() => setFullScreenUrl(null)}
           >
             Close

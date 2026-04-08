@@ -20,7 +20,7 @@ type ImageEditorFileInfoPanelProps = {
 
 const tabBtn = (active: boolean) =>
   cn(
-    "rounded-md px-3 py-1.5 text-[11px] font-medium leading-none transition-colors",
+    "rounded-menu-item px-3 py-1.5 text-[11px] font-medium leading-none transition-colors",
     active
       ? "bg-[#3ABEFF] text-white"
       : "bg-app-inset text-[#A1A1AA] hover:bg-app-elevated hover:text-white",
@@ -53,7 +53,7 @@ export function ImageEditorFileInfoPanel({
         <section
           className={cn(
             "flex min-h-0 flex-1 flex-col overflow-hidden",
-            "w-full rounded-[11px] border border-app-border bg-app-card",
+            "w-full rounded-panel border border-app-border bg-app-card",
             "py-4",
           )}
         >

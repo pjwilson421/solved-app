@@ -16,7 +16,7 @@ const CONTROL_ICON_SIZE = 16;
 
 /** Aligned with Templates trigger; slightly softer fill so settings read secondary. */
 const templatesControlStyle =
-  "rounded-lg bg-[#2A2A2E]/90 px-3 text-[11px] font-normal leading-8 text-white transition-colors hover:bg-[#323238]/95 outline-none focus:outline-none";
+  "rounded-control bg-[#2A2A2E]/90 px-3 text-[11px] font-normal leading-8 text-white transition-colors hover:bg-[#323238]/95 outline-none focus:outline-none";
 
 const assetTypeBtn = cn(
   "flex h-8 min-w-0 cursor-pointer items-center gap-2 text-left",
@@ -115,7 +115,7 @@ function AssetContentTypeMenu({
         <ul
           role="listbox"
           aria-label="Content type"
-          className="rounded-lg border border-[#2A2A2E] bg-[#1E1E22] py-1 text-[11px] shadow-lg"
+          className="rounded-card border border-[#2A2A2E] bg-[#1E1E22] py-1 text-[11px] shadow-lg"
         >
           {ASSET_CONTENT_TYPES.map((opt) => (
             <li key={opt} role="none">

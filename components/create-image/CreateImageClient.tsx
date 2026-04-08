@@ -454,7 +454,7 @@ export function CreateImageClient() {
             onSelect={loadHistory}
             onMenuAction={handleHistoryMenu}
             className="hidden max-h-screen shrink-0 !bg-transparent xl:flex xl:w-[300px] xl:min-w-[300px]"
-            panelClassName="w-full rounded-[11px] border border-[#2A2A2E] bg-[#18181B]"
+            panelClassName="w-full rounded-panel border border-[#2A2A2E] bg-[#18181B]"
             fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
             flushBottom
           />
@@ -585,7 +585,7 @@ export function CreateImageClient() {
         <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
           <button
             type="button"
-            className="mb-4 self-end rounded-lg px-4 py-2 text-sm text-white hover:bg-white/10"
+            className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"
             onClick={() => setFullScreenUrl(null)}
           >
             Close

@@ -74,7 +74,7 @@ export function FilesGridCard({
           : undefined
       }
       className={cn(
-        "group flex h-full flex-col rounded-xl border border-app-border bg-app-card transition-[background-color,border-color,box-shadow] duration-150",
+        "group flex h-full flex-col rounded-card border border-app-border bg-app-card transition-[background-color,border-color,box-shadow] duration-150",
         "hover:border-app-border-hover hover:bg-app-panel hover:shadow-md",
         cardActivate ? "cursor-pointer" : "cursor-default",
         accent === "highlight" &&
@@ -83,7 +83,7 @@ export function FilesGridCard({
     >
       <div
         className={cn(
-          "relative w-full rounded-t-xl bg-app-panel transition-colors duration-150 group-hover:bg-app-shade",
+          "relative w-full rounded-t-card bg-app-panel transition-colors duration-150 group-hover:bg-app-shade",
           "aspect-[148/118] sm:aspect-[8/5]",
         )}
       >
@@ -97,7 +97,7 @@ export function FilesGridCard({
             onSelect={(a) => onMenuAction?.(entry.id, a)}
           />
         </div>
-        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-t-xl">
+        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-t-card">
           {showVisualThumb ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -133,7 +133,7 @@ export function FilesGridCard({
               }
             }}
             onBlur={() => onRenameSubmit?.()}
-            className="w-full rounded bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+            className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
             aria-label={`Rename ${entry.name}`}
           />
         ) : (

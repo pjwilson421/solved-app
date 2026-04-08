@@ -157,7 +157,7 @@ export function DesktopTemplatesStrip({
             aria-selected={selectedId === null}
             onClick={() => onSelect(null)}
             className={cn(
-              "flex shrink-0 items-center justify-center rounded-[10px] border text-[11px] font-medium transition-all",
+              "flex shrink-0 items-center justify-center rounded-card border text-[11px] font-medium transition-all",
               "outline-none focus-visible:ring-2 focus-visible:ring-app-border-hover/70 focus-visible:ring-offset-2 focus-visible:ring-offset-app-canvas",
               "border-app-border bg-app-inset text-[#A1A1AA] hover:border-app-border-hover hover:bg-app-elevated hover:text-white",
               selectedId === null &&
@@ -178,7 +178,7 @@ export function DesktopTemplatesStrip({
                 title={t.name}
                 onClick={() => onSelect(t.id)}
                 className={cn(
-                  "group relative flex shrink-0 flex-col overflow-hidden rounded-[10px] border text-left transition-all",
+                  "group relative flex shrink-0 flex-col overflow-hidden rounded-card border text-left transition-all",
                   "outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF] focus-visible:ring-offset-2 focus-visible:ring-offset-app-canvas",
                   "border-app-border bg-app-inset hover:border-app-border-hover",
                   selected &&
@@ -218,11 +218,11 @@ export function DesktopTemplatesStrip({
               role="presentation"
               aria-hidden
             >
-              <div className="pointer-events-none absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full border border-app-inset bg-app-canvas" />
+              <div className="pointer-events-none absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-input border border-app-inset bg-app-canvas" />
               <div
                 data-thumb
                 className={cn(
-                  "absolute top-1/2 z-[1] -translate-y-1/2 cursor-grab touch-none rounded-full bg-[#3ABEFF] shadow-[0_0_8px_rgba(108,212,255,0.45)]",
+                  "absolute top-1/2 z-[1] -translate-y-1/2 cursor-grab touch-none rounded-action bg-[#3ABEFF] shadow-[0_0_8px_rgba(108,212,255,0.45)]",
                   "hover:brightness-110 active:cursor-grabbing",
                 )}
                 style={{

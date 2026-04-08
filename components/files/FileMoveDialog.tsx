@@ -73,7 +73,7 @@ export function FileMoveDialog({
         aria-labelledby="file-move-title"
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative z-10 w-full max-w-[360px] rounded-xl border border-app-border bg-app-card shadow-xl shadow-black/50",
+          "relative z-10 w-full max-w-[360px] rounded-card border border-app-border bg-app-card shadow-xl shadow-black/50",
           "max-h-[min(420px,70vh)] flex flex-col",
         )}
       >
@@ -92,7 +92,7 @@ export function FileMoveDialog({
           <button
             type="button"
             className={cn(
-              "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-left text-[11px] font-medium transition-colors duration-150",
+              "flex w-full cursor-pointer items-center gap-2 rounded-control px-3 py-2.5 text-left text-[11px] font-medium transition-colors duration-150",
               currentParentId === null
                 ? "bg-[#3ABEFF]/50 text-white"
                 : "text-[#E4E4E7] hover:bg-app-hover-strong",
@@ -102,7 +102,7 @@ export function FileMoveDialog({
               pick(null, "All files (root)");
             }}
           >
-            <div className="flex items-center justify-center w-5 h-5 rounded overflow-hidden bg-app-hover-strong/50 shrink-0 text-[#A1A1AA]">
+            <div className="flex items-center justify-center w-5 h-5 rounded-menu-item overflow-hidden bg-app-hover-strong/50 shrink-0 text-[#A1A1AA]">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -125,7 +125,7 @@ export function FileMoveDialog({
                       role="option"
                       aria-selected={selected}
                       className={cn(
-                        "flex w-full cursor-pointer rounded-lg px-3 py-2.5 text-left text-[11px] font-medium transition-colors duration-150",
+                        "flex w-full cursor-pointer rounded-control px-3 py-2.5 text-left text-[11px] font-medium transition-colors duration-150",
                         selected
                           ? "bg-[#3ABEFF]/50 text-white"
                           : "text-[#E4E4E7] hover:bg-app-hover-strong",
@@ -149,7 +149,7 @@ export function FileMoveDialog({
         <div className="shrink-0 border-t border-app-border/80 px-3 py-2.5">
           <button
             type="button"
-            className="w-full cursor-pointer rounded-lg py-2 text-center text-[11px] font-medium text-[#A1A1AA] transition-colors hover:bg-app-hover-strong hover:text-white"
+            className="w-full cursor-pointer rounded-control py-2 text-center text-[11px] font-medium text-[#A1A1AA] transition-colors hover:bg-app-hover-strong hover:text-white"
             onClick={onClose}
           >
             Cancel
