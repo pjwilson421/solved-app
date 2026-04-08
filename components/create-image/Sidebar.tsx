@@ -27,8 +27,8 @@ type Item = { id: NavId; label: string; iconSrc: string };
 const mainItems: Item[] = [
   { id: "chat", label: "Chat", iconSrc: ICONS.chat },
   { id: "create-image", label: "Create Image", iconSrc: ICONS.createImage },
-  { id: "create-video", label: "Create Video", iconSrc: ICONS.createVideo },
   { id: "image-editor", label: "Image Editor", iconSrc: ICONS.imageEditor },
+  { id: "create-video", label: "Create Video", iconSrc: ICONS.createVideo },
 ];
 
 const assetItems: Item[] = [

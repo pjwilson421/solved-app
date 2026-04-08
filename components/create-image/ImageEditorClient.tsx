@@ -16,6 +16,7 @@ import type { ImageEditorToolId } from "./ImageEditorToolStrip";
 import { ImageEditorFileInfoPanel } from "./ImageEditorFileInfoPanel";
 import { DesktopTemplatesStrip } from "./DesktopTemplatesStrip";
 import {
+  CREATE_IMAGE_SCROLL_RESERVE,
   createImageScrollContentBottomPaddingPx,
   createImageScrollContentBottomPaddingPxDesktopXl,
 } from "./preview-frame-layout";
@@ -351,6 +352,7 @@ export function ImageEditorClient({
             className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
             activeId={activeMainNav}
             onNavigate={navigate}
+            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
           />
           <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:grid xl:h-full xl:min-h-0 xl:min-w-0 xl:max-w-none xl:grid-cols-[minmax(0,1fr)_minmax(0,1000px)_minmax(0,1fr)] xl:items-stretch xl:overflow-hidden xl:px-0">
             <div
