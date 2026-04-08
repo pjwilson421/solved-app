@@ -12,6 +12,7 @@ import { GenerationSettingsRow } from "./GenerationSettingsRow";
 import { PromptBar } from "./PromptBar";
 import { HistoryPanel } from "./HistoryPanel";
 import {
+  CREATE_IMAGE_SCROLL_RESERVE,
   createImageScrollContentBottomPaddingPx,
   createImageScrollContentBottomPaddingPxDesktopXl,
 } from "./preview-frame-layout";
@@ -370,7 +371,7 @@ export function CreateImageClient() {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-[#0F0F10] text-[#FAFAFA]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-canvas text-[#FAFAFA]",
         /* Tablet (md–xl): 900px column cap; desktop xl+: 1000px 16:9 preview column. */
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
@@ -393,6 +394,7 @@ export function CreateImageClient() {
             className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
             activeId={activeMainNav}
             onNavigate={navigate}
+            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
           />
           {/* Tablet: flex + items-center. Desktop (xl): 1fr | minmax(0,1000px) | 1fr — equal side tracks keep the middle column centered at every width. */}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:grid xl:h-full xl:min-h-0 xl:min-w-0 xl:max-w-none xl:grid-cols-[minmax(0,1fr)_minmax(0,1000px)_minmax(0,1fr)] xl:items-stretch xl:overflow-hidden xl:px-0">
@@ -457,13 +459,13 @@ export function CreateImageClient() {
       </div>
 
       {/* Below md: MOBILE-image-16x9.svg layout — single column card */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#0F0F10] md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-canvas md:hidden">
         <Header
           variant="mobile"
           mobileTitle="CREATE"
           onMenuClick={() => setMobileMenuOpen(true)}
         />
-        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] border border-[#2A2A2E] bg-[#141418]">
+        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <div
             ref={mobileScrollRef}
             className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"

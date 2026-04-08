@@ -31,6 +31,8 @@ type PreviewPanelProps = {
   /** Icon in empty preview / empty template slots (default: image placeholder). */
   emptyStatePlaceholderIcon?: IconPath;
   className?: string;
+  /** Optional: remove frame card surface (bg/border/shadow) for page-level seamless layouts. */
+  unstyledFrame?: boolean;
   onPreviewClick?: () => void;
   onMenuAction?: (action: string) => void;
 };
@@ -431,6 +433,7 @@ export function PreviewPanel({
   previewPromptPlaceholder = PREVIEW_PROMPT_PLACEHOLDER,
   emptyStatePlaceholderIcon = ICONS.imagePlaceholder,
   className,
+  unstyledFrame = false,
   onPreviewClick,
   onMenuAction,
 }: PreviewPanelProps) {
@@ -491,6 +494,10 @@ export function PreviewPanel({
     </>
   );
 
+  const frameBase = unstyledFrame
+    ? "relative overflow-hidden border-0 bg-transparent shadow-none"
+    : frameShell;
+
   return (
     <div className={cn("flex min-w-0 flex-col items-stretch", className)}>
       {previewLabel && showPreviewLabel ? (
@@ -505,7 +512,7 @@ export function PreviewPanel({
       {measured && layoutFrame ? (
         mobileFrame ? (
           <div
-            className={cn("self-start", frameShell)}
+            className={cn("self-start", frameBase)}
             style={{
               width: layoutFrame.width,
               height: layoutFrame.height,
@@ -516,7 +523,7 @@ export function PreviewPanel({
         ) : (
           <div className="flex w-full min-w-0 justify-center">
             <div
-              className={frameShell}
+              className={frameBase}
               style={{
                 width: layoutFrame.width,
                 height: layoutFrame.height,
@@ -529,21 +536,23 @@ export function PreviewPanel({
       ) : mobileFrame ? (
         <div
           className={cn(
-            "relative mx-auto overflow-hidden border border-[#2A2A2E] bg-[#18181B]",
+            unstyledFrame
+              ? "relative mx-auto overflow-hidden border-0 bg-transparent shadow-none"
+              : "relative mx-auto overflow-hidden border border-[#2A2A2E] bg-[#18181B]",
             mobileFrameClass(aspectRatio),
           )}
         >
           {previewBody}
         </div>
       ) : aspectRatio === "16:9" ? (
-        <div className={cn(frameShell, desktop169Frame)}>
+        <div className={cn(frameBase, desktop169Frame)}>
           {previewBody}
         </div>
       ) : (
         <div className="flex w-full min-w-0 justify-center">
           <div
             className={cn(
-              frameShell,
+              frameBase,
               desktopOtherAspectInnerClass(aspectRatio),
             )}
           >
