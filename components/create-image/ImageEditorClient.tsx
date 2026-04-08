@@ -421,6 +421,7 @@ export function ImageEditorClient({
             aspectRatio={aspectRatio}
             quality={quality}
             variations={variations}
+            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
             className="hidden max-h-screen xl:flex"
           />
         </div>

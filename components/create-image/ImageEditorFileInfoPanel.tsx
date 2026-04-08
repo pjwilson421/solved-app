@@ -14,6 +14,8 @@ type ImageEditorFileInfoPanelProps = {
   quality: Quality;
   variations: number;
   className?: string;
+  /** Optional override so right rail can align to a page-specific prompt dock. */
+  fixedDockClearancePx?: number;
 };
 
 const tabBtn = (active: boolean) =>
@@ -32,7 +34,11 @@ export function ImageEditorFileInfoPanel({
   quality,
   variations,
   className,
+  fixedDockClearancePx,
 }: ImageEditorFileInfoPanelProps) {
+  const bottomClearancePx =
+    fixedDockClearancePx ?? SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX;
+
   return (
     <aside
       className={cn(
@@ -40,7 +46,7 @@ export function ImageEditorFileInfoPanel({
         className,
       )}
       style={{
-        height: `calc(100% - ${SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX}px)`,
+        height: `calc(100% - ${bottomClearancePx}px)`,
       }}
     >
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden pb-0 pl-5 pr-5 pt-6">
