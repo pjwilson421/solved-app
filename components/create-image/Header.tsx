@@ -37,7 +37,7 @@ export function Header({
         <div className="flex items-center gap-3">
           <Link
             href="/chat"
-            className="shrink-0 rounded-menu-item outline-none transition-opacity duration-150 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-canvas"
+            className="shrink-0 rounded-menu-item transition-opacity duration-150 hover:opacity-90 focus-visible:bg-white/10 focus-visible:opacity-100"
             aria-label="Go to chat"
           >
             <IconAsset

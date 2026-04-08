@@ -63,8 +63,11 @@ import { cn } from "@/lib/utils";
 function chatLikeButtonClass(liked: boolean) {
   return cn(
     liked
-      ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,box-shadow,color] bg-[#3ABEFF]/55 text-white ring-1 ring-inset ring-[#3ABEFF]/35 hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
-      : CHAT_TOOLBAR_ICON_BUTTON_CLASS,
+      ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,color] bg-[#3ABEFF]/55 text-white hover:bg-[#0D8FD1] active:bg-[#0D8FD1] focus-visible:brightness-110"
+      : cn(
+          CHAT_TOOLBAR_ICON_BUTTON_CLASS,
+          "focus-visible:bg-white/10",
+        ),
   );
 }
 
@@ -453,7 +456,7 @@ export function ChatClient() {
             }}
           >
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden pb-0 pl-5 pr-5 pt-6">
-              <section className="flex min-h-0 flex-1 flex-col overflow-hidden w-full rounded-panel border border-[#2A2A2E] bg-[#18181B] py-3">
+              <section className="flex min-h-0 flex-1 flex-col overflow-hidden w-full rounded-panel bg-[#18181B] py-3">
                 <div className="shrink-0 px-4 pb-3">
                   <h2 className="text-left text-[10px] font-bold uppercase tracking-[0.08em] text-white">
                     HISTORY
