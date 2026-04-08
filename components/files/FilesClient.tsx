@@ -97,7 +97,7 @@ function folderPathFromRoot(entries: FileEntry[], folderId: string): FileEntry[]
 function viewModeFromSearchParams(
   params: ReturnType<typeof useSearchParams>,
 ): FilesViewMode {
-  return params.get("view") === "list" ? "list" : "grid";
+  return params.get("view") === "grid" ? "grid" : "list";
 }
 
 export function FilesClient() {
@@ -140,8 +140,8 @@ export function FilesClient() {
     (next: FilesViewMode) => {
       setViewMode(next);
       const q = new URLSearchParams(searchParams.toString());
-      if (next === "grid") q.delete("view");
-      else q.set("view", "list");
+      if (next === "list") q.delete("view");
+      else q.set("view", "grid");
       const qs = q.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
