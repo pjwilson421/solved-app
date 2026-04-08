@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { IconAsset } from "@/components/icons/IconAsset";
 import { ICONS } from "@/components/icons/icon-paths";
-import { cn } from "@/lib/utils";
+import {
+  CHAT_TOOLBAR_ICON_BUTTON_CLASS,
+  CHAT_TOOLBAR_ICON_IMG_CLASS,
+  CHAT_TOOLBAR_ICON_PX,
+} from "./chat-toolbar-icons";
 
 const CHAT_MENU_ITEMS = [
   "Move to files",
@@ -12,15 +16,6 @@ const CHAT_MENU_ITEMS = [
 ] as const;
 
 export type ChatMenuAction = (typeof CHAT_MENU_ITEMS)[number];
-
-const CHAT_TOOLBAR_ICON_PX = 24;
-const CHAT_TOOLBAR_ICON_CLASS =
-  "pointer-events-none [&_img]:!h-6 [&_img]:!w-6 [&_img]:!max-h-6 [&_img]:!max-w-6 [&_img]:object-contain [&_img]:opacity-100";
-
-const triggerClass = cn(
-  "flex h-9 w-9 shrink-0 items-center justify-center rounded-control",
-  "bg-app-menu-trigger text-[#A1A1AA] transition-colors hover:bg-app-menu-trigger-hover active:bg-app-menu-trigger-active hover:text-white",
-);
 
 type ChatOptionsMenuProps = {
   onSelect?: (action: ChatMenuAction) => void;
@@ -51,7 +46,7 @@ export function ChatOptionsMenu({ onSelect }: ChatOptionsMenuProps) {
     >
       <button
         type="button"
-        className={triggerClass}
+        className={CHAT_TOOLBAR_ICON_BUTTON_CLASS}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Chat options"
@@ -63,7 +58,7 @@ export function ChatOptionsMenu({ onSelect }: ChatOptionsMenuProps) {
         <IconAsset
           src={ICONS.threeDots}
           size={CHAT_TOOLBAR_ICON_PX}
-          className={CHAT_TOOLBAR_ICON_CLASS}
+          className={CHAT_TOOLBAR_ICON_IMG_CLASS}
         />
       </button>
       {open ? (

@@ -136,7 +136,7 @@ function SettingsNavDropdown({
           {settingsItem.label}
         </span>
         <span
-          className="shrink-0 text-[11px] leading-none text-[#8A8A93]"
+          className="shrink-0 text-[11px] leading-none text-inherit"
           aria-hidden
         >
           {open ? "▴" : "▾"}

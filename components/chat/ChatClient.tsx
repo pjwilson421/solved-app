@@ -51,22 +51,20 @@ import {
   ChatOptionsMenu,
   type ChatMenuAction,
 } from "./ChatOptionsMenu";
+import {
+  CHAT_TOOLBAR_ICON_BUTTON_CLASS,
+  CHAT_TOOLBAR_ICON_IMG_CLASS,
+  CHAT_TOOLBAR_ICON_PX,
+} from "./chat-toolbar-icons";
 import { IconAsset } from "@/components/icons/IconAsset";
 import { ICONS } from "@/components/icons/icon-paths";
 import { cn } from "@/lib/utils";
 
-const CHAT_TOOLBAR_ICON_PX = 24;
-
-/** Match rendered size for both assets (3-dots SVG includes a full circular backdrop vs. outline heart). */
-const CHAT_TOOLBAR_ICON_CLASS =
-  "pointer-events-none [&_img]:!h-6 [&_img]:!w-6 [&_img]:!max-h-6 [&_img]:!max-w-6 [&_img]:object-contain [&_img]:opacity-100";
-
 function chatLikeButtonClass(liked: boolean) {
   return cn(
-    "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,box-shadow,color]",
     liked
-      ? "bg-[#3ABEFF]/55 text-white ring-1 ring-inset ring-[#3ABEFF]/35 hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
-      : "text-[#A1A1AA] hover:bg-[#2A2A2E] hover:text-white",
+      ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,box-shadow,color] bg-[#3ABEFF]/55 text-white ring-1 ring-inset ring-[#3ABEFF]/35 hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
+      : CHAT_TOOLBAR_ICON_BUTTON_CLASS,
   );
 }
 
@@ -100,7 +98,7 @@ function ChatToolbarIconRow({
           key={chatLiked ? "filled" : "outline"}
           src={chatLiked ? ICONS.likedFilled : ICONS.likedOutlined}
           size={CHAT_TOOLBAR_ICON_PX}
-          className={CHAT_TOOLBAR_ICON_CLASS}
+          className={CHAT_TOOLBAR_ICON_IMG_CLASS}
         />
       </button>
       <ChatOptionsMenu onSelect={onChatMenuAction} />
