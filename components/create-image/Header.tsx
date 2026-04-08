@@ -46,16 +46,28 @@ export function Header({
               className="pointer-events-none shrink-0"
             />
           </Link>
-          <span
-            className={cn(
-              "text-white",
-              showCreateStyle
-                ? "text-[13px] font-semibold tracking-[0.08em]"
-                : "text-sm font-bold tracking-[0.14em]",
-            )}
-          >
-            {mobileTitle ?? "SOLVED"}
-          </span>
+          {mobileTitle != null ? (
+            <span
+              className={cn(
+                "text-white",
+                showCreateStyle
+                  ? "text-[13px] font-semibold tracking-[0.08em]"
+                  : "text-sm font-bold tracking-[0.14em]",
+              )}
+            >
+              {mobileTitle}
+            </span>
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src="/icons/SOLVED-LOGOTYPE.svg"
+              alt=""
+              width={71}
+              height={21}
+              className="pointer-events-none h-[21px] w-auto shrink-0 select-none"
+              draggable={false}
+            />
+          )}
         </div>
         {variant === "mobile" ? (
           <button
