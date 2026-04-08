@@ -13,19 +13,25 @@ const EMPTY_HISTORY: HistoryItem[] = [];
 type SettingsRouteClientProps = {
   title: string;
   description?: string;
+  /** When true, main column has no inner panel (no bg/border/radius); blends with page shell. */
+  flatMainContent?: boolean;
 };
 
 export function SettingsRouteClient({
   title,
   description = "This section will be available in a future update.",
+  flatMainContent = false,
 }: SettingsRouteClientProps) {
   const { navigate, activeMainNav } = useShellNav();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const shellBgClass = flatMainContent ? "bg-app-canvas" : "bg-[#0F0F10]";
+
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-[#0F0F10] text-[#FAFAFA]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden text-[#FAFAFA]",
+        shellBgClass,
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
     >
@@ -51,7 +57,9 @@ export function SettingsRouteClient({
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 pt-6 md:px-8 xl:px-10 xl:pb-6">
             <div
               className={cn(
-                "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[18px] border border-[#2A2A2E] bg-[#141418]",
+                "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+                !flatMainContent &&
+                  "rounded-[18px] border border-[#2A2A2E] bg-[#141418]",
               )}
             >
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 md:p-6">
@@ -67,13 +75,24 @@ export function SettingsRouteClient({
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#0F0F10] md:hidden">
+      <div
+        className={cn(
+          "flex min-h-0 flex-1 flex-col overflow-hidden md:hidden",
+          shellBgClass,
+        )}
+      >
         <Header
           variant="mobile"
           mobileTitle="SETTINGS"
           onMenuClick={() => setMobileMenuOpen(true)}
         />
-        <div className="mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] border border-[#2A2A2E] bg-[#141418]">
+        <div
+          className={cn(
+            "mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+            !flatMainContent &&
+              "rounded-[22px] border border-[#2A2A2E] bg-[#141418]",
+          )}
+        >
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-5">
             <h1 className="text-left text-[12px] font-semibold uppercase tracking-[0.08em] text-white">
               {title}
