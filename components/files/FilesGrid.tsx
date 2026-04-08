@@ -11,6 +11,12 @@ type FilesGridProps = {
   onFileOpen?: (entry: FileEntry) => void;
   /** Catalog lookup: folder has at least one direct child. */
   folderHasChildItems?: (folderId: string) => boolean;
+  renamingId?: string | null;
+  renameValue?: string;
+  onStartRename?: (id: string) => void;
+  onRenameValueChange?: (next: string) => void;
+  onRenameSubmit?: () => void;
+  onRenameCancel?: () => void;
 };
 
 /**
@@ -23,6 +29,12 @@ export function FilesGrid({
   onFolderOpen,
   onFileOpen,
   folderHasChildItems,
+  renamingId = null,
+  renameValue = "",
+  onStartRename,
+  onRenameValueChange,
+  onRenameSubmit,
+  onRenameCancel,
 }: FilesGridProps) {
   return (
     <ul
@@ -36,6 +48,12 @@ export function FilesGrid({
             onMenuAction={onMenuAction}
             onFolderOpen={onFolderOpen}
             onFileOpen={onFileOpen}
+            isRenaming={renamingId === entry.id}
+            renameValue={renamingId === entry.id ? renameValue : ""}
+            onStartRename={onStartRename}
+            onRenameValueChange={onRenameValueChange}
+            onRenameSubmit={onRenameSubmit}
+            onRenameCancel={onRenameCancel}
             folderIsEmpty={
               entry.kind === "folder" && folderHasChildItems
                 ? !folderHasChildItems(entry.id)

@@ -114,6 +114,8 @@ export function FilesClient() {
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>("date-desc");
   const [moveTargetId, setMoveTargetId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
   const [movePortalReady, setMovePortalReady] = useState(false);
   /** `null` = root (only `parentId == null` items). Otherwise show direct children of this folder. */
   const [folderScopeId, setFolderScopeId] = useState<string | null>(null);
@@ -328,11 +330,8 @@ export function FilesClient() {
           openItem(ref);
           break;
         case "Rename": {
-          const next = window.prompt("Rename", entry.name);
-          if (next == null) return;
-          const trimmed = next.trim();
-          if (!trimmed || trimmed === entry.name) return;
-          renameFile(id, trimmed);
+          setRenamingId(id);
+          setRenameValue(entry.name);
           break;
         }
         case "Download":
@@ -357,6 +356,37 @@ export function FilesClient() {
       openItem,
     ],
   );
+
+  const startInlineRename = useCallback(
+    (id: string) => {
+      const entry = fileEntries.find((e) => e.id === id);
+      if (!entry) return;
+      setRenamingId(id);
+      setRenameValue(entry.name);
+    },
+    [fileEntries],
+  );
+
+  const cancelInlineRename = useCallback(() => {
+    setRenamingId(null);
+    setRenameValue("");
+  }, []);
+
+  const submitInlineRename = useCallback(() => {
+    if (!renamingId) return;
+    const entry = fileEntries.find((e) => e.id === renamingId);
+    if (!entry) {
+      setRenamingId(null);
+      setRenameValue("");
+      return;
+    }
+    const trimmed = renameValue.trim();
+    if (trimmed && trimmed !== entry.name) {
+      renameFile(renamingId, trimmed);
+    }
+    setRenamingId(null);
+    setRenameValue("");
+  }, [fileEntries, renameFile, renameValue, renamingId]);
 
   const filterTypes = useMemo(() => {
     const s = new Set<string>();
@@ -505,6 +535,12 @@ export function FilesClient() {
                 onMenuAction={handleFileMenu}
                 onFolderOpen={handleFolderOpen}
                 onFileOpen={handleFileOpenPreview}
+                isRenaming={renamingId === entry.id}
+                renameValue={renamingId === entry.id ? renameValue : ""}
+                onStartRename={startInlineRename}
+                onRenameValueChange={setRenameValue}
+                onRenameSubmit={submitInlineRename}
+                onRenameCancel={cancelInlineRename}
                 folderIsEmpty={
                   entry.kind === "folder"
                     ? !folderHasChildItems(entry.id)
@@ -520,6 +556,12 @@ export function FilesClient() {
             onFolderOpen={handleFolderOpen}
             onFileOpen={handleFileOpenPreview}
             folderHasChildItems={folderHasChildItems}
+            renamingId={renamingId}
+            renameValue={renameValue}
+            onStartRename={startInlineRename}
+            onRenameValueChange={setRenameValue}
+            onRenameSubmit={submitInlineRename}
+            onRenameCancel={cancelInlineRename}
           />
         )}
       </>

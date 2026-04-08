@@ -23,6 +23,12 @@ type FileListRowProps = {
   onFileOpen?: (entry: FileEntry) => void;
   /** When true, folder row uses empty-folder outlined icon. */
   folderIsEmpty?: boolean;
+  isRenaming?: boolean;
+  renameValue?: string;
+  onStartRename?: (id: string) => void;
+  onRenameValueChange?: (next: string) => void;
+  onRenameSubmit?: () => void;
+  onRenameCancel?: () => void;
 };
 
 function rowSurfaceClass(index: number, accent: FileEntry["accent"]) {
@@ -71,6 +77,12 @@ export function FileListRow({
   onFolderOpen,
   onFileOpen,
   folderIsEmpty,
+  isRenaming = false,
+  renameValue = "",
+  onStartRename,
+  onRenameValueChange,
+  onRenameSubmit,
+  onRenameCancel,
 }: FileListRowProps) {
   const sizeDisplay = entry.sizeLabel ?? "—";
   const accent = entry.accent ?? "default";
@@ -116,9 +128,38 @@ export function FileListRow({
             className={cn("mt-0.5 shrink-0", rowIconHoverClass)}
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-left text-[12px] font-medium leading-snug text-white">
-              {entry.name}
-            </p>
+            {isRenaming ? (
+              <input
+                autoFocus
+                value={renameValue}
+                onChange={(e) => onRenameValueChange?.(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    onRenameSubmit?.();
+                  }
+                  if (e.key === "Escape") {
+                    e.preventDefault();
+                    onRenameCancel?.();
+                  }
+                }}
+                onBlur={() => onRenameSubmit?.()}
+                className="w-full rounded bg-transparent text-left text-[12px] font-medium leading-snug text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+                aria-label={`Rename ${entry.name}`}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStartRename?.(entry.id);
+                }}
+                className="w-full truncate text-left text-[12px] font-medium leading-snug text-white"
+              >
+                {entry.name}
+              </button>
+            )}
             <p className="mt-1 text-left text-[10px] leading-none text-[#8A8A93]">
               {entry.dateModified}
             </p>
@@ -197,9 +238,38 @@ export function FileListRow({
           folderIsEmpty={folderIsEmpty}
           className={rowIconHoverClass}
         />
-        <p className="min-w-0 truncate text-left text-[13px] font-medium text-white">
-          {entry.name}
-        </p>
+        {isRenaming ? (
+          <input
+            autoFocus
+            value={renameValue}
+            onChange={(e) => onRenameValueChange?.(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onRenameSubmit?.();
+              }
+              if (e.key === "Escape") {
+                e.preventDefault();
+                onRenameCancel?.();
+              }
+            }}
+            onBlur={() => onRenameSubmit?.()}
+            className="min-w-0 w-full rounded bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+            aria-label={`Rename ${entry.name}`}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onStartRename?.(entry.id);
+            }}
+            className="min-w-0 w-full truncate text-left text-[13px] font-medium text-white"
+          >
+            {entry.name}
+          </button>
+        )}
       </div>
       <p
         className={cn(
