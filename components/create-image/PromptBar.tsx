@@ -96,7 +96,7 @@ export function PromptBar({
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-app-inset p-0 transition-opacity hover:opacity-90"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-app-canvas p-0 transition-opacity hover:opacity-90"
           aria-label="Add reference images"
         >
           <IconAsset src={ICONS.attachPrompt} size={28} />
@@ -124,7 +124,7 @@ export function PromptBar({
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-app-inset p-0 transition-opacity hover:opacity-90"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-app-canvas p-0 transition-opacity hover:opacity-90"
           aria-label="Add reference images"
         >
           <IconAsset src={ICONS.attachPrompt} size={28} />
