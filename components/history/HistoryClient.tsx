@@ -51,7 +51,8 @@ function historyViewModeFromSearchParams(
   if (page === "history") {
     return params.get("view") === "grid" ? "grid" : "list";
   }
-  return params.get("view") === "list" ? "list" : "grid";
+  /* Liked: default list; grid only when ?view=grid (same URL convention as Files). */
+  return params.get("view") === "grid" ? "grid" : "list";
 }
 
 function activityKindFromFilter(
@@ -113,26 +114,18 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
   const setHistoryGridView = useCallback(() => {
     setHistoryViewMode("grid");
     const q = new URLSearchParams(searchParams.toString());
-    if (page === "history") {
-      q.set("view", "grid");
-    } else {
-      q.delete("view");
-    }
+    q.set("view", "grid");
     const qs = q.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [page, pathname, router, searchParams]);
+  }, [pathname, router, searchParams]);
 
   const setHistoryListView = useCallback(() => {
     setHistoryViewMode("list");
     const q = new URLSearchParams(searchParams.toString());
-    if (page === "history") {
-      q.delete("view");
-    } else {
-      q.set("view", "list");
-    }
+    q.delete("view");
     const qs = q.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [page, pathname, router, searchParams]);
+  }, [pathname, router, searchParams]);
 
   const isGridView = historyViewMode === "grid";
 
@@ -148,7 +141,8 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
 
   const minWidth1280 = useMinWidth1280();
 
-  const { deleteCatalogItem, openItem } = useAppItemActions();
+  const { deleteCatalogItem, openItem, renameFile, downloadItem } =
+    useAppItemActions();
 
   const { isLiked } = useLikedItems();
   const isActivityLiked = useCallback(
@@ -165,7 +159,6 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
   } = useAppData();
 
   useEffect(() => {
-    if (page === "history") return;
     setHistoryTitleRenamingId(null);
     setHistoryTitleRenameValue("");
   }, [page]);
@@ -278,37 +271,32 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     [visibleEntries],
   );
 
-  const handleMenu = useCallback(
-    (id: string, action: FileRowMenuAction) => {
-      if (action === "Delete") {
-        deleteCatalogItem(appItemRef.activity(id));
-      } else if (action === "Open") {
-        openItem(appItemRef.activity(id));
-      }
-    },
-    [deleteCatalogItem, openItem],
-  );
-
   const handleItemOpen = useCallback((id: string) => {
     openItem(appItemRef.activity(id));
   }, [openItem]);
 
   const startHistoryTitleRename = useCallback(
     (id: string) => {
-      if (page !== "history") return;
+      if (page !== "history" && page !== "liked") return;
       const thread = chatThreads.find((t) => t.id === id);
       if (thread) {
         setHistoryTitleRenameValue(chatTitleEditSeed(thread));
         setHistoryTitleRenamingId(id);
         return;
       }
-      const entry = activityEntries.find((e) => e.id === id);
-      if (entry) {
-        setHistoryTitleRenameValue(entry.title);
+      const activityEntry = activityEntries.find((e) => e.id === id);
+      if (activityEntry) {
+        setHistoryTitleRenameValue(activityEntry.title);
+        setHistoryTitleRenamingId(id);
+        return;
+      }
+      const fileEntry = fileEntries.find((e) => e.id === id);
+      if (fileEntry) {
+        setHistoryTitleRenameValue(fileEntry.name);
         setHistoryTitleRenamingId(id);
       }
     },
-    [page, chatThreads, activityEntries],
+    [page, chatThreads, activityEntries, fileEntries],
   );
 
   const cancelHistoryTitleRename = useCallback(() => {
@@ -317,7 +305,9 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
   }, []);
 
   const submitHistoryTitleRename = useCallback(() => {
-    if (page !== "history" || !historyTitleRenamingId) return;
+    if ((page !== "history" && page !== "liked") || !historyTitleRenamingId) {
+      return;
+    }
     const trimmed = historyTitleRenameValue.trim();
     const thread = chatThreads.find((t) => t.id === historyTitleRenamingId);
     if (thread) {
@@ -329,13 +319,22 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
         ),
       );
     } else {
-      const entry = activityEntries.find((e) => e.id === historyTitleRenamingId);
-      if (entry && trimmed && trimmed !== entry.title) {
-        updateActivityEntries((prev) =>
-          prev.map((e) =>
-            e.id === historyTitleRenamingId ? { ...e, title: trimmed } : e,
-          ),
-        );
+      const actEntry = activityEntries.find(
+        (e) => e.id === historyTitleRenamingId,
+      );
+      if (actEntry) {
+        if (trimmed && trimmed !== actEntry.title) {
+          updateActivityEntries((prev) =>
+            prev.map((e) =>
+              e.id === historyTitleRenamingId ? { ...e, title: trimmed } : e,
+            ),
+          );
+        }
+      } else {
+        const f = fileEntries.find((e) => e.id === historyTitleRenamingId);
+        if (f && trimmed && trimmed !== f.name) {
+          renameFile(historyTitleRenamingId, trimmed);
+        }
       }
     }
     setHistoryTitleRenamingId(null);
@@ -346,9 +345,43 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     historyTitleRenameValue,
     chatThreads,
     activityEntries,
+    fileEntries,
     updateChatThreads,
     updateActivityEntries,
+    renameFile,
   ]);
+
+  const handleMenu = useCallback(
+    (id: string, action: FileRowMenuAction) => {
+      const fileHit = fileEntries.find((e) => e.id === id);
+      if (fileHit) {
+        if (action === "Delete") {
+          deleteCatalogItem(appItemRef.file(id));
+        } else if (action === "Open") {
+          openItem(appItemRef.file(id));
+        } else if (action === "Rename") {
+          startHistoryTitleRename(id);
+        } else if (action === "Download") {
+          downloadItem(appItemRef.file(id));
+        }
+        return;
+      }
+      if (action === "Delete") {
+        deleteCatalogItem(appItemRef.activity(id));
+      } else if (action === "Open") {
+        openItem(appItemRef.activity(id));
+      } else if (action === "Rename") {
+        startHistoryTitleRename(id);
+      }
+    },
+    [
+      fileEntries,
+      deleteCatalogItem,
+      openItem,
+      downloadItem,
+      startHistoryTitleRename,
+    ],
+  );
 
   const emptyListCopy =
     page === "liked"
@@ -412,7 +445,9 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             entries={visibleEntries}
             onMenuAction={handleMenu}
             onItemOpen={handleItemOpen}
-            enableTitleInlineRename={page === "history"}
+            enableTitleInlineRename={
+              page === "history" || page === "liked"
+            }
             titleRenamingId={historyTitleRenamingId}
             titleRenameValue={historyTitleRenameValue}
             onStartTitleRename={startHistoryTitleRename}
@@ -452,7 +487,9 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                                 `/chat?openChat=${encodeURIComponent(record.id)}`
                               )
                             }
-                            enableTitleInlineRename={page === "history"}
+                            enableTitleInlineRename={
+                              page === "history" || page === "liked"
+                            }
                             isTitleRenaming={historyTitleRenamingId === entry.id}
                             titleRenameValue={
                               historyTitleRenamingId === entry.id
@@ -477,7 +514,9 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                           rowIndex={i}
                           onMenuAction={handleMenu}
                           onItemOpen={handleItemOpen}
-                          enableTitleInlineRename={page === "history"}
+                          enableTitleInlineRename={
+                            page === "history" || page === "liked"
+                          }
                           isTitleRenaming={historyTitleRenamingId === entry.id}
                           titleRenameValue={
                             historyTitleRenamingId === entry.id
@@ -515,6 +554,12 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                 entries={likedFileEntries}
                 onMenuAction={handleMenu}
                 folderHasChildItems={folderHasChildItems}
+                renamingId={historyTitleRenamingId}
+                renameValue={historyTitleRenameValue}
+                onStartRename={startHistoryTitleRename}
+                onRenameValueChange={setHistoryTitleRenameValue}
+                onRenameSubmit={submitHistoryTitleRename}
+                onRenameCancel={cancelHistoryTitleRename}
               />
             ) : (
               <ul
@@ -528,6 +573,16 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                       variant={toolbarVariant}
                       rowIndex={i}
                       onMenuAction={handleMenu}
+                      isRenaming={historyTitleRenamingId === entry.id}
+                      renameValue={
+                        historyTitleRenamingId === entry.id
+                          ? historyTitleRenameValue
+                          : ""
+                      }
+                      onStartRename={startHistoryTitleRename}
+                      onRenameValueChange={setHistoryTitleRenameValue}
+                      onRenameSubmit={submitHistoryTitleRename}
+                      onRenameCancel={cancelHistoryTitleRename}
                       folderIsEmpty={
                         entry.kind === "folder"
                           ? !folderHasChildItems(entry.id)
@@ -566,6 +621,19 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                           `/chat?openChat=${encodeURIComponent(record.id)}`,
                         )
                       }
+                      enableTitleInlineRename
+                      isTitleRenaming={historyTitleRenamingId === record.id}
+                      titleRenameValue={
+                        historyTitleRenamingId === record.id
+                          ? historyTitleRenameValue
+                          : ""
+                      }
+                      onStartTitleRename={() =>
+                        startHistoryTitleRename(record.id)
+                      }
+                      onTitleRenameChange={setHistoryTitleRenameValue}
+                      onTitleRenameSubmit={submitHistoryTitleRename}
+                      onTitleRenameCancel={cancelHistoryTitleRename}
                     />
                   </li>
                 ))}
@@ -583,6 +651,19 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                           `/chat?openChat=${encodeURIComponent(record.id)}`,
                         )
                       }
+                      enableTitleInlineRename
+                      isTitleRenaming={historyTitleRenamingId === record.id}
+                      titleRenameValue={
+                        historyTitleRenamingId === record.id
+                          ? historyTitleRenameValue
+                          : ""
+                      }
+                      onStartTitleRename={() =>
+                        startHistoryTitleRename(record.id)
+                      }
+                      onTitleRenameChange={setHistoryTitleRenameValue}
+                      onTitleRenameSubmit={submitHistoryTitleRename}
+                      onTitleRenameCancel={cancelHistoryTitleRename}
                     />
                   </li>
                 ))}
