@@ -1,0 +1,58 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import { IconAsset } from "@/components/icons/IconAsset";
+import { ICONS } from "@/components/icons/icon-paths";
+import { useLikedItems } from "./liked-items-context";
+
+const iconClass =
+  "pointer-events-none [&_img]:block [&_img]:max-h-5 [&_img]:max-w-5 [&_img]:object-contain";
+
+type LikeToggleButtonProps = {
+  itemKey: string;
+  className?: string;
+};
+
+/**
+ * Heart toggle (global + localStorage via `LikedItemsProvider`):
+ * - Outline heart = not liked. One click → filled solid heart; it stays filled across navigation
+ *   and reloads until the same button is clicked again.
+ * - Filled heart = liked. One click → removes like and shows outline again.
+ */
+export function LikeToggleButton({ itemKey, className }: LikeToggleButtonProps) {
+  const { isLiked, toggle } = useLikedItems();
+  const liked = isLiked(itemKey);
+
+  return (
+    <button
+      type="button"
+      className={cn(
+        "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[10px] transition-[background-color,box-shadow,color] duration-150",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-panel",
+        liked
+          ? "bg-[#3ABEFF]/55 text-white ring-1 ring-inset ring-[#3ABEFF]/35 hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
+          : "text-[#A1A1AA] hover:bg-app-hover-strong hover:text-white active:bg-app-pressed",
+        className,
+      )}
+      aria-label={liked ? "Unlike" : "Like"}
+      aria-pressed={liked}
+      data-state={liked ? "liked" : "unliked"}
+      onClick={(e) => {
+        e.stopPropagation();
+        toggle(itemKey);
+      }}
+    >
+      <IconAsset
+        key={liked ? "filled" : "outline"}
+        src={liked ? ICONS.likedFilled : ICONS.likedOutlined}
+        size={20}
+        className={cn(
+          iconClass,
+          liked
+            ? "[&_img]:opacity-100"
+            : "[&_img]:opacity-95",
+        )}
+      />
+    </button>
+  );
+}

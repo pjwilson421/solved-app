@@ -1,22 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Deep purple app canvas — primary shell background */
+  --background: #11042d;
+  --foreground: #fafafa;
+  --brand-primary: #3abeff;
+  --brand-primary-hover: #1ea7e1;
+  --brand-primary-active: #0d8fd1;
+  --brand-primary-soft: #e6f7ff;
+  --brand-primary-glow: #6cd4ff;
 }
 
 @theme inline {
+  --color-primary: #3abeff;
+  --color-primaryHover: #1ea7e1;
+  --color-primaryActive: #0d8fd1;
+  --color-primarySoft: #e6f7ff;
+  --color-primaryGlow: #6cd4ff;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Layered surfaces — slightly lighter than canvas for depth */
+  --color-app-canvas: #11042d;
+  --color-app-panel: #150a38;
+  --color-app-card: #1a1042;
+  --color-app-inset: #1e1348;
+  --color-app-shade: #140a34;
+  --color-app-border: #3d2f68;
+  --color-app-hover: #241456;
+  --color-app-hover-strong: #2e1a68;
+  --color-app-elevated: #241850;
+  --color-app-pressed: #352866;
+  --color-app-border-hover: #5c4d88;
+  --color-app-input: #14082f;
+  --color-app-thumb: #241848;
 }
 
 body {
