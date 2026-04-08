@@ -3,7 +3,6 @@
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -15,33 +14,11 @@ import { useShellNavReset } from "@/lib/shell-nav-reset-context";
 import { Header } from "../create-image/Header";
 import { Sidebar } from "../create-image/Sidebar";
 import { MobileCreateImageDrawer } from "../create-image/MobileCreateImageDrawer";
-import { GenerationSettingsRow } from "../create-image/GenerationSettingsRow";
-import { DesktopTemplatesStrip } from "../create-image/DesktopTemplatesStrip";
-import {
-  createImageScrollContentBottomPaddingPx,
-  createImageScrollContentBottomPaddingPxDesktopXl,
-} from "../create-image/preview-frame-layout";
-import {
-  useCreateImagePreviewPromptLayout,
-  useMinWidth1280,
-} from "../create-image/use-create-image-preview-prompt-layout";
-import { FixedPromptBarDock } from "../create-image/FixedPromptBarDock";
-import {
-  createImageDesktopPromptDockGeometryPx,
-  type PromptBarDockGeometry,
-} from "../create-image/prompt-bar-dock-geometry";
-import type {
-  AspectRatio,
-  AssetContentType,
-  HistoryItem,
-  Quality,
-} from "../create-image/types";
-import { MOCK_TEMPLATES } from "../create-image/types";
+import type { HistoryItem } from "../create-image/types";
 import { cn } from "@/lib/utils";
 import { useAppData } from "@/lib/app-data/app-data-context";
 import { useAppItemActions } from "@/lib/app-data/use-app-item-actions";
 import { appItemRef } from "@/lib/app-data/item-ref";
-import { FilesDropZone } from "./FilesDropZone";
 import { FileListRow } from "./FileListRow";
 import { FilesGrid } from "./FilesGrid";
 import { FilesListHeader } from "./FilesListHeader";
@@ -119,16 +96,6 @@ export function FilesClient() {
   const [movePortalReady, setMovePortalReady] = useState(false);
   /** `null` = root (only `parentId == null` items). Otherwise show direct children of this folder. */
   const [folderScopeId, setFolderScopeId] = useState<string | null>(null);
-  /** Invisible — same dock stack as CreateImageClient (layout parity only). */
-  const [dockParityAsset, setDockParityAsset] =
-    useState<AssetContentType>("Social Media");
-  const [dockParityAspect, setDockParityAspect] =
-    useState<AspectRatio>("16:9");
-  const [dockParityQuality, setDockParityQuality] = useState<Quality>("4K");
-  const [dockParityVariations, setDockParityVariations] = useState(1);
-  const [dockParityTemplateId, setDockParityTemplateId] = useState<
-    string | null
-  >(null);
 
   useEffect(() => {
     setViewMode(viewFromUrl);
@@ -151,49 +118,7 @@ export function FilesClient() {
   );
 
   const desktopScrollRef = useRef<HTMLDivElement>(null);
-  const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
-  const mobileColumnRef = useRef<HTMLElement>(null);
-
-  const minWidth1280 = useMinWidth1280();
-  const desktopScrollBottomPadPx = minWidth1280
-    ? createImageScrollContentBottomPaddingPxDesktopXl()
-    : createImageScrollContentBottomPaddingPx("desktop");
-  const mobileScrollBottomPadPx =
-    createImageScrollContentBottomPaddingPx("mobile");
-
-  const { promptBar: dockGeom, minWidth768 } =
-    useCreateImagePreviewPromptLayout({
-      desktopScrollRef,
-      desktopMiddleColumnRef,
-      mobileScrollRef,
-      mobileColumnRef,
-      aspectRatio: "16:9",
-      templatesOpen: false,
-    });
-
-  /** Same as Chat: main column is full-width; dock uses Create Image shell math so bar size/position unchanged. */
-  const [filesDesktopDockGeom, setFilesDesktopDockGeom] =
-    useState<PromptBarDockGeometry | null>(null);
-  useLayoutEffect(() => {
-    if (!minWidth768) {
-      setFilesDesktopDockGeom(null);
-      return;
-    }
-    const sync = () =>
-      setFilesDesktopDockGeom(createImageDesktopPromptDockGeometryPx());
-    sync();
-    window.addEventListener("resize", sync);
-    window.visualViewport?.addEventListener("resize", sync);
-    return () => {
-      window.removeEventListener("resize", sync);
-      window.visualViewport?.removeEventListener("resize", sync);
-    };
-  }, [minWidth768]);
-
-  const filesPromptDockGeometry = minWidth768
-    ? (filesDesktopDockGeom ?? dockGeom)
-    : dockGeom;
 
   const { fileEntries, updateFileEntries } = useAppData();
   const {
@@ -571,7 +496,7 @@ export function FilesClient() {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-[#0F0F10] text-[#FAFAFA]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-canvas text-[#FAFAFA]",
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
     >
@@ -599,22 +524,13 @@ export function FilesClient() {
               <div
                 ref={desktopScrollRef}
                 className="min-h-0 w-full min-w-0 flex-1 overflow-y-auto"
-                style={{
-                  scrollPaddingBottom: desktopScrollBottomPadPx,
-                }}
               >
                 <div
-                  ref={desktopMiddleColumnRef}
                   className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
-                  style={{
-                    paddingBottom: desktopScrollBottomPadPx,
-                  }}
                 >
                   <div className="px-4 md:px-6">
-                    <div className="rounded-[18px] border border-[#2A2A2E] bg-[#141418]">
-                      <div className="flex w-full min-w-0 flex-col gap-4 p-4 md:p-6">
-                        {filesMainInner("desktop", true)}
-                      </div>
+                    <div className="flex w-full min-w-0 flex-col gap-4 p-4 md:p-6">
+                      {filesMainInner("desktop", true)}
                     </div>
                   </div>
                 </div>
@@ -624,27 +540,18 @@ export function FilesClient() {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#0F0F10] md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-canvas md:hidden">
         <Header
           variant="mobile"
           mobileTitle="FILES"
           onMenuClick={() => setMobileMenuOpen(true)}
         />
-        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] border border-[#2A2A2E] bg-[#141418]">
+        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <div
             ref={mobileScrollRef}
             className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
-            style={{
-              scrollPaddingBottom: mobileScrollBottomPadPx,
-            }}
           >
-            <main
-              ref={mobileColumnRef}
-              className="flex w-full min-w-0 flex-col px-4 pt-3"
-              style={{
-                paddingBottom: mobileScrollBottomPadPx,
-              }}
-            >
+            <main className="flex w-full min-w-0 flex-col px-4 pt-3">
               <div className="flex w-full min-w-0 flex-col gap-4">
                 {filesMainInner("mobile", false)}
               </div>
@@ -652,46 +559,6 @@ export function FilesClient() {
           </div>
         </div>
       </div>
-
-      <FixedPromptBarDock geometry={filesPromptDockGeometry} ariaLabel="Upload files">
-        <FilesDropZone
-          className="w-full shrink-0"
-          variant={minWidth768 ? "desktop" : "mobile"}
-          onFilesUpload={handleFilesUpload}
-        />
-        <div
-          className="invisible pointer-events-none w-full shrink-0"
-          aria-hidden="true"
-        >
-          <GenerationSettingsRow
-            className="w-full shrink-0"
-            assetContentType={dockParityAsset}
-            onAssetContentType={setDockParityAsset}
-            aspectRatio={dockParityAspect}
-            onAspectRatio={setDockParityAspect}
-            quality={dockParityQuality}
-            onQuality={setDockParityQuality}
-            variations={dockParityVariations}
-            onVariations={setDockParityVariations}
-            variant={minWidth768 ? "desktop" : "mobile"}
-          />
-        </div>
-        <div
-          className={cn(
-            "invisible pointer-events-none hidden w-full shrink-0 xl:flex xl:justify-center",
-            "mt-[32px]",
-          )}
-          aria-hidden="true"
-        >
-          <div className="w-full min-w-0 xl:max-w-[1000px]">
-            <DesktopTemplatesStrip
-              templates={MOCK_TEMPLATES}
-              selectedId={dockParityTemplateId}
-              onSelect={setDockParityTemplateId}
-            />
-          </div>
-        </div>
-      </FixedPromptBarDock>
 
       <MobileCreateImageDrawer
         open={mobileMenuOpen}
