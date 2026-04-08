@@ -13,6 +13,12 @@ type HistoryPanelProps = {
   onSelect: (id: string) => void;
   onMenuAction?: (itemId: string, action: string) => void;
   className?: string;
+  /** Optional surface override so page rails can match nav panel styling exactly. */
+  panelClassName?: string;
+  /** Optional override for rail bottom clearance (defaults to settings+prompt clearance). */
+  fixedDockClearancePx?: number;
+  /** When true, removes extra rail bottom padding so panel can align with left nav. */
+  flushBottom?: boolean;
   /** List grows and scrolls within a flex parent (e.g. mobile slide-out menu). */
   fillParent?: boolean;
   /** Omit the “HISTORY” heading (mobile drawer aligns with nav labels). */
@@ -25,9 +31,15 @@ export function HistoryPanel({
   onSelect,
   onMenuAction,
   className,
+  panelClassName,
+  fixedDockClearancePx,
+  flushBottom = false,
   fillParent = false,
   hideTitle = false,
 }: HistoryPanelProps) {
+  const bottomClearancePx =
+    fixedDockClearancePx ?? SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX;
+
   /** Horizontal inset for list rows — drawer uses wider edge padding. */
   const rowPad = hideTitle ? "px-5" : "px-4";
 
@@ -127,14 +139,20 @@ export function HistoryPanel({
         className,
       )}
       style={{
-        height: `calc(100% - ${SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX}px)`,
+        height: `calc(100% - ${bottomClearancePx}px)`,
       }}
     >
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden pb-4 pl-5 pr-5 pt-6">
+      <div
+        className={cn(
+          "flex min-h-0 flex-1 flex-col overflow-hidden pl-5 pr-5 pt-6",
+          flushBottom ? "pb-0" : "pb-4",
+        )}
+      >
         <section
           className={cn(
             "flex min-h-0 flex-1 flex-col overflow-hidden",
             "py-3",
+            panelClassName,
           )}
         >
           {!hideTitle ? (

@@ -40,7 +40,8 @@ export function TemplatesPanel({
             onClick={() => onSelect(null)}
             className={cn(
               "flex h-[64px] w-[92px] shrink-0 items-center justify-center rounded-[10px] border border-app-border bg-app-inset text-[10px] text-[#8A8A93] transition-colors hover:border-app-border-hover",
-              selectedId === null && "border-[#3ABEFF] bg-[#3ABEFF] text-white",
+              selectedId === null &&
+                "border-app-border-hover bg-app-elevated text-white",
             )}
           >
             None

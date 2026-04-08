@@ -158,10 +158,10 @@ export function DesktopTemplatesStrip({
             onClick={() => onSelect(null)}
             className={cn(
               "flex shrink-0 items-center justify-center rounded-[10px] border text-[11px] font-medium transition-all",
-              "outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF] focus-visible:ring-offset-2 focus-visible:ring-offset-app-canvas",
+              "outline-none focus-visible:ring-2 focus-visible:ring-app-border-hover/70 focus-visible:ring-offset-2 focus-visible:ring-offset-app-canvas",
               "border-app-border bg-app-inset text-[#A1A1AA] hover:border-app-border-hover hover:bg-app-elevated hover:text-white",
               selectedId === null &&
-                "border-[#3ABEFF] bg-[#E6F7FF] text-white shadow-[0_0_0_1px_rgba(108,212,255,0.45)] ring-1 ring-[#3ABEFF]/30",
+                "border-app-border-hover bg-app-elevated text-white shadow-none ring-0",
             )}
             style={{ width: TILE, height: TILE }}
           >

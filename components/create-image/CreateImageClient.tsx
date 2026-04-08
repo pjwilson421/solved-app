@@ -453,7 +453,10 @@ export function CreateImageClient() {
             activeId={activeHistoryId}
             onSelect={loadHistory}
             onMenuAction={handleHistoryMenu}
-            className="hidden max-h-screen shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
+            className="hidden max-h-screen shrink-0 !bg-transparent xl:flex xl:w-[300px] xl:min-w-[300px]"
+            panelClassName="w-full rounded-[11px] border border-[#2A2A2E] bg-[#18181B]"
+            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
+            flushBottom
           />
         </div>
       </div>
