@@ -15,6 +15,7 @@ import { Header } from "../create-image/Header";
 import { Sidebar } from "../create-image/Sidebar";
 import { MobileCreateImageDrawer } from "../create-image/MobileCreateImageDrawer";
 import { CREATE_IMAGE_SCROLL_RESERVE } from "../create-image/preview-frame-layout";
+import { useMinWidth1280 } from "../create-image/use-create-image-preview-prompt-layout";
 import type { HistoryItem } from "../create-image/types";
 import { cn } from "@/lib/utils";
 import { useAppData } from "@/lib/app-data/app-data-context";
@@ -120,6 +121,7 @@ export function FilesClient() {
 
   const desktopScrollRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const minWidth1280 = useMinWidth1280();
 
   const { fileEntries, updateFileEntries } = useAppData();
   const {
@@ -521,7 +523,19 @@ export function FilesClient() {
             fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
           />
 
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-0 xl:pr-[40px]">
+          <div
+            className={cn(
+              "flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-0 xl:pr-[40px]",
+              minWidth1280 && "w-full self-start",
+            )}
+            style={
+              minWidth1280
+                ? {
+                    height: `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`,
+                  }
+                : undefined
+            }
+          >
             <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
               <div
                 ref={desktopScrollRef}

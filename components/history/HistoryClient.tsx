@@ -602,7 +602,9 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     <div
       className={cn(
         "flex h-dvh min-h-0 flex-col overflow-hidden text-[#FAFAFA]",
-        page === "history" ? "bg-app-canvas" : "bg-[#0F0F10]",
+        page === "history" || page === "liked"
+          ? "bg-app-canvas"
+          : "bg-[#0F0F10]",
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
     >
@@ -626,7 +628,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
           />
 
-          {/* xl: History — same bottom clearance as Sidebar (`fixedDockClearancePx`); Liked — full dock reserve. */}
+          {/* xl: History & Liked — same bottom clearance as Sidebar (`fixedDockClearancePx`). */}
           <div
             className={cn(
               "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 pt-6 md:px-8 xl:px-10",
@@ -636,7 +638,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
               minWidth1280
                 ? {
                     height:
-                      page === "history"
+                      page === "history" || page === "liked"
                         ? `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`
                         : `calc(100% - ${SIDEBAR_BOTTOM_DOCK_CLEARANCE_PX}px)`,
                   }
@@ -647,6 +649,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
               className={cn(
                 "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
                 page !== "history" &&
+                  page !== "liked" &&
                   "rounded-[18px] border border-[#2A2A2E] bg-[#141418]",
               )}
             >
@@ -661,7 +664,9 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
       <div
         className={cn(
           "flex min-h-0 flex-1 flex-col overflow-hidden md:hidden",
-          page === "history" ? "bg-app-canvas" : "bg-[#0F0F10]",
+          page === "history" || page === "liked"
+            ? "bg-app-canvas"
+            : "bg-[#0F0F10]",
         )}
       >
         <Header
@@ -673,6 +678,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
           className={cn(
             "mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
             page !== "history" &&
+              page !== "liked" &&
               "rounded-[22px] border border-[#2A2A2E] bg-[#141418]",
           )}
         >
