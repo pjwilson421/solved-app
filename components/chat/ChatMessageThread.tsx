@@ -146,7 +146,8 @@ function UserBubble({ m, stackMarginClass }: BubbleProps) {
     <div
       className={cn(
         "relative max-w-[min(100%,420px)] rounded-full bg-[#3ABEFF]/90",
-        "px-5 pr-11 pb-3 pt-3 text-left text-[16px] leading-[22px] text-[#FAFAFA]",
+        /* Padding matches AssistantBubble; copy control: right-5, vertically centered */
+        "px-5 py-4 pr-18 text-left text-[16px] leading-[22px] text-[#FAFAFA]",
         stackMarginClass,
       )}
     >
@@ -154,7 +155,7 @@ function UserBubble({ m, stackMarginClass }: BubbleProps) {
         type="button"
         onClick={(e) => handleCopyClick(e, m.text)}
         className={cn(
-          "absolute right-1.5 top-1.5 z-[1] flex h-7 w-7 items-center justify-center rounded-menu-item",
+          "absolute right-5 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-menu-item",
           "text-[#A1A1AA] opacity-90 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/15",
         )}
         aria-label="Copy message"
@@ -165,7 +166,9 @@ function UserBubble({ m, stackMarginClass }: BubbleProps) {
           className="pointer-events-none [&_img]:opacity-100"
         />
       </button>
-      <span className="block whitespace-pre-wrap break-words">{m.text}</span>
+      <span className="block min-w-0 whitespace-pre-wrap break-words">
+        {m.text}
+      </span>
     </div>
   );
 }
@@ -175,7 +178,8 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
     <div
       className={cn(
         "relative max-w-[min(100%,620px)] rounded-full border-0 bg-[#18181B] shadow-none ring-0",
-        "px-5 pr-11 pb-3 pt-3 text-left text-[16px] leading-[22px] text-[#E4E4E7]",
+        /* Roomy inset; pr-18 reserves space so wrapped lines clear the copy control */
+        "px-5 py-4 pr-18 text-left text-[16px] leading-[22px] text-[#E4E4E7]",
         stackMarginClass,
       )}
     >
@@ -183,7 +187,7 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
         type="button"
         onClick={(e) => handleCopyClick(e, m.text)}
         className={cn(
-          "absolute right-1.5 top-1.5 z-[1] flex h-7 w-7 items-center justify-center rounded-menu-item",
+          "absolute right-5 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-menu-item",
           "text-[#A1A1AA] opacity-90 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/15",
         )}
         aria-label="Copy message"
@@ -194,7 +198,9 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
           className="pointer-events-none [&_img]:opacity-100"
         />
       </button>
-      <span className="block whitespace-pre-wrap break-words">{m.text}</span>
+      <span className="block min-w-0 whitespace-pre-wrap break-words">
+        {m.text}
+      </span>
     </div>
   );
 }
