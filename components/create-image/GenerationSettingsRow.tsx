@@ -16,7 +16,7 @@ const CONTROL_ICON_SIZE = 16;
 
 /** Aligned with Templates trigger; slightly softer fill so settings read secondary. */
 const templatesControlStyle =
-  "rounded-control bg-[#2A2A2E]/90 px-3 text-[11px] font-normal leading-8 text-white transition-colors hover:bg-[#323238]/95 outline-none focus:outline-none";
+  "rounded-control bg-surface-hover/90 px-3 text-[11px] font-normal leading-8 text-white transition-colors hover:bg-surface-pressed/95 outline-none focus:outline-none";
 
 const assetTypeBtn = cn(
   "flex h-8 min-w-0 cursor-pointer items-center gap-2 text-left",
@@ -60,7 +60,7 @@ function SelectChevron({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "pointer-events-none absolute inset-y-0 right-3 z-[2] flex w-2 shrink-0 items-center justify-center text-[10px] leading-none text-[#8A8A93]",
+        "pointer-events-none absolute inset-y-0 right-3 z-[2] flex w-2 shrink-0 items-center justify-center text-[10px] leading-none text-tx-muted",
         className,
       )}
       aria-hidden
@@ -99,7 +99,7 @@ function AssetContentTypeMenu({
         />
         <span className="min-w-0 flex-1 truncate leading-8">{value}</span>
         <span
-          className="shrink-0 text-[10px] leading-none text-[#8A8A93]"
+          className="shrink-0 text-[10px] leading-none text-tx-muted"
           aria-hidden
         >
           ▾
@@ -115,7 +115,7 @@ function AssetContentTypeMenu({
         <ul
           role="listbox"
           aria-label="Content type"
-          className="rounded-card border border-[#2A2A2E] bg-[#1E1E22] py-1 text-[11px] shadow-lg"
+          className="rounded-card border border-edge-default bg-surface-hover py-1 text-[11px] shadow-lg"
         >
           {ASSET_CONTENT_TYPES.map((opt) => (
             <li key={opt} role="none">
@@ -124,8 +124,8 @@ function AssetContentTypeMenu({
                 role="option"
                 aria-selected={value === opt}
                 className={cn(
-                  "flex w-full items-center gap-2 px-3 py-2 text-left text-white transition-colors hover:bg-[#2A2A2E]",
-                  value === opt && "bg-[#3ABEFF]/60",
+                  "flex w-full items-center gap-2 px-3 py-2 text-left text-white transition-colors hover:bg-surface-hover",
+                  value === opt && "bg-primary/60",
                 )}
                 onClick={() => onChange(opt)}
               >

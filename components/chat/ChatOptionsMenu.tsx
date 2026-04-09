@@ -66,13 +66,13 @@ export function ChatOptionsMenu({ onSelect }: ChatOptionsMenuProps) {
           role="menu"
           className="absolute right-0 top-full z-[60] min-w-[200px] pt-1"
         >
-          <div className="rounded-card bg-[#18181B] py-1.5 shadow-xl">
+          <div className="rounded-card bg-surface-elevated py-1.5 shadow-xl">
             {CHAT_MENU_ITEMS.map((label) => (
               <button
                 key={label}
                 type="button"
                 role="menuitem"
-                className="w-full px-4 py-2 text-left text-[11px] text-[#E4E4E7] transition-colors hover:bg-[#3ABEFF] hover:text-white"
+                className="w-full px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors hover:bg-primary hover:text-white"
                 onClick={() => {
                   onSelect?.(label);
                   setOpen(false);

@@ -13,7 +13,7 @@ export function HistorySectionLabel({
   return (
     <h2
       className={cn(
-        "text-left text-[10px] font-bold uppercase tracking-[0.08em] text-[#8A8A93]",
+        "text-left text-[10px] font-bold uppercase tracking-[0.08em] text-tx-muted",
         className,
       )}
     >

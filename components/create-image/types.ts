@@ -43,60 +43,61 @@ export type VideoDuration = "5s" | "10s" | "15s" | "30s";
 
 export const VIDEO_DURATIONS: VideoDuration[] = ["5s", "10s", "15s", "30s"];
 
+/** Thumbnail gradients use only theme colors (`globals.css`). */
 export const MOCK_TEMPLATES: TemplateDef[] = [
   {
     id: "t1",
     name: "Social",
-    thumbnailGradient: "from-sky-500/40 to-cyan-500/30",
+    thumbnailGradient: "from-primary/45 to-primary-active/35",
     slots: 1,
     layout: "single",
   },
   {
     id: "t2",
     name: "Split",
-    thumbnailGradient: "from-sky-500/40 to-cyan-600/30",
+    thumbnailGradient: "from-primary/40 to-surface-pressed/50",
     slots: 2,
     layout: "two-col",
   },
   {
     id: "t3",
     name: "Stack",
-    thumbnailGradient: "from-emerald-600/40 to-teal-600/30",
+    thumbnailGradient: "from-primary-active/45 to-surface-elevated/50",
     slots: 2,
     layout: "two-row",
   },
   {
     id: "t4",
     name: "Triple",
-    thumbnailGradient: "from-amber-600/40 to-orange-600/30",
+    thumbnailGradient: "from-surface-elevated/80 to-primary/35",
     slots: 3,
     layout: "triple",
   },
   {
     id: "t5",
     name: "Template 5",
-    thumbnailGradient: "from-rose-600/40 to-pink-600/30",
+    thumbnailGradient: "from-primary-hover/50 to-surface-panel/70",
     slots: 1,
     layout: "single",
   },
   {
     id: "t6",
     name: "Template 6",
-    thumbnailGradient: "from-cyan-600/40 to-blue-600/30",
+    thumbnailGradient: "from-primary/35 to-surface-hover/60",
     slots: 1,
     layout: "single",
   },
   {
     id: "t7",
     name: "Template 7",
-    thumbnailGradient: "from-lime-600/40 to-green-600/30",
+    thumbnailGradient: "from-surface-pressed/70 to-primary/40",
     slots: 2,
     layout: "two-col",
   },
   {
     id: "t8",
     name: "Template 8",
-    thumbnailGradient: "from-cyan-500/40 to-blue-500/30",
+    thumbnailGradient: "from-primary-active/40 to-primary/30",
     slots: 1,
     layout: "single",
   },

@@ -36,8 +36,8 @@ type LikedChatEntryRowProps = {
 
 function rowSurfaceClass(index: number) {
   return index % 2 === 0
-    ? "bg-app-card border-app-border/80"
-    : "bg-app-panel border-app-border/80";
+    ? "bg-surface-elevated border-edge-default/80"
+    : "bg-surface-panel border-edge-default/80";
 }
 
 /** List row shaped like a saved “chat file” on the Liked page (opens Chat when clicked). */
@@ -76,7 +76,7 @@ export function LikedChatEntryRow({
           }
         }}
         onBlur={() => onTitleRenameSubmit?.()}
-        className="mt-0.5 w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+        className="mt-0.5 w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium text-white outline-none ring-1 ring-edge-strong px-1 -mx-1"
         aria-label={`Rename ${title}`}
       />
     ) : (
@@ -115,7 +115,7 @@ export function LikedChatEntryRow({
           }
         }}
         onBlur={() => onTitleRenameSubmit?.()}
-        className="mt-0.5 w-full rounded-menu-item bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+        className="mt-0.5 w-full rounded-menu-item bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-edge-strong px-1 -mx-1"
         aria-label={`Rename ${title}`}
       />
     ) : (
@@ -140,8 +140,8 @@ export function LikedChatEntryRow({
     const shellClass = cn(
       "group flex w-full cursor-pointer gap-3 rounded-card border px-3 py-3 text-left transition-[background-color,border-color] duration-150",
       surface,
-      "hover:border-app-border-hover hover:bg-app-panel",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-panel",
+      "hover:border-edge-strong hover:bg-surface-panel",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel",
     );
     if (enableTitleInlineRename) {
       return (
@@ -158,17 +158,17 @@ export function LikedChatEntryRow({
           className={shellClass}
         >
           <div
-            className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-card border border-app-border bg-app-inset"
+            className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-card border border-edge-default bg-surface-panel"
             aria-hidden
           >
             <IconAsset src={ICONS.chat} size={22} className="opacity-90" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[11px] font-medium uppercase tracking-wide text-[#8A8A93]">
+            <p className="truncate text-[11px] font-medium uppercase tracking-wide text-tx-muted">
               Chat file
             </p>
             {titleBlockMobile}
-            <p className="mt-1 text-left text-[10px] leading-relaxed text-[#A1A1AA]">
+            <p className="mt-1 text-left text-[10px] leading-relaxed text-tx-muted">
               {meta}
             </p>
           </div>
@@ -178,17 +178,17 @@ export function LikedChatEntryRow({
     return (
       <button type="button" onClick={onOpen} className={shellClass}>
         <div
-          className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-card border border-app-border bg-app-inset"
+          className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-card border border-edge-default bg-surface-panel"
           aria-hidden
         >
           <IconAsset src={ICONS.chat} size={22} className="opacity-90" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[11px] font-medium uppercase tracking-wide text-[#8A8A93]">
+          <p className="truncate text-[11px] font-medium uppercase tracking-wide text-tx-muted">
             Chat file
           </p>
           {titleBlockMobile}
-          <p className="mt-1 text-left text-[10px] leading-relaxed text-[#A1A1AA]">
+          <p className="mt-1 text-left text-[10px] leading-relaxed text-tx-muted">
             {meta}
           </p>
         </div>
@@ -199,8 +199,8 @@ export function LikedChatEntryRow({
   const shellClassDesktop = cn(
     "group grid w-full cursor-pointer grid-cols-[48px_minmax(0,1fr)] items-center gap-3 rounded-card border px-4 py-3 text-left transition-[background-color,border-color] duration-150",
     surface,
-    "hover:border-app-border-hover hover:bg-app-panel",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-panel",
+    "hover:border-edge-strong hover:bg-surface-panel",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel",
   );
 
   if (enableTitleInlineRename) {
@@ -218,17 +218,17 @@ export function LikedChatEntryRow({
         className={shellClassDesktop}
       >
         <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-card border border-app-border bg-app-inset"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-card border border-edge-default bg-surface-panel"
           aria-hidden
         >
           <IconAsset src={ICONS.chat} size={22} className="opacity-90" />
         </div>
         <div className="min-w-0">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-[#8A8A93]">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-tx-muted">
             Chat file
           </p>
           {titleBlockDesktop}
-          <p className="mt-1 truncate text-left text-[11px] text-[#A1A1AA]">
+          <p className="mt-1 truncate text-left text-[11px] text-tx-muted">
             {meta}
           </p>
         </div>
@@ -239,17 +239,17 @@ export function LikedChatEntryRow({
   return (
     <button type="button" onClick={onOpen} className={shellClassDesktop}>
       <div
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-card border border-app-border bg-app-inset"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-card border border-edge-default bg-surface-panel"
         aria-hidden
       >
         <IconAsset src={ICONS.chat} size={22} className="opacity-90" />
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-[#8A8A93]">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-tx-muted">
           Chat file
         </p>
         {titleBlockDesktop}
-        <p className="mt-1 truncate text-left text-[11px] text-[#A1A1AA]">
+        <p className="mt-1 truncate text-left text-[11px] text-tx-muted">
           {meta}
         </p>
       </div>

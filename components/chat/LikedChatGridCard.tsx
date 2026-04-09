@@ -46,8 +46,8 @@ export function LikedChatGridCard({
   const meta = `${record.messages.length} message${record.messages.length === 1 ? "" : "s"} · ${formatSavedAt(record.savedAt)}`;
   const surface =
     rowIndex % 2 === 0
-      ? "bg-[#18181B] border-[#2A2A2E]/80"
-      : "bg-[#141418] border-[#2A2A2E]/80";
+      ? "bg-surface-elevated border-edge-default/80"
+      : "bg-surface-panel border-edge-default/80";
 
   const titleBlock = enableTitleInlineRename ? (
     isTitleRenaming ? (
@@ -67,7 +67,7 @@ export function LikedChatGridCard({
           }
         }}
         onBlur={() => onTitleRenameSubmit?.()}
-        className="line-clamp-2 w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+        className="line-clamp-2 w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-edge-strong px-1 -mx-1"
         aria-label={`Rename ${title}`}
       />
     ) : (
@@ -91,21 +91,21 @@ export function LikedChatGridCard({
   const shellClass = cn(
     "group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-card border text-left transition-[background-color,border-color,box-shadow] duration-150",
     surface,
-    "hover:border-[#3F3F46] hover:bg-[#1c1c1f] hover:shadow-md",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418]",
+    "hover:border-edge-strong hover:bg-surface-hover hover:shadow-md",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel",
   );
 
   const body = (
     <>
-      <div className="relative flex aspect-square w-full items-center justify-center bg-[#1E1E22] transition-colors duration-150 group-hover:bg-[#25252b]">
+      <div className="relative flex aspect-square w-full items-center justify-center bg-surface-hover transition-colors duration-150 group-hover:bg-surface-hover">
         <IconAsset src={ICONS.chat} size={40} className="opacity-90" />
-        <span className="absolute left-2 top-2 text-[9px] font-semibold uppercase tracking-wider text-[#8A8A93]">
+        <span className="absolute left-2 top-2 text-[9px] font-semibold uppercase tracking-wider text-tx-muted">
           Chat file
         </span>
       </div>
       <div className="min-w-0 px-2.5 pb-2.5 pt-2 sm:px-3 sm:pb-3 sm:pt-2.5">
         {titleBlock}
-        <p className="mt-1 line-clamp-2 text-left text-[10px] text-[#8A8A93] sm:text-[11px]">
+        <p className="mt-1 line-clamp-2 text-left text-[10px] text-tx-muted sm:text-[11px]">
           {meta}
         </p>
       </div>

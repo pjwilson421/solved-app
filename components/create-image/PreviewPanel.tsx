@@ -114,7 +114,7 @@ function PreviewDescriptionText({
           "min-w-0 flex-1 break-words",
           !expanded && "line-clamp-1",
           "text-[10px] leading-4 xl:text-[13px] xl:leading-[18px]",
-          isPlaceholder ? "text-[#71717A]" : "text-[#E4E4E7]",
+          isPlaceholder ? "text-tx-disabled" : "text-tx-secondary",
         )}
       >
         {display}
@@ -124,7 +124,7 @@ function PreviewDescriptionText({
           type="button"
           className={cn(
             "mt-0.5 shrink-0 self-start rounded-menu-item p-0.5 outline-none",
-            "hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-[#3ABEFF]",
+            "hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-primary",
           )}
           aria-expanded={expanded}
           aria-label={expanded ? "Collapse description" : "Expand description"}
@@ -133,7 +133,7 @@ function PreviewDescriptionText({
           <ChevronExpandIcon
             expanded={expanded}
             className={
-              isPlaceholder ? "text-[#71717A]" : "text-[#E4E4E7]"
+              isPlaceholder ? "text-tx-disabled" : "text-tx-secondary"
             }
           />
         </button>
@@ -218,8 +218,8 @@ function SlotBox({
   placeholderIcon: IconPath;
 }) {
   return (
-    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#15151A]">
-      <span className="absolute left-2 top-2 z-10 text-[9px] font-semibold uppercase tracking-wider text-[#8A8A93]">
+    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-surface-panel">
+      <span className="absolute left-2 top-2 z-10 text-[9px] font-semibold uppercase tracking-wider text-tx-muted">
         {label}
       </span>
 
@@ -392,8 +392,8 @@ function TemplateLayout({
         placeholderIcon={placeholderIcon}
       />
 
-      <div className="relative col-span-2 flex min-h-0 overflow-hidden bg-[#15151A]">
-        <span className="absolute left-2 top-2 z-10 text-[9px] font-semibold uppercase tracking-wider text-[#8A8A93]">
+      <div className="relative col-span-2 flex min-h-0 overflow-hidden bg-surface-panel">
+        <span className="absolute left-2 top-2 z-10 text-[9px] font-semibold uppercase tracking-wider text-tx-muted">
           Image 3
         </span>
 
@@ -416,7 +416,7 @@ function TemplateLayout({
 }
 
 const frameShell =
-  "relative overflow-hidden border border-[#2A2A2E] bg-[#18181B]";
+  "relative overflow-hidden border border-edge-default bg-surface-elevated";
 
 export function PreviewPanel({
   aspectRatio,
@@ -474,10 +474,10 @@ export function PreviewPanel({
         )}
 
         {isLoading ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#0F0F10]/80 backdrop-blur-sm">
+          <div className="absolute inset-0 flex items-center justify-center bg-surface-base/80 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-3">
-              <div className="h-9 w-9 animate-spin rounded-action border-2 border-[#3ABEFF] border-t-transparent" />
-              <span className="text-[11px] font-medium tracking-wide text-[#A1A1AA]">
+              <div className="h-9 w-9 animate-spin rounded-action border-2 border-primary border-t-transparent" />
+              <span className="text-[11px] font-medium tracking-wide text-tx-muted">
                 Generating…
               </span>
             </div>
@@ -538,7 +538,7 @@ export function PreviewPanel({
           className={cn(
             unstyledFrame
               ? "relative mx-auto overflow-hidden border-0 bg-transparent shadow-none"
-              : "relative mx-auto overflow-hidden border border-[#2A2A2E] bg-[#18181B]",
+              : "relative mx-auto overflow-hidden border border-edge-default bg-surface-elevated",
             mobileFrameClass(aspectRatio),
           )}
         >
@@ -585,7 +585,7 @@ export function PreviewPanel({
               : undefined
           }
         >
-          <p className="w-full min-w-0 max-w-none text-[10px] leading-none text-[#A1A1AA]">
+          <p className="w-full min-w-0 max-w-none text-[10px] leading-none text-tx-muted">
             {dateLine}
           </p>
 

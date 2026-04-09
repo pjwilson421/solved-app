@@ -41,8 +41,8 @@ export function HistoryGridCard({
   const meta = formatHistoryRowMeta(entry);
   const surface =
     rowIndex % 2 === 0
-      ? "bg-[#18181B] border-[#2A2A2E]/80"
-      : "bg-[#141418] border-[#2A2A2E]/80";
+      ? "bg-surface-elevated border-edge-default/80"
+      : "bg-surface-panel border-edge-default/80";
 
   return (
     <div
@@ -58,7 +58,7 @@ export function HistoryGridCard({
       className={cn(
         "group flex h-full cursor-pointer flex-col overflow-hidden rounded-card border transition-[background-color,border-color,box-shadow] duration-150",
         surface,
-        "hover:border-[#3F3F46] hover:bg-[#1c1c1f] hover:shadow-md",
+        "hover:border-edge-strong hover:bg-surface-hover hover:shadow-md",
       )}
     >
       <div className="relative">
@@ -94,7 +94,7 @@ export function HistoryGridCard({
                 }
               }}
               onBlur={() => onTitleRenameSubmit?.()}
-              className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+              className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-edge-strong px-1 -mx-1"
               aria-label={`Rename ${entry.title}`}
             />
           ) : (
@@ -114,10 +114,10 @@ export function HistoryGridCard({
             {entry.title}
           </p>
         )}
-        <p className="mt-0.5 truncate text-left text-[11px] text-[#A1A1AA]">
+        <p className="mt-0.5 truncate text-left text-[11px] text-tx-muted">
           {entry.subtitle}
         </p>
-        <p className="mt-1 truncate text-left text-[10px] text-[#8A8A93] sm:text-[11px]">
+        <p className="mt-1 truncate text-left text-[10px] text-tx-muted sm:text-[11px]">
           {meta}
         </p>
       </div>

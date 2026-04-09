@@ -28,7 +28,7 @@ export function Header({
   return (
     <header
       className={cn(
-        "flex shrink-0 items-center bg-app-canvas px-5",
+        "flex shrink-0 items-center bg-surface-base px-5",
         variant === "desktop" ? "h-16" : "h-[72px]",
         className,
       )}
@@ -73,7 +73,7 @@ export function Header({
           <button
             type="button"
             onClick={onMenuClick}
-            className="mr-2 flex h-8 w-8 items-center justify-center rounded-control text-[#A1A1AA] transition-colors hover:bg-app-hover-strong hover:text-white"
+            className="mr-2 flex h-8 w-8 items-center justify-center rounded-control text-tx-muted transition-colors hover:bg-surface-hover hover:text-white"
             aria-label="Open menu"
           >
             <IconMenu className="h-5 w-5" />

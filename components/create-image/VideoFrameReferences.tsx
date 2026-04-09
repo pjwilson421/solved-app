@@ -52,9 +52,9 @@ function FrameSlot({
       />
       <div
         className={cn(
-          "relative flex h-[64px] w-[92px] shrink-0 items-center justify-center overflow-hidden rounded-card border border-app-border bg-app-inset transition-colors",
+          "relative flex h-[64px] w-[92px] shrink-0 items-center justify-center overflow-hidden rounded-card border border-edge-default bg-surface-panel transition-colors",
           "xl:h-[120px] xl:w-[120px]",
-          !file && "hover:border-app-border-hover",
+          !file && "hover:border-edge-strong",
         )}
       >
         {file ? (
@@ -68,7 +68,7 @@ function FrameSlot({
             <button
               type="button"
               onClick={onRemove}
-              className="absolute right-1.5 top-1.5 z-[1] flex h-6 w-6 items-center justify-center rounded-action bg-app-canvas/90 text-[11px] text-white"
+              className="absolute right-1.5 top-1.5 z-[1] flex h-6 w-6 items-center justify-center rounded-action bg-surface-base/90 text-[11px] text-white"
               aria-label={`Remove ${label}`}
             >
               ×
@@ -78,10 +78,10 @@ function FrameSlot({
           <button
             type="button"
             onClick={() => ref.current?.click()}
-            className="flex h-full w-full items-center justify-center outline-none transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3ABEFF]"
+            className="flex h-full w-full items-center justify-center outline-none transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             aria-label={`Add ${label}`}
           >
-            <span className="text-2xl font-light text-[#8A8A93]">+</span>
+            <span className="text-2xl font-light text-tx-muted">+</span>
           </button>
         )}
       </div>

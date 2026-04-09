@@ -7,4 +7,4 @@ export const CHAT_TOOLBAR_ICON_IMG_CLASS =
 
 /** Matches unliked heart control: same box, radius, and hover as the like button. */
 export const CHAT_TOOLBAR_ICON_BUTTON_CLASS =
-  "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,box-shadow,color] text-[#A1A1AA] hover:bg-[#2A2A2E] hover:text-white";
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,box-shadow,color] text-tx-muted hover:bg-surface-hover hover:text-white";

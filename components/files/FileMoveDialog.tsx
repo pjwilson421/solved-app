@@ -63,7 +63,7 @@ export function FileMoveDialog({
     <div className="fixed inset-0 z-[1300] flex items-end justify-center p-4 sm:items-center sm:p-6">
       <button
         type="button"
-        className="absolute inset-0 z-0 bg-black/60"
+        className="absolute inset-0 z-0 bg-surface-base/70"
         aria-label="Close"
         onClick={onClose}
       />
@@ -73,18 +73,18 @@ export function FileMoveDialog({
         aria-labelledby="file-move-title"
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative z-10 w-full max-w-[360px] rounded-card border border-app-border bg-app-card shadow-xl shadow-black/50",
+          "relative z-10 w-full max-w-[360px] rounded-card border border-edge-default bg-surface-elevated shadow-xl shadow-primary-glow/35",
           "max-h-[min(420px,70vh)] flex flex-col",
         )}
       >
-        <div className="shrink-0 border-b border-app-border/80 px-4 py-3">
+        <div className="shrink-0 border-b border-edge-default/80 px-4 py-3">
           <h2
             id="file-move-title"
             className="text-left text-[12px] font-semibold text-white"
           >
             Move “{item.name}”
           </h2>
-          <p className="mt-1 text-left text-[10px] leading-snug text-[#8A8A93]">
+          <p className="mt-1 text-left text-[10px] leading-snug text-tx-muted">
             Choose a folder or move to the top level.
           </p>
         </div>
@@ -94,15 +94,15 @@ export function FileMoveDialog({
             className={cn(
               "flex w-full cursor-pointer items-center gap-2 rounded-control px-3 py-2.5 text-left text-[11px] font-medium transition-colors duration-150",
               currentParentId === null
-                ? "bg-[#3ABEFF]/50 text-white"
-                : "text-[#E4E4E7] hover:bg-app-hover-strong",
+                ? "bg-primary/50 text-white"
+                : "text-tx-secondary hover:bg-surface-hover",
             )}
             onClick={(e) => {
               e.stopPropagation();
               pick(null, "All files (root)");
             }}
           >
-            <div className="flex items-center justify-center w-5 h-5 rounded-menu-item overflow-hidden bg-app-hover-strong/50 shrink-0 text-[#A1A1AA]">
+            <div className="flex items-center justify-center w-5 h-5 rounded-menu-item overflow-hidden bg-surface-hover/50 shrink-0 text-tx-muted">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -111,7 +111,7 @@ export function FileMoveDialog({
             <span className="font-semibold text-[12px]">All files (root)</span>
           </button>
           {folders.length === 0 ? (
-            <p className="px-3 py-2 text-left text-[10px] text-[#71717A]">
+            <p className="px-3 py-2 text-left text-[10px] text-tx-disabled">
               No other folders available.
             </p>
           ) : (
@@ -127,8 +127,8 @@ export function FileMoveDialog({
                       className={cn(
                         "flex w-full cursor-pointer rounded-control px-3 py-2.5 text-left text-[11px] font-medium transition-colors duration-150",
                         selected
-                          ? "bg-[#3ABEFF]/50 text-white"
-                          : "text-[#E4E4E7] hover:bg-app-hover-strong",
+                          ? "bg-primary/50 text-white"
+                          : "text-tx-secondary hover:bg-surface-hover",
                       )}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -136,7 +136,7 @@ export function FileMoveDialog({
                       }}
                     >
                       <span className="truncate">{f.name}</span>
-                      <span className="ml-2 shrink-0 text-[10px] font-normal text-[#71717A]">
+                      <span className="ml-2 shrink-0 text-[10px] font-normal text-tx-disabled">
                         Folder
                       </span>
                     </button>
@@ -146,10 +146,10 @@ export function FileMoveDialog({
             </ul>
           )}
         </div>
-        <div className="shrink-0 border-t border-app-border/80 px-3 py-2.5">
+        <div className="shrink-0 border-t border-edge-default/80 px-3 py-2.5">
           <button
             type="button"
-            className="w-full cursor-pointer rounded-control py-2 text-center text-[11px] font-medium text-[#A1A1AA] transition-colors hover:bg-app-hover-strong hover:text-white"
+            className="w-full cursor-pointer rounded-control py-2 text-center text-[11px] font-medium text-tx-muted transition-colors hover:bg-surface-hover hover:text-white"
             onClick={onClose}
           >
             Cancel

@@ -22,8 +22,8 @@ const tabBtn = (active: boolean) =>
   cn(
     "rounded-menu-item px-3 py-1.5 text-[11px] font-medium leading-none transition-colors",
     active
-      ? "bg-[#3ABEFF] text-white"
-      : "bg-app-inset text-[#A1A1AA] hover:bg-app-elevated hover:text-white",
+      ? "bg-primary text-white"
+      : "bg-surface-panel text-tx-muted hover:bg-surface-elevated hover:text-white",
   );
 
 export function ImageEditorFileInfoPanel({
@@ -42,7 +42,7 @@ export function ImageEditorFileInfoPanel({
   return (
     <aside
       className={cn(
-        "flex min-h-0 min-w-0 w-[300px] shrink-0 flex-col self-start bg-app-canvas",
+        "flex min-h-0 min-w-0 w-[300px] shrink-0 flex-col self-start bg-surface-base",
         className,
       )}
       style={{
@@ -53,7 +53,7 @@ export function ImageEditorFileInfoPanel({
         <section
           className={cn(
             "flex min-h-0 flex-1 flex-col overflow-hidden",
-            "w-full rounded-panel border border-app-border bg-app-card",
+            "w-full rounded-panel border border-edge-default bg-surface-elevated",
             "py-4",
           )}
         >
@@ -78,23 +78,23 @@ export function ImageEditorFileInfoPanel({
           </div>
           <div className="mt-4 min-h-0 flex-1 overflow-y-auto px-4">
             {activeTab === "prompt" ? (
-              <p className="text-left text-[11px] leading-[18px] text-[#A1A1AA]">
+              <p className="text-left text-[11px] leading-[18px] text-tx-muted">
                 {promptPreview.trim()
                   ? promptPreview
                   : "Edits you describe in the prompt bar will appear here."}
               </p>
             ) : (
-              <ul className="space-y-2 text-left text-[11px] leading-[18px] text-[#A1A1AA]">
+              <ul className="space-y-2 text-left text-[11px] leading-[18px] text-tx-muted">
                 <li>
-                  <span className="text-[#71717A]">Aspect </span>
+                  <span className="text-tx-disabled">Aspect </span>
                   {aspectRatio}
                 </li>
                 <li>
-                  <span className="text-[#71717A]">Quality </span>
+                  <span className="text-tx-disabled">Quality </span>
                   {quality}
                 </li>
                 <li>
-                  <span className="text-[#71717A]">Variations </span>
+                  <span className="text-tx-disabled">Variations </span>
                   {variations}
                 </li>
               </ul>

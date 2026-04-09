@@ -47,7 +47,7 @@ export function HistoryPanel({
     items.length === 0 ? (
       <p
         className={cn(
-          "py-8 text-left text-[11px] leading-[18px] text-[#8A8A93]",
+          "py-8 text-left text-[11px] leading-[18px] text-tx-muted",
           rowPad,
         )}
       >
@@ -61,9 +61,9 @@ export function HistoryPanel({
           <div
             key={item.id}
             className={cn(
-              "border-b border-[#2A2A2E]/15 pb-3 pt-3 transition-colors last:border-b-0",
+              "border-b border-edge-default/15 pb-3 pt-3 transition-colors last:border-b-0",
               rowPad,
-              active ? "bg-[#3ABEFF]/40" : "hover:bg-[#1E1E22]/35",
+              active ? "bg-primary/40" : "hover:bg-surface-hover/35",
             )}
           >
             <div className="relative">
@@ -72,7 +72,7 @@ export function HistoryPanel({
                 onClick={() => onSelect(item.id)}
                 className="block w-full text-left"
               >
-                <div className="relative aspect-[200/112.5] w-full overflow-hidden bg-[#18181B]">
+                <div className="relative aspect-[200/112.5] w-full overflow-hidden bg-surface-elevated">
                   {thumb ? (
                     <Image
                       src={thumb}
@@ -83,10 +83,10 @@ export function HistoryPanel({
                     />
                   ) : null}
                 </div>
-                <p className="mt-[15px] line-clamp-2 text-left text-[11px] leading-[18px] text-[#A1A1AA]">
+                <p className="mt-[15px] line-clamp-2 text-left text-[11px] leading-[18px] text-tx-muted">
                   {item.prompt}
                 </p>
-                <p className="mt-1 text-left text-[10px] leading-none text-[#71717A]">
+                <p className="mt-1 text-left text-[10px] leading-none text-tx-disabled">
                   {formatCreatedAt(item.createdAt)}
                 </p>
               </button>
@@ -106,7 +106,7 @@ export function HistoryPanel({
     return (
       <aside
         className={cn(
-          "flex min-h-0 w-full min-w-0 flex-col bg-[#0F0F10]",
+          "flex min-h-0 w-full min-w-0 flex-col bg-surface-base",
           "flex-1",
           className,
         )}
@@ -134,7 +134,7 @@ export function HistoryPanel({
   return (
     <aside
       className={cn(
-        "flex min-h-0 min-w-0 shrink-0 flex-col self-start bg-[#0F0F10]",
+        "flex min-h-0 min-w-0 shrink-0 flex-col self-start bg-surface-base",
         "xl:w-[300px]",
         className,
       )}

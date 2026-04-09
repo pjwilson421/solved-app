@@ -63,7 +63,7 @@ import { cn } from "@/lib/utils";
 function chatLikeButtonClass(liked: boolean) {
   return cn(
     liked
-      ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,color] bg-[#3ABEFF]/55 text-white hover:bg-[#0D8FD1] active:bg-[#0D8FD1] focus-visible:brightness-110"
+      ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,color] bg-primary/55 text-white hover:bg-primary-active active:bg-primary-active focus-visible:brightness-110"
       : cn(
           CHAT_TOOLBAR_ICON_BUTTON_CLASS,
           "focus-visible:bg-white/10",
@@ -388,7 +388,7 @@ export function ChatClient() {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-canvas text-[#FAFAFA]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
     >
@@ -450,13 +450,13 @@ export function ChatClient() {
             </div>
           </div>
           <aside
-            className="hidden min-h-0 min-w-0 w-[300px] shrink-0 flex-col self-start bg-app-canvas xl:flex"
+            className="hidden min-h-0 min-w-0 w-[300px] shrink-0 flex-col self-start bg-surface-base xl:flex"
             style={{
               height: `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`,
             }}
           >
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden pb-0 pl-5 pr-5 pt-6">
-              <section className="flex min-h-0 flex-1 flex-col overflow-hidden w-full rounded-panel bg-[#18181B] py-3">
+              <section className="flex min-h-0 flex-1 flex-col overflow-hidden w-full rounded-panel bg-surface-elevated py-3">
                 <div className="shrink-0 px-4 pb-3">
                   <h2 className="text-left text-[10px] font-bold uppercase tracking-[0.08em] text-white">
                     HISTORY
@@ -464,7 +464,7 @@ export function ChatClient() {
                 </div>
                 <div className="flex min-h-0 flex-1 flex-col gap-0 overflow-y-auto">
                   {chatHistoryItems.length === 0 ? (
-                    <p className="px-4 py-8 text-left text-[11px] leading-[18px] text-[#8A8A93]">
+                    <p className="px-4 py-8 text-left text-[11px] leading-[18px] text-tx-muted">
                       No chats yet.
                     </p>
                   ) : (
@@ -472,8 +472,8 @@ export function ChatClient() {
                       <div
                         key={item.id}
                         className={cn(
-                          "border-b border-[#2A2A2E]/15 px-4 pb-3 pt-3 transition-colors last:border-b-0",
-                          "hover:bg-[#1E1E22]/35",
+                          "border-b border-edge-default/15 px-4 pb-3 pt-3 transition-colors last:border-b-0",
+                          "hover:bg-surface-hover/35",
                         )}
                       >
                         <div className="flex items-center justify-between gap-2">
@@ -485,7 +485,7 @@ export function ChatClient() {
                             }}
                             className="block min-w-0 flex-1 text-left"
                           >
-                            <p className="line-clamp-1 text-left text-[11px] leading-[18px] text-[#A1A1AA]">
+                            <p className="line-clamp-1 text-left text-[11px] leading-[18px] text-tx-muted">
                               {item.preview}
                             </p>
                           </button>
@@ -513,7 +513,7 @@ export function ChatClient() {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-canvas md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden">
         <Header
           variant="mobile"
           mobileTitle="CHAT"
@@ -614,7 +614,7 @@ export function ChatClient() {
       />
 
       {fullScreenUrl ? (
-        <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
+        <div className="fixed inset-0 z-[1200] flex flex-col bg-surface-base/95 p-4">
           <button
             type="button"
             className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"

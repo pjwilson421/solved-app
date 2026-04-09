@@ -74,16 +74,16 @@ export function FilesGridCard({
           : undefined
       }
       className={cn(
-        "group flex h-full flex-col rounded-card border border-app-border bg-app-card transition-[background-color,border-color,box-shadow] duration-150",
-        "hover:border-app-border-hover hover:bg-app-panel hover:shadow-md",
+        "group flex h-full flex-col rounded-card border border-edge-default bg-surface-elevated transition-[background-color,border-color,box-shadow] duration-150",
+        "hover:border-edge-strong hover:bg-surface-panel hover:shadow-md",
         cardActivate ? "cursor-pointer" : "cursor-default",
         accent === "highlight" &&
-          "border-[#1EA7E1]/60 bg-[#1e1a2e]/90 hover:border-[#1EA7E1]/80 hover:bg-[#252038]/95",
+          "border-primary-hover/60 bg-surface-panel/90 hover:border-primary-hover/80 hover:bg-surface-pressed/95",
       )}
     >
       <div
         className={cn(
-          "relative w-full rounded-t-card bg-app-panel transition-colors duration-150 group-hover:bg-app-shade",
+          "relative w-full rounded-t-card bg-surface-panel transition-colors duration-150 group-hover:bg-surface-pressed",
           "aspect-[148/118] sm:aspect-[8/5]",
         )}
       >
@@ -133,7 +133,7 @@ export function FilesGridCard({
               }
             }}
             onBlur={() => onRenameSubmit?.()}
-            className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+            className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-edge-strong px-1 -mx-1"
             aria-label={`Rename ${entry.name}`}
           />
         ) : (
@@ -151,7 +151,7 @@ export function FilesGridCard({
         <p
           className={cn(
             "mt-1 truncate text-left text-[10px] leading-snug sm:text-[11px]",
-            accent === "highlight" ? "text-[#E4E4E7]" : "text-[#8A8A93]",
+            accent === "highlight" ? "text-tx-secondary" : "text-tx-muted",
           )}
         >
           {meta}

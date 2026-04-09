@@ -327,7 +327,7 @@ export function ImageEditorClient({
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-canvas text-[#FAFAFA]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
     >
@@ -422,13 +422,13 @@ export function ImageEditorClient({
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-canvas md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden">
         <Header
           variant="mobile"
           mobileTitle="EDIT"
           onMenuClick={() => setMobileMenuOpen(true)}
         />
-        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-panel border border-app-border bg-app-panel">
+        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-panel border border-edge-default bg-surface-panel">
           <div
             ref={mobileScrollRef}
             className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
@@ -469,17 +469,17 @@ export function ImageEditorClient({
                 </p>
               </div>
               <div className="mt-5 space-y-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#A1A1AA]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-tx-muted">
                   File information
                 </p>
-                <p className="text-[11px] leading-[18px] text-[#A1A1AA]">
+                <p className="text-[11px] leading-[18px] text-tx-muted">
                   {MOBILE_FILE_INFO[0]}
                 </p>
-                <p className="text-[11px] leading-[18px] text-[#A1A1AA]">
+                <p className="text-[11px] leading-[18px] text-tx-muted">
                   {MOBILE_FILE_INFO[1]}
                 </p>
               </div>
-              <div className="my-5 h-px w-full bg-app-hover-strong/80" />
+              <div className="my-5 h-px w-full bg-surface-hover/80" />
               <p
                 className="mb-3 text-[11px] font-bold tracking-[0.09em] text-white"
                 style={{ letterSpacing: "0.11em" }}
@@ -552,7 +552,7 @@ export function ImageEditorClient({
       />
 
       {fullScreenUrl ? (
-        <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
+        <div className="fixed inset-0 z-[1200] flex flex-col bg-surface-base/95 p-4">
           <button
             type="button"
             className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"

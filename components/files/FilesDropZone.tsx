@@ -64,12 +64,12 @@ export function FilesDropZone({
             className="sr-only"
             onChange={onInputChange}
           />
-          <span className="flex h-10 w-10 items-center justify-center rounded-action bg-app-canvas shrink-0">
+          <span className="flex h-10 w-10 items-center justify-center rounded-action bg-surface-base shrink-0">
             <IconAsset src={ICONS.attachPrompt} size={28} />
           </span>
           <span>
             <p className="text-white text-[16px]">Drop files or click to upload</p>
-            <p className="text-[#71717A] text-[11px]">Images, video, docs</p>
+            <p className="text-tx-disabled text-[11px]">Images, video, docs</p>
           </span>
         </label>
       </PromptBarShell>

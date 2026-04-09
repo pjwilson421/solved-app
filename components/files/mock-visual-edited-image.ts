@@ -62,15 +62,15 @@ export async function createMockVisuallyEditedImage(
           const g = d[i + 1]!;
           const b = d[i + 2]!;
           const y = 0.299 * r + 0.587 * g + 0.114 * b;
-          const dark = Math.min(255, y * 0.72);
-          d[i] = dark;
-          d[i + 1] = dark;
-          d[i + 2] = dark;
+          const t = Math.min(255, y * 0.55);
+          d[i] = Math.min(255, t * 0.35 + 25);
+          d[i + 1] = Math.min(255, t * 0.42 + 45);
+          d[i + 2] = Math.min(255, t * 0.55 + 95);
         }
         ctx.putImageData(imageData, 0, 0);
 
         const border = Math.max(3, Math.round(Math.min(w, h) * 0.014));
-        ctx.strokeStyle = "rgba(124, 92, 255, 0.95)";
+        ctx.strokeStyle = "rgba(8, 168, 247, 0.95)";
         ctx.lineWidth = border;
         ctx.strokeRect(
           border / 2,
@@ -85,9 +85,9 @@ export async function createMockVisuallyEditedImage(
         const label = "EDITED";
         const tw = ctx.measureText(label).width;
         const bh = Math.round(fontPx * 1.6);
-        ctx.fillStyle = "rgba(0,0,0,0.62)";
+        ctx.fillStyle = "rgba(9, 13, 38, 0.85)";
         ctx.fillRect(pad, pad, tw + pad * 2, bh);
-        ctx.fillStyle = "#fafafa";
+        ctx.fillStyle = "rgb(255, 255, 255)";
         ctx.fillText(label, pad + pad, pad + fontPx * 1.1);
 
         const dataUrl = canvasToJpegDataUrl(canvas, 0.88);

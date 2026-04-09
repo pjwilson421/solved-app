@@ -1,55 +1,85 @@
 @import "tailwindcss";
 
+/*
+ * Centralized color system — blue-based, no neutral grays.
+ * Semantic tokens in :root; Tailwind utilities via @theme.
+ */
 :root {
-  /* Main app shell background */
-  --background: #272727;
-  --foreground: #fafafa;
-  --brand-primary: #3abeff;
-  --brand-primary-hover: #1ea7e1;
-  --brand-primary-active: #0d8fd1;
-  --brand-primary-soft: #e6f7ff;
-  --brand-primary-glow: #6cd4ff;
+  --background: #090d26;
+  --foreground: #ffffff;
+
+  --surface-base: #090d26;
+  --surface-panel: #07195b;
+  --surface-elevated: #0b1f6f;
+  --surface-hover: #0f2a8c;
+  --surface-pressed: #1336a8;
+
+  --primary: #08a8f7;
+  --primary-hover: #0696dd;
+  --primary-active: #047fc0;
+  --primary-soft: rgba(8, 168, 247, 0.08);
+  --primary-glow: rgba(8, 168, 247, 0.5);
+
+  --text-primary: #ffffff;
+  --text-secondary: #b9c2ff;
+  --text-muted: #6f7bd1;
+  --text-disabled: #3e4785;
+
+  --border-subtle: #0f2a8c;
+  --border-default: #1336a8;
+  --border-strong: #1a45cc;
+
+  --message-user: #08a8f7;
+  --message-ai: #0b1f6f;
+
+  --input-bg: #07195b;
+  --input-border: #1336a8;
+  --input-focus: #08a8f7;
+
+  --menu-bg: #0b1f6f;
+  --menu-hover: #0f2a8c;
+  --menu-active: #1336a8;
 }
 
 @theme inline {
-  --color-primary: #3abeff;
-  --color-primaryHover: #1ea7e1;
-  --color-primaryActive: #0d8fd1;
-  --color-primarySoft: #e6f7ff;
-  --color-primaryGlow: #6cd4ff;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-primary: #08a8f7;
+  --color-primary-hover: #0696dd;
+  --color-primary-active: #047fc0;
+  --color-primary-soft: rgba(8, 168, 247, 0.08);
+  --color-primary-glow: rgba(8, 168, 247, 0.5);
+
+  --color-surface-base: #090d26;
+  --color-surface-panel: #07195b;
+  --color-surface-elevated: #0b1f6f;
+  --color-surface-hover: #0f2a8c;
+  --color-surface-pressed: #1336a8;
+
+  --color-tx-primary: #ffffff;
+  --color-tx-secondary: #b9c2ff;
+  --color-tx-muted: #6f7bd1;
+  --color-tx-disabled: #3e4785;
+
+  --color-edge-subtle: #0f2a8c;
+  --color-edge-default: #1336a8;
+  --color-edge-strong: #1a45cc;
+
+  --color-message-user: #08a8f7;
+  --color-message-ai: #0b1f6f;
+
+  --color-input-bg: #07195b;
+  --color-input-border: #1336a8;
+  --color-input-focus: #08a8f7;
+
+  --color-menu-bg: #0b1f6f;
+  --color-menu-hover: #0f2a8c;
+  --color-menu-active: #1336a8;
+
+  --color-background: var(--surface-base);
+  --color-foreground: var(--text-primary);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* Layered surfaces — canvas matches main shell; panels use separate tokens */
-  --color-app-canvas: #272727;
-  --color-app-panel: #150a38;
-  --color-app-card: #1a1042;
-  --color-app-inset: #1e1348;
-  --color-app-shade: #140a34;
-  --color-app-border: #3d2f68;
-  --color-app-hover: #241456;
-  --color-app-hover-strong: #2e1a68;
-  --color-app-elevated: #241850;
-  --color-app-pressed: #352866;
-  --color-app-border-hover: #5c4d88;
-  --color-app-input: #14082f;
-  --color-app-thumb: #241848;
-
-  /* Overflow / “⋯” menu trigger (neutral; matches app canvas family) */
-  --color-app-menu-trigger: #272727;
-  --color-app-menu-trigger-hover: #303030;
-  --color-app-menu-trigger-active: #363636;
-
-  /*
-   * Corner radius scale — design system (use rounded-* utilities).
-   * panel / card: structural surfaces & tiles (12px)
-   * control: toolbars, dropdowns, chips (14px)
-   * input: pill-shaped primary bars (9999px)
-   * action: circular icon buttons (9999px)
-   * menu-item: nav rows & compact controls (10px)
-   */
   --radius-panel: 12px;
   --radius-card: 12px;
   --radius-control: 14px;
@@ -59,7 +89,7 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--surface-base);
+  color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
 }

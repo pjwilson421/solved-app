@@ -25,13 +25,10 @@ export function SettingsRouteClient({
   const { navigate, activeMainNav } = useShellNav();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const shellBgClass = flatMainContent ? "bg-app-canvas" : "bg-[#0F0F10]";
-
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden text-[#FAFAFA]",
-        shellBgClass,
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
     >
@@ -59,14 +56,14 @@ export function SettingsRouteClient({
               className={cn(
                 "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
                 !flatMainContent &&
-                  "rounded-panel border border-[#2A2A2E] bg-[#141418]",
+                  "rounded-panel border border-edge-default bg-surface-panel",
               )}
             >
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 md:p-6">
-                <h1 className="text-left text-[13px] font-semibold uppercase tracking-[0.08em] text-white">
+                <h1 className="text-left text-[13px] font-semibold uppercase tracking-[0.08em] text-tx-primary">
                   {title}
                 </h1>
-                <p className="mt-4 max-w-lg text-[13px] leading-relaxed text-[#A1A1AA]">
+                <p className="mt-4 max-w-lg text-[13px] leading-relaxed text-tx-muted">
                   {description}
                 </p>
               </div>
@@ -76,10 +73,7 @@ export function SettingsRouteClient({
       </div>
 
       <div
-        className={cn(
-          "flex min-h-0 flex-1 flex-col overflow-hidden md:hidden",
-          shellBgClass,
-        )}
+        className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden"
       >
         <Header
           variant="mobile"
@@ -90,14 +84,14 @@ export function SettingsRouteClient({
           className={cn(
             "mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
             !flatMainContent &&
-              "rounded-panel border border-[#2A2A2E] bg-[#141418]",
+              "rounded-panel border border-edge-default bg-surface-panel",
           )}
         >
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-5">
-            <h1 className="text-left text-[12px] font-semibold uppercase tracking-[0.08em] text-white">
+            <h1 className="text-left text-[12px] font-semibold uppercase tracking-[0.08em] text-tx-primary">
               {title}
             </h1>
-            <p className="mt-3 text-[12px] leading-relaxed text-[#A1A1AA]">
+            <p className="mt-3 text-[12px] leading-relaxed text-tx-muted">
               {description}
             </p>
           </div>

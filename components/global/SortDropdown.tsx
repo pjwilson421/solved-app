@@ -42,9 +42,9 @@ export function SortDropdown<T extends string>({
 
   const chipBtn = cn(
     "inline-flex h-[30px] shrink-0 cursor-pointer items-center gap-1.5 rounded-control border px-3 text-[11px] font-medium transition-colors duration-150",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-panel",
-    "border-app-border bg-app-inset text-[#A1A1AA] hover:border-app-border-hover hover:text-white",
-    open && "border-[#1EA7E1]/80 bg-[#3ABEFF] text-white hover:bg-[#0D8FD1]",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel",
+    "border-edge-default bg-surface-panel text-tx-muted hover:border-edge-strong hover:text-white",
+    open && "border-primary-hover/80 bg-primary text-white hover:bg-primary-active",
   );
 
   return (
@@ -81,7 +81,7 @@ export function SortDropdown<T extends string>({
         <div
           id={menuId}
           role="listbox"
-          className="absolute right-0 sm:left-0 sm:right-auto top-[calc(100%+6px)] z-50 min-w-[148px] rounded-card border border-app-border/90 bg-app-card py-1 shadow-lg shadow-black/40"
+          className="absolute right-0 sm:left-0 sm:right-auto top-[calc(100%+6px)] z-50 min-w-[148px] rounded-card border border-edge-default/90 bg-surface-elevated py-1 shadow-lg shadow-primary-glow/25"
         >
           {options.map((opt) => {
             const selected = value === opt.value;
@@ -94,8 +94,8 @@ export function SortDropdown<T extends string>({
                 className={cn(
                   "flex w-full cursor-pointer items-center px-3 py-2 text-left text-[11px] font-medium transition-colors duration-150",
                   selected
-                    ? "bg-[#3ABEFF] text-white"
-                    : "text-[#A1A1AA] hover:bg-app-hover-strong hover:text-white",
+                    ? "bg-primary text-white"
+                    : "text-tx-muted hover:bg-surface-hover hover:text-white",
                 )}
                 onClick={() => {
                   onChange(opt.value);

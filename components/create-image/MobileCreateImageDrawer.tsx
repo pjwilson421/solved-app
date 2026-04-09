@@ -112,8 +112,8 @@ export function MobileCreateImageDrawer({
       rowPad,
       "transition-colors",
       active
-        ? "bg-[#3ABEFF] text-white"
-        : "text-[#A1A1AA] hover:bg-[#2A2A2E] hover:text-white",
+        ? "bg-primary text-white"
+        : "text-tx-muted hover:bg-surface-hover hover:text-white",
     );
 
   const expandableRow = (expanded: boolean) =>
@@ -121,21 +121,21 @@ export function MobileCreateImageDrawer({
       rowPad,
       "justify-between transition-colors",
       expanded
-        ? "bg-[#252530] text-white"
-        : "text-[#A1A1AA] hover:bg-[#2A2A2E] hover:text-white",
+        ? "bg-surface-pressed text-white"
+        : "text-tx-muted hover:bg-surface-hover hover:text-white",
     );
 
   const subBtn = (selected: boolean) =>
     cn(
-      "w-full rounded-menu-item py-2 pl-3 pr-2 text-left text-[12px] leading-snug transition-colors active:bg-[#2A2A2E]/90",
+      "w-full rounded-menu-item py-2 pl-3 pr-2 text-left text-[12px] leading-snug transition-colors active:bg-surface-hover/90",
       selected
-        ? "bg-[#3ABEFF]/60 text-white"
-        : "text-[#A1A1AA] hover:bg-[#2A2A2E]/90 hover:text-white",
+        ? "bg-primary/60 text-white"
+        : "text-tx-muted hover:bg-surface-hover/90 hover:text-white",
     );
 
   const chevron = (expanded: boolean) => (
     <span
-      className="flex h-5 w-8 shrink-0 items-center justify-center text-[11px] leading-none text-[#8A8A93]"
+      className="flex h-5 w-8 shrink-0 items-center justify-center text-[11px] leading-none text-tx-muted"
       aria-hidden
     >
       {expanded ? "▴" : "▾"}
@@ -146,12 +146,12 @@ export function MobileCreateImageDrawer({
     <div className="fixed inset-0 z-[1100] xl:hidden">
       <button
         type="button"
-        className="absolute inset-0 bg-black/90 backdrop-blur-[3px]"
+        className="absolute inset-0 bg-surface-base/90 backdrop-blur-[3px]"
         aria-label="Close menu"
         onClick={onClose}
       />
-      <nav className="absolute right-0 top-0 flex h-full w-[min(100%,252px)] min-w-0 flex-col overflow-hidden border-l border-[#2A2A2E] bg-[#141418] shadow-2xl">
-        <p className="shrink-0 border-b border-[#2A2A2E] px-5 pb-2.5 pt-2 text-[10px] font-bold tracking-[0.1em] text-[#8A8A93]">
+      <nav className="absolute right-0 top-0 flex h-full w-[min(100%,252px)] min-w-0 flex-col overflow-hidden border-l border-edge-default bg-surface-panel shadow-2xl">
+        <p className="shrink-0 border-b border-edge-default px-5 pb-2.5 pt-2 text-[10px] font-bold tracking-[0.1em] text-tx-muted">
           MENU
         </p>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overscroll-y-contain">
@@ -247,15 +247,15 @@ export function MobileCreateImageDrawer({
                 className={cn(
                   "flex w-full min-w-0 items-stretch",
                   likedScopeOpen || activeMainNav === "liked"
-                    ? "bg-[#252530] text-white"
-                    : "text-[#A1A1AA]",
+                    ? "bg-surface-pressed text-white"
+                    : "text-tx-muted",
                 )}
               >
                 <button
                   type="button"
                   className={cn(
                     rowPad,
-                    "min-w-0 flex-1 justify-start transition-colors hover:bg-[#2A2A2E] hover:text-white",
+                    "min-w-0 flex-1 justify-start transition-colors hover:bg-surface-hover hover:text-white",
                   )}
                   onClick={() => {
                     goMainNav("liked");
@@ -269,7 +269,7 @@ export function MobileCreateImageDrawer({
                 </button>
                 <button
                   type="button"
-                  className="flex w-10 shrink-0 items-center justify-center transition-colors hover:bg-[#2A2A2E] hover:text-white"
+                  className="flex w-10 shrink-0 items-center justify-center transition-colors hover:bg-surface-hover hover:text-white"
                   aria-expanded={likedScopeOpen}
                   aria-label="Liked filters"
                   onClick={() => setLikedScopeOpen((o) => !o)}
@@ -279,7 +279,7 @@ export function MobileCreateImageDrawer({
               </div>
               {likedScopeOpen ? (
                 <ul
-                  className="mx-3 mb-1 mt-0.5 rounded-card border border-[#2A2A2E]/80 bg-[#1A1A1F] py-1.5 pl-2 pr-1"
+                  className="mx-3 mb-1 mt-0.5 rounded-card border border-edge-default/80 bg-surface-panel py-1.5 pl-2 pr-1"
                   role="list"
                 >
                   {SCOPE_ROWS.map((row) => (
@@ -312,7 +312,7 @@ export function MobileCreateImageDrawer({
               </button>
               {settingsScopeOpen ? (
                 <ul
-                  className="mx-3 mb-1 mt-0.5 rounded-card border border-[#2A2A2E]/80 bg-[#1A1A1F] py-1.5 pl-2 pr-1"
+                  className="mx-3 mb-1 mt-0.5 rounded-card border border-edge-default/80 bg-surface-panel py-1.5 pl-2 pr-1"
                   role="list"
                 >
                   {(
@@ -337,7 +337,7 @@ export function MobileCreateImageDrawer({
             </li>
           </ul>
 
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col border-t border-[#2A2A2E]/50 pt-1.5">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col border-t border-edge-default/50 pt-1.5">
             <HistoryPanel
               fillParent
               hideTitle

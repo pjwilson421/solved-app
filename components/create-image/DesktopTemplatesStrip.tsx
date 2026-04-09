@@ -158,10 +158,10 @@ export function DesktopTemplatesStrip({
             onClick={() => onSelect(null)}
             className={cn(
               "flex shrink-0 items-center justify-center rounded-card border text-[11px] font-medium transition-all",
-              "outline-none focus-visible:ring-2 focus-visible:ring-app-border-hover/70 focus-visible:ring-offset-2 focus-visible:ring-offset-app-canvas",
-              "border-app-border bg-app-inset text-[#A1A1AA] hover:border-app-border-hover hover:bg-app-elevated hover:text-white",
+              "outline-none focus-visible:ring-2 focus-visible:ring-edge-strong/70 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
+              "border-edge-default bg-surface-panel text-tx-muted hover:border-edge-strong hover:bg-surface-elevated hover:text-white",
               selectedId === null &&
-                "border-app-border-hover bg-app-elevated text-white shadow-none ring-0",
+                "border-edge-strong bg-surface-elevated text-white shadow-none ring-0",
             )}
             style={{ width: TILE, height: TILE }}
           >
@@ -179,25 +179,25 @@ export function DesktopTemplatesStrip({
                 onClick={() => onSelect(t.id)}
                 className={cn(
                   "group relative flex shrink-0 flex-col overflow-hidden rounded-card border text-left transition-all",
-                  "outline-none focus-visible:ring-2 focus-visible:ring-[#3ABEFF] focus-visible:ring-offset-2 focus-visible:ring-offset-app-canvas",
-                  "border-app-border bg-app-inset hover:border-app-border-hover",
+                  "outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
+                  "border-edge-default bg-surface-panel hover:border-edge-strong",
                   selected &&
-                    "border-[#3ABEFF] bg-[#222228] shadow-[0_0_16px_rgba(108,212,255,0.22)] ring-1 ring-[#3ABEFF]/35",
+                    "border-primary bg-surface-elevated shadow-lg shadow-primary-glow/20 ring-1 ring-primary/35",
                 )}
                 style={{ width: TILE, height: TILE }}
               >
                 <div
-                  className="flex min-h-0 flex-1 flex-col border-b border-app-border bg-app-thumb"
+                  className="flex min-h-0 flex-1 flex-col border-b border-edge-default bg-surface-elevated"
                   aria-hidden
                 >
-                  <div className="flex flex-1 items-center justify-center bg-app-hover-strong/80">
-                    <span className="select-none text-[9px] font-medium uppercase tracking-wider text-[#52525B]">
+                  <div className="flex flex-1 items-center justify-center bg-surface-hover/80">
+                    <span className="select-none text-[9px] font-medium uppercase tracking-wider text-tx-disabled">
                       Template
                     </span>
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center justify-center bg-app-card px-1 py-1.5">
-                  <span className="line-clamp-2 w-full text-center text-[9px] font-medium leading-tight text-[#A1A1AA] group-hover:text-[#D4D4D8]">
+                <div className="flex shrink-0 items-center justify-center bg-surface-elevated px-1 py-1.5">
+                  <span className="line-clamp-2 w-full text-center text-[9px] font-medium leading-tight text-tx-muted group-hover:text-tx-secondary">
                     {t.name}
                   </span>
                 </div>
@@ -218,11 +218,11 @@ export function DesktopTemplatesStrip({
               role="presentation"
               aria-hidden
             >
-              <div className="pointer-events-none absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-input border border-app-inset bg-app-canvas" />
+              <div className="pointer-events-none absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-input border border-edge-subtle bg-surface-base" />
               <div
                 data-thumb
                 className={cn(
-                  "absolute top-1/2 z-[1] -translate-y-1/2 cursor-grab touch-none rounded-action bg-[#3ABEFF] shadow-[0_0_8px_rgba(108,212,255,0.45)]",
+                  "absolute top-1/2 z-[1] -translate-y-1/2 cursor-grab touch-none rounded-action bg-primary shadow-md shadow-primary-glow/40",
                   "hover:brightness-110 active:cursor-grabbing",
                 )}
                 style={{

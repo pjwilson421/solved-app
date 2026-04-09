@@ -28,7 +28,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-app-canvas text-[#FAFAFA] antialiased">
+      <body className="min-h-full flex flex-col bg-surface-base text-tx-primary antialiased">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

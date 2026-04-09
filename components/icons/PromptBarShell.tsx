@@ -13,10 +13,10 @@ export function PromptBarShell({
 }) {
   const shellClass = cn(
     "relative h-[76px] w-full shrink-0 overflow-visible rounded-input",
-    "bg-[#18181B]",
+    "bg-surface-elevated",
     "transition-[background-color] duration-200 ease-out",
-    "hover:bg-[#1E1E22]",
-    "focus-within:bg-[#18181B]",
+    "hover:bg-surface-hover",
+    "focus-within:bg-surface-elevated",
   );
 
   if (variant === "mobile") {

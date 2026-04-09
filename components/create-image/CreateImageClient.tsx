@@ -371,7 +371,7 @@ export function CreateImageClient() {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-canvas text-[#FAFAFA]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
         /* Tablet (md–xl): 900px column cap; desktop xl+: 1000px 16:9 preview column. */
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
@@ -454,7 +454,7 @@ export function CreateImageClient() {
             onSelect={loadHistory}
             onMenuAction={handleHistoryMenu}
             className="hidden max-h-screen shrink-0 !bg-transparent xl:flex xl:w-[300px] xl:min-w-[300px]"
-            panelClassName="w-full rounded-panel border border-[#2A2A2E] bg-[#18181B]"
+            panelClassName="w-full rounded-panel border border-edge-default bg-surface-elevated"
             fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
             flushBottom
           />
@@ -462,7 +462,7 @@ export function CreateImageClient() {
       </div>
 
       {/* Below md: MOBILE-image-16x9.svg layout — single column card */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-canvas md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden">
         <Header
           variant="mobile"
           mobileTitle="CREATE"
@@ -503,10 +503,10 @@ export function CreateImageClient() {
                 const [lineA, lineB] = mobileCreateImageHelperLines(aspectRatio);
                 return (
                   <div className="mt-2 space-y-0.5">
-                    <p className="text-[11px] leading-[18px] text-[#A1A1AA]">
+                    <p className="text-[11px] leading-[18px] text-tx-muted">
                       {lineA}
                     </p>
-                    <p className="text-[11px] leading-[18px] text-[#A1A1AA]">
+                    <p className="text-[11px] leading-[18px] text-tx-muted">
                       {lineB}
                     </p>
                   </div>
@@ -582,7 +582,7 @@ export function CreateImageClient() {
       />
 
       {fullScreenUrl ? (
-        <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
+        <div className="fixed inset-0 z-[1200] flex flex-col bg-surface-base/95 p-4">
           <button
             type="button"
             className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"

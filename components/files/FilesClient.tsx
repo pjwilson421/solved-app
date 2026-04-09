@@ -352,16 +352,16 @@ export function FilesClient() {
           <button
             type="button"
             onClick={goFolderUp}
-            className="shrink-0 flex items-center gap-1 rounded-menu-item py-1 pr-2 text-[11px] font-medium text-[#A1A1AA] transition-colors hover:text-white"
+            className="shrink-0 flex items-center gap-1 rounded-menu-item py-1 pr-2 text-[11px] font-medium text-tx-muted transition-colors hover:text-white"
           >
             <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M7.5 9L4.5 6L7.5 3" />
             </svg>
             Back
           </button>
-          <div className="h-3 w-px bg-[#2A2A2E]/80 shrink-0" aria-hidden />
+          <div className="h-3 w-px bg-surface-hover/80 shrink-0" aria-hidden />
           <nav
-            className="flex min-w-0 flex-wrap items-center gap-1.5 text-[11px] text-[#A1A1AA] ml-1"
+            className="flex min-w-0 flex-wrap items-center gap-1.5 text-[11px] text-tx-muted ml-1"
             aria-label="Folder path"
           >
             <button
@@ -373,7 +373,7 @@ export function FilesClient() {
             </button>
             {breadcrumbFolders.map((f, i) => (
               <span key={f.id} className="flex min-w-0 items-center gap-1">
-                <span className="shrink-0 text-[#52525B]" aria-hidden>
+                <span className="shrink-0 text-tx-disabled" aria-hidden>
                   /
                 </span>
                 {i < breadcrumbFolders.length - 1 ? (
@@ -406,15 +406,15 @@ export function FilesClient() {
       />
 
       {filterOpen ? (
-        <div className="flex flex-wrap gap-2 rounded-card border border-[#2A2A2E]/80 bg-[#18181B]/80 px-3 py-2">
+        <div className="flex flex-wrap gap-2 rounded-card border border-edge-default/80 bg-surface-elevated/80 px-3 py-2">
           <button
             type="button"
             onClick={() => setTypeFilter(null)}
             className={cn(
               "cursor-pointer rounded-menu-item px-2.5 py-1 text-[10px] font-medium transition-colors duration-150",
               typeFilter === null
-                ? "bg-[#3ABEFF] text-white hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
-                : "text-[#A1A1AA] hover:bg-[#2A2A2E] hover:text-white active:bg-[#252528]",
+                ? "bg-primary text-white hover:bg-primary-active active:bg-primary-active"
+                : "text-tx-muted hover:bg-surface-hover hover:text-white active:bg-surface-pressed",
             )}
           >
             All types
@@ -427,8 +427,8 @@ export function FilesClient() {
               className={cn(
                 "cursor-pointer rounded-menu-item px-2.5 py-1 text-[10px] font-medium transition-colors duration-150",
                 typeFilter === t
-                  ? "bg-[#3ABEFF] text-white hover:bg-[#0D8FD1] active:bg-[#0D8FD1]"
-                  : "text-[#A1A1AA] hover:bg-[#2A2A2E] hover:text-white active:bg-[#252528]",
+                  ? "bg-primary text-white hover:bg-primary-active active:bg-primary-active"
+                  : "text-tx-muted hover:bg-surface-hover hover:text-white active:bg-surface-pressed",
               )}
             >
               {t}
@@ -440,7 +440,7 @@ export function FilesClient() {
       <>
         {viewMode === "list" ? <FilesListHeader /> : null}
         {visibleEntries.length === 0 ? (
-          <p className="py-6 text-left text-[12px] leading-relaxed text-[#A1A1AA] sm:text-[13px]">
+          <p className="py-6 text-left text-[12px] leading-relaxed text-tx-muted sm:text-[13px]">
             {!searchQuery.trim() && !typeFilter && scopedEntries.length === 0
               ? folderScopeId === null
                 ? "No files yet."
@@ -499,7 +499,7 @@ export function FilesClient() {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-canvas text-[#FAFAFA]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
     >
@@ -554,7 +554,7 @@ export function FilesClient() {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-canvas md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden">
         <Header
           variant="mobile"
           mobileTitle="FILES"

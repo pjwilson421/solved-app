@@ -3,7 +3,7 @@ import { HistoryClient } from "@/components/history/HistoryClient";
 
 function HistoryFallback() {
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-app-canvas text-sm text-[#A1A1AA]">
+    <div className="flex min-h-dvh items-center justify-center bg-surface-base text-sm text-tx-muted">
       Loading…
     </div>
   );

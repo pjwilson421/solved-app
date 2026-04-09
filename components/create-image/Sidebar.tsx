@@ -58,8 +58,8 @@ const navRowClass = (active: boolean) =>
   cn(
     "flex h-9 w-full min-w-0 items-center gap-3 rounded-menu-item pl-3 pr-3 text-left text-[14px] leading-none transition-colors",
     active
-      ? "bg-[#3ABEFF] text-white"
-      : "bg-transparent text-[#8A8A93] hover:bg-[#2A2A2E] hover:text-white",
+      ? "bg-primary text-white"
+      : "bg-transparent text-tx-muted hover:bg-surface-hover hover:text-white",
   );
 
 function NavButton({
@@ -144,7 +144,7 @@ function SettingsNavDropdown({
       </button>
       {open ? (
         <ul
-          className="absolute bottom-full left-0 right-0 z-10 mb-1 rounded-menu-item border border-[#2A2A2E] bg-[#18181B] py-1 shadow-lg"
+          className="absolute bottom-full left-0 right-0 z-10 mb-1 rounded-menu-item border border-edge-default bg-surface-elevated py-1 shadow-lg"
           role="menu"
         >
           {SETTINGS_MENU_ITEMS.map((row) => (
@@ -152,7 +152,7 @@ function SettingsNavDropdown({
               <button
                 type="button"
                 role="menuitem"
-                className="flex w-full items-center px-3 py-2 text-left text-[13px] text-[#A1A1AA] transition-colors hover:bg-[#2A2A2E] hover:text-white"
+                className="flex w-full items-center px-3 py-2 text-left text-[13px] text-tx-muted transition-colors hover:bg-surface-hover hover:text-white"
                 onClick={() => {
                   router.push(hrefForSettingsSection(row.id));
                   setOpen(false);
@@ -202,7 +202,7 @@ export function Sidebar({
         <section
           className={cn(
             "flex min-h-0 flex-1 flex-col overflow-hidden",
-            "w-full rounded-panel border border-[#2A2A2E] bg-[#18181B]",
+            "w-full rounded-panel border border-edge-default bg-surface-elevated",
             "py-3",
           )}
         >
@@ -237,7 +237,7 @@ export function Sidebar({
               ))}
             </nav>
           </div>
-          <div className="shrink-0 border-t border-[#2A2A2E]/40 px-1 pb-3 pt-3">
+          <div className="shrink-0 border-t border-edge-default/40 px-1 pb-3 pt-3">
             <SettingsNavDropdown active={activeId === "settings"} />
           </div>
         </section>

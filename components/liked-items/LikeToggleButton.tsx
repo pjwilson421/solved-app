@@ -29,8 +29,8 @@ export function LikeToggleButton({ itemKey, className }: LikeToggleButtonProps) 
       className={cn(
         "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-menu-item transition-[background-color,color] duration-150",
         liked
-          ? "bg-[#3ABEFF]/55 text-white hover:bg-[#0D8FD1] active:bg-[#0D8FD1] focus-visible:brightness-110"
-          : "text-[#A1A1AA] hover:bg-app-hover-strong hover:text-white active:bg-app-pressed focus-visible:bg-white/10",
+          ? "bg-primary/55 text-white hover:bg-primary-active active:bg-primary-active focus-visible:brightness-110"
+          : "text-tx-muted hover:bg-surface-hover hover:text-white active:bg-surface-pressed focus-visible:bg-white/10",
         className,
       )}
       aria-label={liked ? "Unlike" : "Like"}

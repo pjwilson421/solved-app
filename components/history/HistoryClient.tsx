@@ -433,7 +433,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
         {visibleEntries.length === 0 ? (
           page === "liked" &&
           (likedFileEntries.length > 0 || filteredLikedChats.length > 0) ? null : (
-            <p className="py-6 text-left text-[12px] leading-relaxed text-[#A1A1AA] sm:text-[13px]">
+            <p className="py-6 text-left text-[12px] leading-relaxed text-tx-muted sm:text-[13px]">
               {emptyListCopy}
             </p>
           )
@@ -457,7 +457,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             {grouped.map((group, gi) => (
               <div key={group.bucket}>
                 <HistorySectionLabel
-                  className={cn(gi > 0 && "mt-1 border-t border-[#2A2A2E] pt-6")}
+                  className={cn(gi > 0 && "mt-1 border-t border-edge-default pt-6")}
                 >
                   {group.label}
                 </HistorySectionLabel>
@@ -541,7 +541,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             <HistorySectionLabel
               className={cn(
                 visibleEntries.length > 0 &&
-                  "mt-6 border-t border-[#2A2A2E] pt-6",
+                  "mt-6 border-t border-edge-default pt-6",
               )}
             >
               Files
@@ -598,7 +598,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             <HistorySectionLabel
               className={cn(
                 (visibleEntries.length > 0 || likedFileEntries.length > 0) &&
-                  "mt-6 border-t border-[#2A2A2E] pt-6",
+                  "mt-6 border-t border-edge-default pt-6",
               )}
             >
               Chats
@@ -679,10 +679,10 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden text-[#FAFAFA]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden text-tx-primary",
         page === "history" || page === "liked"
-          ? "bg-app-canvas"
-          : "bg-[#0F0F10]",
+          ? "bg-surface-base"
+          : "bg-surface-base",
         "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
       )}
     >
@@ -773,8 +773,8 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
         className={cn(
           "flex min-h-0 flex-1 flex-col overflow-hidden md:hidden",
           page === "history" || page === "liked"
-            ? "bg-app-canvas"
-            : "bg-[#0F0F10]",
+            ? "bg-surface-base"
+            : "bg-surface-base",
         )}
       >
         <Header

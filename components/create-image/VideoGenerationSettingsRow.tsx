@@ -10,7 +10,7 @@ import { ASPECT_RATIOS, QUALITIES, VIDEO_DURATIONS } from "./types";
 const CONTROL_ICON_SIZE = 16;
 
 const templatesControlStyle =
-  "rounded-control bg-app-hover-strong/90 px-3 text-[11px] font-normal leading-8 text-white transition-colors hover:bg-app-pressed/95 outline-none focus:outline-none";
+  "rounded-control bg-surface-hover/90 px-3 text-[11px] font-normal leading-8 text-white transition-colors hover:bg-surface-pressed/95 outline-none focus:outline-none";
 
 const selectBase = cn(
   "h-8 min-w-0 cursor-pointer appearance-none py-0 pr-7 text-[11px] font-normal leading-8 outline-none focus:outline-none",
@@ -36,7 +36,7 @@ function SelectChevron({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "pointer-events-none absolute inset-y-0 right-3 z-[2] flex w-2 shrink-0 items-center justify-center text-[10px] leading-none text-[#8A8A93]",
+        "pointer-events-none absolute inset-y-0 right-3 z-[2] flex w-2 shrink-0 items-center justify-center text-[10px] leading-none text-tx-muted",
         className,
       )}
       aria-hidden

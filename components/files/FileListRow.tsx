@@ -33,24 +33,24 @@ type FileListRowProps = {
 
 function rowSurfaceClass(index: number, accent: FileEntry["accent"]) {
   if (accent === "highlight") {
-    return "bg-[#3ABEFF]/35 border-[#1EA7E1]/50";
+    return "bg-primary/35 border-primary-hover/50";
   }
   if (accent === "muted") {
-    return "bg-app-hover-strong/40 border-app-border";
+    return "bg-surface-hover/40 border-edge-default";
   }
   return index % 2 === 0
-    ? "bg-app-card border-app-border/80"
-    : "bg-app-panel border-app-border/80";
+    ? "bg-surface-elevated border-edge-default/80"
+    : "bg-surface-panel border-edge-default/80";
 }
 
 function rowHoverClass(accent: FileEntry["accent"]) {
   if (accent === "highlight") {
-    return "hover:border-[#1EA7E1]/70 hover:bg-[#3ABEFF]/50";
+    return "hover:border-primary-hover/70 hover:bg-primary/50";
   }
   if (accent === "muted") {
-    return "hover:border-app-border-hover hover:bg-app-pressed/90";
+    return "hover:border-edge-strong hover:bg-surface-pressed/90";
   }
-  return "hover:border-app-border-hover hover:bg-app-hover";
+  return "hover:border-edge-strong hover:bg-surface-hover";
 }
 
 const rowIconHoverClass =
@@ -62,8 +62,8 @@ function TreeGuide({ className }: { className?: string }) {
       className={cn("flex w-5 shrink-0 flex-col items-center pt-1", className)}
       aria-hidden
     >
-      <div className="min-h-[8px] w-px flex-1 bg-app-hover-strong" />
-      <div className="h-px w-full min-w-[12px] bg-app-hover-strong" />
+      <div className="min-h-[8px] w-px flex-1 bg-surface-hover" />
+      <div className="h-px w-full min-w-[12px] bg-surface-hover" />
     </div>
   );
 }
@@ -145,7 +145,7 @@ export function FileListRow({
                   }
                 }}
                 onBlur={() => onRenameSubmit?.()}
-                className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+                className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white outline-none ring-1 ring-edge-strong px-1 -mx-1"
                 aria-label={`Rename ${entry.name}`}
               />
             ) : (
@@ -160,7 +160,7 @@ export function FileListRow({
                 {entry.name}
               </button>
             )}
-            <p className="mt-1 text-left text-[10px] leading-none text-[#8A8A93]">
+            <p className="mt-1 text-left text-[10px] leading-none text-tx-muted">
               {entry.dateModified}
             </p>
           </div>
@@ -172,7 +172,7 @@ export function FileListRow({
               <p
                 className={cn(
                   "text-[10px] leading-snug",
-                  accent === "highlight" ? "text-white" : "text-[#A1A1AA]",
+                  accent === "highlight" ? "text-white" : "text-tx-muted",
                 )}
               >
                 {entry.typeLabel}
@@ -181,8 +181,8 @@ export function FileListRow({
                 className={cn(
                   "mt-0.5 text-[10px] leading-none",
                   accent === "highlight"
-                    ? "text-[#E4E4E7]"
-                    : "text-[#A1A1AA]",
+                    ? "text-tx-secondary"
+                    : "text-tx-muted",
                 )}
               >
                 {sizeDisplay}
@@ -229,8 +229,8 @@ export function FileListRow({
             className="flex w-4 shrink-0 flex-col items-center sm:hidden"
             aria-hidden
           >
-            <span className="h-2 w-px bg-app-hover-strong" />
-            <span className="h-px w-3 bg-app-hover-strong" />
+            <span className="h-2 w-px bg-surface-hover" />
+            <span className="h-px w-3 bg-surface-hover" />
           </span>
         ) : null}
         <FileRowIcon
@@ -255,7 +255,7 @@ export function FileListRow({
               }
             }}
             onBlur={() => onRenameSubmit?.()}
-            className="min-w-0 w-full rounded-menu-item bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-app-border-hover px-1 -mx-1"
+            className="min-w-0 w-full rounded-menu-item bg-transparent text-left text-[13px] font-medium text-white outline-none ring-1 ring-edge-strong px-1 -mx-1"
             aria-label={`Rename ${entry.name}`}
           />
         ) : (
@@ -274,18 +274,18 @@ export function FileListRow({
       <p
         className={cn(
           "hidden text-[11px] sm:block",
-          accent === "highlight" ? "text-white" : "text-[#A1A1AA]",
+          accent === "highlight" ? "text-white" : "text-tx-muted",
         )}
       >
         {entry.typeLabel}
       </p>
-      <p className="hidden text-[11px] text-[#A1A1AA] sm:block">
+      <p className="hidden text-[11px] text-tx-muted sm:block">
         {entry.dateModified}
       </p>
       <p
         className={cn(
           "hidden text-[11px] sm:block",
-          accent === "highlight" ? "text-[#E4E4E7]" : "text-[#A1A1AA]",
+          accent === "highlight" ? "text-tx-secondary" : "text-tx-muted",
         )}
       >
         {sizeDisplay}

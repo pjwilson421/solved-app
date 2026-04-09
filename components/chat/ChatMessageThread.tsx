@@ -17,9 +17,6 @@ import {
   useChatTimestampReveal,
 } from "./use-chat-timestamp-reveal";
 
-/** Muted secondary text — aligned with Apple Messages on iOS. */
-const CHAT_META = "#8a8a93";
-
 /** Copies full plain text; clipboard API with execCommand fallback for older / non-HTTPS contexts. */
 async function copyMessageText(text: string): Promise<boolean> {
   const value = text ?? "";
@@ -91,10 +88,7 @@ function DateSeparator({ label }: { label: string }) {
       role="separator"
       aria-label={label}
     >
-      <span
-        className="rounded-input px-3 py-0.5 text-[11px] font-medium"
-        style={{ color: CHAT_META, backgroundColor: "rgba(255,255,255,0.05)" }}
-      >
+      <span className="rounded-input bg-primary-soft px-3 py-0.5 text-[11px] font-medium text-tx-muted">
         {label}
       </span>
     </div>
@@ -126,10 +120,7 @@ function MessageTimestampColumn({
       }}
       aria-hidden
     >
-      <span
-        className="pr-0.5 text-[11px] leading-[13px]"
-        style={{ color: CHAT_META }}
-      >
+      <span className="pr-0.5 text-[11px] leading-[13px] text-tx-muted">
         {timeLabel}
       </span>
     </div>
@@ -145,9 +136,9 @@ function UserBubble({ m, stackMarginClass }: BubbleProps) {
   return (
     <div
       className={cn(
-        "relative max-w-[min(100%,420px)] rounded-full bg-[#3ABEFF]/90",
+        "relative max-w-[min(100%,420px)] rounded-full bg-message-user/90",
         /* Padding matches AssistantBubble; copy control: right-5, vertically centered */
-        "px-5 py-4 pr-18 text-left text-[16px] leading-[22px] text-[#FAFAFA]",
+        "px-5 py-4 pr-18 text-left text-[16px] leading-[22px] text-tx-primary",
         stackMarginClass,
       )}
     >
@@ -156,7 +147,7 @@ function UserBubble({ m, stackMarginClass }: BubbleProps) {
         onClick={(e) => handleCopyClick(e, m.text)}
         className={cn(
           "absolute right-5 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-menu-item",
-          "text-[#A1A1AA] opacity-90 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/15",
+          "text-tx-muted opacity-90 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/15",
         )}
         aria-label="Copy message"
       >
@@ -177,9 +168,9 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
   return (
     <div
       className={cn(
-        "relative max-w-[min(100%,620px)] rounded-full border-0 bg-[#18181B] shadow-none ring-0",
+        "relative max-w-[min(100%,620px)] rounded-full border-0 bg-message-ai shadow-none ring-0",
         /* Roomy inset; pr-18 reserves space so wrapped lines clear the copy control */
-        "px-5 py-4 pr-18 text-left text-[16px] leading-[22px] text-[#E4E4E7]",
+        "px-5 py-4 pr-18 text-left text-[16px] leading-[22px] text-tx-secondary",
         stackMarginClass,
       )}
     >
@@ -188,7 +179,7 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
         onClick={(e) => handleCopyClick(e, m.text)}
         className={cn(
           "absolute right-5 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-menu-item",
-          "text-[#A1A1AA] opacity-90 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/15",
+          "text-tx-muted opacity-90 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/15",
         )}
         aria-label="Copy message"
       >
@@ -290,9 +281,9 @@ export function ChatMessageThread({
               type="button"
               onClick={() => onChipClick?.(label)}
               className={cn(
-                "rounded-card bg-app-card px-3 py-1.5",
-                "text-[11px] font-medium text-[#A1A1AA] transition-colors",
-                "hover:bg-app-hover hover:text-white focus-visible:bg-app-hover",
+                "rounded-card bg-surface-elevated px-3 py-1.5",
+                "text-[11px] font-medium text-tx-muted transition-colors",
+                "hover:bg-surface-hover hover:text-white focus-visible:bg-surface-hover",
               )}
             >
               {label}

@@ -16,7 +16,7 @@ type HistoryListTemplateThumbProps = {
 
 /**
  * Square placeholder matching xl+ `DesktopTemplatesStrip` template tiles:
- * `rounded-card`, `border-app-border`, preview `bg-app-thumb` / `bg-app-hover-strong/80`.
+ * `rounded-card`, `border-edge-default`, preview `bg-surface-elevated` / `bg-surface-hover/80`.
  */
 export function HistoryListTemplateThumb({
   variant,
@@ -31,7 +31,7 @@ export function HistoryListTemplateThumb({
   return (
     <div
       className={cn(
-        "relative flex shrink-0 flex-col overflow-hidden rounded-card border border-app-border bg-app-inset",
+        "relative flex shrink-0 flex-col overflow-hidden rounded-card border border-edge-default bg-surface-panel",
         className,
       )}
       style={{ width: px, height: px }}
@@ -46,8 +46,8 @@ export function HistoryListTemplateThumb({
           sizes={`${px}px`}
         />
       ) : (
-        <div className="flex min-h-0 flex-1 flex-col bg-app-thumb">
-          <div className="flex min-h-0 flex-1 items-center justify-center bg-app-hover-strong/80" />
+        <div className="flex min-h-0 flex-1 flex-col bg-surface-elevated">
+          <div className="flex min-h-0 flex-1 items-center justify-center bg-surface-hover/80" />
         </div>
       )}
     </div>
@@ -67,7 +67,7 @@ export function HistoryGridTemplateThumb({
   return (
     <div
       className={cn(
-        "relative w-full overflow-hidden rounded-t-card bg-app-inset",
+        "relative w-full overflow-hidden rounded-t-card bg-surface-panel",
         "aspect-square",
         className,
       )}
@@ -82,8 +82,8 @@ export function HistoryGridTemplateThumb({
           sizes="(max-width: 768px) 50vw, 280px"
         />
       ) : (
-        <div className="absolute inset-0 flex flex-col bg-app-thumb">
-          <div className="flex min-h-0 flex-1 items-center justify-center bg-app-hover-strong/80" />
+        <div className="absolute inset-0 flex flex-col bg-surface-elevated">
+          <div className="flex min-h-0 flex-1 items-center justify-center bg-surface-hover/80" />
         </div>
       )}
     </div>
