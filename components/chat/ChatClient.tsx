@@ -51,6 +51,9 @@ function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+const INITIAL_ASSISTANT_GREETING =
+  "What's going on? How can I help you today?";
+
 export function ChatClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -89,6 +92,18 @@ export function ChatClient() {
     [chatThreads, chatSessionId],
   );
   const messages: ChatThreadMessage[] = currentThread?.messages ?? [];
+
+  useEffect(() => {
+    if (currentThread && currentThread.messages.length > 0) return;
+    upsertChatThreadSnapshot(chatSessionId, [
+      {
+        id: uid(),
+        role: "assistant",
+        text: INITIAL_ASSISTANT_GREETING,
+        sentAt: new Date().toISOString(),
+      },
+    ]);
+  }, [chatSessionId, currentThread, upsertChatThreadSnapshot]);
 
   useEffect(() => {
     if (searchParams.get("new") === "1") {

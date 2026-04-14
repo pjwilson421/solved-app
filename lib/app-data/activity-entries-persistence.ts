@@ -7,7 +7,8 @@ export const ACTIVITY_ENTRIES_STORAGE_KEY = "solved-app-activity-entries-v1";
 
 const MAX_PROMPT = 100_000;
 const MAX_TITLE_SUB = 2_000;
-const MAX_URL = 4096;
+const MAX_URL = 2_000_000;
+const MAX_DATA_URL = 10_000_000;
 
 const KINDS: HistoryActivityKind[] = [
   "image",
@@ -31,14 +32,13 @@ function parseOccurredAt(v: unknown): Date | null {
 }
 
 function optionalUrl(s: unknown): string | undefined {
-  if (typeof s !== "string" || s.length > MAX_URL) return undefined;
-  if (
-    s.startsWith("https://") ||
-    s.startsWith("http://") ||
-    s.startsWith("data:")
-  ) {
+  if (typeof s !== "string") return undefined;
+  if (s.startsWith("data:")) {
+    if (s.length > MAX_DATA_URL) return undefined;
     return s;
   }
+  if (s.length > MAX_URL) return undefined;
+  if (s.startsWith("https://") || s.startsWith("http://")) return s;
   return undefined;
 }
 

@@ -119,7 +119,7 @@ export function ImageEditorClient({
     ? createImageScrollContentBottomPaddingPxDesktopXl()
     : createImageScrollContentBottomPaddingPx("desktop");
 
-  const generateDisabled = !barPrompt.trim();
+  const generateDisabled = !barPrompt.trim() || !slotImages[0]?.trim();
 
   const handleApplyEdits = useCallback(async () => {
     if (generateDisabled || isGenerating) return;
@@ -130,21 +130,53 @@ export function ImageEditorClient({
       const batchId = uid();
       const promptText = barPrompt.trim();
       const sourceUrl = slotImages[0];
-      const visual = await createMockVisuallyEditedImage(
-        sourceUrl,
-        `${batchId}-${promptText}`,
-      );
+      const visual = await createMockVisuallyEditedImage(sourceUrl);
       const previewSrc =
         "dataUrl" in visual ? visual.dataUrl : visual.remoteUrl;
+
+      const editorCount = activityEntries.filter(
+        (e) => e.kind === "editor" && e.origin === "image-editor",
+      ).length;
+      const sequenceNum = String(editorCount + 1).padStart(2, "0");
+      const title = `image-${sequenceNum}-edited.jpg`;
+      const subtitle =
+        promptText.length > 120 ? `${promptText.slice(0, 117)}…` : promptText;
+      const parentFileId = editorLineageParentRef.current;
+      const sourceImageId = activeHistoryId ?? parentFileId ?? undefined;
+
+      const activity: ActivityHistoryEntry = {
+        id: batchId,
+        kind: "editor",
+        title,
+        subtitle,
+        occurredAt: createdAt,
+        promptText,
+        editPrompt: promptText,
+        thumbnailUrl: previewSrc,
+        imageUrls: [previewSrc],
+        origin: "image-editor",
+        edited: true,
+        ...(sourceImageId ? { sourceImageId } : {}),
+        ...(parentFileId ? { sourceFileEntryId: parentFileId } : {}),
+      };
+      updateActivityEntries((prev) => [activity, ...prev]);
 
       setSlotImages([previewSrc]);
       setPreviewPrompt(promptText);
       setPreviewAt(createdAt);
-      setActiveHistoryId(null);
+      setActiveHistoryId(batchId);
     } finally {
       setIsGenerating(false);
     }
-  }, [barPrompt, generateDisabled, isGenerating, slotImages]);
+  }, [
+    activeHistoryId,
+    activityEntries,
+    barPrompt,
+    generateDisabled,
+    isGenerating,
+    slotImages,
+    updateActivityEntries,
+  ]);
 
   const handlePreviewClick = useCallback(() => {
     const url = slotImages[0];

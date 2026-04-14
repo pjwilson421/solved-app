@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type RefObject } from "react";
+import { useCallback, useEffect, useRef, type RefObject } from "react";
 import { cn } from "@/lib/utils";
 import { PromptBarShell } from "@/components/icons/PromptBarShell";
 import { ICONS } from "@/components/icons/icon-paths";
@@ -92,14 +92,46 @@ export function PromptBar({
   promptTextAreaRef,
 }: PromptBarProps) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const desktopTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const mobileTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const isDesktop = variant === "desktop";
+
+  const autoResizeTextArea = useCallback((el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
+
+  useEffect(() => {
+    autoResizeTextArea(isDesktop ? desktopTextAreaRef.current : mobileTextAreaRef.current);
+  }, [autoResizeTextArea, isDesktop, prompt]);
+
+  const setDesktopTextAreaRef = useCallback(
+    (el: HTMLTextAreaElement | null) => {
+      desktopTextAreaRef.current = el;
+      if (promptTextAreaRef) {
+        promptTextAreaRef.current = el;
+      }
+    },
+    [promptTextAreaRef],
+  );
+
+  const setMobileTextAreaRef = useCallback(
+    (el: HTMLTextAreaElement | null) => {
+      mobileTextAreaRef.current = el;
+      if (promptTextAreaRef) {
+        promptTextAreaRef.current = el;
+      }
+    },
+    [promptTextAreaRef],
+  );
 
   const generateBtn = (
     <button
       type="submit"
       disabled={generateDisabled || isGenerating}
       className={cn(
-        "group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 p-0 opacity-100 disabled:opacity-100",
+        "group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 p-0 opacity-100 transition-opacity hover:opacity-70 disabled:opacity-100",
         generateDisabled || isGenerating ? "cursor-not-allowed" : "",
       )}
       aria-label={generateAriaLabel}
@@ -171,15 +203,18 @@ export function PromptBar({
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-90"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
           aria-label="Add reference images"
         >
           <PromptBarMaskedIcon src={ICONS.attachPrompt} size={28} />
         </button>
         <textarea
-          ref={isDesktop ? promptTextAreaRef : undefined}
+          suppressHydrationWarning
+          ref={setDesktopTextAreaRef}
+          readOnly={false}
           value={prompt}
           onChange={(e) => onPromptChange(e.target.value)}
+          onInput={(e) => autoResizeTextArea(e.currentTarget)}
           onKeyDown={(e) => {
             const isEnter = e.key === "Enter" || e.key === "NumpadEnter";
             if (!isEnter || e.shiftKey) return;
@@ -188,8 +223,8 @@ export function PromptBar({
             submitGenerate();
           }}
           placeholder={placeholder}
-          rows={1}
-          className="m-0 box-border block h-10 min-h-10 max-h-10 min-w-0 flex-1 resize-none border-0 bg-transparent px-1.5 py-0 text-[16px] leading-10 text-[#ffffff] [padding-block:0] placeholder:text-white/50 placeholder:leading-10 outline-none focus:outline-none focus:ring-0"
+          rows={2}
+          className="m-0 box-border block min-h-12 min-w-0 flex-1 resize-none border-0 bg-transparent px-1.5 py-3 text-[16px] leading-6 text-[#ffffff] placeholder:text-white/50 placeholder:leading-6 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0"
         />
         <div className="ml-auto flex shrink-0 items-center pl-1">{generateBtn}</div>
       </form>
@@ -205,15 +240,18 @@ export function PromptBar({
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-90"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
           aria-label="Add reference images"
         >
           <PromptBarMaskedIcon src={ICONS.attachPrompt} size={28} />
         </button>
         <textarea
-          ref={isDesktop ? undefined : promptTextAreaRef}
+          suppressHydrationWarning
+          ref={setMobileTextAreaRef}
+          readOnly={false}
           value={prompt}
           onChange={(e) => onPromptChange(e.target.value)}
+          onInput={(e) => autoResizeTextArea(e.currentTarget)}
           onKeyDown={(e) => {
             const isEnter = e.key === "Enter" || e.key === "NumpadEnter";
             if (!isEnter || e.shiftKey) return;
@@ -222,8 +260,8 @@ export function PromptBar({
             submitGenerate();
           }}
           placeholder={placeholder}
-          rows={1}
-          className="min-h-11 max-h-11 min-w-0 flex-1 resize-none rounded-none border-0 bg-transparent px-1.5 py-0 text-[16px] leading-11 text-[#ffffff] [padding-block:0] placeholder:text-white/50 placeholder:leading-11 outline-none focus:outline-none focus:ring-0"
+          rows={2}
+          className="min-h-12 min-w-0 flex-1 resize-none rounded-none border-0 bg-transparent px-1.5 py-3 text-[16px] leading-6 text-[#ffffff] placeholder:text-white/50 placeholder:leading-6 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0"
         />
         <div className="flex shrink-0 pl-0.5">{generateBtn}</div>
       </form>

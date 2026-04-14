@@ -81,7 +81,9 @@ function MobileNavDropdown({
                     type="button"
                     className={cn(
                       "flex min-h-11 w-full min-w-0 items-center gap-3 rounded-full px-3 text-left text-[14px] leading-none text-white outline-none transition-[background-color] duration-150 ease-out",
-                      sidebarNavRowClass(activeMainNav === item.id),
+                      item.id === "settings"
+                        ? "bg-transparent hover:bg-transparent active:bg-transparent"
+                        : sidebarNavRowClass(activeMainNav === item.id),
                     )}
                     onClick={() => {
                       if (item.id === "settings") {

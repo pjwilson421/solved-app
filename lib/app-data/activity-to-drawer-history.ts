@@ -18,9 +18,7 @@ export function activityEntryToHistoryItem(
         ? entry.imageUrls
         : entry.thumbnailUrl
           ? [entry.thumbnailUrl]
-          : [
-              `https://picsum.photos/seed/${encodeURIComponent(entry.id)}/400/225`,
-            ];
+          : [];
   return {
     id: entry.id,
     prompt,

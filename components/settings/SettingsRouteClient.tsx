@@ -45,10 +45,10 @@ export function SettingsRouteClient({
             />
           </LeftNavRail>
 
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 pt-6 md:px-8 xl:px-10 xl:pb-6">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 pt-6 md:px-8 xl:px-10 xl:pb-4">
             <div
               className={cn(
-                "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[18px] border border-edge-subtle bg-panel-bg",
+                "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[18px] border border-edge-subtle bg-rail-navy",
               )}
             >
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 md:p-6">
@@ -70,7 +70,7 @@ export function SettingsRouteClient({
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-bg xl:hidden">
         <Header variant="mobile" mobileTitle="SETTINGS" />
-        <div className="mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] border border-edge-subtle bg-panel-bg">
+        <div className="mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] border border-edge-subtle bg-rail-navy">
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-5">
             <h1 className="text-left text-[12px] font-semibold uppercase tracking-[0.08em] text-white">
               {title}

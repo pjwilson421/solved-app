@@ -137,7 +137,7 @@ export function bubbleStackMarginTopClass(
   prev: ChatMessageTimeFields | undefined,
   curr: ChatMessageTimeFields,
 ): string {
-  if (showDateSeparatorAbove) return "mt-0";
+  if (showDateSeparatorAbove) return "mt-9";
   if (!prev) return "mt-0";
   return prev.role === curr.role
     ? "mt-4"

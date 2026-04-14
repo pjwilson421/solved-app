@@ -150,14 +150,14 @@ const chatBubbleFrameClassName =
   "relative max-w-[70%] shrink-0 rounded-[20px] py-3 pl-4 pr-10 text-left font-normal text-[16px] leading-[22px]";
 
 const chatBubbleTextClassName =
-  "block min-w-0 whitespace-pre-wrap break-words text-[16px] leading-[22px] font-normal";
+  "block min-w-0 whitespace-pre-wrap break-words text-[16px] leading-[22px] font-normal select-text cursor-text";
 
 function UserBubble({ m, stackMarginClass }: BubbleProps) {
   return (
     <div
       className={cn(
         chatBubbleFrameClassName,
-        "bg-[#315790] text-tx-primary hover:bg-[#315790] active:bg-[#315790]",
+        "bg-[#0b1f6f] text-tx-primary hover:bg-[#0b1f6f] active:bg-[#0b1f6f]",
         stackMarginClass,
       )}
     >
@@ -186,7 +186,7 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
     <div
       className={cn(
         chatBubbleFrameClassName,
-        "bg-transparent text-[#FFFFFF]",
+        "bg-[#282828] text-[#FFFFFF]",
         "[&_a]:text-[#FFFFFF] [&_a]:underline [&_strong]:text-[#FFFFFF] [&_code]:text-[#FFFFFF]",
         stackMarginClass,
       )}
@@ -232,7 +232,6 @@ export function ChatMessageThread({
     <div
       className={cn(
         "flex w-full min-w-0 flex-col",
-        horizontalLock && "select-none",
         className,
       )}
       style={{
@@ -262,36 +261,41 @@ export function ChatMessageThread({
                   reveal={reveal}
                   transitionClass={transitionClass}
                 />
-                <UserBubble m={m} stackMarginClass={stackMarginClass} />
+                <UserBubble
+                  m={m}
+                  stackMarginClass={stackMarginClass}
+                />
               </div>
             ) : (
-              <div className="flex w-full min-w-0 flex-col items-stretch">
+              <div className="flex w-full min-w-0 flex-col items-start">
                 <div className="flex w-full min-w-0 items-end justify-start gap-1.5">
-                  <AssistantBubble
-                    m={m}
-                    stackMarginClass={stackMarginClass}
-                  />
+                  <div className="inline-flex min-w-0 max-w-[70%] flex-col items-start">
+                    <AssistantBubble
+                      m={m}
+                      stackMarginClass={stackMarginClass}
+                    />
+                    <div className="mt-1.5 flex w-full justify-end max-w-[70%]">
+                      <button
+                        type="button"
+                        aria-label="Assistant message actions"
+                        className={cn(
+                          "flex h-8 w-8 shrink-0 items-center justify-center",
+                          threeDotsMenuTriggerButtonClassName,
+                        )}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        <IconDots className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
                   <MessageTimestampColumn
                     timeLabel={timeLabel}
                     reveal={reveal}
                     transitionClass={transitionClass}
                   />
-                </div>
-                <div className="mt-1.5 flex w-full min-w-0 justify-start">
-                  <button
-                    type="button"
-                    aria-label="Assistant message actions"
-                    className={cn(
-                      "flex h-8 w-8 shrink-0 items-center justify-center",
-                      threeDotsMenuTriggerButtonClassName,
-                    )}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    <IconDots className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
             )}

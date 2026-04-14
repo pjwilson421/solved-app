@@ -75,20 +75,20 @@ export const SHELL_NAV_MOBILE_MENU_SECTIONS: readonly {
 ];
 
 type SidebarProps = {
-  activeId?: NavId;
+  activeId?: NavId | null;
   className?: string;
   onNavigate?: (id: NavId) => void;
 };
 
-/** Selected / visible-active pill — unchanged from prior nav spec. */
-export const SIDEBAR_NAV_SELECTED_PILL_CLASS = "bg-rail-navy";
+/** Selected / visible-active pill. */
+export const SIDEBAR_NAV_SELECTED_PILL_CLASS = "bg-surface-card";
 
-/** Hover-only pill — slightly lighter than `SIDEBAR_NAV_SELECTED_PILL_CLASS` for subtle contrast. */
-export const SIDEBAR_NAV_HOVER_PILL_CLASS = "hover:bg-[#0d1d5a]";
+/** Hover-only pill. */
+export const SIDEBAR_NAV_HOVER_PILL_CLASS = "hover:bg-surface-card";
 
 /**
  * Default: white label + mask icon (`currentColor`), no fill.
- * Selected: `rail-navy` (`--rail-navy`). Hover (non-selected row): `#0d1d5a`.
+ * Selected + hover: `surface-card` (`#0b1f6f`).
  */
 const navRowClass = (showPill: boolean) =>
   cn(
@@ -100,14 +100,12 @@ const navRowClass = (showPill: boolean) =>
       : cn("bg-transparent", SIDEBAR_NAV_HOVER_PILL_CLASS),
   );
 
-const settingsNavTriggerClass = (showPill: boolean) =>
+const settingsNavTriggerClass = (_showPill: boolean) =>
   cn(
     "flex h-9 w-full min-w-0 cursor-pointer items-center gap-3 rounded-full pl-3 pr-3 text-left text-[14px] leading-none text-white",
     "transition-[background-color] duration-150 ease-out",
     "outline-none ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-0",
-    showPill
-      ? SIDEBAR_NAV_SELECTED_PILL_CLASS
-      : cn("bg-transparent", SIDEBAR_NAV_HOVER_PILL_CLASS),
+    "bg-transparent hover:bg-transparent active:bg-transparent",
   );
 
 /** Raster SVG nav glyphs → tint via mask so `color` / `currentColor` matches label. */
@@ -146,6 +144,7 @@ function NavButton({
   return (
     <button
       type="button"
+      suppressHydrationWarning
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       className={navRowClass(showPill)}
@@ -250,7 +249,7 @@ function SectionHeading({ children }: { children: ReactNode }) {
 }
 
 export function Sidebar({
-  activeId = "create-image",
+  activeId = null,
   className,
   onNavigate,
 }: SidebarProps) {

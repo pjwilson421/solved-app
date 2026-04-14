@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { NavId } from "@/components/create-image/Sidebar";
 import {
@@ -14,6 +14,11 @@ export function useShellNav() {
   const router = useRouter();
   const pathname = usePathname();
   const { bumpFiles, bumpHistory, bumpLiked } = useShellNavReset();
+  const hydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const navigate = useCallback(
     (id: NavId) => {
@@ -26,11 +31,11 @@ export function useShellNav() {
     [router, bumpFiles, bumpHistory, bumpLiked],
   );
 
-  const activeMainNav: NavId = useMemo(() => {
+  const activeMainNav: NavId | null = useMemo(() => {
+    if (!hydrated) return null;
     const id = primaryNavIdFromPathname(pathname);
-    if (id) return id;
-    return "create-image";
-  }, [pathname]);
+    return (id as NavId | null) ?? null;
+  }, [hydrated, pathname]);
 
   return { navigate, activeMainNav };
 }

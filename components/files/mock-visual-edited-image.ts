@@ -1,13 +1,8 @@
 /**
- * Client-side mock “edit”: grayscale + darken + blue frame + EDITED badge.
+ * Client-side visual edit: grayscale + darken + blue frame + EDITED badge.
  * Returns a `data:image/jpeg` URL when the source can be painted to a canvas;
- * otherwise a distinct picsum URL (still different from a typical unedited seed).
+ * otherwise falls back to the original source URL.
  */
-
-function picsumDistinctFallback(seed: string): string {
-  const compact = seed.replace(/\W+/g, "").slice(0, 36) || "fb";
-  return `https://picsum.photos/seed/edited-${compact}/1600/900`;
-}
 
 function canvasToJpegDataUrl(canvas: HTMLCanvasElement, quality: number): string {
   return canvas.toDataURL("image/jpeg", quality);
@@ -18,17 +13,16 @@ function canvasToJpegDataUrl(canvas: HTMLCanvasElement, quality: number): string
  */
 export async function createMockVisuallyEditedImage(
   sourceUrl: string | undefined,
-  seedForFallback: string,
 ): Promise<{ dataUrl: string } | { remoteUrl: string }> {
   if (!sourceUrl?.trim()) {
-    return { remoteUrl: picsumDistinctFallback(seedForFallback) };
+    return { remoteUrl: "" };
   }
 
   return new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
     const done = (remote: boolean) => {
-      if (remote) resolve({ remoteUrl: picsumDistinctFallback(seedForFallback) });
+      if (remote) resolve({ remoteUrl: sourceUrl });
     };
 
     img.onload = () => {
