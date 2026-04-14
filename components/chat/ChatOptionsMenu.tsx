@@ -78,7 +78,7 @@ export function ChatOptionsMenu({ onSelect, onToggleLike }: ChatOptionsMenuProps
                 key="Like"
                 type="button"
                 role="menuitem"
-                className="flex w-full items-center rounded-full px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors hover:bg-panel-hover"
+                className="flex w-full cursor-pointer items-center rounded-lg px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors hover:bg-[#0d1d45]"
                 onClick={() => {
                   onToggleLike();
                   setOpen(false);
@@ -92,7 +92,7 @@ export function ChatOptionsMenu({ onSelect, onToggleLike }: ChatOptionsMenuProps
                 key={label}
                 type="button"
                 role="menuitem"
-                className="flex w-full items-center rounded-full px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors hover:bg-panel-hover"
+                className="flex w-full cursor-pointer items-center rounded-lg px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors hover:bg-[#0d1d45]"
                 onClick={() => {
                   onSelect?.(label);
                   setOpen(false);

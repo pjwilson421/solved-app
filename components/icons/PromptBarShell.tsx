@@ -13,8 +13,9 @@ export function PromptBarShell({
 }) {
   return (
     <div
+      suppressHydrationWarning
       className={cn(
-        "relative flex h-[76px] w-full shrink-0 items-center overflow-hidden rounded-full bg-[#07195b] px-[23px]",
+        "relative z-[1] flex h-[76px] w-full shrink-0 items-center overflow-visible rounded-full bg-[#07195b] px-[23px] pointer-events-auto",
         className,
       )}
     >

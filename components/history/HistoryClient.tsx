@@ -171,7 +171,10 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     [fileEntries],
   );
   const allEntries = useMemo(() => {
-    const chatActivityEntries: ActivityHistoryEntry[] = chatThreads.map((t) => {
+    const completedChatThreads = chatThreads.filter((t) =>
+      t.messages.some((m) => m.role === "user" && m.text.trim().length > 0),
+    );
+    const chatActivityEntries: ActivityHistoryEntry[] = completedChatThreads.map((t) => {
       const title = likedChatTitle(t);
       return {
         id: t.id,

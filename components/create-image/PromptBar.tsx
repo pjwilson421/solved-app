@@ -129,11 +129,9 @@ export function PromptBar({
   const generateBtn = (
     <button
       type="submit"
+      suppressHydrationWarning
       disabled={generateDisabled || isGenerating}
-      className={cn(
-        "group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 p-0 opacity-100 transition-opacity hover:opacity-70 disabled:opacity-100",
-        generateDisabled || isGenerating ? "cursor-not-allowed" : "",
-      )}
+      className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 p-0 opacity-100 transition-opacity hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-100"
       aria-label={generateAriaLabel}
     >
       {isGenerating ? (
@@ -193,6 +191,7 @@ export function PromptBar({
   const controlsRow =
     variant === "desktop" ? (
       <form
+        suppressHydrationWarning
         className="flex w-full min-h-0 min-w-0 flex-nowrap items-center gap-2 lg:gap-[10px]"
         onSubmit={(e) => {
           e.preventDefault();
@@ -202,6 +201,7 @@ export function PromptBar({
         {fileInput}
         <button
           type="button"
+          suppressHydrationWarning
           onClick={() => fileRef.current?.click()}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
           aria-label="Add reference images"
@@ -223,13 +223,14 @@ export function PromptBar({
             submitGenerate();
           }}
           placeholder={placeholder}
-          rows={2}
-          className="m-0 box-border block min-h-12 min-w-0 flex-1 resize-none border-0 bg-transparent px-1.5 py-3 text-[16px] leading-6 text-[#ffffff] placeholder:text-white/50 placeholder:leading-6 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0"
+          rows={1}
+          className="min-w-0 flex-1 self-center resize-none rounded-none border-0 bg-transparent px-1.5 py-2 text-[16px] leading-6 text-[#ffffff] placeholder:text-white/50 placeholder:leading-6 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0"
         />
-        <div className="ml-auto flex shrink-0 items-center pl-1">{generateBtn}</div>
+        <div className="flex shrink-0 pl-0.5">{generateBtn}</div>
       </form>
     ) : (
       <form
+        suppressHydrationWarning
         className="flex w-full items-center gap-3"
         onSubmit={(e) => {
           e.preventDefault();
@@ -239,6 +240,7 @@ export function PromptBar({
         {fileInput}
         <button
           type="button"
+          suppressHydrationWarning
           onClick={() => fileRef.current?.click()}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
           aria-label="Add reference images"
@@ -260,8 +262,8 @@ export function PromptBar({
             submitGenerate();
           }}
           placeholder={placeholder}
-          rows={2}
-          className="min-h-12 min-w-0 flex-1 resize-none rounded-none border-0 bg-transparent px-1.5 py-3 text-[16px] leading-6 text-[#ffffff] placeholder:text-white/50 placeholder:leading-6 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0"
+          rows={1}
+          className="min-w-0 flex-1 self-center resize-none rounded-none border-0 bg-transparent px-1.5 py-2 text-[16px] leading-6 text-[#ffffff] placeholder:text-white/50 placeholder:leading-6 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0"
         />
         <div className="flex shrink-0 pl-0.5">{generateBtn}</div>
       </form>

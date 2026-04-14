@@ -78,7 +78,7 @@ export function PreviewActionsMenu({
               key={label}
               type="button"
               role="menuitem"
-              className="flex w-full items-center rounded-full px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors duration-150 hover:bg-ix-hover hover:text-white active:bg-ix-pressed"
+              className="flex w-full cursor-pointer items-center rounded-lg px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors duration-150 hover:bg-[#0d1d45] hover:text-white active:bg-ix-pressed"
               onClick={() => {
                 onSelect?.(label);
                 setOpen(false);

@@ -52,7 +52,7 @@ function uid() {
 }
 
 const INITIAL_ASSISTANT_GREETING =
-  "What's going on? How can I help you today?";
+  "Hello there, how can I help you today?";
 
 export function ChatClient() {
   const router = useRouter();
@@ -93,17 +93,17 @@ export function ChatClient() {
   );
   const messages: ChatThreadMessage[] = currentThread?.messages ?? [];
 
-  useEffect(() => {
-    if (currentThread && currentThread.messages.length > 0) return;
-    upsertChatThreadSnapshot(chatSessionId, [
+  const displayMessages = useMemo<ChatThreadMessage[]>(() => {
+    if (messages.length > 0) return messages;
+    return [
       {
-        id: uid(),
+        id: "greeting",
         role: "assistant",
         text: INITIAL_ASSISTANT_GREETING,
         sentAt: new Date().toISOString(),
       },
-    ]);
-  }, [chatSessionId, currentThread, upsertChatThreadSnapshot]);
+    ];
+  }, [messages]);
 
   useEffect(() => {
     if (searchParams.get("new") === "1") {
@@ -442,7 +442,7 @@ export function ChatClient() {
                     }}
                   >
                     <ChatMessageThread
-                      messages={messages}
+                      messages={displayMessages}
                       showSuggestedChips={false}
                       onChipClick={handleChip}
                       bottomRef={messagesEndDesktopRef}
@@ -489,7 +489,7 @@ export function ChatClient() {
             >
               <div className="w-full min-w-0">
                 <ChatMessageThread
-                  messages={messages}
+                  messages={displayMessages}
                   showSuggestedChips={false}
                   onChipClick={handleChip}
                   bottomRef={messagesEndMobileRef}

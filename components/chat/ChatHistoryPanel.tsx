@@ -21,7 +21,6 @@ import { IconDots } from "@/components/create-image/icons";
 import { threeDotsMenuTriggerButtonClassName } from "@/components/ui/three-dots-menu-trigger";
 import { cn } from "@/lib/utils";
 import type { ChatThreadRecord } from "@/lib/app-data/chat-thread";
-import { chatThreadListHeadline } from "@/lib/app-data/chat-thread";
 
 export type ChatHistoryThreadMenuAction =
   | "Like"
@@ -57,6 +56,34 @@ type ChatHistoryPanelProps = {
    */
   mobileTriggerAlign?: "start" | "end";
 };
+
+function chatHistoryTitlePreview(record: ChatThreadRecord): string {
+  const firstUser = record.messages.find((m) => m.role === "user");
+  const firstLine = firstUser?.text?.trim().split(/\r?\n/)[0]?.trim() ?? "";
+  if (!firstLine) return "Chat";
+  const words = firstLine.split(/\s+/).filter(Boolean);
+  if (words.length <= 8) return words.join(" ");
+  return `${words.slice(0, 8).join(" ")}…`;
+}
+
+function chatHistoryTimestampLabel(savedAt: string): string {
+  const d = new Date(savedAt);
+  if (Number.isNaN(d.getTime())) return "";
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  const dayLabel = sameDay
+    ? "Today"
+    : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const timeLabel = d.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+  return `${dayLabel} • ${timeLabel}`;
+}
 
 /**
  * Chat thread picker: desktop xl+ right rail, or mobile compact trigger + overlay list.
@@ -136,8 +163,10 @@ export function ChatHistoryPanel({
   }, [actionsMenuThreadId]);
 
   const sortedThreads = useMemo(() => {
-    const withMessages = threads.filter((t) => t.messages.length > 0);
-    return [...withMessages].sort((a, b) =>
+    const completedThreads = threads.filter((t) =>
+      t.messages.some((m) => m.role === "user" && m.text.trim().length > 0),
+    );
+    return [...completedThreads].sort((a, b) =>
       a.savedAt < b.savedAt ? 1 : a.savedAt > b.savedAt ? -1 : 0,
     );
   }, [threads]);
@@ -178,16 +207,24 @@ export function ChatHistoryPanel({
               rowPad,
             )}
           >
-            <div className="flex w-full min-w-0 items-center justify-between gap-0">
-              <button
-                type="button"
-                role="option"
-                aria-selected={selected ? "true" : undefined}
-                onClick={() => handlePickChat(t.id)}
-                className={cn(titleButtonClass)}
-              >
-                {chatThreadListHeadline(t)}
-              </button>
+            <div className="flex w-full min-w-0 items-start justify-between gap-0">
+              <div className="min-w-0 flex-1">
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={selected ? "true" : undefined}
+                  onClick={() => handlePickChat(t.id)}
+                  className={cn(
+                    titleButtonClass,
+                    "truncate overflow-hidden whitespace-nowrap text-ellipsis",
+                  )}
+                >
+                  {chatHistoryTitlePreview(t)}
+                </button>
+                <p className="mt-0.5 truncate text-[10px] leading-[14px] text-white/60">
+                  {chatHistoryTimestampLabel(t.savedAt)}
+                </p>
+              </div>
               <div
                 ref={(el) => setRowMenuRoot(t.id, el)}
                 className="relative shrink-0 self-center"
@@ -221,7 +258,7 @@ export function ChatHistoryPanel({
                           key={label}
                           type="button"
                           role="menuitem"
-                          className="flex w-full items-center rounded-full px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors duration-150 hover:bg-ix-hover hover:text-white active:bg-ix-pressed"
+                          className="flex w-full cursor-pointer items-center rounded-lg px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors duration-150 hover:bg-[#0d1d45] hover:text-white active:bg-ix-pressed"
                           onClick={(e) => {
                             e.stopPropagation();
                             onThreadMenuAction?.(t.id, label);

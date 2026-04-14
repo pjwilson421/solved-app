@@ -147,7 +147,7 @@ type BubbleProps = {
 
 /** Shared layout + type rhythm for user and assistant bubbles (role-specific colors below). */
 const chatBubbleFrameClassName =
-  "relative max-w-[70%] shrink-0 rounded-[20px] py-3 pl-4 pr-10 text-left font-normal text-[16px] leading-[22px]";
+  "relative max-w-[95%] shrink-0 rounded-[20px] py-3 pl-4 pr-10 text-left font-normal text-[16px] leading-[22px]";
 
 const chatBubbleTextClassName =
   "block min-w-0 whitespace-pre-wrap break-words text-[16px] leading-[22px] font-normal select-text cursor-text";
@@ -269,12 +269,12 @@ export function ChatMessageThread({
             ) : (
               <div className="flex w-full min-w-0 flex-col items-start">
                 <div className="flex w-full min-w-0 items-end justify-start gap-1.5">
-                  <div className="inline-flex min-w-0 max-w-[70%] flex-col items-start">
+                  <div className="inline-flex min-w-0 max-w-[95%] flex-col items-start">
                     <AssistantBubble
                       m={m}
                       stackMarginClass={stackMarginClass}
                     />
-                    <div className="mt-1.5 flex w-full justify-end max-w-[70%]">
+                    <div className="mt-1.5 flex w-full justify-end max-w-[95%]">
                       <button
                         type="button"
                         aria-label="Assistant message actions"
