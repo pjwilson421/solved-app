@@ -85,7 +85,6 @@ export function FilesGridCard({
         >
           <LikeToggleButton
             itemKey={likedKey.file(entry.id)}
-            filesHeartAppearance
           />
           <FileRowActionsMenu
             align="right"

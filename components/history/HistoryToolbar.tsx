@@ -39,7 +39,6 @@ export function HistoryToolbarFilters({
         options={FILTER_OPTIONS}
         labelPrefix="Type: "
         currentLabel={currentFilterLabel}
-        triggerAlwaysWhite
         {...(compactLayout ? sortDropdownFullWidthProps : {})}
       />
       <SortDropdown
@@ -48,7 +47,6 @@ export function HistoryToolbarFilters({
         options={SORT_OPTIONS}
         labelPrefix="Sort: "
         currentLabel={currentSortLabel}
-        triggerAlwaysWhite
         {...(compactLayout ? sortDropdownFullWidthProps : {})}
       />
     </>

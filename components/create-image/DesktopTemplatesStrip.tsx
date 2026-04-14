@@ -29,7 +29,7 @@ export function DesktopTemplatesStrip({
           role="listbox"
           aria-label="Templates"
           className={cn(
-            "min-h-0 w-full min-w-0 max-w-full flex flex-nowrap gap-3.5 overflow-x-auto overflow-y-hidden overscroll-x-contain pb-3",
+            "min-h-0 w-full min-w-0 max-w-full flex flex-nowrap gap-3.5 overflow-x-scroll overflow-y-hidden overscroll-x-contain pb-6",
             "templates-strip-scrollbar",
             /* Instant scroll — required so thumb drag matches pointer (no smooth-scroll lag). */
             "[scroll-behavior:auto]",

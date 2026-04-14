@@ -167,7 +167,6 @@ export function FileListRow({
           >
             <LikeToggleButton
               itemKey={likedKey.file(entry.id)}
-              filesHeartAppearance
             />
             <FileRowActionsMenu
               align="right"
@@ -256,7 +255,6 @@ export function FileListRow({
         >
           <LikeToggleButton
             itemKey={likedKey.file(entry.id)}
-            filesHeartAppearance
           />
           <FileRowActionsMenu
             align="right"

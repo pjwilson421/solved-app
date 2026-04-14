@@ -164,7 +164,7 @@ export function CreateImageClient() {
     mobileColumnRef,
     aspectRatio,
     templatesOpen: templatesMenuOpen,
-    previewLayoutIgnoreTemplatesOpen: false,
+    previewLayoutIgnoreTemplatesOpen: true,
     templatesInScrollColumn: true,
   });
 
@@ -183,7 +183,6 @@ export function CreateImageClient() {
         templates={MOCK_TEMPLATES}
         selectedId={templateId}
         onSelect={setTemplateId}
-        menuThumbPreset="create-image"
       />
     ),
     [templateId],

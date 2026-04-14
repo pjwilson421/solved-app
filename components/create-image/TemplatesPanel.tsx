@@ -224,7 +224,7 @@ export function TemplatesPanel({
     <div
       ref={rootRef}
       className={cn(
-        "w-full min-w-0",
+        "w-full min-w-0 shrink-0",
         isCreateImageOverlay
           ? "relative overflow-visible"
           : cn("flex flex-col gap-3", isHoverMode && "relative"),
@@ -245,7 +245,7 @@ export function TemplatesPanel({
       {isCreateImageToggle && matchStandardSettingsTriggerWidth ? (
         <div
           className={cn(
-            "shrink-0 self-start min-w-0",
+            "shrink-0 self-start min-w-0 h-9",
             SETTINGS_ASSET_CONTENT_TRIGGER_WIDTH_DESKTOP,
           )}
         >
@@ -326,7 +326,7 @@ export function TemplatesPanel({
           ) : null}
           <div
             className={cn(
-              "flex flex-wrap gap-[17px]",
+              "flex min-w-0 w-full flex-nowrap gap-4 overflow-x-scroll overflow-y-hidden overscroll-x-contain pb-6 [scroll-behavior:auto] templates-strip-scrollbar",
               desktopExpandedSlot != null && "xl:hidden",
             )}
           >

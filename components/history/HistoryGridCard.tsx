@@ -65,7 +65,6 @@ export function HistoryGridCard({
         >
           <LikeToggleButton
             itemKey={likedKey.activity(entry.id)}
-            filesHeartAppearance
           />
           <FileRowActionsMenu
             align="right"

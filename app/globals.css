@@ -236,16 +236,19 @@ body {
   background-color: #059fe0;
 }
 
-/* Templates Strip: single horizontal scrollbar with #07195b thumb */
+/* Templates Strip: single horizontal scrollbar with #07195b thumb, persistent visibility */
 .templates-strip-scrollbar::-webkit-scrollbar {
-  height: 6px;
+  height: 8px;
+  display: block;
 }
 .templates-strip-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(7, 25, 91, 0.4);
+  border-radius: 10px;
 }
 .templates-strip-scrollbar::-webkit-scrollbar-thumb {
   background-color: #07195b;
   border-radius: 10px;
+  min-width: 40px;
 }
 .templates-strip-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #0a256e;
@@ -254,7 +257,7 @@ body {
 /* Firefox */
 .templates-strip-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #07195b transparent;
+  scrollbar-color: #07195b rgba(7, 25, 91, 0.4);
 }
 
 /* Hide native scrollbar; overflow-x/y scroll still works (e.g. Create Image templates row). */

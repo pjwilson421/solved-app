@@ -122,13 +122,28 @@ export function FilesDesktopHeaderActions({
 type FilesToolbarProps = {
   searchQuery: string;
   onSearchChange: (q: string) => void;
-  filterOpen: boolean;
-  onToggleFilter: () => void;
+  /** Files: filter state (omit on History / Liked — use `customFilterSortSlot`). */
+  filterOpen?: boolean;
+  onToggleFilter?: () => void;
   variant: "desktop" | "mobile";
   showDesktopExtras?: boolean;
   /** When true, mobile layout omits the filter icon (e.g. filter lives in view toggle row). */
   omitMobileFilterButton?: boolean;
-  onFilesUpload: (files: File[]) => void;
+  onFilesUpload?: (files: File[]) => void;
+  /** History / Liked: custom filters (Type / Sort) passed as a slot. */
+  customFilterSortSlot?: React.ReactNode;
+  /** History / Liked: hide the top Upload / New row. */
+  omitPrimaryFileActions?: boolean;
+  searchPlaceholder?: string;
+  searchLabel?: string;
+  searchInputId?: string;
+  /** Desktop: Grid/List toggle row (Files) or custom actions (History). */
+  desktopTrailingSlot?: React.ReactNode;
+  sortOption?: string;
+  onSortChange?: (val: any) => void;
+  typeFilter?: string | null;
+  onTypeFilterChange?: (val: any) => void;
+  fileTypeLabelsForFilter?: string[];
 };
 
 function FilesFilterIconButton({
@@ -158,125 +173,151 @@ function FilesFilterIconButton({
 export function FilesToolbar({
   searchQuery,
   onSearchChange,
-  filterOpen,
+  filterOpen = false,
   onToggleFilter,
   variant,
   showDesktopExtras = true,
   omitMobileFilterButton = false,
   onFilesUpload,
+  customFilterSortSlot,
+  omitPrimaryFileActions = false,
+  searchPlaceholder = "Search files",
+  searchLabel = "Search files",
+  searchInputId = "files-search",
+  desktopTrailingSlot,
+  sortOption,
+  onSortChange,
+  typeFilter,
+  onTypeFilterChange,
+  fileTypeLabelsForFilter,
 }: FilesToolbarProps) {
   const uploadRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-3">
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => uploadRef.current?.click()}
-          className={filesToolbarPrimaryBtnClass}
-        >
-          <IconAsset
-            src={ICONS.filesToolbarUpload}
-            size={15}
-            className="[&_img]:block [&_img]:shrink-0"
-          />
-          Upload
-        </button>
-        <input
-          ref={uploadRef}
-          type="file"
-          className="sr-only"
-          multiple
-          aria-hidden
-          onChange={(e) => {
-            const files = e.target.files ? Array.from(e.target.files) : [];
-            if (files.length) onFilesUpload(files);
-            e.target.value = "";
-          }}
-        />
-        {variant === "desktop" && showDesktopExtras ? (
-          <>
-            <button
-              type="button"
-              className={cn(
-                "hidden sm:inline-flex",
-                filesToolbarPrimaryBtnClass,
-              )}
-            >
-              <IconAsset
-                src={ICONS.filesToolbarAddFolder}
-                size={15}
-                className="[&_img]:block [&_img]:shrink-0"
-              />
-              New Folder
-            </button>
-            <button
-              type="button"
-              className={cn(
-                "hidden sm:inline-flex",
-                filesToolbarPrimaryBtnClass,
-              )}
-            >
-              <IconAsset
-                src={ICONS.filesToolbarNewFile}
-                size={15}
-                className="[&_img]:block [&_img]:shrink-0"
-              />
-              New File
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              type="button"
-              className="inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
-            >
-              + New
-            </button>
-            {omitMobileFilterButton ? null : (
-              <FilesFilterIconButton
-                filterOpen={filterOpen}
-                onToggleFilter={onToggleFilter}
-              />
-            )}
-          </>
-        )}
-      </div>
-
-      <div className="w-full min-w-0">
-        <label className="sr-only" htmlFor="files-search">
-          Search files
-        </label>
-        <div className="flex h-[30px] w-full min-w-0 items-center gap-2 rounded-full border border-edge-subtle bg-transparent px-3 transition-[border-color,background-color] duration-150 hover:bg-panel-hover/40 focus-within:border-white">
-          <svg
-            className="h-3.5 w-3.5 shrink-0 text-tx-secondary"
-            viewBox="0 0 12 12"
-            fill="none"
-            aria-hidden
+      {!omitPrimaryFileActions && (
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => uploadRef.current?.click()}
+            className={filesToolbarPrimaryBtnClass}
           >
-            <circle
-              cx="5"
-              cy="5"
-              r="3.5"
-              stroke="currentColor"
-              strokeWidth="1.2"
+            <IconAsset
+              src={ICONS.filesToolbarUpload}
+              size={15}
+              className="[&_img]:block [&_img]:shrink-0"
             />
-            <path
-              d="M7.5 7.5L10 10"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-            />
-          </svg>
+            Upload
+          </button>
           <input
-            id="files-search"
-            type="search"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search files"
-            className="min-w-0 flex-1 bg-transparent text-[11px] text-white placeholder:text-tx-secondary outline-none ring-0 focus:outline-none focus:ring-0"
+            ref={uploadRef}
+            type="file"
+            className="sr-only"
+            multiple
+            aria-hidden
+            onChange={(e) => {
+              const files = e.target.files ? Array.from(e.target.files) : [];
+              if (files.length) onFilesUpload?.(files);
+              e.target.value = "";
+            }}
           />
+          {variant === "desktop" && showDesktopExtras ? (
+            <>
+              <button
+                type="button"
+                className={cn(
+                  "hidden sm:inline-flex",
+                  filesToolbarPrimaryBtnClass,
+                )}
+              >
+                <IconAsset
+                  src={ICONS.filesToolbarAddFolder}
+                  size={15}
+                  className="[&_img]:block [&_img]:shrink-0"
+                />
+                New Folder
+              </button>
+              <button
+                type="button"
+                className={cn(
+                  "hidden sm:inline-flex",
+                  filesToolbarPrimaryBtnClass,
+                )}
+              >
+                <IconAsset
+                  src={ICONS.filesToolbarNewFile}
+                  size={15}
+                  className="[&_img]:block [&_img]:shrink-0"
+                />
+                New File
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+              >
+                + New
+              </button>
+              {omitMobileFilterButton || !onToggleFilter ? null : (
+                <FilesFilterIconButton
+                  filterOpen={filterOpen}
+                  onToggleFilter={onToggleFilter}
+                />
+              )}
+            </>
+          )}
         </div>
+      )}
+
+      {customFilterSortSlot && (
+        <div className="flex w-full min-w-0 flex-col gap-2">
+          {customFilterSortSlot}
+        </div>
+      )}
+
+      <div className="flex w-full min-w-0 items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <label className="sr-only" htmlFor={searchInputId}>
+            {searchLabel}
+          </label>
+          <div className="flex h-[30px] w-full min-w-0 items-center gap-2 rounded-full border border-edge-subtle bg-transparent px-3 transition-[border-color,background-color] duration-150 hover:bg-panel-hover/40 focus-within:border-white">
+            <svg
+              className="h-3.5 w-3.5 shrink-0 text-tx-secondary"
+              viewBox="0 0 12 12"
+              fill="none"
+              aria-hidden
+              >
+              <circle
+                cx="5"
+                cy="5"
+                r="3.5"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                />
+              <path
+                d="M7.5 7.5L10 10"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                />
+            </svg>
+            <input
+              id={searchInputId}
+              type="search"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder={searchPlaceholder}
+              className="min-w-0 flex-1 bg-transparent text-[11px] text-white placeholder:text-tx-secondary outline-none ring-0 focus:outline-none focus:ring-0"
+              />
+          </div>
+        </div>
+        {desktopTrailingSlot && (
+          <div className="hidden shrink-0 md:block">
+            {desktopTrailingSlot}
+          </div>
+        )}
       </div>
     </div>
   );

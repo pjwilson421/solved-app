@@ -109,7 +109,7 @@ export function ImageEditorClient({
       mobileColumnRef,
       aspectRatio,
       templatesOpen: templatesMenuOpen,
-      previewLayoutIgnoreTemplatesOpen: false,
+      previewLayoutIgnoreTemplatesOpen: true,
       previewLayoutIgnoreTemplatesOpenOnDesktopXl: true,
       extraBelowPreviewReservePx: IMAGE_EDITOR_TOOL_STRIP_SCROLL_RESERVE_PX,
       templatesInScrollColumn: true,
@@ -234,7 +234,6 @@ export function ImageEditorClient({
         templates={MOCK_TEMPLATES}
         selectedId={templateId}
         onSelect={setTemplateId}
-        menuThumbPreset="create-image"
       />
     ),
     [templateId],

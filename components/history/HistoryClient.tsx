@@ -433,7 +433,6 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
         <FilesToolbar
           variant={toolbarVariant}
           showDesktopExtras={showDesktopChrome}
-          omitPrimaryFileActions
           customFilterSortSlot={
             <HistoryToolbarFilters
               activityFilter={activityFilter}
@@ -454,7 +453,6 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             showDesktopChrome && toolbarVariant === "desktop" ? (
               <FilesDesktopHeaderActions
                 menuButtonVariant="list"
-                filesIconStyle
                 onListViewClick={setHistoryListView}
                 listViewActive={!gridView}
                 onGridViewClick={setHistoryGridView}
@@ -542,23 +540,24 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                           entry={entry}
                           variant={toolbarVariant}
                           rowIndex={i}
-                          titleEdit={{
-                            isEditing:
-                              editingNameTarget?.domain === "activity" &&
-                              editingNameTarget.id === entry.id,
-                            editedName,
-                            onEditedNameChange: setEditedName,
-                            onStart: () => {
-                              setEditingNameTarget({
-                                domain: "activity",
-                                id: entry.id,
-                              });
-                              setEditedName(entry.title);
-                            },
-                            onCommit: (raw) =>
-                              handleActivityTitleCommit(entry.id, raw),
-                            onCancel: handleNameCancelEdit,
+                          enableTitleInlineRename
+                          isTitleRenaming={
+                            editingNameTarget?.domain === "activity" &&
+                            editingNameTarget.id === entry.id
+                          }
+                          titleRenameValue={editedName}
+                          onTitleRenameChange={setEditedName}
+                          onStartTitleRename={() => {
+                            setEditingNameTarget({
+                              domain: "activity",
+                              id: entry.id,
+                            });
+                            setEditedName(entry.title);
                           }}
+                          onTitleRenameSubmit={() =>
+                            handleActivityTitleCommit(entry.id, editedName)
+                          }
+                          onTitleRenameCancel={handleNameCancelEdit}
                           onMenuAction={handleActivityMenu}
                           onItemOpen={handleItemOpen}
                         />
