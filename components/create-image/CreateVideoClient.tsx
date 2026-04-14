@@ -30,43 +30,6 @@ function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-function dimsForAspect(a: AspectRatio): { w: number; h: number } {
-  switch (a) {
-    case "16:9":
-      return { w: 1600, h: 900 };
-    case "1:1":
-      return { w: 1024, h: 1024 };
-    case "4:5":
-      return { w: 800, h: 1000 };
-    case "9:16":
-      return { w: 900, h: 1600 };
-    default:
-      return { w: 1600, h: 900 };
-  }
-}
-
-/** Short CC0 sample clip (no API key); simulates a generated video asset. */
-const MOCK_GENERATED_VIDEO_MP4 =
-  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-
-async function mockVideoPoster(
-  aspect: AspectRatio,
-  seedBase: string,
-): Promise<string> {
-  await new Promise((r) => setTimeout(r, 1600));
-  const { w, h } = dimsForAspect(aspect);
-  const safe = seedBase.replace(/\W+/g, "").slice(0, 12) || "vid";
-  return `https://picsum.photos/seed/${safe}-video/${w}/${h}`;
-}
-
-async function mockGenerateVideoAsset(
-  aspect: AspectRatio,
-  seedBase: string,
-): Promise<{ posterUrl: string; videoUrl: string }> {
-  const posterUrl = await mockVideoPoster(aspect, seedBase);
-  return { posterUrl, videoUrl: MOCK_GENERATED_VIDEO_MP4 };
-}
-
 const VIDEO_PREVIEW_PROMPT_PLACEHOLDER =
   "After you generate, the prompt you enter in the bar below will appear here.";
 
@@ -94,6 +57,7 @@ export function CreateVideoClient() {
 
   const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
   const [previewVideoUrl, setPreviewVideoUrl] = useState<string | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   const createVideoSidebarHistory = useMemo(
     () =>
@@ -137,22 +101,47 @@ export function CreateVideoClient() {
 
   const generateDisabled = useMemo(() => {
     const hasPrompt = barPrompt.trim().length > 0;
-    const hasFrame = startFrame != null || endFrame != null;
-    return !hasPrompt && !hasFrame;
-  }, [barPrompt, startFrame, endFrame]);
+    return !hasPrompt;
+  }, [barPrompt]);
 
   const handleGenerate = useCallback(async () => {
     if (generateDisabled || isGenerating) return;
     setIsGenerating(true);
+    setGenerationError(null);
     try {
-      const seed = `${aspectRatio}-${duration}-${quality}-${barPrompt}-${startFrame?.id ?? ""}-${endFrame?.id ?? ""}`;
-      const { posterUrl, videoUrl } = await mockGenerateVideoAsset(
-        aspectRatio,
-        seed,
-      );
+      const response = await fetch("/api/video/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: barPrompt.trim() }),
+      });
+
+      const data: unknown = await response.json().catch(() => null);
+      if (!response.ok) {
+        const msg =
+          data &&
+          typeof data === "object" &&
+          typeof (data as { error?: unknown }).error === "string"
+            ? (data as { error: string }).error
+            : "Video generation failed.";
+        throw new Error(msg);
+      }
+
+      const videoUrl =
+        data &&
+        typeof data === "object" &&
+        typeof (data as { videoUrl?: unknown }).videoUrl === "string"
+          ? (data as { videoUrl: string }).videoUrl
+          : "";
+
+      if (!videoUrl) {
+        throw new Error("Video generation succeeded but no video URL was returned.");
+      }
+
       const batchId = uid();
       const createdAt = new Date();
-      const promptText = barPrompt.trim() || "(frames only)";
+      const promptText = barPrompt.trim();
       const subtitle =
         promptText.length > 120 ? `${promptText.slice(0, 117)}…` : promptText;
 
@@ -167,8 +156,7 @@ export function CreateVideoClient() {
         subtitle,
         occurredAt: createdAt,
         promptText,
-        thumbnailUrl: posterUrl,
-        imageUrls: [posterUrl],
+        imageUrls: [],
         videoUrl,
         origin: "generated-video",
       };
@@ -177,8 +165,11 @@ export function CreateVideoClient() {
       setActiveHistoryId(batchId);
       setPreviewPrompt(promptText);
       setPreviewAt(createdAt);
-      setSlotImages([posterUrl]);
+      setSlotImages([]);
       setPreviewVideoUrl(videoUrl);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Video generation failed.";
+      setGenerationError(msg);
     } finally {
       setIsGenerating(false);
     }
@@ -424,6 +415,7 @@ export function CreateVideoClient() {
                       aspectRatio={aspectRatio}
                       template={null}
                       slotImages={slotImages}
+                      previewVideoUrl={previewVideoUrl}
                       promptText={previewPrompt}
                       createdAt={previewAt}
                       isLoading={isGenerating}
@@ -438,7 +430,10 @@ export function CreateVideoClient() {
                       onPreviewClick={handlePreviewClick}
                       onMenuAction={handlePreviewMenu}
                       afterPreviewStack={
-                        <div className="mb-6 w-full">
+                        <div className="mb-6 mt-[5px] w-full">
+                          {generationError ? (
+                            <p className="mb-3 text-[11px] text-rose-300">{generationError}</p>
+                          ) : null}
                           <VideoFrameReferences
                             className="w-full"
                             variant="compact"
@@ -491,6 +486,7 @@ export function CreateVideoClient() {
                       aspectRatio={aspectRatio}
                       template={null}
                       slotImages={slotImages}
+                      previewVideoUrl={previewVideoUrl}
                       promptText={previewPrompt}
                       createdAt={previewAt}
                       isLoading={isGenerating}
@@ -507,9 +503,12 @@ export function CreateVideoClient() {
                     />
                   </div>
                   <div
-                    className="mx-auto mb-6 mt-3 flex w-full min-w-0 flex-col items-stretch"
+                    className="mx-auto mb-6 mt-[12px] flex w-full min-w-0 flex-col items-stretch"
                     style={previewContentCapStyle}
                   >
+                    {generationError ? (
+                      <p className="mb-3 text-[11px] text-rose-300">{generationError}</p>
+                    ) : null}
                     <VideoFrameReferences
                       className="w-full"
                       startFrame={startFrame}
@@ -571,13 +570,14 @@ export function CreateVideoClient() {
           <div className="relative flex min-h-0 flex-1 items-center justify-center">
             {fullScreen.mode === "video" ? (
               <video
-                src={fullScreen.src}
                 poster={fullScreen.poster}
                 controls
                 playsInline
                 autoPlay
                 className="max-h-full max-w-full object-contain"
-              />
+              >
+                <source src={fullScreen.src} type="video/mp4" />
+              </video>
             ) : (
               <div className="relative h-full w-full">
                 <Image

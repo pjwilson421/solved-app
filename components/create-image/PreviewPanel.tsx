@@ -42,6 +42,8 @@ type PreviewPanelProps = {
   previewPromptPlaceholder?: string;
   /** Icon in empty preview / empty template slots (default: image placeholder). */
   emptyStatePlaceholderIcon?: IconPath;
+  /** Optional generated video source to display in the primary preview frame. */
+  previewVideoUrl?: string | null;
   /**
    * Rendered inside the meta column directly under the prompt description (same width as the
    * description block). Create Image mobile uses this for the inline 4-column history grid.
@@ -541,6 +543,7 @@ export function PreviewPanel({
   layoutFrame = null,
   previewPromptPlaceholder = PREVIEW_PROMPT_PLACEHOLDER,
   emptyStatePlaceholderIcon = ICONS.imagePlaceholder,
+  previewVideoUrl = null,
   inlineAfterDescription,
   afterPreviewStack,
   className,
@@ -549,6 +552,8 @@ export function PreviewPanel({
 }: PreviewPanelProps) {
   const validImages = slotImages.filter(Boolean);
   const hasImage = validImages.length > 0;
+  const hasVideo = typeof previewVideoUrl === "string" && previewVideoUrl.length > 0;
+  const hasPreviewMedia = hasVideo || hasImage;
   const dateLine = createdAt ? formatCreatedAt(createdAt) : "";
 
   /**
@@ -584,20 +589,28 @@ export function PreviewPanel({
   const previewBody = (
     <>
       <div
-        role={hasImage ? "button" : undefined}
-        tabIndex={hasImage ? 0 : undefined}
-        className={cn("relative h-full w-full", hasImage && "cursor-pointer")}
+        role={hasPreviewMedia ? "button" : undefined}
+        tabIndex={hasPreviewMedia ? 0 : undefined}
+        className={cn("relative h-full w-full", hasPreviewMedia && "cursor-pointer")}
         onClick={() => {
-          if (hasImage) onPreviewClick?.();
+          if (hasPreviewMedia) onPreviewClick?.();
         }}
         onKeyDown={(e) => {
-          if (hasImage && (e.key === "Enter" || e.key === " ")) {
+          if (hasPreviewMedia && (e.key === "Enter" || e.key === " ")) {
             e.preventDefault();
             onPreviewClick?.();
           }
         }}
       >
-        {template ? (
+        {hasVideo ? (
+          <video
+            className="h-full w-full object-contain"
+            controls
+            playsInline
+          >
+            <source src={previewVideoUrl} type="video/mp4" />
+          </video>
+        ) : template ? (
           <TemplateLayout
             template={template}
             urls={slotImages}
@@ -678,7 +691,7 @@ export function PreviewPanel({
         </div>
       )}
 
-      {!hideMeta && (hasImage || inlineAfterDescription) ? (
+      {!hideMeta && (hasPreviewMedia || inlineAfterDescription) ? (
         <div
           className={cn(
             "mt-3 min-w-0 shrink-0 xl:mt-3",

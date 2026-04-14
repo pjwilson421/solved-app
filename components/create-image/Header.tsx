@@ -162,7 +162,7 @@ export function Header({
         <button
           type="button"
           onClick={() => setMobileNavOpen((o) => !o)}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-tx-secondary transition-colors hover:bg-panel-hover hover:text-white focus-visible:outline-none focus-visible:ring-0 focus-visible:bg-panel-hover focus-visible:text-white"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-white transition-colors hover:bg-panel-hover focus-visible:outline-none focus-visible:ring-0 focus-visible:bg-panel-hover"
           aria-expanded={mobileNavOpen}
           aria-haspopup="true"
           aria-controls={
