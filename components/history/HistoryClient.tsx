@@ -1,25 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useShellNav } from "@/lib/use-shell-nav";
 import { useShellNavReset } from "@/lib/shell-nav-reset-context";
 import { Header } from "../create-image/Header";
-import { Sidebar } from "../create-image/Sidebar";
-import { CREATE_IMAGE_SCROLL_RESERVE } from "../create-image/preview-frame-layout";
-import { useMinWidth1280 } from "../create-image/use-create-image-preview-prompt-layout";
-import { MobileCreateImageDrawer } from "../create-image/MobileCreateImageDrawer";
-import type { HistoryItem } from "../create-image/types";
+import {
+  Sidebar,
+  SIDEBAR_SECTION_HEADING_TYPOGRAPHY_CLASS,
+} from "../create-image/Sidebar";
+import { LeftNavRail } from "@/components/shell/LeftNavRail";
 import { cn } from "@/lib/utils";
 import { likedKey } from "@/lib/liked-item-keys";
 import { useLikedItems } from "@/components/liked-items/liked-items-context";
 import { FileListRow } from "../files/FileListRow";
 import { FilesGrid } from "../files/FilesGrid";
-import { FilesDesktopHeaderActions } from "../files/FilesToolbar";
+import { FilesDesktopHeaderActions, FilesToolbar } from "../files/FilesToolbar";
 import type { FileRowMenuAction } from "../files/FileRowActionsMenu";
 import { likedChatTitle } from "../chat/liked-chats-storage";
-import { chatTitleEditSeed } from "@/lib/app-data/chat-thread";
 import { LikedChatEntryRow } from "../chat/LikedChatEntryRow";
 import { LikedChatGridCard } from "../chat/LikedChatGridCard";
 import { useAppData } from "@/lib/app-data/app-data-context";
@@ -27,28 +25,22 @@ import { useAppItemActions } from "@/lib/app-data/use-app-item-actions";
 import { appItemRef } from "@/lib/app-data/item-ref";
 import { getLikedHistoryEntries } from "./get-liked-history-entries";
 import { groupEntriesByBucket } from "./history-buckets";
+import { FilesListHeader } from "../files/FilesListHeader";
 import { HistoryGrid } from "./HistoryGrid";
 import { HistoryListRow } from "./HistoryListRow";
 import { HistorySectionLabel } from "./HistorySectionLabel";
 import {
-  HistoryToolbar,
+  HistoryToolbarFilters,
   type HistoryActivityFilter,
 } from "./HistoryToolbar";
 import type { ActivityHistoryEntry, HistoryActivityKind } from "./types";
 import { type SortOption, genericSort } from "@/lib/app-data/sort-filter-utils";
 
-const EMPTY_HISTORY: HistoryItem[] = [];
-
 type HistoryViewMode = "grid" | "list";
 
 function historyViewModeFromSearchParams(
   params: ReturnType<typeof useSearchParams>,
-  page: HistoryClientPage,
 ): HistoryViewMode {
-  if (page === "history") {
-    return params.get("view") === "grid" ? "grid" : "list";
-  }
-  /* Liked: default list; grid only when ?view=grid (same URL convention as Files). */
   return params.get("view") === "grid" ? "grid" : "list";
 }
 
@@ -80,13 +72,18 @@ export type HistoryClientProps = {
   page?: HistoryClientPage;
 };
 
+type EditingNameTarget =
+  | null
+  | { domain: "activity"; id: string }
+  | { domain: "file"; id: string };
+
 export function HistoryClient({ page = "history" }: HistoryClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { navigate, activeMainNav } = useShellNav();
   const { historyResetVersion, likedResetVersion } = useShellNavReset();
-  const viewFromUrl = historyViewModeFromSearchParams(searchParams, page);
+  const viewFromUrl = historyViewModeFromSearchParams(searchParams);
   const [historyViewMode, setHistoryViewMode] =
     useState<HistoryViewMode>(viewFromUrl);
 
@@ -99,6 +96,8 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     setSearchQuery("");
     setActivityFilter("all");
     setSortOption("date-desc");
+    setEditingNameTarget(null);
+    setEditedName("");
   }, [historyResetVersion, page]);
 
   useEffect(() => {
@@ -106,6 +105,8 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     setSearchQuery("");
     setActivityFilter("all");
     setSortOption("date-desc");
+    setEditingNameTarget(null);
+    setEditedName("");
   }, [likedResetVersion, page]);
 
   const setHistoryGridView = useCallback(() => {
@@ -113,7 +114,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     const q = new URLSearchParams(searchParams.toString());
     q.set("view", "grid");
     const qs = q.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    router.replace(`${pathname}?${qs}`, { scroll: false });
   }, [pathname, router, searchParams]);
 
   const setHistoryListView = useCallback(() => {
@@ -126,20 +127,17 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
 
   const isGridView = historyViewMode === "grid";
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activityFilter, setActivityFilter] =
     useState<HistoryActivityFilter>("all");
   const [sortOption, setSortOption] = useState<SortOption>("date-desc");
-  const [historyTitleRenamingId, setHistoryTitleRenamingId] = useState<
-    string | null
-  >(null);
-  const [historyTitleRenameValue, setHistoryTitleRenameValue] = useState("");
 
-  const minWidth1280 = useMinWidth1280();
-
-  const { deleteCatalogItem, openItem, renameFile, downloadItem } =
-    useAppItemActions();
+  const {
+    deleteCatalogItem,
+    openItem,
+    renameFile,
+    downloadItem,
+  } = useAppItemActions();
 
   const { isLiked } = useLikedItems();
   const isActivityLiked = useCallback(
@@ -147,18 +145,26 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     [isLiked],
   );
 
-  const {
-    activityEntries,
-    fileEntries,
-    chatThreads,
-    updateActivityEntries,
-    updateChatThreads,
-  } = useAppData();
+  const { activityEntries, fileEntries, chatThreads, updateActivityEntries } =
+    useAppData();
+
+  const [editingNameTarget, setEditingNameTarget] =
+    useState<EditingNameTarget>(null);
+  const [editedName, setEditedName] = useState("");
+  const skipBlurCommitRef = useRef(false);
 
   useEffect(() => {
-    setHistoryTitleRenamingId(null);
-    setHistoryTitleRenameValue("");
-  }, [page]);
+    if (!editingNameTarget) return;
+    if (editingNameTarget.domain === "activity") {
+      if (!activityEntries.some((e) => e.id === editingNameTarget.id)) {
+        setEditingNameTarget(null);
+        setEditedName("");
+      }
+    } else if (!fileEntries.some((e) => e.id === editingNameTarget.id)) {
+      setEditingNameTarget(null);
+      setEditedName("");
+    }
+  }, [activityEntries, fileEntries, editingNameTarget]);
 
   const folderHasChildItems = useCallback(
     (folderId: string) => fileEntries.some((e) => e.parentId === folderId),
@@ -255,130 +261,130 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
       });
     }
 
-    return genericSort(
+    const sorted = genericSort(
       list,
       sortOption,
       (e) => e.title,
-      (e) => e.occurredAt.getTime()
+      (e) => e.occurredAt.getTime(),
     );
-  }, [sourceEntries, searchQuery, activityFilter, sortOption]);
+    /*
+     * History (not Liked): omit `kind === "chat"` entries — they render via
+     * LikedChatEntryRow / LikedChatGridCard, which still use `text-tx-secondary`
+     * (legacy violet). Activity rows use the Files-aligned #315790 metadata.
+     */
+    if (page !== "history") return sorted;
+    return sorted.filter((e) => e.kind !== "chat");
+  }, [page, sourceEntries, searchQuery, activityFilter, sortOption]);
 
   const grouped = useMemo(
     () => groupEntriesByBucket(visibleEntries),
     [visibleEntries],
   );
 
+  const handleNameCancelEdit = useCallback(() => {
+    skipBlurCommitRef.current = true;
+    setEditingNameTarget(null);
+    setEditedName("");
+  }, []);
+
+  const handleActivityTitleCommit = useCallback(
+    (id: string, rawValue: string) => {
+      if (skipBlurCommitRef.current) {
+        skipBlurCommitRef.current = false;
+        return;
+      }
+      const entry = activityEntries.find((e) => e.id === id);
+      if (!entry) {
+        setEditingNameTarget(null);
+        setEditedName("");
+        return;
+      }
+      let next = rawValue.trim();
+      if (!next) next = entry.title;
+      if (next !== entry.title) {
+        updateActivityEntries((prev) =>
+          prev.map((e) => (e.id === id ? { ...e, title: next } : e)),
+        );
+      }
+      setEditingNameTarget(null);
+      setEditedName("");
+    },
+    [activityEntries, updateActivityEntries],
+  );
+
+  const handleFileNameCommit = useCallback(
+    (id: string, rawValue: string) => {
+      if (skipBlurCommitRef.current) {
+        skipBlurCommitRef.current = false;
+        return;
+      }
+      const entry = fileEntries.find((e) => e.id === id);
+      if (!entry) {
+        setEditingNameTarget(null);
+        setEditedName("");
+        return;
+      }
+      let next = rawValue.trim();
+      if (!next) next = entry.name;
+      if (next !== entry.name) renameFile(id, next);
+      setEditingNameTarget(null);
+      setEditedName("");
+    },
+    [fileEntries, renameFile],
+  );
+
+  const handleActivityMenu = useCallback(
+    (id: string, action: FileRowMenuAction) => {
+      if (action === "Delete") {
+        deleteCatalogItem(appItemRef.activity(id));
+        return;
+      }
+      if (action === "Open") {
+        openItem(appItemRef.activity(id));
+        return;
+      }
+      if (action === "Rename") {
+        const act = allEntries.find((e) => e.id === id && e.kind !== "chat");
+        if (!act) return;
+        setEditingNameTarget({ domain: "activity", id });
+        setEditedName(act.title);
+      }
+    },
+    [allEntries, deleteCatalogItem, openItem],
+  );
+
+  const handleLikedFileMenu = useCallback(
+    (id: string, action: FileRowMenuAction) => {
+      const ref = appItemRef.file(id);
+      const entry = fileEntries.find((e) => e.id === id);
+      if (!entry) return;
+      switch (action) {
+        case "Open":
+          openItem(ref);
+          break;
+        case "Rename":
+          setEditingNameTarget({ domain: "file", id });
+          setEditedName(entry.name);
+          break;
+        case "Download":
+          if (entry.kind === "folder") return;
+          downloadItem(ref);
+          break;
+        case "Move":
+          break;
+        case "Delete":
+          deleteCatalogItem(ref);
+          break;
+        default:
+          break;
+      }
+    },
+    [fileEntries, deleteCatalogItem, downloadItem, openItem],
+  );
+
   const handleItemOpen = useCallback((id: string) => {
     openItem(appItemRef.activity(id));
   }, [openItem]);
-
-  const startHistoryTitleRename = useCallback(
-    (id: string) => {
-      if (page !== "history" && page !== "liked") return;
-      const thread = chatThreads.find((t) => t.id === id);
-      if (thread) {
-        setHistoryTitleRenameValue(chatTitleEditSeed(thread));
-        setHistoryTitleRenamingId(id);
-        return;
-      }
-      const activityEntry = activityEntries.find((e) => e.id === id);
-      if (activityEntry) {
-        setHistoryTitleRenameValue(activityEntry.title);
-        setHistoryTitleRenamingId(id);
-        return;
-      }
-      const fileEntry = fileEntries.find((e) => e.id === id);
-      if (fileEntry) {
-        setHistoryTitleRenameValue(fileEntry.name);
-        setHistoryTitleRenamingId(id);
-      }
-    },
-    [page, chatThreads, activityEntries, fileEntries],
-  );
-
-  const cancelHistoryTitleRename = useCallback(() => {
-    setHistoryTitleRenamingId(null);
-    setHistoryTitleRenameValue("");
-  }, []);
-
-  const submitHistoryTitleRename = useCallback(() => {
-    if ((page !== "history" && page !== "liked") || !historyTitleRenamingId) {
-      return;
-    }
-    const trimmed = historyTitleRenameValue.trim();
-    const thread = chatThreads.find((t) => t.id === historyTitleRenamingId);
-    if (thread) {
-      updateChatThreads((prev) =>
-        prev.map((t) =>
-          t.id === historyTitleRenamingId
-            ? { ...t, displayTitle: trimmed || undefined }
-            : t,
-        ),
-      );
-    } else {
-      const actEntry = activityEntries.find(
-        (e) => e.id === historyTitleRenamingId,
-      );
-      if (actEntry) {
-        if (trimmed && trimmed !== actEntry.title) {
-          updateActivityEntries((prev) =>
-            prev.map((e) =>
-              e.id === historyTitleRenamingId ? { ...e, title: trimmed } : e,
-            ),
-          );
-        }
-      } else {
-        const f = fileEntries.find((e) => e.id === historyTitleRenamingId);
-        if (f && trimmed && trimmed !== f.name) {
-          renameFile(historyTitleRenamingId, trimmed);
-        }
-      }
-    }
-    setHistoryTitleRenamingId(null);
-    setHistoryTitleRenameValue("");
-  }, [
-    page,
-    historyTitleRenamingId,
-    historyTitleRenameValue,
-    chatThreads,
-    activityEntries,
-    fileEntries,
-    updateChatThreads,
-    updateActivityEntries,
-    renameFile,
-  ]);
-
-  const handleMenu = useCallback(
-    (id: string, action: FileRowMenuAction) => {
-      const fileHit = fileEntries.find((e) => e.id === id);
-      if (fileHit) {
-        if (action === "Delete") {
-          deleteCatalogItem(appItemRef.file(id));
-        } else if (action === "Open") {
-          openItem(appItemRef.file(id));
-        } else if (action === "Rename") {
-          startHistoryTitleRename(id);
-        } else if (action === "Download") {
-          downloadItem(appItemRef.file(id));
-        }
-        return;
-      }
-      if (action === "Delete") {
-        deleteCatalogItem(appItemRef.activity(id));
-      } else if (action === "Open") {
-        openItem(appItemRef.activity(id));
-      } else if (action === "Rename") {
-        startHistoryTitleRename(id);
-      }
-    },
-    [
-      fileEntries,
-      deleteCatalogItem,
-      openItem,
-      downloadItem,
-      startHistoryTitleRename,
-    ],
-  );
 
   const emptyListCopy =
     page === "liked"
@@ -389,6 +395,16 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
         ? "No history matches your search or filters."
         : "No history yet.";
 
+  const emptyPrimarySlotHidden =
+    page === "liked" &&
+    (likedFileEntries.length > 0 || filteredLikedChats.length > 0);
+
+  const historyEmptyUnfiltered =
+    visibleEntries.length === 0 &&
+    !emptyPrimarySlotHidden &&
+    !searchQuery.trim() &&
+    activityFilter === "all";
+
   const scrollableInner = (
     toolbarVariant: "desktop" | "mobile",
     showDesktopChrome: boolean,
@@ -397,75 +413,107 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     let globalIndex = 0;
     return (
       <>
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex min-w-0 w-full items-center gap-4">
           <h1
             className={cn(
-              "min-w-0 flex-1 text-left font-bold uppercase leading-none text-white",
-              "text-[11px] tracking-[0.11em] md:text-[12px] md:font-semibold md:tracking-[0.09em] lg:text-[13px] lg:tracking-[0.08em]",
+              "min-w-0 flex-1 truncate text-left",
+              SIDEBAR_SECTION_HEADING_TYPOGRAPHY_CLASS,
             )}
           >
             {page === "liked"
-              ? "Liked files"
+              ? toolbarVariant === "mobile"
+                ? "All liked"
+                : "Liked"
               : toolbarVariant === "mobile"
                 ? "All activity"
                 : "All history"}
           </h1>
-          {showDesktopChrome && toolbarVariant === "desktop" ? (
-            <FilesDesktopHeaderActions
-              menuButtonVariant="list"
-              onListViewClick={setHistoryListView}
-              listViewActive={!gridView}
-              onGridViewClick={setHistoryGridView}
-              gridViewActive={gridView}
-            />
-          ) : null}
         </div>
 
-        <HistoryToolbar
+        <FilesToolbar
+          variant={toolbarVariant}
+          showDesktopExtras={showDesktopChrome}
+          omitPrimaryFileActions
+          customFilterSortSlot={
+            <HistoryToolbarFilters
+              activityFilter={activityFilter}
+              onActivityFilterChange={setActivityFilter}
+              sortOption={sortOption}
+              onSortChange={setSortOption}
+              compactLayout={toolbarVariant === "mobile"}
+            />
+          }
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          activityFilter={activityFilter}
-          onActivityFilterChange={setActivityFilter}
           sortOption={sortOption}
           onSortChange={setSortOption}
+          typeFilter={null}
+          onTypeFilterChange={() => {}}
+          fileTypeLabelsForFilter={[]}
+          desktopTrailingSlot={
+            showDesktopChrome && toolbarVariant === "desktop" ? (
+              <FilesDesktopHeaderActions
+                menuButtonVariant="list"
+                filesIconStyle
+                onListViewClick={setHistoryListView}
+                listViewActive={!gridView}
+                onGridViewClick={setHistoryGridView}
+                gridViewActive={gridView}
+              />
+            ) : undefined
+          }
+          searchPlaceholder={
+            page === "liked" ? "Search liked assets..." : "Search assets..."
+          }
+          searchLabel={page === "liked" ? "Search liked" : "Search history"}
+          searchInputId={
+            page === "liked" ? "liked-assets-search" : "history-search"
+          }
         />
 
         {visibleEntries.length === 0 ? (
-          page === "liked" &&
-          (likedFileEntries.length > 0 || filteredLikedChats.length > 0) ? null : (
-            <p className="py-6 text-left text-[12px] leading-relaxed text-tx-muted sm:text-[13px]">
+          emptyPrimarySlotHidden ? null : (
+            <p
+              className={cn(
+                "py-6 text-left text-[12px] leading-relaxed sm:text-[13px]",
+                historyEmptyUnfiltered ? "text-[#ffffff]" : "text-tx-secondary",
+              )}
+            >
               {emptyListCopy}
             </p>
           )
         ) : gridView ? (
           <HistoryGrid
             entries={visibleEntries}
-            onMenuAction={handleMenu}
+            onMenuAction={handleActivityMenu}
             onItemOpen={handleItemOpen}
-            enableTitleInlineRename={
-              page === "history" || page === "liked"
-            }
-            titleRenamingId={historyTitleRenamingId}
-            titleRenameValue={historyTitleRenameValue}
-            onStartTitleRename={startHistoryTitleRename}
-            onTitleRenameChange={setHistoryTitleRenameValue}
-            onTitleRenameSubmit={submitHistoryTitleRename}
-            onTitleRenameCancel={cancelHistoryTitleRename}
+            titleEdit={{
+              editingActivityId:
+                editingNameTarget?.domain === "activity"
+                  ? editingNameTarget.id
+                  : null,
+              editedName,
+              onEditedNameChange: setEditedName,
+              onStart: (id, title) => {
+                setEditingNameTarget({ domain: "activity", id });
+                setEditedName(title);
+              },
+              onCommit: handleActivityTitleCommit,
+              onCancel: handleNameCancelEdit,
+            }}
           />
         ) : (
-          <div className="flex flex-col gap-6">
+          <div className="flex min-w-0 flex-col gap-6">
+            <FilesListHeader />
             {grouped.map((group, gi) => (
-              <div key={group.bucket}>
+              <div key={group.bucket} className="min-w-0">
                 <HistorySectionLabel
-                  className={cn(gi > 0 && "mt-1 border-t border-edge-default pt-6")}
+                  className={cn(gi > 0 && "mt-1 border-t border-edge-subtle pt-6")}
                 >
                   {group.label}
                 </HistorySectionLabel>
                 <ul
-                  className={cn(
-                    "mt-3 flex flex-col gap-2",
-                    toolbarVariant === "mobile" ? "gap-2" : "gap-2",
-                  )}
+                  className="mt-3 flex min-w-0 flex-col"
                   role="list"
                 >
                   {group.items.map((entry) => {
@@ -474,7 +522,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                       const record = chatThreads.find((t) => t.id === entry.id);
                       if (!record) return null;
                       return (
-                        <li key={entry.id}>
+                        <li key={entry.id} className="min-w-0">
                           <LikedChatEntryRow
                             record={record}
                             variant={toolbarVariant}
@@ -484,48 +532,35 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                                 `/chat?openChat=${encodeURIComponent(record.id)}`
                               )
                             }
-                            enableTitleInlineRename={
-                              page === "history" || page === "liked"
-                            }
-                            isTitleRenaming={historyTitleRenamingId === entry.id}
-                            titleRenameValue={
-                              historyTitleRenamingId === entry.id
-                                ? historyTitleRenameValue
-                                : ""
-                            }
-                            onStartTitleRename={() =>
-                              startHistoryTitleRename(entry.id)
-                            }
-                            onTitleRenameChange={setHistoryTitleRenameValue}
-                            onTitleRenameSubmit={submitHistoryTitleRename}
-                            onTitleRenameCancel={cancelHistoryTitleRename}
                           />
                         </li>
                       );
                     }
                     return (
-                      <li key={entry.id}>
+                      <li key={entry.id} className="min-w-0">
                         <HistoryListRow
                           entry={entry}
                           variant={toolbarVariant}
                           rowIndex={i}
-                          onMenuAction={handleMenu}
+                          titleEdit={{
+                            isEditing:
+                              editingNameTarget?.domain === "activity" &&
+                              editingNameTarget.id === entry.id,
+                            editedName,
+                            onEditedNameChange: setEditedName,
+                            onStart: () => {
+                              setEditingNameTarget({
+                                domain: "activity",
+                                id: entry.id,
+                              });
+                              setEditedName(entry.title);
+                            },
+                            onCommit: (raw) =>
+                              handleActivityTitleCommit(entry.id, raw),
+                            onCancel: handleNameCancelEdit,
+                          }}
+                          onMenuAction={handleActivityMenu}
                           onItemOpen={handleItemOpen}
-                          enableTitleInlineRename={
-                            page === "history" || page === "liked"
-                          }
-                          isTitleRenaming={historyTitleRenamingId === entry.id}
-                          titleRenameValue={
-                            historyTitleRenamingId === entry.id
-                              ? historyTitleRenameValue
-                              : ""
-                          }
-                          onStartTitleRename={() =>
-                            startHistoryTitleRename(entry.id)
-                          }
-                          onTitleRenameChange={setHistoryTitleRenameValue}
-                          onTitleRenameSubmit={submitHistoryTitleRename}
-                          onTitleRenameCancel={cancelHistoryTitleRename}
                         />
                       </li>
                     );
@@ -537,60 +572,123 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
         )}
 
         {page === "liked" && likedFileEntries.length > 0 ? (
-          <>
-            <HistorySectionLabel
+          /*
+           * List + liked-files-only: same shell as History time buckets — `flex flex-col gap-6`,
+           * `FilesListHeader`, then one group `<div>` with `HistorySectionLabel` + `mt-3` list (matches "Older" etc.).
+           * After activity / grid: outer `mt-6` (= inter-bucket `gap-6`) + label `mt-1 border-t pt-6` like `gi > 0`.
+           */
+          !gridView && visibleEntries.length === 0 ? (
+            <div className="flex min-w-0 flex-col gap-6">
+              <FilesListHeader />
+              <div className="min-w-0">
+                <HistorySectionLabel>Files</HistorySectionLabel>
+                <ul className="mt-3 flex min-w-0 flex-col" role="list">
+                  {likedFileEntries.map((entry) => (
+                    <li key={entry.id} className="min-w-0">
+                      <FileListRow
+                        entry={entry}
+                        variant={toolbarVariant}
+                        nameEdit={{
+                          isEditing:
+                            editingNameTarget?.domain === "file" &&
+                            editingNameTarget.id === entry.id,
+                          editedName,
+                          onEditedNameChange: setEditedName,
+                          onStart: () => {
+                            setEditingNameTarget({
+                              domain: "file",
+                              id: entry.id,
+                            });
+                            setEditedName(entry.name);
+                          },
+                          onCommit: (raw) =>
+                            handleFileNameCommit(entry.id, raw),
+                          onCancel: handleNameCancelEdit,
+                        }}
+                        onMenuAction={handleLikedFileMenu}
+                        folderIsEmpty={
+                          entry.kind === "folder"
+                            ? !folderHasChildItems(entry.id)
+                            : undefined
+                        }
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <div
               className={cn(
-                visibleEntries.length > 0 &&
-                  "mt-6 border-t border-edge-default pt-6",
+                "min-w-0",
+                visibleEntries.length > 0 && "mt-6",
               )}
             >
-              Files
-            </HistorySectionLabel>
-            {gridView ? (
-              <FilesGrid
-                entries={likedFileEntries}
-                onMenuAction={handleMenu}
-                folderHasChildItems={folderHasChildItems}
-                renamingId={historyTitleRenamingId}
-                renameValue={historyTitleRenameValue}
-                onStartRename={startHistoryTitleRename}
-                onRenameValueChange={setHistoryTitleRenameValue}
-                onRenameSubmit={submitHistoryTitleRename}
-                onRenameCancel={cancelHistoryTitleRename}
-              />
-            ) : (
-              <ul
-                className="mt-3 flex flex-col gap-2"
-                role="list"
+              <HistorySectionLabel
+                className={cn(
+                  visibleEntries.length > 0 &&
+                    "mt-1 border-t border-edge-subtle pt-6",
+                )}
               >
-                {likedFileEntries.map((entry, i) => (
-                  <li key={entry.id}>
-                    <FileListRow
-                      entry={entry}
-                      variant={toolbarVariant}
-                      rowIndex={i}
-                      onMenuAction={handleMenu}
-                      isRenaming={historyTitleRenamingId === entry.id}
-                      renameValue={
-                        historyTitleRenamingId === entry.id
-                          ? historyTitleRenameValue
-                          : ""
-                      }
-                      onStartRename={startHistoryTitleRename}
-                      onRenameValueChange={setHistoryTitleRenameValue}
-                      onRenameSubmit={submitHistoryTitleRename}
-                      onRenameCancel={cancelHistoryTitleRename}
-                      folderIsEmpty={
-                        entry.kind === "folder"
-                          ? !folderHasChildItems(entry.id)
-                          : undefined
-                      }
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
+                Files
+              </HistorySectionLabel>
+              {gridView ? (
+                <FilesGrid
+                  entries={likedFileEntries}
+                  nameEdit={{
+                    editingFileId:
+                      editingNameTarget?.domain === "file"
+                        ? editingNameTarget.id
+                        : null,
+                    editedName,
+                    onEditedNameChange: setEditedName,
+                    onStart: (id, name) => {
+                      setEditingNameTarget({ domain: "file", id });
+                      setEditedName(name);
+                    },
+                    onCommit: handleFileNameCommit,
+                    onCancel: handleNameCancelEdit,
+                  }}
+                  onMenuAction={handleLikedFileMenu}
+                  folderHasChildItems={folderHasChildItems}
+                />
+              ) : (
+                <ul className="mt-3 flex min-w-0 flex-col" role="list">
+                  {likedFileEntries.map((entry) => (
+                    <li key={entry.id} className="min-w-0">
+                      <FileListRow
+                        entry={entry}
+                        variant={toolbarVariant}
+                        nameEdit={{
+                          isEditing:
+                            editingNameTarget?.domain === "file" &&
+                            editingNameTarget.id === entry.id,
+                          editedName,
+                          onEditedNameChange: setEditedName,
+                          onStart: () => {
+                            setEditingNameTarget({
+                              domain: "file",
+                              id: entry.id,
+                            });
+                            setEditedName(entry.name);
+                          },
+                          onCommit: (raw) =>
+                            handleFileNameCommit(entry.id, raw),
+                          onCancel: handleNameCancelEdit,
+                        }}
+                        onMenuAction={handleLikedFileMenu}
+                        folderIsEmpty={
+                          entry.kind === "folder"
+                            ? !folderHasChildItems(entry.id)
+                            : undefined
+                        }
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )
         ) : null}
 
         {page === "liked" && filteredLikedChats.length > 0 ? (
@@ -598,14 +696,14 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
             <HistorySectionLabel
               className={cn(
                 (visibleEntries.length > 0 || likedFileEntries.length > 0) &&
-                  "mt-6 border-t border-edge-default pt-6",
+                  "mt-6 border-t border-edge-subtle pt-6",
               )}
             >
               Chats
             </HistorySectionLabel>
             {gridView ? (
               <ul
-                className="mt-3 grid grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-5 sm:gap-y-8 md:grid-cols-3 xl:grid-cols-4"
+                className="mt-3 grid w-full min-w-0 grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-5 sm:gap-y-8 xl:grid-cols-4"
                 role="list"
               >
                 {filteredLikedChats.map((record, i) => (
@@ -618,27 +716,14 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                           `/chat?openChat=${encodeURIComponent(record.id)}`,
                         )
                       }
-                      enableTitleInlineRename
-                      isTitleRenaming={historyTitleRenamingId === record.id}
-                      titleRenameValue={
-                        historyTitleRenamingId === record.id
-                          ? historyTitleRenameValue
-                          : ""
-                      }
-                      onStartTitleRename={() =>
-                        startHistoryTitleRename(record.id)
-                      }
-                      onTitleRenameChange={setHistoryTitleRenameValue}
-                      onTitleRenameSubmit={submitHistoryTitleRename}
-                      onTitleRenameCancel={cancelHistoryTitleRename}
                     />
                   </li>
                 ))}
               </ul>
             ) : (
-              <ul className="mt-3 flex flex-col gap-2" role="list">
+              <ul className="mt-3 flex min-w-0 flex-col" role="list">
                 {filteredLikedChats.map((record, i) => (
-                  <li key={record.id}>
+                  <li key={record.id} className="min-w-0">
                     <LikedChatEntryRow
                       record={record}
                       variant={toolbarVariant}
@@ -648,19 +733,6 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
                           `/chat?openChat=${encodeURIComponent(record.id)}`,
                         )
                       }
-                      enableTitleInlineRename
-                      isTitleRenaming={historyTitleRenamingId === record.id}
-                      titleRenameValue={
-                        historyTitleRenamingId === record.id
-                          ? historyTitleRenameValue
-                          : ""
-                      }
-                      onStartTitleRename={() =>
-                        startHistoryTitleRename(record.id)
-                      }
-                      onTitleRenameChange={setHistoryTitleRenameValue}
-                      onTitleRenameSubmit={submitHistoryTitleRename}
-                      onTitleRenameCancel={cancelHistoryTitleRename}
                     />
                   </li>
                 ))}
@@ -672,21 +744,14 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
     );
   };
 
-  const wrapScroll = (children: ReactNode) => (
-    <div className="flex w-full min-w-0 flex-col gap-4 pb-6">{children}</div>
-  );
-
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden text-tx-primary",
-        page === "history" || page === "liked"
-          ? "bg-surface-base"
-          : "bg-surface-base",
-        "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-bg text-tx-primary",
+        "xl:[--create-image-prompt-max:1000px]",
       )}
     >
-      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden md:flex">
+      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden xl:flex">
         <div className="hidden shrink-0 xl:block">
           <Header variant="desktop" />
         </div>
@@ -694,126 +759,71 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
           <Header
             variant="mobile"
             mobileTitle={page === "liked" ? "LIKED" : "HISTORY"}
-            onMenuClick={() => setMobileMenuOpen(true)}
+            mobileNavTriggerSide="end"
           />
         </div>
 
-        <div
-          className={cn(
-            "flex min-h-0 min-w-0 flex-1 overflow-hidden",
-            page !== "history" && "xl:grid xl:grid-cols-[300px_minmax(0,1fr)]",
-          )}
-        >
-          <Sidebar
-            className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
-            activeId={activeMainNav}
-            onNavigate={navigate}
-            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
-          />
+        <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
+          <LeftNavRail className="hidden shrink-0 xl:flex">
+            <Sidebar
+              className="flex min-h-0 min-w-0 w-full flex-1 flex-col"
+              activeId={activeMainNav}
+              onNavigate={navigate}
+            />
+          </LeftNavRail>
 
-          {page === "history" ? (
-            <div
-              className={cn(
-                "flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-10",
-                minWidth1280 && "w-full self-start",
-              )}
-              style={
-                minWidth1280
-                  ? {
-                      height: `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`,
-                    }
-                  : undefined
-              }
-            >
-              <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
-                <div className="min-h-0 w-full min-w-0 flex-1 overflow-y-auto">
-                  <div className="flex w-full min-w-0 flex-col items-center pt-6 text-left">
-                    <div className="w-full min-w-0 max-w-[1000px] px-4 md:px-6">
-                      <div className="flex w-full min-w-0 flex-col gap-4 py-4 md:py-6">
-                        {wrapScroll(
-                          scrollableInner("desktop", true, isGridView),
-                        )}
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-0 xl:pr-[40px]">
+            <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
+              <div
+                className="min-h-0 w-full min-w-0 flex-1 overflow-y-auto"
+                style={{
+                  scrollPaddingBottom: 0,
+                }}
+              >
+                <div
+                  className={cn(
+                    "flex w-full min-w-0 flex-col items-stretch text-left",
+                    "xl:pt-3",
+                  )}
+                  style={{
+                    paddingBottom: 0,
+                  }}
+                >
+                  <div className="px-4 md:px-6">
+                    <div className="rounded-[18px] bg-transparent">
+                      <div className="flex w-full min-w-0 flex-col gap-4 p-4 md:p-6">
+                        {scrollableInner("desktop", true, isGridView)}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          ) : (
-            <div
-              className={cn(
-                "flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-10",
-                minWidth1280 && "w-full self-start",
-              )}
-              style={
-                minWidth1280
-                  ? {
-                      height: `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`,
-                    }
-                  : undefined
-              }
-            >
-              <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
-                <div className="min-h-0 w-full min-w-0 flex-1 overflow-y-auto overscroll-y-contain">
-                  <div className="flex w-full min-w-0 flex-col items-center pt-6 text-left">
-                    <div className="w-full min-w-0 max-w-[1000px] px-4 md:px-6">
-                      <div className="flex w-full min-w-0 flex-col gap-4 py-4 md:py-6">
-                        {wrapScroll(scrollableInner("desktop", true, isGridView))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
 
-      <div
-        className={cn(
-          "flex min-h-0 flex-1 flex-col overflow-hidden md:hidden",
-          page === "history" || page === "liked"
-            ? "bg-surface-base"
-            : "bg-surface-base",
-        )}
-      >
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-bg xl:hidden">
         <Header
           variant="mobile"
           mobileTitle={page === "liked" ? "LIKED" : "HISTORY"}
-          onMenuClick={() => setMobileMenuOpen(true)}
+          mobileNavTriggerSide="end"
         />
-        {page === "history" ? (
-          <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
-              <main className="flex w-full min-w-0 flex-col items-center px-4 pt-3">
-                <div className="flex w-full min-w-0 max-w-[1000px] flex-col gap-4">
-                  {wrapScroll(scrollableInner("mobile", false, isGridView))}
-                </div>
-              </main>
+        <div className="mx-4 mb-1 mt-2 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 sm:px-8">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center overflow-x-hidden">
+            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col">
+              <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain">
+                <main className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left">
+                  <div className="flex w-full min-w-0 flex-col gap-4">
+                    {scrollableInner("mobile", false, isGridView)}
+                  </div>
+                </main>
+              </div>
             </div>
           </div>
-        ) : (
-          <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
-              <main className="flex w-full min-w-0 flex-col items-center px-4 pt-3">
-                <div className="flex w-full min-w-0 max-w-[1000px] flex-col gap-4">
-                  {wrapScroll(scrollableInner("mobile", false, isGridView))}
-                </div>
-              </main>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
-      <MobileCreateImageDrawer
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        historyItems={EMPTY_HISTORY}
-        activeHistoryId={null}
-        onSelectHistory={() => {}}
-        onHistoryMenuAction={() => {}}
-        activeMainNav={activeMainNav}
-      />
     </div>
   );
 }

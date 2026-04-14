@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { AppProviders } from "./providers";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Solved — Create Image",
-  description: "Create images with prompts, templates, and references.",
+  title: "SOLVED",
+  description: "AI creative workspace",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-surface-base text-tx-primary antialiased">
+      <body className="ui-stroke-free flex min-h-dvh flex-col bg-app-bg">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

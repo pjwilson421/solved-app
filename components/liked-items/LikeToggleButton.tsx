@@ -27,10 +27,11 @@ export function LikeToggleButton({ itemKey, className }: LikeToggleButtonProps) 
     <button
       type="button"
       className={cn(
-        "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-menu-item transition-[background-color,color] duration-150",
+        "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full transition-[background-color,box-shadow,color] duration-150",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-panel-bg",
         liked
-          ? "bg-primary/55 text-white hover:bg-primary-active active:bg-primary-active focus-visible:brightness-110"
-          : "text-tx-muted hover:bg-surface-hover hover:text-white active:bg-surface-pressed focus-visible:bg-white/10",
+          ? "bg-primary/55 text-white ring-1 ring-inset ring-primary/35 hover:bg-primary-active active:bg-primary-active"
+          : "text-tx-secondary hover:bg-panel-hover hover:text-white active:bg-panel-pressed",
         className,
       )}
       aria-label={liked ? "Unlike" : "Like"}

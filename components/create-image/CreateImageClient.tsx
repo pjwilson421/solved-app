@@ -12,14 +12,10 @@ import { GenerationSettingsRow } from "./GenerationSettingsRow";
 import { PromptBar } from "./PromptBar";
 import { HistoryPanel } from "./HistoryPanel";
 import {
-  CREATE_IMAGE_SCROLL_RESERVE,
   createImageScrollContentBottomPaddingPx,
   createImageScrollContentBottomPaddingPxDesktopXl,
 } from "./preview-frame-layout";
-import {
-  useCreateImagePreviewPromptLayout,
-  useMinWidth1280,
-} from "./use-create-image-preview-prompt-layout";
+import { useCreateImagePreviewPromptLayout } from "./use-create-image-preview-prompt-layout";
 import type {
   AspectRatio,
   AssetContentType,
@@ -27,9 +23,9 @@ import type {
   ReferenceFile,
 } from "./types";
 import { MOCK_TEMPLATES } from "./types";
-import { mobileCreateImageHelperLines } from "./mobile-create-image-copy";
-import { MobileCreateImageDrawer } from "./MobileCreateImageDrawer";
+import { MobileCreateImageInlineHistoryGrid } from "./MobileCreateImageInlineHistoryGrid";
 import { FixedPromptBarDock } from "./FixedPromptBarDock";
+import { DesktopThreeColumnShell } from "@/components/shell/DesktopThreeColumnShell";
 import { cn } from "@/lib/utils";
 import { useShellNav } from "@/lib/use-shell-nav";
 import { likedKey } from "@/lib/liked-item-keys";
@@ -42,38 +38,77 @@ import {
   firstFileIdForImageBatch,
 } from "@/components/files/image-editor-source";
 import type { ActivityHistoryEntry } from "@/components/history/types";
+import { isDataImageSrc } from "@/lib/is-data-image-src";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-function dimsForAspect(a: AspectRatio): { w: number; h: number } {
-  switch (a) {
-    case "16:9":
-      return { w: 1600, h: 900 };
-    case "1:1":
-      return { w: 1024, h: 1024 };
-    case "4:5":
-      return { w: 800, h: 1000 };
-    case "9:16":
-      return { w: 900, h: 1600 };
-    default:
-      return { w: 1600, h: 900 };
-  }
-}
+/** Calls `/api/ai/generate-image` with live Image Settings; server returns one or more data-URL images. */
+async function fetchGeneratedImages(opts: {
+  prompt: string;
+  assetType: AssetContentType;
+  aspectRatio: AspectRatio;
+  resolution: Quality;
+  numberOfVariations: number;
+}): Promise<string[]> {
+  const {
+    prompt,
+    assetType,
+    aspectRatio,
+    resolution,
+    numberOfVariations,
+  } = opts;
+  console.log("Generate request settings:", {
+    prompt,
+    assetType,
+    aspectRatio,
+    resolution,
+    numberOfVariations,
+  });
 
-async function mockGenerateImages(
-  count: number,
-  aspect: AspectRatio,
-  seedBase: string,
-): Promise<string[]> {
-  await new Promise((r) => setTimeout(r, 1600));
-  const { w, h } = dimsForAspect(aspect);
-  const safe = seedBase.replace(/\W+/g, "").slice(0, 12) || "img";
-  return Array.from(
-    { length: count },
-    (_, i) => `https://picsum.photos/seed/${safe}${i}/${w}/${h}`,
-  );
+  const res = await fetch("/api/ai/generate-image", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      prompt,
+      assetType,
+      aspectRatio,
+      resolution,
+      numberOfVariations,
+    }),
+  });
+  const data: unknown = await res.json().catch(() => null);
+
+  let urls: string[] = [];
+  if (
+    data &&
+    typeof data === "object" &&
+    Array.isArray((data as { images?: unknown }).images)
+  ) {
+    urls = (data as { images: unknown[] }).images.filter(
+      (x): x is string => typeof x === "string" && x.length > 0,
+    );
+  }
+  if (
+    urls.length === 0 &&
+    data &&
+    typeof data === "object" &&
+    typeof (data as { image?: unknown }).image === "string"
+  ) {
+    urls = [(data as { image: string }).image];
+  }
+
+  if (!res.ok || urls.length === 0) {
+    const fromServer =
+      data &&
+      typeof data === "object" &&
+      typeof (data as { error?: unknown }).error === "string"
+        ? (data as { error: string }).error
+        : null;
+    throw new Error(fromServer || `Image generation failed (${res.status})`);
+  }
+  return urls;
 }
 
 export function CreateImageClient() {
@@ -90,12 +125,11 @@ export function CreateImageClient() {
   const [barPrompt, setBarPrompt] = useState("");
   const [references, setReferences] = useState<ReferenceFile[]>([]);
   const [assetContentType, setAssetContentType] =
-    useState<AssetContentType>("Social Media");
+    useState<AssetContentType>("Standard");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
   const [quality, setQuality] = useState<Quality>("4K");
   const [variations, setVariations] = useState(1);
   const [templateId, setTemplateId] = useState<string | null>(null);
-  const [templatesOpen, setTemplatesOpen] = useState(false);
 
   const [previewPrompt, setPreviewPrompt] = useState("");
   const [previewAt, setPreviewAt] = useState<Date | null>(null);
@@ -115,23 +149,25 @@ export function CreateImageClient() {
   );
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const generateInFlightRef = useRef(false);
+  const [templatesMenuOpen, setTemplatesMenuOpen] = useState(false);
   const [fullScreenUrl, setFullScreenUrl] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const desktopScrollRef = useRef<HTMLDivElement>(null);
   const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const mobileColumnRef = useRef<HTMLElement>(null);
-  const { layoutFrame, promptBar: promptBarGeom, minWidth768 } =
+  const { layoutFrame, promptBar: promptBarGeom, minWidth1280 } =
     useCreateImagePreviewPromptLayout({
     desktopScrollRef,
     desktopMiddleColumnRef,
     mobileScrollRef,
     mobileColumnRef,
     aspectRatio,
-    templatesOpen,
+    templatesOpen: templatesMenuOpen,
+    previewLayoutIgnoreTemplatesOpen: false,
+    templatesInScrollColumn: true,
   });
 
-  const minWidth1280 = useMinWidth1280();
   const desktopScrollBottomPadPx = minWidth1280
     ? createImageScrollContentBottomPaddingPxDesktopXl()
     : createImageScrollContentBottomPaddingPx("desktop");
@@ -139,6 +175,36 @@ export function CreateImageClient() {
   const template = useMemo(
     () => MOCK_TEMPLATES.find((t) => t.id === templateId) ?? null,
     [templateId],
+  );
+
+  const desktopTemplatesStripSlot = useMemo(
+    () => (
+      <DesktopTemplatesStrip
+        templates={MOCK_TEMPLATES}
+        selectedId={templateId}
+        onSelect={setTemplateId}
+        menuThumbPreset="create-image"
+      />
+    ),
+    [templateId],
+  );
+
+  const templatesAfterPreviewStack = useMemo(
+    () => (
+      <TemplatesPanel
+        templates={MOCK_TEMPLATES}
+        selectedId={templateId}
+        openMode="hover"
+        onSelect={setTemplateId}
+        desktopExpandedSlot={desktopTemplatesStripSlot}
+        toggleButtonPreset="create-image"
+        menuThumbPreset="create-image"
+        hoverClickMenuDualMode
+        stackTemplatesMenuInLayout
+        onMenuVisibilityChange={setTemplatesMenuOpen}
+      />
+    ),
+    [desktopTemplatesStripSlot, templateId],
   );
 
   const displaySlots = useMemo(() => {
@@ -151,21 +217,32 @@ export function CreateImageClient() {
     !barPrompt.trim() && references.length === 0;
 
   const handleGenerate = useCallback(async () => {
-    if (generateDisabled || isGenerating) return;
+    if (generateInFlightRef.current) return;
+    const trimmed = barPrompt.trim();
+    if (!trimmed && references.length === 0) return;
+
+    generateInFlightRef.current = true;
     setIsGenerating(true);
     try {
-      const urls = await mockGenerateImages(
-        variations,
+      const promptForApi =
+        trimmed ||
+        "Generate a compelling image based on the attached reference images.";
+      const urls = await fetchGeneratedImages({
+        prompt: promptForApi,
+        assetType: assetContentType,
         aspectRatio,
-        `${assetContentType}-${barPrompt}-${references.map((r) => r.id).join("")}`,
-      );
+        resolution: quality,
+        numberOfVariations: variations,
+      });
       const batchId = uid();
       const createdAt = new Date();
-      const promptText = barPrompt.trim() || "(reference only)";
+      const promptText = trimmed || "(reference only)";
       const subtitle =
         promptText.length > 120 ? `${promptText.slice(0, 117)}…` : promptText;
 
-      const imageCount = activityEntries.filter((e) => e.kind === "image" && e.origin === "generated-image").length;
+      const imageCount = activityEntries.filter(
+        (e) => e.kind === "image" && e.origin === "generated-image",
+      ).length;
       const sequenceNum = String(imageCount + 1).padStart(2, "0");
       const title = `image-${sequenceNum}.jpg`;
 
@@ -187,19 +264,21 @@ export function CreateImageClient() {
       setPreviewAt(createdAt);
       setSlotImages(urls);
       setSlotFileIds([]);
+    } catch (err) {
+      console.error("[CreateImageClient] Image generation failed:", err);
     } finally {
+      generateInFlightRef.current = false;
       setIsGenerating(false);
     }
   }, [
     barPrompt,
-    generateDisabled,
-    isGenerating,
     references,
     variations,
-    aspectRatio,
     assetContentType,
+    aspectRatio,
+    quality,
+    activityEntries,
     updateActivityEntries,
-    updateFileEntries,
   ]);
 
   const loadHistory = useCallback(
@@ -371,38 +450,39 @@ export function CreateImageClient() {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
-        /* Tablet (md–xl): 900px column cap; desktop xl+: 1000px 16:9 preview column. */
-        "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-bg text-tx-primary",
+        "xl:[--create-image-prompt-max:1000px]",
       )}
     >
-      {/* md+: sidebar (xl+) + centered main + history (xl+); refs for preview/prompt layout */}
-      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden md:flex">
+      {/* xl+: visible side rails + desktop header; same refs as preview/prompt layout */}
+      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden xl:flex">
         <div className="hidden shrink-0 xl:block">
           <Header variant="desktop" />
         </div>
         <div className="shrink-0 xl:hidden">
-          <Header
-            variant="mobile"
-            mobileTitle="CREATE"
-            onMenuClick={() => setMobileMenuOpen(true)}
-          />
+          <Header variant="mobile" mobileTitle="CREATE" />
         </div>
-        {/* xl: fixed 300px rails + minmax(0,1fr) center; inner flex justify-center + max-w (refs unchanged). */}
-        <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden xl:grid xl:grid-cols-[300px_minmax(0,1fr)_300px]">
-          <Sidebar
-            className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
-            activeId={activeMainNav}
-            onNavigate={navigate}
-            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
-          />
-          {/* Tablet: flex + items-center. Desktop (xl): 1fr | minmax(0,1000px) | 1fr — equal side tracks keep the middle column centered at every width. */}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:grid xl:h-full xl:min-h-0 xl:min-w-0 xl:max-w-none xl:grid-cols-[minmax(0,1fr)_minmax(0,1000px)_minmax(0,1fr)] xl:items-stretch xl:overflow-hidden xl:px-0">
-            <div
-              className="hidden min-w-0 xl:block xl:min-h-0"
-              aria-hidden="true"
+        <DesktopThreeColumnShell
+          sidebar={
+            <Sidebar
+              className="flex min-h-0 h-full min-w-0 w-full flex-1 flex-col"
+              activeId={activeMainNav}
+              onNavigate={navigate}
             />
-            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col xl:max-w-none xl:w-full xl:min-h-0 xl:min-w-0">
+          }
+          rail={
+            <HistoryPanel
+              title="IMAGE HISTORY"
+              items={createImageSidebarHistory}
+              activeId={activeHistoryId}
+              onSelect={loadHistory}
+              onMenuAction={handleHistoryMenu}
+              className="min-h-0 w-full min-w-0 flex-1 flex-col"
+            />
+          }
+        >
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:px-0">
+            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col xl:mx-auto xl:w-[min(100%,1000px)] xl:max-w-[1000px] xl:min-h-0 xl:min-w-0">
               <div
                 ref={desktopScrollRef}
                 className="min-h-0 flex-1 overflow-y-auto"
@@ -410,7 +490,7 @@ export function CreateImageClient() {
                   scrollPaddingBottom: desktopScrollBottomPadPx,
                 }}
               >
-                {/* One column: tablet md–xl max 900px; desktop xl max 1000px (16:9 preview). */}
+                {/* Desktop xl+: centered column max 1000px (16:9 preview). */}
                 <div
                   ref={desktopMiddleColumnRef}
                   className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
@@ -427,101 +507,82 @@ export function CreateImageClient() {
                       createdAt={previewAt}
                       isLoading={isGenerating}
                       layoutFrame={layoutFrame}
+                      promptDescriptionAnchoredToPreview
                       onPreviewClick={handlePreviewClick}
                       onMenuAction={handlePreviewMenu}
-                    />
-                  </div>
-                  <div className="mb-3 mt-5 min-w-0 w-full shrink-0 max-xl:block xl:hidden">
-                    <TemplatesPanel
-                      templates={MOCK_TEMPLATES}
-                      selectedId={templateId}
-                      open={templatesOpen}
-                      onToggle={() => setTemplatesOpen((o) => !o)}
-                      onSelect={setTemplateId}
+                      afterPreviewStack={templatesAfterPreviewStack}
                     />
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              className="hidden min-w-0 xl:block xl:min-h-0"
-              aria-hidden="true"
-            />
           </div>
-          <HistoryPanel
-            items={createImageSidebarHistory}
-            activeId={activeHistoryId}
-            onSelect={loadHistory}
-            onMenuAction={handleHistoryMenu}
-            className="hidden max-h-screen shrink-0 !bg-transparent xl:flex xl:w-[300px] xl:min-w-[300px]"
-            panelClassName="w-full rounded-panel border border-edge-default bg-surface-elevated"
-            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
-            flushBottom
-          />
-        </div>
+        </DesktopThreeColumnShell>
       </div>
 
-      {/* Below md: MOBILE-image-16x9.svg layout — single column card */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden">
+      {/* Below xl: center column only (matches Chat mobile header + desktop middle flow). */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-bg xl:hidden">
         <Header
           variant="mobile"
           mobileTitle="CREATE"
-          onMenuClick={() => setMobileMenuOpen(true)}
+          mobileNavTriggerSide="end"
         />
-        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <div
-            ref={mobileScrollRef}
-            className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
-            style={{
-              scrollPaddingBottom:
-                createImageScrollContentBottomPaddingPx("mobile"),
-            }}
-          >
-            <main
-              ref={mobileColumnRef}
-              className="flex w-full min-w-0 flex-col px-4 pt-3"
-              style={{
-                paddingBottom:
-                  createImageScrollContentBottomPaddingPx("mobile"),
-              }}
-            >
-              <PreviewPanel
-                aspectRatio={aspectRatio}
-                template={template}
-                slotImages={displaySlots}
-                promptText={previewPrompt}
-                createdAt={previewAt}
-                isLoading={isGenerating}
-                layoutFrame={layoutFrame}
-                showPreviewLabel={false}
-                hideMeta
-                mobileFrame
-                onPreviewClick={handlePreviewClick}
-                onMenuAction={handlePreviewMenu}
-              />
-              {(() => {
-                const [lineA, lineB] = mobileCreateImageHelperLines(aspectRatio);
-                return (
-                  <div className="mt-2 space-y-0.5">
-                    <p className="text-[11px] leading-[18px] text-tx-muted">
-                      {lineA}
-                    </p>
-                    <p className="text-[11px] leading-[18px] text-tx-muted">
-                      {lineB}
-                    </p>
+        <div className="mx-4 mb-1 mt-2 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 sm:px-8">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center">
+            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col">
+              <div
+                ref={mobileScrollRef}
+                className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
+                style={{
+                  scrollPaddingBottom:
+                    createImageScrollContentBottomPaddingPx("mobile"),
+                }}
+              >
+                <main
+                  ref={mobileColumnRef}
+                  className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
+                  style={{
+                    paddingBottom:
+                      createImageScrollContentBottomPaddingPx("mobile"),
+                  }}
+                >
+                  <div className="min-w-0 xl:mb-8">
+                    <PreviewPanel
+                      aspectRatio={aspectRatio}
+                      template={template}
+                      slotImages={displaySlots}
+                      promptText={previewPrompt}
+                      createdAt={previewAt}
+                      isLoading={isGenerating}
+                      layoutFrame={layoutFrame}
+                      promptDescriptionAnchoredToPreview
+                      onPreviewClick={handlePreviewClick}
+                      onMenuAction={handlePreviewMenu}
+                      afterPreviewStack={
+                        createImageSidebarHistory.length > 0
+                          ? undefined
+                          : templatesAfterPreviewStack
+                      }
+                      inlineAfterDescription={
+                        createImageSidebarHistory.length > 0 ? (
+                          <>
+                            <div className="mt-3 w-full min-w-0 shrink-0">
+                              {templatesAfterPreviewStack}
+                            </div>
+                            <MobileCreateImageInlineHistoryGrid
+                              items={createImageSidebarHistory}
+                              activeId={activeHistoryId}
+                              onSelect={loadHistory}
+                              onMenuAction={handleHistoryMenu}
+                            />
+                          </>
+                        ) : undefined
+                      }
+                    />
                   </div>
-                );
-              })()}
-              <div className="mt-4 mb-4 min-w-0 w-full">
-                <TemplatesPanel
-                  templates={MOCK_TEMPLATES}
-                  selectedId={templateId}
-                  open={templatesOpen}
-                  onToggle={() => setTemplatesOpen((o) => !o)}
-                  onSelect={setTemplateId}
-                />
+                </main>
               </div>
-            </main>
+            </div>
           </div>
         </div>
       </div>
@@ -537,10 +598,11 @@ export function CreateImageClient() {
           onGenerate={handleGenerate}
           isGenerating={isGenerating}
           generateDisabled={generateDisabled}
-          variant={minWidth768 ? "desktop" : "mobile"}
+          variant={minWidth1280 ? "desktop" : "mobile"}
         />
         <GenerationSettingsRow
           className="w-full shrink-0"
+          imagePagesPillStyle
           assetContentType={assetContentType}
           onAssetContentType={setAssetContentType}
           aspectRatio={aspectRatio}
@@ -549,43 +611,15 @@ export function CreateImageClient() {
           onQuality={setQuality}
           variations={variations}
           onVariations={setVariations}
-          variant={minWidth768 ? "desktop" : "mobile"}
+          variant={minWidth1280 ? "desktop" : "mobile"}
         />
-        <div
-          className={cn(
-            "hidden w-full shrink-0 xl:flex xl:justify-center",
-            /* mt: description → templates; gap-3 on dock = templates → settings (≈12px). */
-            "mt-[32px]",
-          )}
-        >
-          <div className="w-full min-w-0 xl:max-w-[1000px]">
-            <DesktopTemplatesStrip
-              templates={MOCK_TEMPLATES}
-              selectedId={templateId}
-              onSelect={setTemplateId}
-            />
-          </div>
-        </div>
       </FixedPromptBarDock>
 
-      <MobileCreateImageDrawer
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        historyItems={createImageSidebarHistory}
-        activeHistoryId={activeHistoryId}
-        onSelectHistory={(id) => {
-          loadHistory(id);
-          setMobileMenuOpen(false);
-        }}
-        onHistoryMenuAction={handleHistoryMenu}
-        activeMainNav={activeMainNav}
-      />
-
       {fullScreenUrl ? (
-        <div className="fixed inset-0 z-[1200] flex flex-col bg-surface-base/95 p-4">
+        <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
           <button
             type="button"
-            className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"
+            className="mb-4 self-end rounded-full px-4 py-2 text-sm text-white hover:bg-white/10"
             onClick={() => setFullScreenUrl(null)}
           >
             Close
@@ -597,6 +631,7 @@ export function CreateImageClient() {
               fill
               className="object-contain"
               sizes="100vw"
+              unoptimized={isDataImageSrc(fullScreenUrl)}
             />
           </div>
         </div>

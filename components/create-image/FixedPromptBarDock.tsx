@@ -25,7 +25,7 @@ export function FixedPromptBarDock({
   return (
     <div
       className={cn(
-        "fixed bottom-6 z-[1000] flex min-w-0 flex-col-reverse items-stretch gap-3",
+        "fixed bottom-[var(--prompt-dock-viewport-bottom)] z-[1000] flex min-w-0 flex-col-reverse items-stretch gap-3 overflow-visible",
         className,
       )}
       role="region"

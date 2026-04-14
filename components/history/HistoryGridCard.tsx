@@ -7,6 +7,8 @@ import {
   FileRowActionsMenu,
   type FileRowMenuAction,
 } from "../files/FileRowActionsMenu";
+import type { FileRowNameEditProps } from "../files/FileListRow";
+import { FileNameInlineEdit } from "../files/FileNameInlineEdit";
 import { formatHistoryRowMeta } from "./history-meta";
 import { HistoryGridTemplateThumb } from "./history-template-thumb";
 import type { ActivityHistoryEntry } from "./types";
@@ -16,109 +18,87 @@ type HistoryGridCardProps = {
   rowIndex: number;
   onMenuAction?: (id: string, action: FileRowMenuAction) => void;
   onItemOpen?: (id: string) => void;
-  enableTitleInlineRename?: boolean;
-  isTitleRenaming?: boolean;
-  titleRenameValue?: string;
-  onStartTitleRename?: () => void;
-  onTitleRenameChange?: (next: string) => void;
-  onTitleRenameSubmit?: () => void;
-  onTitleRenameCancel?: () => void;
+  titleEdit?: FileRowNameEditProps;
 };
 
 export function HistoryGridCard({
   entry,
-  rowIndex,
+  rowIndex: _rowIndex,
   onMenuAction,
   onItemOpen,
-  enableTitleInlineRename = false,
-  isTitleRenaming = false,
-  titleRenameValue = "",
-  onStartTitleRename,
-  onTitleRenameChange,
-  onTitleRenameSubmit,
-  onTitleRenameCancel,
+  titleEdit,
 }: HistoryGridCardProps) {
   const meta = formatHistoryRowMeta(entry);
-  const surface =
-    rowIndex % 2 === 0
-      ? "bg-surface-elevated border-edge-default/80"
-      : "bg-surface-panel border-edge-default/80";
+  const metaLine = `${entry.subtitle} • ${meta}`;
+  const cardActivate = onItemOpen ? () => onItemOpen(entry.id) : undefined;
 
   return (
     <div
-      role={onItemOpen ? "button" : undefined}
-      tabIndex={onItemOpen ? 0 : undefined}
-      onClick={() => onItemOpen?.(entry.id)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onItemOpen?.(entry.id);
-        }
-      }}
+      role={cardActivate ? "button" : undefined}
+      tabIndex={cardActivate ? 0 : undefined}
+      onClick={cardActivate}
+      onKeyDown={
+        cardActivate
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                cardActivate();
+              }
+            }
+          : undefined
+      }
       className={cn(
-        "group flex h-full cursor-pointer flex-col overflow-hidden rounded-card border transition-[background-color,border-color,box-shadow] duration-150",
-        surface,
-        "hover:border-edge-strong hover:bg-surface-hover hover:shadow-md",
+        "group flex h-full flex-col rounded-xl border border-edge-subtle bg-surface-card transition-colors duration-150",
+        "hover:bg-ix-hover",
+        cardActivate ? "cursor-pointer" : "cursor-default",
       )}
     >
-      <div className="relative">
-        <HistoryGridTemplateThumb imageUrl={entry.thumbnailUrl} />
+      <div
+        className={cn(
+          "relative w-full rounded-t-xl bg-panel-bg transition-colors duration-150 group-hover:bg-app-shade",
+          "aspect-[148/118] sm:aspect-[8/5]",
+        )}
+      >
         <div
           className="absolute right-2 top-2 z-10 flex items-center gap-1"
           onClick={(e) => e.stopPropagation()}
         >
-          <LikeToggleButton itemKey={likedKey.activity(entry.id)} />
+          <LikeToggleButton
+            itemKey={likedKey.activity(entry.id)}
+            filesHeartAppearance
+          />
           <FileRowActionsMenu
             align="right"
             menuAriaLabel="History item actions"
             onSelect={(a) => onMenuAction?.(entry.id, a)}
           />
         </div>
+        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-t-xl">
+          <HistoryGridTemplateThumb
+            imageUrl={entry.thumbnailUrl}
+            className="h-full w-full rounded-t-xl"
+          />
+        </div>
       </div>
       <div className="min-w-0 px-2.5 pb-2.5 pt-2 sm:px-3 sm:pb-3 sm:pt-2.5">
-        {enableTitleInlineRename ? (
-          isTitleRenaming ? (
-            <input
-              autoFocus
-              value={titleRenameValue}
-              onChange={(e) => onTitleRenameChange?.(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  onTitleRenameSubmit?.();
-                }
-                if (e.key === "Escape") {
-                  e.preventDefault();
-                  onTitleRenameCancel?.();
-                }
-              }}
-              onBlur={() => onTitleRenameSubmit?.()}
-              className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-edge-strong px-1 -mx-1"
-              aria-label={`Rename ${entry.title}`}
-            />
-          ) : (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onStartTitleRename?.();
-              }}
-              className="w-full truncate text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]"
-            >
-              {entry.title}
-            </button>
-          )
+        {titleEdit ? (
+          <FileNameInlineEdit
+            displayName={entry.title}
+            isEditing={titleEdit.isEditing}
+            draftValue={titleEdit.editedName}
+            onDraftChange={titleEdit.onEditedNameChange}
+            onRequestEdit={titleEdit.onStart}
+            onCommit={titleEdit.onCommit}
+            onCancelEdit={titleEdit.onCancel}
+            textClassName="truncate text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]"
+          />
         ) : (
           <p className="truncate text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]">
             {entry.title}
           </p>
         )}
-        <p className="mt-0.5 truncate text-left text-[11px] text-tx-muted">
-          {entry.subtitle}
-        </p>
-        <p className="mt-1 truncate text-left text-[10px] text-tx-muted sm:text-[11px]">
-          {meta}
+        <p className="mt-1 truncate text-left text-[10px] leading-snug text-[#315790] sm:text-[11px]">
+          {metaLine}
         </p>
       </div>
     </div>

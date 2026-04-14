@@ -4,9 +4,12 @@ import type { MouseEvent, RefObject } from "react";
 import { useMemo } from "react";
 import { IconAsset } from "@/components/icons/IconAsset";
 import { ICONS } from "@/components/icons/icon-paths";
+import { IconDots } from "@/components/create-image/icons";
+import { threeDotsMenuTriggerButtonClassName } from "@/components/ui/three-dots-menu-trigger";
 import { cn } from "@/lib/utils";
 import {
   bubbleStackMarginTopClass,
+  chatDateTimeLabelTextClassName,
   formatChatDateLabel,
   formatMessageTime,
   resolveMessageDates,
@@ -88,7 +91,12 @@ function DateSeparator({ label }: { label: string }) {
       role="separator"
       aria-label={label}
     >
-      <span className="rounded-input bg-primary-soft px-3 py-0.5 text-[11px] font-medium text-tx-muted">
+      <span
+        className={cn(
+          "rounded-full bg-primary/10 px-3 py-0.5 text-[11px] font-medium",
+          chatDateTimeLabelTextClassName,
+        )}
+      >
         {label}
       </span>
     </div>
@@ -120,7 +128,12 @@ function MessageTimestampColumn({
       }}
       aria-hidden
     >
-      <span className="pr-0.5 text-[11px] leading-[13px] text-tx-muted">
+      <span
+        className={cn(
+          "pr-0.5 text-[11px] leading-[13px]",
+          chatDateTimeLabelTextClassName,
+        )}
+      >
         {timeLabel}
       </span>
     </div>
@@ -132,13 +145,19 @@ type BubbleProps = {
   stackMarginClass: string;
 };
 
+/** Shared layout + type rhythm for user and assistant bubbles (role-specific colors below). */
+const chatBubbleFrameClassName =
+  "relative max-w-[70%] shrink-0 rounded-[20px] py-3 pl-4 pr-10 text-left font-normal text-[16px] leading-[22px]";
+
+const chatBubbleTextClassName =
+  "block min-w-0 whitespace-pre-wrap break-words text-[16px] leading-[22px] font-normal";
+
 function UserBubble({ m, stackMarginClass }: BubbleProps) {
   return (
     <div
       className={cn(
-        "relative max-w-[min(100%,420px)] rounded-full bg-message-user/90",
-        /* Padding matches AssistantBubble; copy control: right-5, vertically centered */
-        "px-5 py-4 pr-18 text-left text-[16px] leading-[22px] text-tx-primary",
+        chatBubbleFrameClassName,
+        "bg-[#315790] text-tx-primary hover:bg-[#315790] active:bg-[#315790]",
         stackMarginClass,
       )}
     >
@@ -146,8 +165,8 @@ function UserBubble({ m, stackMarginClass }: BubbleProps) {
         type="button"
         onClick={(e) => handleCopyClick(e, m.text)}
         className={cn(
-          "absolute right-5 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-menu-item",
-          "text-tx-muted opacity-90 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/15",
+          "absolute right-1.5 top-1.5 z-[1] flex h-7 w-7 items-center justify-center rounded-full",
+          "text-tx-secondary opacity-90 transition-colors hover:bg-white/10 hover:text-white",
         )}
         aria-label="Copy message"
       >
@@ -157,9 +176,7 @@ function UserBubble({ m, stackMarginClass }: BubbleProps) {
           className="pointer-events-none [&_img]:opacity-100"
         />
       </button>
-      <span className="block min-w-0 whitespace-pre-wrap break-words">
-        {m.text}
-      </span>
+      <span className={chatBubbleTextClassName}>{m.text}</span>
     </div>
   );
 }
@@ -168,9 +185,9 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
   return (
     <div
       className={cn(
-        "relative max-w-[min(100%,620px)] rounded-full border-0 bg-message-ai shadow-none ring-0",
-        /* Roomy inset; pr-18 reserves space so wrapped lines clear the copy control */
-        "px-5 py-4 pr-18 text-left text-[16px] leading-[22px] text-tx-secondary",
+        chatBubbleFrameClassName,
+        "bg-transparent text-[#FFFFFF]",
+        "[&_a]:text-[#FFFFFF] [&_a]:underline [&_strong]:text-[#FFFFFF] [&_code]:text-[#FFFFFF]",
         stackMarginClass,
       )}
     >
@@ -178,8 +195,8 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
         type="button"
         onClick={(e) => handleCopyClick(e, m.text)}
         className={cn(
-          "absolute right-5 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-menu-item",
-          "text-tx-muted opacity-90 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/15",
+          "absolute right-1.5 top-1.5 z-[1] flex h-7 w-7 items-center justify-center rounded-full",
+          "text-[#FFFFFF] opacity-90 transition-colors hover:bg-white/10 hover:opacity-100",
         )}
         aria-label="Copy message"
       >
@@ -189,9 +206,7 @@ function AssistantBubble({ m, stackMarginClass }: BubbleProps) {
           className="pointer-events-none [&_img]:opacity-100"
         />
       </button>
-      <span className="block min-w-0 whitespace-pre-wrap break-words">
-        {m.text}
-      </span>
+      <span className={chatBubbleTextClassName}>{m.text}</span>
     </div>
   );
 }
@@ -216,7 +231,7 @@ export function ChatMessageThread({
   return (
     <div
       className={cn(
-        "flex min-w-0 flex-col",
+        "flex w-full min-w-0 flex-col",
         horizontalLock && "select-none",
         className,
       )}
@@ -225,6 +240,7 @@ export function ChatMessageThread({
       }}
       {...handlers}
     >
+      <div className="mx-auto flex w-full min-w-0 max-w-[800px] flex-col">
       {messages.map((m, i) => {
         const prev = i > 0 ? messages[i - 1] : undefined;
         const prevDate = i > 0 ? dates[i - 1] : undefined;
@@ -239,32 +255,46 @@ export function ChatMessageThread({
           <div key={m.id}>
             {showSep ? <DateSeparator label={dateLabel} /> : null}
 
-            <div
-              className={cn(
-                "flex w-full min-w-0 items-end gap-1.5",
-                isUser ? "justify-end" : "justify-start",
-              )}
-            >
-              {isUser ? (
-                <>
-                  <UserBubble m={m} stackMarginClass={stackMarginClass} />
+            {isUser ? (
+              <div className="flex w-full min-w-0 items-end justify-end gap-1.5">
+                <MessageTimestampColumn
+                  timeLabel={timeLabel}
+                  reveal={reveal}
+                  transitionClass={transitionClass}
+                />
+                <UserBubble m={m} stackMarginClass={stackMarginClass} />
+              </div>
+            ) : (
+              <div className="flex w-full min-w-0 flex-col items-stretch">
+                <div className="flex w-full min-w-0 items-end justify-start gap-1.5">
+                  <AssistantBubble
+                    m={m}
+                    stackMarginClass={stackMarginClass}
+                  />
                   <MessageTimestampColumn
                     timeLabel={timeLabel}
                     reveal={reveal}
                     transitionClass={transitionClass}
                   />
-                </>
-              ) : (
-                <>
-                  <AssistantBubble m={m} stackMarginClass={stackMarginClass} />
-                  <MessageTimestampColumn
-                    timeLabel={timeLabel}
-                    reveal={reveal}
-                    transitionClass={transitionClass}
-                  />
-                </>
-              )}
-            </div>
+                </div>
+                <div className="mt-1.5 flex w-full min-w-0 justify-start">
+                  <button
+                    type="button"
+                    aria-label="Assistant message actions"
+                    className={cn(
+                      "flex h-8 w-8 shrink-0 items-center justify-center",
+                      threeDotsMenuTriggerButtonClassName,
+                    )}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <IconDots className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         );
       })}
@@ -281,9 +311,10 @@ export function ChatMessageThread({
               type="button"
               onClick={() => onChipClick?.(label)}
               className={cn(
-                "rounded-card bg-surface-elevated px-3 py-1.5",
-                "text-[11px] font-medium text-tx-muted transition-colors",
-                "hover:bg-surface-hover hover:text-white focus-visible:bg-surface-hover",
+                "rounded-full bg-surface-card px-3 py-1.5",
+                "text-[11px] font-medium text-tx-secondary transition-colors",
+                "hover:bg-panel-hover hover:text-white",
+                "focus-visible:outline-none focus-visible:ring-0 focus-visible:bg-panel-hover focus-visible:text-white",
               )}
             >
               {label}
@@ -291,7 +322,8 @@ export function ChatMessageThread({
           ))}
         </div>
       ) : null}
-      <div ref={bottomRef} className="h-px w-full shrink-0" aria-hidden />
+      <div ref={bottomRef} className="h-0 w-full shrink-0" aria-hidden />
+      </div>
     </div>
   );
 }

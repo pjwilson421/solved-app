@@ -12,11 +12,12 @@ export type PromptBarDockRefs = {
 /**
  * Matches `useCreateImagePreviewPromptLayout` prompt dock math exactly (Create Image = source of truth).
  */
+/** @param useDesktopShellLayout `true` when viewport is `xl+` (same as visible three-column shell). */
 export function readPromptBarDockGeometry(
-  minWidth768: boolean,
+  useDesktopShellLayout: boolean,
   refs: PromptBarDockRefs,
 ): PromptBarDockGeometry | null {
-  if (minWidth768) {
+  if (useDesktopShellLayout) {
     const colEl = refs.desktopMiddleColumnRef.current;
     const scrollEl = refs.desktopScrollRef.current;
     if (!colEl || !scrollEl) return null;
@@ -43,10 +44,9 @@ const XL_BREAKPOINT_PX = 1280;
 const SM_BREAKPOINT_PX = 640;
 
 /**
- * Pixel geometry of the fixed prompt dock on Create Image **desktop** (md+), derived from the
- * same grid / max-width rules as `CreateImageClient` (300 | 1fr | 300 at xl; max 900px centered
- * tablet with px-4 / sm:px-8). Use on pages whose main column differs but the dock should match
- * Create Image exactly.
+ * Pixel geometry of the fixed prompt dock on Create Image **desktop** (`xl+`), derived from the
+ * same grid / max-width rules as `CreateImageClient` (300 | 1fr | 300). Use on pages whose main
+ * column differs but the dock should match Create Image exactly.
  */
 export function createImageDesktopPromptDockGeometryPx(): PromptBarDockGeometry {
   if (typeof document === "undefined") {

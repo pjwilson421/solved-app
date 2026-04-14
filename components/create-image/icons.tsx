@@ -13,6 +13,20 @@ export function IconMenu({ className }: { className?: string }) {
   );
 }
 
+/** Mobile header: closed menu vs open (paired with `IconMenu`). */
+export function IconCloseNav({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M7 7l10 10M17 7L7 17"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function IconDots({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden>

@@ -1,3 +1,12 @@
+import { HISTORY_THUMB_DATETIME_TEXT_CLASS } from "@/lib/history-metadata-text";
+
+/**
+ * Day labels (Today / Yesterday / …), centered date separators, and swipe-revealed per-message
+ * timestamps in the chat message column. Not used for bubble body text or suggested chips.
+ * Color matches Create Image history thumbnail date line ({@link HISTORY_THUMB_DATETIME_TEXT_CLASS}).
+ */
+export const chatDateTimeLabelTextClassName = HISTORY_THUMB_DATETIME_TEXT_CLASS;
+
 /** Minimal shape for date resolution / grouping (keeps module free of UI circular imports). */
 export type ChatMessageTimeFields = {
   sentAt?: string;
@@ -109,6 +118,16 @@ export function shouldGroupWithPrevious(
   return gap >= 0 && gap <= CHAT_GROUP_GAP_MS;
 }
 
+/** User ↔ assistant gap — keep in sync with `CHAT_MESSAGE_STACK_TOP_WITH_OVERFLOW_MENU_CLASS` calc. */
+export const CHAT_BUBBLE_ALTERNATING_ROLE_MARGIN_TOP_CLASS = "mt-6";
+
+/**
+ * Top padding when the preview-aligned overflow menu (`top-3` + `h-8`) is shown:
+ * clearance under the button = same as alternating bubble gap (`mt-6` = 1.5rem).
+ */
+export const CHAT_MESSAGE_STACK_TOP_WITH_OVERFLOW_MENU_CLASS =
+  "pt-[calc(0.75rem+2rem+1.5rem)]";
+
 /**
  * Vertical gap between consecutive bubbles: 16px same role (user–user or assistant–assistant),
  * 24px when roles alternate. First row after a date separator uses 0 (separator provides space).
@@ -120,5 +139,7 @@ export function bubbleStackMarginTopClass(
 ): string {
   if (showDateSeparatorAbove) return "mt-0";
   if (!prev) return "mt-0";
-  return prev.role === curr.role ? "mt-4" : "mt-6";
+  return prev.role === curr.role
+    ? "mt-4"
+    : CHAT_BUBBLE_ALTERNATING_ROLE_MARGIN_TOP_CLASS;
 }

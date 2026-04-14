@@ -1,112 +1,90 @@
 "use client";
 
-import { useState } from "react";
+import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Header } from "@/components/create-image/Header";
 import { Sidebar } from "@/components/create-image/Sidebar";
-import { MobileCreateImageDrawer } from "@/components/create-image/MobileCreateImageDrawer";
-import type { HistoryItem } from "@/components/create-image/types";
+import { LeftNavRail } from "@/components/shell/LeftNavRail";
 import { useShellNav } from "@/lib/use-shell-nav";
-
-const EMPTY_HISTORY: HistoryItem[] = [];
 
 type SettingsRouteClientProps = {
   title: string;
   description?: string;
-  /** When true, main column has no inner panel (no bg/border/radius); blends with page shell. */
-  flatMainContent?: boolean;
+  /** When set, replaces the default description block (e.g. Help). */
+  children?: ReactNode;
 };
 
 export function SettingsRouteClient({
   title,
   description = "This section will be available in a future update.",
-  flatMainContent = false,
+  children,
 }: SettingsRouteClientProps) {
   const { navigate, activeMainNav } = useShellNav();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
-        "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-bg text-tx-primary",
+        "xl:[--create-image-prompt-max:1000px]",
       )}
     >
-      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden md:flex">
+      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden xl:flex">
         <div className="hidden shrink-0 xl:block">
           <Header variant="desktop" />
         </div>
         <div className="shrink-0 xl:hidden">
-          <Header
-            variant="mobile"
-            mobileTitle="SETTINGS"
-            onMenuClick={() => setMobileMenuOpen(true)}
-          />
+          <Header variant="mobile" mobileTitle="SETTINGS" />
         </div>
 
         <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden xl:grid xl:grid-cols-[300px_minmax(0,1fr)]">
-          <Sidebar
-            className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
-            activeId={activeMainNav}
-            onNavigate={navigate}
-          />
+          <LeftNavRail className="hidden min-h-0 h-full shrink-0 xl:flex">
+            <Sidebar
+              className="flex min-h-0 min-w-0 w-full flex-1 flex-col"
+              activeId={activeMainNav}
+              onNavigate={navigate}
+            />
+          </LeftNavRail>
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 pt-6 md:px-8 xl:px-10 xl:pb-6">
             <div
               className={cn(
-                "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
-                !flatMainContent &&
-                  "rounded-panel border border-edge-default bg-surface-panel",
+                "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[18px] border border-edge-subtle bg-panel-bg",
               )}
             >
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 md:p-6">
-                <h1 className="text-left text-[13px] font-semibold uppercase tracking-[0.08em] text-tx-primary">
+                <h1 className="text-left text-[13px] font-semibold uppercase tracking-[0.08em] text-white">
                   {title}
                 </h1>
-                <p className="mt-4 max-w-lg text-[13px] leading-relaxed text-tx-muted">
-                  {description}
-                </p>
+                {children ? (
+                  <div className="mt-6 max-w-2xl">{children}</div>
+                ) : (
+                  <p className="mt-4 max-w-lg text-[13px] leading-relaxed text-tx-secondary">
+                    {description}
+                  </p>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div
-        className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden"
-      >
-        <Header
-          variant="mobile"
-          mobileTitle="SETTINGS"
-          onMenuClick={() => setMobileMenuOpen(true)}
-        />
-        <div
-          className={cn(
-            "mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
-            !flatMainContent &&
-              "rounded-panel border border-edge-default bg-surface-panel",
-          )}
-        >
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-bg xl:hidden">
+        <Header variant="mobile" mobileTitle="SETTINGS" />
+        <div className="mx-4 mt-2 mb-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] border border-edge-subtle bg-panel-bg">
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-5">
-            <h1 className="text-left text-[12px] font-semibold uppercase tracking-[0.08em] text-tx-primary">
+            <h1 className="text-left text-[12px] font-semibold uppercase tracking-[0.08em] text-white">
               {title}
             </h1>
-            <p className="mt-3 text-[12px] leading-relaxed text-tx-muted">
-              {description}
-            </p>
+            {children ? (
+              <div className="mt-5 max-w-2xl">{children}</div>
+            ) : (
+              <p className="mt-3 text-[12px] leading-relaxed text-tx-secondary">
+                {description}
+              </p>
+            )}
           </div>
         </div>
       </div>
-
-      <MobileCreateImageDrawer
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        historyItems={EMPTY_HISTORY}
-        activeHistoryId={null}
-        onSelectHistory={() => {}}
-        onHistoryMenuAction={() => {}}
-        activeMainNav={activeMainNav}
-      />
     </div>
   );
 }

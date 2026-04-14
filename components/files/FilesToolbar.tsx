@@ -5,32 +5,36 @@ import { cn } from "@/lib/utils";
 import { IconAsset } from "@/components/icons/IconAsset";
 import { ICONS } from "@/components/icons/icon-paths";
 import { IconMenu } from "../create-image/icons";
-import { SortDropdown } from "@/components/global/SortDropdown";
-import { type SortOption, SORT_OPTIONS, SORT_LABEL_BY_VALUE } from "@/lib/app-data/sort-filter-utils";
 
 const filesToolbarPrimaryBtnClass =
-  "inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-control bg-primary px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel";
+  "inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-primary px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg";
 
 const filterIconBtnClass = (active: boolean) =>
   cn(
-    "inline-flex h-[30px] w-[30px] shrink-0 cursor-pointer items-center justify-center rounded-control border transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel",
+    "inline-flex h-[30px] w-[30px] shrink-0 cursor-pointer items-center justify-center rounded-md text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
     active
-      ? "border-primary-hover/80 bg-primary hover:bg-primary-active"
-      : "border-edge-default bg-surface-hover hover:border-edge-strong hover:bg-surface-hover",
+      ? "bg-panel-pressed hover:bg-panel-pressed"
+      : "hover:bg-panel-hover active:bg-panel-pressed",
   );
 
 /** Menu, grid, and account controls — share row with page title on desktop. */
 export function FilesDesktopHeaderActions({
   className,
+  filterOpen,
+  onToggleFilter,
   onListViewClick,
   listViewActive,
   onGridViewClick,
   gridViewActive,
   showGridButton = true,
+  showAddUserButton = true,
   /** History / Liked: first control uses list-view-icon.svg instead of the burger glyph. */
   menuButtonVariant = "burger",
 }: {
   className?: string;
+  /** Files: filter control to the left of list/grid (omit on History / Liked). */
+  filterOpen?: boolean;
+  onToggleFilter?: () => void;
   /** Switches to list view (e.g. Files: `?view=list`). */
   onListViewClick?: () => void;
   listViewActive?: boolean;
@@ -38,6 +42,7 @@ export function FilesDesktopHeaderActions({
   onGridViewClick?: () => void;
   gridViewActive?: boolean;
   showGridButton?: boolean;
+  showAddUserButton?: boolean;
   menuButtonVariant?: "burger" | "list";
 }) {
   return (
@@ -47,17 +52,23 @@ export function FilesDesktopHeaderActions({
         className,
       )}
     >
+      {onToggleFilter ? (
+        <FilesFilterIconButton
+          filterOpen={filterOpen ?? false}
+          onToggleFilter={onToggleFilter}
+        />
+      ) : null}
       <button
         type="button"
         onClick={onListViewClick}
         aria-label="List view"
         aria-pressed={listViewActive}
         className={cn(
-          "flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel",
+          "flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
           onListViewClick ? "" : "cursor-default",
           listViewActive
             ? "bg-primary hover:bg-primary-active active:bg-primary-active"
-            : "hover:bg-surface-hover active:bg-surface-pressed",
+            : "hover:bg-panel-hover active:bg-panel-pressed",
         )}
       >
         {menuButtonVariant === "list" ? (
@@ -77,10 +88,10 @@ export function FilesDesktopHeaderActions({
           aria-label="Grid view"
           aria-pressed={gridViewActive}
           className={cn(
-            "flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel",
+            "flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
             gridViewActive
               ? "bg-primary hover:bg-primary-active active:bg-primary-active"
-              : "hover:bg-surface-hover active:bg-surface-pressed",
+              : "hover:bg-panel-hover active:bg-panel-pressed",
           )}
         >
           <span className="grid grid-cols-2 gap-0.5" aria-hidden>
@@ -91,17 +102,19 @@ export function FilesDesktopHeaderActions({
           </span>
         </button>
       ) : null}
-      <button
-        type="button"
-        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-action bg-surface-hover transition-colors duration-150 hover:bg-surface-pressed active:bg-surface-pressed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel"
-        aria-label="Add user"
-      >
-        <IconAsset
-          src={ICONS.filesHeaderAddUser}
-          size={16}
-          className="[&_img]:block [&_img]:shrink-0"
-        />
-      </button>
+      {showAddUserButton ? (
+        <button
+          type="button"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-white transition-colors duration-150 hover:bg-panel-hover active:bg-panel-pressed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+          aria-label="Add user"
+        >
+          <IconAsset
+            src={ICONS.filesHeaderAddUser}
+            size={16}
+            className="[&_img]:block [&_img]:shrink-0"
+          />
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -116,8 +129,6 @@ type FilesToolbarProps = {
   /** When true, mobile layout omits the filter icon (e.g. filter lives in view toggle row). */
   omitMobileFilterButton?: boolean;
   onFilesUpload: (files: File[]) => void;
-  sortOption: SortOption;
-  onSortChange: (value: SortOption) => void;
 };
 
 function FilesFilterIconButton({
@@ -153,11 +164,8 @@ export function FilesToolbar({
   showDesktopExtras = true,
   omitMobileFilterButton = false,
   onFilesUpload,
-  sortOption,
-  onSortChange,
 }: FilesToolbarProps) {
   const uploadRef = useRef<HTMLInputElement>(null);
-  const currentSortLabel = SORT_LABEL_BY_VALUE[sortOption];
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-3">
@@ -216,23 +224,12 @@ export function FilesToolbar({
               />
               New File
             </button>
-            <FilesFilterIconButton
-              filterOpen={filterOpen}
-              onToggleFilter={onToggleFilter}
-            />
-            <SortDropdown
-              value={sortOption}
-              onChange={onSortChange}
-              options={SORT_OPTIONS}
-              labelPrefix="Sort: "
-              currentLabel={currentSortLabel}
-            />
           </>
         ) : (
           <>
             <button
               type="button"
-              className="inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center rounded-control bg-primary px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel"
+              className="inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
             >
               + New
             </button>
@@ -242,13 +239,6 @@ export function FilesToolbar({
                 onToggleFilter={onToggleFilter}
               />
             )}
-            <SortDropdown
-              value={sortOption}
-              onChange={onSortChange}
-              options={SORT_OPTIONS}
-              labelPrefix="Sort: "
-              currentLabel={currentSortLabel}
-            />
           </>
         )}
       </div>
@@ -257,9 +247,9 @@ export function FilesToolbar({
         <label className="sr-only" htmlFor="files-search">
           Search files
         </label>
-        <div className="flex h-[30px] w-full min-w-0 items-center gap-2 rounded-input border border-edge-default bg-surface-panel px-3 transition-[border-color,box-shadow] duration-150 hover:border-edge-strong focus-within:border-primary-hover/55 focus-within:ring-2 focus-within:ring-primary/30">
+        <div className="flex h-[30px] w-full min-w-0 items-center gap-2 rounded-full border border-edge-subtle bg-transparent px-3 transition-[border-color,background-color] duration-150 hover:bg-panel-hover/40 focus-within:border-white">
           <svg
-            className="h-3.5 w-3.5 shrink-0 text-tx-muted"
+            className="h-3.5 w-3.5 shrink-0 text-tx-secondary"
             viewBox="0 0 12 12"
             fill="none"
             aria-hidden
@@ -284,7 +274,7 @@ export function FilesToolbar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search files"
-            className="min-w-0 flex-1 bg-transparent text-[11px] text-white placeholder:text-tx-muted outline-none"
+            className="min-w-0 flex-1 bg-transparent text-[11px] text-white placeholder:text-tx-secondary outline-none ring-0 focus:outline-none focus:ring-0"
           />
         </div>
       </div>

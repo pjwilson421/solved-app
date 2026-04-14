@@ -1,4 +1,4 @@
-import type { FileEntry } from "@/components/files/types";
+import type { FileEntry, FileEntryAccent } from "@/components/files/types";
 
 export const FILE_ENTRIES_STORAGE_KEY = "solved-app-file-entries-v1";
 
@@ -21,10 +21,12 @@ function normalizeStoredFileEntry(item: unknown): FileEntry | null {
   } else {
     return null;
   }
-  const accent =
+  let accent: FileEntryAccent | undefined =
     o.accent === "muted" || o.accent === "highlight" || o.accent === "default"
       ? o.accent
       : undefined;
+  /** Row highlight is interaction-only; never restore a persisted "selected" look on load. */
+  if (accent === "highlight") accent = undefined;
   let previewDataUrl: string | undefined;
   if (
     typeof o.previewDataUrl === "string" &&

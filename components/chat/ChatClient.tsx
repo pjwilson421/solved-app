@@ -13,20 +13,14 @@ import { useShellNav } from "@/lib/use-shell-nav";
 import Image from "next/image";
 import { Header } from "../create-image/Header";
 import { Sidebar } from "../create-image/Sidebar";
-import { PreviewActionsMenu } from "../create-image/PreviewActionsMenu";
 import { PromptBar } from "../create-image/PromptBar";
 import { GenerationSettingsRow } from "../create-image/GenerationSettingsRow";
 import { DesktopTemplatesStrip } from "../create-image/DesktopTemplatesStrip";
-import { MobileCreateImageDrawer } from "../create-image/MobileCreateImageDrawer";
 import {
-  CREATE_IMAGE_SCROLL_RESERVE,
   createImageScrollContentBottomPaddingPx,
   createImageScrollContentBottomPaddingPxDesktopXl,
 } from "../create-image/preview-frame-layout";
-import {
-  useCreateImagePreviewPromptLayout,
-  useMinWidth1280,
-} from "../create-image/use-create-image-preview-prompt-layout";
+import { useCreateImagePreviewPromptLayout } from "../create-image/use-create-image-preview-prompt-layout";
 import { FixedPromptBarDock } from "../create-image/FixedPromptBarDock";
 import {
   createImageDesktopPromptDockGeometryPx,
@@ -41,83 +35,20 @@ import type {
 import { MOCK_TEMPLATES } from "../create-image/types";
 import { ChatMessageThread, type ChatThreadMessage } from "./ChatMessageThread";
 import { useAppData } from "@/lib/app-data/app-data-context";
-import { activityEntriesToDrawerHistoryItems } from "@/lib/app-data/activity-to-drawer-history";
 import { useAppItemActions } from "@/lib/app-data/use-app-item-actions";
 import { appItemRef } from "@/lib/app-data/item-ref";
 import { likedKey } from "@/lib/liked-item-keys";
 import { useLikedItems } from "@/components/liked-items/liked-items-context";
-import type { ChatThreadRecord } from "@/lib/app-data/chat-thread";
 import {
-  ChatOptionsMenu,
-  type ChatMenuAction,
-} from "./ChatOptionsMenu";
-import {
-  CHAT_TOOLBAR_ICON_BUTTON_CLASS,
-  CHAT_TOOLBAR_ICON_IMG_CLASS,
-  CHAT_TOOLBAR_ICON_PX,
-} from "./chat-toolbar-icons";
-import { IconAsset } from "@/components/icons/IconAsset";
-import { ICONS } from "@/components/icons/icon-paths";
+  ChatHistoryPanel,
+  type ChatHistoryThreadMenuAction,
+} from "./ChatHistoryPanel";
+import { chatThreadListHeadline } from "@/lib/app-data/chat-thread";
+import { DesktopThreeColumnShell } from "@/components/shell/DesktopThreeColumnShell";
 import { cn } from "@/lib/utils";
-
-function chatLikeButtonClass(liked: boolean) {
-  return cn(
-    liked
-      ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-[background-color,color] bg-primary/55 text-white hover:bg-primary-active active:bg-primary-active focus-visible:brightness-110"
-      : cn(
-          CHAT_TOOLBAR_ICON_BUTTON_CLASS,
-          "focus-visible:bg-white/10",
-        ),
-  );
-}
-
-function ChatToolbarIconRow({
-  rowClassName,
-  chatLiked,
-  onToggleChatLike,
-  onChatMenuAction,
-}: {
-  rowClassName?: string;
-  chatLiked: boolean;
-  onToggleChatLike: () => void;
-  onChatMenuAction?: (action: ChatMenuAction) => void;
-}) {
-  return (
-    <div
-      className={cn(
-        "flex shrink-0 items-center justify-end gap-1",
-        rowClassName,
-      )}
-    >
-      <button
-        type="button"
-        className={chatLikeButtonClass(chatLiked)}
-        aria-label={chatLiked ? "Unlike chat" : "Like chat"}
-        aria-pressed={chatLiked}
-        data-state={chatLiked ? "liked" : "unliked"}
-        onClick={onToggleChatLike}
-      >
-        <IconAsset
-          key={chatLiked ? "filled" : "outline"}
-          src={chatLiked ? ICONS.likedFilled : ICONS.likedOutlined}
-          size={CHAT_TOOLBAR_ICON_PX}
-          className={CHAT_TOOLBAR_ICON_IMG_CLASS}
-        />
-      </button>
-      <ChatOptionsMenu onSelect={onChatMenuAction} />
-    </div>
-  );
-}
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-function firstUserLine(thread: Pick<ChatThreadRecord, "messages">): string {
-  const first = thread.messages.find((m) => m.role === "user")?.text?.trim();
-  if (!first) return "New chat";
-  const oneLine = first.replace(/\s+/g, " ");
-  return oneLine.length > 140 ? `${oneLine.slice(0, 140)}…` : oneLine;
 }
 
 export function ChatClient() {
@@ -131,12 +62,10 @@ export function ChatClient() {
   const [barPrompt, setBarPrompt] = useState("");
   const [references, setReferences] = useState<ReferenceFile[]>([]);
   const [isSending, setIsSending] = useState(false);
-  const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [fullScreenUrl, setFullScreenUrl] = useState<string | null>(null);
   /** Invisible — same dock stack as Create Image so flex layout / spacing matches exactly. */
   const [dockParityAsset, setDockParityAsset] =
-    useState<AssetContentType>("Social Media");
+    useState<AssetContentType>("Standard");
   const [dockParityAspect, setDockParityAspect] =
     useState<AspectRatio>("16:9");
   const [dockParityQuality, setDockParityQuality] = useState<Quality>("4K");
@@ -150,35 +79,16 @@ export function ChatClient() {
       : `chat-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
   );
 
-  const { chatThreads, upsertChatThreadSnapshot, activityEntries } =
+  const { chatThreads, upsertChatThreadSnapshot, updateFileEntries } =
     useAppData();
   const { isLiked } = useLikedItems();
   const { toggleLike, deleteCatalogItem } = useAppItemActions();
-
-  const drawerHistoryItems = useMemo(
-    () => activityEntriesToDrawerHistoryItems(activityEntries),
-    [activityEntries],
-  );
-  const chatHistoryItems = useMemo(
-    () =>
-      [...chatThreads]
-        .sort(
-          (a, b) =>
-            new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
-        )
-        .map((t) => ({
-          id: t.id,
-          preview: firstUserLine(t),
-        })),
-    [chatThreads],
-  );
 
   const currentThread = useMemo(
     () => chatThreads.find((t) => t.id === chatSessionId),
     [chatThreads, chatSessionId],
   );
   const messages: ChatThreadMessage[] = currentThread?.messages ?? [];
-  const chatLiked = isLiked(likedKey.chat(chatSessionId));
 
   useEffect(() => {
     if (searchParams.get("new") === "1") {
@@ -187,7 +97,6 @@ export function ChatClient() {
         return [];
       });
       setBarPrompt("");
-      setActiveHistoryId(null);
       setFullScreenUrl(null);
       setChatSessionId(
         typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -217,23 +126,90 @@ export function ChatClient() {
     return () => cancelAnimationFrame(id);
   }, [promptFocusNonce]);
 
-  const toggleChatLike = useCallback(() => {
-    const k = likedKey.chat(chatSessionId);
-    if (!isLiked(k)) {
-      upsertChatThreadSnapshot(chatSessionId, messages);
-    }
-    toggleLike(appItemRef.chat(chatSessionId));
-  }, [
-    chatSessionId,
-    isLiked,
-    messages,
-    toggleLike,
-    upsertChatThreadSnapshot,
-  ]);
+  const handleChatHistoryThreadMenuAction = useCallback(
+    (threadId: string, action: ChatHistoryThreadMenuAction) => {
+      const thread = chatThreads.find((t) => t.id === threadId);
+      if (!thread) return;
 
-  const handleChatMenuAction = useCallback((_action: ChatMenuAction) => {
-    /* Move to files, Rename, Delete — hook up when routes/modals exist */
-  }, []);
+      if (action === "Like") {
+        if (!isLiked(likedKey.chat(threadId))) {
+          upsertChatThreadSnapshot(threadId, thread.messages);
+        }
+        toggleLike(appItemRef.chat(threadId));
+        return;
+      }
+
+      if (action === "Save To Files") {
+        const headline = chatThreadListHeadline(thread);
+        const base =
+          headline.replace(/[^\w.\-()\s]+/g, "_").trim().slice(0, 60) ||
+          "Chat";
+        const body = thread.messages
+          .map((m) => `${m.role.toUpperCase()}: ${m.text ?? ""}`)
+          .join("\n\n");
+        const sizeKb = Math.max(1, Math.ceil(new Blob([body]).size / 1024));
+        const dateModified = new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+        updateFileEntries((prev) => [
+          ...prev,
+          {
+            id: uid(),
+            name: `${base}_chat.txt`,
+            kind: "file",
+            typeLabel: "Text",
+            dateModified,
+            sizeLabel: `${sizeKb} KB`,
+            parentId: null,
+          },
+        ]);
+        return;
+      }
+
+      if (action === "Share") {
+        const url = `${window.location.origin}/chat?openChat=${encodeURIComponent(threadId)}`;
+        const title = chatThreadListHeadline(thread);
+        if (typeof navigator !== "undefined" && navigator.share) {
+          void navigator.share({ title, text: title, url });
+        } else {
+          void navigator.clipboard?.writeText?.(url);
+        }
+        return;
+      }
+
+      if (action === "Delete") {
+        if (threadId === chatSessionId) {
+          const nextThreads = chatThreads.filter((t) => t.id !== threadId);
+          if (nextThreads.length > 0) {
+            setChatSessionId(nextThreads[0].id);
+          } else {
+            setChatSessionId(
+              typeof crypto !== "undefined" && "randomUUID" in crypto
+                ? crypto.randomUUID()
+                : `chat-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+            );
+            setBarPrompt("");
+            setReferences((prev) => {
+              for (const r of prev) URL.revokeObjectURL(r.url);
+              return [];
+            });
+          }
+        }
+        deleteCatalogItem(appItemRef.chat(threadId));
+      }
+    },
+    [
+      chatSessionId,
+      chatThreads,
+      deleteCatalogItem,
+      isLiked,
+      toggleLike,
+      updateFileEntries,
+      upsertChatThreadSnapshot,
+    ],
+  );
 
   const desktopScrollRef = useRef<HTMLDivElement>(null);
   const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
@@ -242,14 +218,10 @@ export function ChatClient() {
   const messagesEndDesktopRef = useRef<HTMLDivElement>(null);
   const messagesEndMobileRef = useRef<HTMLDivElement>(null);
 
-  const minWidth1280 = useMinWidth1280();
-  const desktopScrollBottomPadPx = minWidth1280
-    ? createImageScrollContentBottomPaddingPxDesktopXl()
-    : createImageScrollContentBottomPaddingPx("desktop");
   const mobileScrollBottomPadPx =
     createImageScrollContentBottomPaddingPx("mobile");
 
-  const { promptBar: promptBarGeom, minWidth768 } =
+  const { promptBar: promptBarGeom, minWidth1280 } =
     useCreateImagePreviewPromptLayout({
       desktopScrollRef,
       desktopMiddleColumnRef,
@@ -259,11 +231,15 @@ export function ChatClient() {
       templatesOpen: false,
     });
 
+  const desktopScrollBottomPadPx = minWidth1280
+    ? createImageScrollContentBottomPaddingPxDesktopXl()
+    : createImageScrollContentBottomPaddingPx("desktop");
+
   /** Create Image shell math only — Chat main column layout differs; dock width/left must still match. */
   const [chatDesktopDockGeom, setChatDesktopDockGeom] =
     useState<PromptBarDockGeometry | null>(null);
   useLayoutEffect(() => {
-    if (!minWidth768) {
+    if (!minWidth1280) {
       setChatDesktopDockGeom(null);
       return;
     }
@@ -276,9 +252,9 @@ export function ChatClient() {
       window.removeEventListener("resize", sync);
       window.visualViewport?.removeEventListener("resize", sync);
     };
-  }, [minWidth768]);
+  }, [minWidth1280]);
 
-  const chatPromptDockGeometry = minWidth768
+  const chatPromptDockGeometry = minWidth1280
     ? (chatDesktopDockGeom ?? promptBarGeom)
     : promptBarGeom;
 
@@ -309,12 +285,42 @@ export function ChatClient() {
     const afterUser = [...messages, userMsg];
     upsertChatThreadSnapshot(chatSessionId, afterUser);
     setIsSending(true);
-    await new Promise((r) => setTimeout(r, 720));
+
+    const transcriptPayload =
+      afterUser
+        .map((m) => {
+          const label = m.role === "user" ? "User" : "Assistant";
+          return `${label}: ${m.text ?? ""}`.trim();
+        })
+        .join("\n\n")
+        .trim() || "User sent a message without text.";
+
+    let assistantText: string;
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: transcriptPayload }),
+      });
+      const data: unknown = await res.json().catch(() => null);
+      if (
+        !res.ok ||
+        !data ||
+        typeof data !== "object" ||
+        typeof (data as { text?: unknown }).text !== "string"
+      ) {
+        assistantText = "Sorry, something went wrong.";
+      } else {
+        assistantText = (data as { text: string }).text;
+      }
+    } catch {
+      assistantText = "Sorry, something went wrong.";
+    }
+
     const assistantMsg: ChatThreadMessage = {
       id: uid(),
       role: "assistant",
-      text:
-        "This is a placeholder reply. Connect your chat API here to stream real assistant messages.",
+      text: assistantText,
       sentAt: new Date().toISOString(),
     };
     upsertChatThreadSnapshot(chatSessionId, [...afterUser, assistantMsg]);
@@ -357,70 +363,54 @@ export function ChatClient() {
     setBarPrompt(label);
   }, []);
 
-  const loadHistory = useCallback((id: string) => {
-    setActiveHistoryId(id);
-  }, []);
-
-  const handleHistoryMenu = useCallback(
-    (itemId: string, action: string) => {
-      const item = drawerHistoryItems.find((h) => h.id === itemId);
-      const url = item?.imageUrls[0];
-      if (action === "Full Screen Preview" && url) setFullScreenUrl(url);
-      if (action === "Download" && url) {
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "image.jpg";
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.click();
-      }
-      if (action === "Share" && url && navigator.share) {
-        void navigator.share({ url });
-      }
-      if (action === "Delete") {
-        deleteCatalogItem(appItemRef.activity(itemId));
-        if (activeHistoryId === itemId) setActiveHistoryId(null);
-      }
+  const selectChatFromHistory = useCallback(
+    (id: string) => {
+      if (id === chatSessionId) return;
+      setChatSessionId(id);
+      setBarPrompt("");
+      setReferences((prev) => {
+        for (const r of prev) URL.revokeObjectURL(r.url);
+        return [];
+      });
     },
-    [activeHistoryId, drawerHistoryItems, deleteCatalogItem],
+    [chatSessionId],
   );
 
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
-        "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-bg text-tx-primary",
+        "xl:[--create-image-prompt-max:1000px]",
       )}
     >
-      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden md:flex">
+      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden xl:flex">
         <div className="hidden shrink-0 xl:block">
           <Header variant="desktop" />
         </div>
         <div className="shrink-0 xl:hidden">
-          <Header
-            variant="mobile"
-            mobileTitle="CHAT"
-            onMenuClick={() => setMobileMenuOpen(true)}
-          />
+          <Header variant="mobile" mobileTitle="CHAT" />
         </div>
 
-        <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden xl:grid xl:grid-cols-[300px_minmax(0,1fr)_300px]">
-          <Sidebar
-            className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
-            activeId={activeMainNav}
-            onNavigate={navigate}
-            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
-          />
-
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-0 xl:pr-[40px]">
-            <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
-              <ChatToolbarIconRow
-                rowClassName="px-4 pt-4 md:px-6 md:pt-5"
-                chatLiked={chatLiked}
-                onToggleChatLike={toggleChatLike}
-                onChatMenuAction={handleChatMenuAction}
-              />
-
+        <DesktopThreeColumnShell
+          sidebar={
+            <Sidebar
+              className="flex min-h-0 h-full min-w-0 w-full flex-1 flex-col"
+              activeId={activeMainNav}
+              onNavigate={navigate}
+            />
+          }
+          rail={
+            <ChatHistoryPanel
+              threads={chatThreads}
+              activeChatId={chatSessionId}
+              onSelectChat={selectChatFromHistory}
+              onThreadMenuAction={handleChatHistoryThreadMenuAction}
+              className="min-h-0 w-full min-w-0 flex-1 flex-col"
+            />
+          }
+        >
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:overflow-hidden xl:px-0">
+            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col xl:mx-auto xl:w-[min(100%,1000px)] xl:max-w-[1000px] xl:min-h-0 xl:min-w-0">
               <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
                 <div
                   ref={desktopScrollRef}
@@ -436,114 +426,56 @@ export function ChatClient() {
                       paddingBottom: desktopScrollBottomPadPx,
                     }}
                   >
-                    <div className="mx-auto w-full min-w-0 max-w-[980px] px-4 md:px-6">
-                      <ChatMessageThread
-                        messages={messages}
-                        showSuggestedChips={false}
-                        onChipClick={handleChip}
-                        bottomRef={messagesEndDesktopRef}
-                      />
-                    </div>
+                    <ChatMessageThread
+                      messages={messages}
+                      showSuggestedChips={false}
+                      onChipClick={handleChip}
+                      bottomRef={messagesEndDesktopRef}
+                    />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <aside
-            className="hidden min-h-0 min-w-0 w-[300px] shrink-0 flex-col self-start bg-surface-base xl:flex"
-            style={{
-              height: `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`,
-            }}
-          >
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden pb-0 pl-5 pr-5 pt-6">
-              <section className="flex min-h-0 flex-1 flex-col overflow-hidden w-full rounded-panel bg-surface-elevated py-3">
-                <div className="shrink-0 px-4 pb-3">
-                  <h2 className="text-left text-[10px] font-bold uppercase tracking-[0.08em] text-white">
-                    HISTORY
-                  </h2>
-                </div>
-                <div className="flex min-h-0 flex-1 flex-col gap-0 overflow-y-auto">
-                  {chatHistoryItems.length === 0 ? (
-                    <p className="px-4 py-8 text-left text-[11px] leading-[18px] text-tx-muted">
-                      No chats yet.
-                    </p>
-                  ) : (
-                    chatHistoryItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className={cn(
-                          "border-b border-edge-default/15 px-4 pb-3 pt-3 transition-colors last:border-b-0",
-                          "hover:bg-surface-hover/35",
-                        )}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setChatSessionId(item.id);
-                              setActiveHistoryId(item.id);
-                            }}
-                            className="block min-w-0 flex-1 text-left"
-                          >
-                            <p className="line-clamp-1 text-left text-[11px] leading-[18px] text-tx-muted">
-                              {item.preview}
-                            </p>
-                          </button>
-                          <div className="z-20 shrink-0">
-                            <PreviewActionsMenu
-                              align="right"
-                              onSelect={(action) => {
-                                if (action === "Delete") {
-                                  deleteCatalogItem(appItemRef.chat(item.id));
-                                  if (chatSessionId === item.id) {
-                                    setActiveHistoryId(null);
-                                  }
-                                }
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </section>
-            </div>
-          </aside>
-        </div>
+        </DesktopThreeColumnShell>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-bg xl:hidden">
         <Header
           variant="mobile"
           mobileTitle="CHAT"
-          onMenuClick={() => setMobileMenuOpen(true)}
+          mobileNavTriggerSide="end"
         />
-        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <ChatToolbarIconRow
-            rowClassName="px-3 pt-3 pr-3"
-            chatLiked={chatLiked}
-            onToggleChatLike={toggleChatLike}
-            onChatMenuAction={handleChatMenuAction}
+        <div className="mx-4 mb-1 mt-2 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4">
+          <ChatHistoryPanel
+            variant="mobile"
+            mobileTriggerAlign="end"
+            threads={chatThreads}
+            activeChatId={chatSessionId}
+            onSelectChat={selectChatFromHistory}
+            onThreadMenuAction={handleChatHistoryThreadMenuAction}
           />
           <div
             ref={mobileScrollRef}
-            className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
+            className="relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
             style={{
               scrollPaddingBottom: mobileScrollBottomPadPx,
             }}
           >
             <main
               ref={mobileColumnRef}
-              className="flex w-full min-w-0 flex-col px-4 pt-3"
+              className={cn(
+                "flex min-h-0 w-full min-w-0 flex-col bg-transparent outline-none",
+                messages.length > 0 ? "pt-6" : "pt-2",
+              )}
               style={{
                 paddingBottom: mobileScrollBottomPadPx,
               }}
             >
-              <div className="mx-auto w-full min-w-0 max-w-[980px]">
+              <div className="w-full min-w-0">
                 <ChatMessageThread
                   messages={messages}
-                  showSuggestedChips
+                  showSuggestedChips={false}
                   onChipClick={handleChip}
                   bottomRef={messagesEndMobileRef}
                 />
@@ -564,13 +496,17 @@ export function ChatClient() {
           onGenerate={handleSend}
           isGenerating={isSending}
           generateDisabled={generateDisabled}
-          variant={minWidth768 ? "desktop" : "mobile"}
+          variant={minWidth1280 ? "desktop" : "mobile"}
           placeholder="Ask anything…"
           generateAriaLabel="Send message"
           promptTextAreaRef={promptTextAreaRef}
         />
         <div
-          className="invisible pointer-events-none w-full shrink-0"
+          className={cn(
+            "pointer-events-none w-full shrink-0",
+            /* Below `md` the real settings UI is not in the dock — do not reserve invisible height. */
+            minWidth1280 ? "invisible" : "hidden",
+          )}
           aria-hidden="true"
         >
           <GenerationSettingsRow
@@ -583,7 +519,7 @@ export function ChatClient() {
             onQuality={setDockParityQuality}
             variations={dockParityVariations}
             onVariations={setDockParityVariations}
-            variant={minWidth768 ? "desktop" : "mobile"}
+            variant={minWidth1280 ? "desktop" : "mobile"}
           />
         </div>
         <div
@@ -603,21 +539,11 @@ export function ChatClient() {
         </div>
       </FixedPromptBarDock>
 
-      <MobileCreateImageDrawer
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        historyItems={drawerHistoryItems}
-        activeHistoryId={activeHistoryId}
-        onSelectHistory={loadHistory}
-        onHistoryMenuAction={handleHistoryMenu}
-        activeMainNav={activeMainNav}
-      />
-
       {fullScreenUrl ? (
-        <div className="fixed inset-0 z-[1200] flex flex-col bg-surface-base/95 p-4">
+        <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
           <button
             type="button"
-            className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"
+            className="mb-4 self-end rounded-full px-4 py-2 text-sm text-white hover:bg-white/10"
             onClick={() => setFullScreenUrl(null)}
           >
             Close

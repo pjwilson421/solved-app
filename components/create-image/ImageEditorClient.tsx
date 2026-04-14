@@ -8,7 +8,6 @@ import { PreviewPanel } from "./PreviewPanel";
 import { TemplatesPanel } from "./TemplatesPanel";
 import { GenerationSettingsRow } from "./GenerationSettingsRow";
 import { PromptBar } from "./PromptBar";
-import { MobileCreateImageDrawer } from "./MobileCreateImageDrawer";
 import { FixedPromptBarDock } from "./FixedPromptBarDock";
 import { useShellNav } from "@/lib/use-shell-nav";
 import { ImageEditorToolStrip } from "./ImageEditorToolStrip";
@@ -16,14 +15,11 @@ import type { ImageEditorToolId } from "./ImageEditorToolStrip";
 import { ImageEditorFileInfoPanel } from "./ImageEditorFileInfoPanel";
 import { DesktopTemplatesStrip } from "./DesktopTemplatesStrip";
 import {
-  CREATE_IMAGE_SCROLL_RESERVE,
   createImageScrollContentBottomPaddingPx,
   createImageScrollContentBottomPaddingPxDesktopXl,
+  IMAGE_EDITOR_TOOL_STRIP_SCROLL_RESERVE_PX,
 } from "./preview-frame-layout";
-import {
-  useCreateImagePreviewPromptLayout,
-  useMinWidth1280,
-} from "./use-create-image-preview-prompt-layout";
+import { useCreateImagePreviewPromptLayout } from "./use-create-image-preview-prompt-layout";
 import type {
   AspectRatio,
   AssetContentType,
@@ -32,11 +28,11 @@ import type {
 } from "./types";
 import { MOCK_TEMPLATES } from "./types";
 import { ICONS } from "@/components/icons/icon-paths";
+import { DesktopThreeColumnShell } from "@/components/shell/DesktopThreeColumnShell";
 import { cn } from "@/lib/utils";
 import { likedKey } from "@/lib/liked-item-keys";
 import { useLikedItems } from "@/components/liked-items/liked-items-context";
 import { useAppData } from "@/lib/app-data/app-data-context";
-import { activityEntryToHistoryItem } from "@/lib/app-data/activity-to-drawer-history";
 import { createMockVisuallyEditedImage } from "@/components/files/mock-visual-edited-image";
 import type { ActivityHistoryEntry } from "@/components/history/types";
 import { imageSrcFromFileEntry } from "@/components/files/image-editor-source";
@@ -44,11 +40,6 @@ import { imageSrcFromFileEntry } from "@/components/files/image-editor-source";
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
-
-const MOBILE_FILE_INFO: [string, string] = [
-  "Edit, enhance, regenerate, remove elements,",
-  "add content, draw, and update text before export.",
-];
 
 type ImageEditorClientProps = {
   initialImageUrl: string | null;
@@ -67,14 +58,12 @@ export function ImageEditorClient({
   const [barPrompt, setBarPrompt] = useState("");
   const [references] = useState<ReferenceFile[]>([]);
   const [assetContentType, setAssetContentType] =
-    useState<AssetContentType>("Social Media");
+    useState<AssetContentType>("Standard");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
   const [quality, setQuality] = useState<Quality>("4K");
   const [variations, setVariations] = useState(1);
   const [templateId, setTemplateId] = useState<string | null>(null);
-  const [templatesOpen, setTemplatesOpen] = useState(false);
 
-  const [editTitle] = useState("Portrait retouch");
   const [activeTool, setActiveTool] = useState<ImageEditorToolId>("add");
   const [fileInfoTab, setFileInfoTab] = useState<"prompt" | "settings">(
     "prompt",
@@ -83,6 +72,9 @@ export function ImageEditorClient({
   const [slotImages, setSlotImages] = useState<string[]>(() =>
     initialImageUrl ? [initialImageUrl] : [],
   );
+  /** Under-preview description — same pattern as Create Image (`previewPrompt` / `previewAt`). */
+  const [previewPrompt, setPreviewPrompt] = useState("");
+  const [previewAt, setPreviewAt] = useState<Date | null>(null);
 
   useEffect(() => {
     if (!initialFileId) return;
@@ -91,23 +83,16 @@ export function ImageEditorClient({
     if (src) {
       setSlotImages([src]);
       editorLineageParentRef.current = initialFileId;
+      setPreviewPrompt(entry?.editPrompt?.trim() ?? "");
+      setPreviewAt(null);
     }
   }, [initialFileId, fileEntries]);
 
   const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
 
-  const imageEditorSidebarHistory = useMemo(
-    () =>
-      activityEntries
-        .filter((e) => e.kind === "editor" && e.origin === "image-editor")
-        .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime())
-        .map(activityEntryToHistoryItem),
-    [activityEntries],
-  );
-
   const [isGenerating, setIsGenerating] = useState(false);
+  const [templatesMenuOpen, setTemplatesMenuOpen] = useState(false);
   const [fullScreenUrl, setFullScreenUrl] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const desktopScrollRef = useRef<HTMLDivElement>(null);
   const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
@@ -116,21 +101,23 @@ export function ImageEditorClient({
   /** Catalog file id for the image currently in the canvas (lineage parent for the next saved edit). */
   const editorLineageParentRef = useRef<string | null>(null);
 
-  const { layoutFrame, promptBar: promptBarGeom, minWidth768 } =
+  const { layoutFrame, promptBar: promptBarGeom, minWidth1280 } =
     useCreateImagePreviewPromptLayout({
       desktopScrollRef,
       desktopMiddleColumnRef,
       mobileScrollRef,
       mobileColumnRef,
       aspectRatio,
-      templatesOpen: false,
+      templatesOpen: templatesMenuOpen,
+      previewLayoutIgnoreTemplatesOpen: false,
+      previewLayoutIgnoreTemplatesOpenOnDesktopXl: true,
+      extraBelowPreviewReservePx: IMAGE_EDITOR_TOOL_STRIP_SCROLL_RESERVE_PX,
+      templatesInScrollColumn: true,
     });
 
-  const minWidth1280 = useMinWidth1280();
-  const desktopScrollBottomPadPx =
-    minWidth1280
-      ? createImageScrollContentBottomPaddingPxDesktopXl()
-      : createImageScrollContentBottomPaddingPx("desktop");
+  const desktopScrollBottomPadPx = minWidth1280
+    ? createImageScrollContentBottomPaddingPxDesktopXl()
+    : createImageScrollContentBottomPaddingPx("desktop");
 
   const generateDisabled = !barPrompt.trim();
 
@@ -149,44 +136,15 @@ export function ImageEditorClient({
       );
       const previewSrc =
         "dataUrl" in visual ? visual.dataUrl : visual.remoteUrl;
-      
+
       setSlotImages([previewSrc]);
+      setPreviewPrompt(promptText);
+      setPreviewAt(createdAt);
       setActiveHistoryId(null);
     } finally {
       setIsGenerating(false);
     }
-  }, [
-    barPrompt,
-    generateDisabled,
-    isGenerating,
-    slotImages,
-    updateActivityEntries,
-    activeHistoryId,
-  ]);
-
-  const loadHistory = useCallback(
-    (id: string) => {
-      const entry = activityEntries.find((e) => e.id === id);
-      if (!entry || entry.kind !== "editor") return;
-      const urls =
-        entry.imageUrls && entry.imageUrls.length > 0
-          ? entry.imageUrls
-          : entry.thumbnailUrl
-            ? [entry.thumbnailUrl]
-            : [];
-      setActiveHistoryId(id);
-      setSlotImages(urls);
-      setBarPrompt(entry.promptText ?? entry.subtitle);
-      const outputFile = fileEntries.find(
-        (f) =>
-          f.kind === "file" &&
-          f.typeLabel === "Image" &&
-          f.generationBatchId === id,
-      );
-      editorLineageParentRef.current = outputFile?.id ?? null;
-    },
-    [activityEntries, fileEntries],
-  );
+  }, [barPrompt, generateDisabled, isGenerating, slotImages]);
 
   const handlePreviewClick = useCallback(() => {
     const url = slotImages[0];
@@ -239,6 +197,8 @@ export function ImageEditorClient({
       }
       if (action === "Delete") {
         setSlotImages([]);
+        setPreviewPrompt("");
+        setPreviewAt(null);
         editorLineageParentRef.current = null;
         if (activeHistoryId) {
           updateActivityEntries((h) =>
@@ -259,50 +219,8 @@ export function ImageEditorClient({
     ],
   );
 
-  const handleHistoryMenu = useCallback(
-    (itemId: string, action: string) => {
-      const entry = activityEntries.find((e) => e.id === itemId);
-      const url =
-        entry?.imageUrls?.[0] ?? entry?.thumbnailUrl;
-      if (action === "Full Screen Preview" && url) setFullScreenUrl(url);
-      if (action === "Download" && url) {
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "edited-image.jpg";
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.click();
-      }
-      if (action === "Share" && url && navigator.share) {
-        void navigator.share({ url });
-      }
-      if (action === "Delete") {
-        updateActivityEntries((h) => h.filter((x) => x.id !== itemId));
-        if (activeHistoryId === itemId) {
-          setActiveHistoryId(null);
-          setSlotImages([]);
-          editorLineageParentRef.current = null;
-        }
-      }
-      if (action === "Like") {
-        toggleLiked(likedKey.generation(itemId));
-      }
-    },
-    [
-      activeHistoryId,
-      activityEntries,
-      toggleLiked,
-      updateActivityEntries,
-    ],
-  );
-
   const onToolSelect = useCallback((id: ImageEditorToolId) => {
     setActiveTool(id);
-    if (id === "templates") {
-      setTemplatesOpen((o) => !o);
-    } else {
-      setTemplatesOpen(false);
-    }
   }, []);
 
   const metaMaxWidth = useMemo(() => {
@@ -310,51 +228,97 @@ export function ImageEditorClient({
     return undefined;
   }, [layoutFrame]);
 
-  const editorMeta = (
-    <div
-      className={cn(
-        "mt-3 min-w-0 shrink-0",
-        layoutFrame?.width ? "mx-auto" : "mx-auto w-full max-w-[882.06px] xl:max-w-[1000px]",
-      )}
-      style={metaMaxWidth}
-    >
-      <p className="text-[12px] font-medium leading-snug text-white">
-        Edited Image — {editTitle}
-      </p>
+  const desktopTemplatesStripSlot = useMemo(
+    () => (
+      <DesktopTemplatesStrip
+        templates={MOCK_TEMPLATES}
+        selectedId={templateId}
+        onSelect={setTemplateId}
+        menuThumbPreset="create-image"
+      />
+    ),
+    [templateId],
+  );
+
+  const editorBelowPreviewShellClass = cn(
+    "mt-3 min-w-0 shrink-0",
+    layoutFrame?.width
+      ? "mx-auto"
+      : "mx-auto w-full max-w-[882.06px] xl:max-w-[1000px]",
+  );
+
+  const editorTemplatesPanel = useMemo(
+    () => (
+      <TemplatesPanel
+        key={activeTool}
+        templates={MOCK_TEMPLATES}
+        selectedId={templateId}
+        openMode="hover"
+        onSelect={setTemplateId}
+        desktopExpandedSlot={desktopTemplatesStripSlot}
+        toggleButtonPreset="create-image"
+        menuThumbPreset="create-image"
+        hoverClickMenuDualMode
+        stackTemplatesMenuInLayout
+        onMenuVisibilityChange={setTemplatesMenuOpen}
+      />
+    ),
+    [activeTool, desktopTemplatesStripSlot, templateId],
+  );
+
+  /** Editor tools under description; Templates sit above this row in the scroll column. */
+  const editorToolStripUnderMeta = (
+    <div className={editorBelowPreviewShellClass} style={metaMaxWidth}>
+      <div
+        className="flex w-full min-w-0 flex-wrap items-center justify-start gap-2 xl:gap-2.5"
+        role="toolbar"
+        aria-label="Edit tools"
+      >
+        <ImageEditorToolStrip
+          activeId={activeTool}
+          onSelect={onToolSelect}
+          className="w-full shrink-0"
+        />
+      </div>
     </div>
   );
 
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
-        "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-bg text-tx-primary",
+        "xl:[--create-image-prompt-max:1000px]",
       )}
     >
-      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden md:flex">
+      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden xl:flex">
         <div className="hidden shrink-0 xl:block">
           <Header variant="desktop" />
         </div>
         <div className="shrink-0 xl:hidden">
-          <Header
-            variant="mobile"
-            mobileTitle="EDIT"
-            onMenuClick={() => setMobileMenuOpen(true)}
-          />
+          <Header variant="mobile" mobileTitle="EDIT" />
         </div>
-        <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden xl:grid xl:grid-cols-[300px_minmax(0,1fr)_300px]">
-          <Sidebar
-            className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
-            activeId={activeMainNav}
-            onNavigate={navigate}
-            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
-          />
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:grid xl:h-full xl:min-h-0 xl:min-w-0 xl:max-w-none xl:grid-cols-[minmax(0,1fr)_minmax(0,1000px)_minmax(0,1fr)] xl:items-stretch xl:overflow-hidden xl:px-0">
-            <div
-              className="hidden min-w-0 xl:block xl:min-h-0"
-              aria-hidden="true"
+        <DesktopThreeColumnShell
+          sidebar={
+            <Sidebar
+              className="flex min-h-0 h-full min-w-0 w-full flex-1 flex-col"
+              activeId={activeMainNav}
+              onNavigate={navigate}
             />
-            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col xl:max-w-none xl:w-full xl:min-h-0 xl:min-w-0">
+          }
+          rail={
+            <ImageEditorFileInfoPanel
+              activeTab={fileInfoTab}
+              onTabChange={setFileInfoTab}
+              promptPreview={barPrompt}
+              aspectRatio={aspectRatio}
+              quality={quality}
+              variations={variations}
+              className="min-h-0 w-full min-w-0 flex-1 flex-col"
+            />
+          }
+        >
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:px-0">
+            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col xl:mx-auto xl:w-[min(100%,1000px)] xl:max-w-[1000px] xl:min-h-0 xl:min-w-0">
               <div
                 ref={desktopScrollRef}
                 className="min-h-0 flex-1 overflow-y-auto"
@@ -365,141 +329,76 @@ export function ImageEditorClient({
                   className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
                   style={{ paddingBottom: desktopScrollBottomPadPx }}
                 >
-                  <div className="min-w-0 xl:mb-5">
+                  <div className="min-w-0 xl:mb-8">
                     <PreviewPanel
                       aspectRatio={aspectRatio}
                       template={null}
                       slotImages={slotImages}
-                      promptText=""
-                      createdAt={null}
+                      promptText={previewPrompt}
+                      createdAt={previewAt}
                       isLoading={isGenerating}
                       layoutFrame={layoutFrame}
                       showPreviewLabel={false}
-                      hideMeta
+                      promptDescriptionAnchoredToPreview
                       onPreviewClick={handlePreviewClick}
                       onMenuAction={handlePreviewMenu}
+                      afterPreviewStack={editorTemplatesPanel}
                     />
-                    {editorMeta}
+                    {editorToolStripUnderMeta}
                   </div>
-                  {templatesOpen ? (
-                    <>
-                      <div className="mb-6 w-full min-w-0 xl:hidden">
-                        <TemplatesPanel
-                          templates={MOCK_TEMPLATES}
-                          selectedId={templateId}
-                          open
-                          onToggle={() => setTemplatesOpen(false)}
-                          onSelect={setTemplateId}
-                        />
-                      </div>
-                      <div className="mb-6 hidden w-full min-w-0 xl:block">
-                        <DesktopTemplatesStrip
-                          templates={MOCK_TEMPLATES}
-                          selectedId={templateId}
-                          onSelect={setTemplateId}
-                        />
-                      </div>
-                    </>
-                  ) : null}
                 </div>
               </div>
             </div>
-            <div
-              className="hidden min-w-0 xl:block xl:min-h-0"
-              aria-hidden="true"
-            />
           </div>
-          <ImageEditorFileInfoPanel
-            activeTab={fileInfoTab}
-            onTabChange={setFileInfoTab}
-            promptPreview={barPrompt}
-            aspectRatio={aspectRatio}
-            quality={quality}
-            variations={variations}
-            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
-            className="hidden max-h-screen xl:flex"
-          />
-        </div>
+        </DesktopThreeColumnShell>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden">
+      {/* Below xl: same shell as Create Image mobile — app-bg column, no inner panel card. */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-bg xl:hidden">
         <Header
           variant="mobile"
           mobileTitle="EDIT"
-          onMenuClick={() => setMobileMenuOpen(true)}
+          mobileNavTriggerSide="end"
         />
-        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-panel border border-edge-default bg-surface-panel">
-          <div
-            ref={mobileScrollRef}
-            className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
-            style={{
-              scrollPaddingBottom: createImageScrollContentBottomPaddingPx("mobile"),
-            }}
-          >
-            <main
-              ref={mobileColumnRef}
-              className="flex w-full min-w-0 flex-col px-4 pt-3"
-              style={{
-                paddingBottom: createImageScrollContentBottomPaddingPx("mobile"),
-              }}
-            >
-              <p
-                className="mb-[14px] text-[11px] font-bold tracking-[0.09em] text-white"
-                style={{ letterSpacing: "0.11em" }}
+        <div className="mx-4 mb-1 mt-2 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 sm:px-8">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center">
+            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col">
+              <div
+                ref={mobileScrollRef}
+                className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
+                style={{
+                  scrollPaddingBottom:
+                    createImageScrollContentBottomPaddingPx("mobile"),
+                }}
               >
-                EDIT IMAGE
-              </p>
-              <PreviewPanel
-                aspectRatio={aspectRatio}
-                template={null}
-                slotImages={slotImages}
-                promptText=""
-                createdAt={null}
-                isLoading={isGenerating}
-                showPreviewLabel={false}
-                hideMeta
-                mobileFrame
-                layoutFrame={layoutFrame}
-                onPreviewClick={handlePreviewClick}
-                onMenuAction={handlePreviewMenu}
-              />
-              <div className="mt-3 min-w-0">
-                <p className="text-[12px] font-medium leading-snug text-white">
-                  Edited Image — {editTitle}
-                </p>
+                <main
+                  ref={mobileColumnRef}
+                  className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
+                  style={{
+                    paddingBottom:
+                      createImageScrollContentBottomPaddingPx("mobile"),
+                  }}
+                >
+                  <div className="min-w-0 xl:mb-8">
+                    <PreviewPanel
+                      aspectRatio={aspectRatio}
+                      template={null}
+                      slotImages={slotImages}
+                      promptText={previewPrompt}
+                      createdAt={previewAt}
+                      isLoading={isGenerating}
+                      layoutFrame={layoutFrame}
+                      showPreviewLabel={false}
+                      promptDescriptionAnchoredToPreview
+                      onPreviewClick={handlePreviewClick}
+                      onMenuAction={handlePreviewMenu}
+                      afterPreviewStack={editorTemplatesPanel}
+                    />
+                    {editorToolStripUnderMeta}
+                  </div>
+                </main>
               </div>
-              <div className="mt-5 space-y-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-tx-muted">
-                  File information
-                </p>
-                <p className="text-[11px] leading-[18px] text-tx-muted">
-                  {MOBILE_FILE_INFO[0]}
-                </p>
-                <p className="text-[11px] leading-[18px] text-tx-muted">
-                  {MOBILE_FILE_INFO[1]}
-                </p>
-              </div>
-              <div className="my-5 h-px w-full bg-surface-hover/80" />
-              <p
-                className="mb-3 text-[11px] font-bold tracking-[0.09em] text-white"
-                style={{ letterSpacing: "0.11em" }}
-              >
-                TEMPLATES
-              </p>
-              <TemplatesPanel
-                templates={MOCK_TEMPLATES}
-                selectedId={templateId}
-                open={templatesOpen}
-                onToggle={() => setTemplatesOpen((o) => !o)}
-                onSelect={setTemplateId}
-              />
-              <p
-                className="mb-2 text-[11px] font-bold tracking-[0.09em] text-white"
-                style={{ letterSpacing: "0.11em" }}
-              >
-                PROMPT
-              </p>
-            </main>
+            </div>
           </div>
         </div>
       </div>
@@ -515,12 +414,13 @@ export function ImageEditorClient({
           onGenerate={handleApplyEdits}
           isGenerating={isGenerating}
           generateDisabled={generateDisabled}
-          variant={minWidth768 ? "desktop" : "mobile"}
+          variant={minWidth1280 ? "desktop" : "mobile"}
           placeholder="Describe your edits"
           generateAriaLabel="Apply edits"
         />
         <GenerationSettingsRow
           className="w-full shrink-0"
+          imagePagesPillStyle
           assetContentType={assetContentType}
           onAssetContentType={setAssetContentType}
           aspectRatio={aspectRatio}
@@ -529,33 +429,15 @@ export function ImageEditorClient({
           onQuality={setQuality}
           variations={variations}
           onVariations={setVariations}
-          variant={minWidth768 ? "desktop" : "mobile"}
-        />
-        <ImageEditorToolStrip
-          activeId={activeTool}
-          onSelect={onToolSelect}
-          className="w-full shrink-0"
+          variant={minWidth1280 ? "desktop" : "mobile"}
         />
       </FixedPromptBarDock>
 
-      <MobileCreateImageDrawer
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        historyItems={imageEditorSidebarHistory}
-        activeHistoryId={activeHistoryId}
-        onSelectHistory={(id) => {
-          loadHistory(id);
-          setMobileMenuOpen(false);
-        }}
-        onHistoryMenuAction={handleHistoryMenu}
-        activeMainNav={activeMainNav}
-      />
-
       {fullScreenUrl ? (
-        <div className="fixed inset-0 z-[1200] flex flex-col bg-surface-base/95 p-4">
+        <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
           <button
             type="button"
-            className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"
+            className="mb-4 self-end rounded-full px-4 py-2 text-sm text-white hover:bg-white/10"
             onClick={() => setFullScreenUrl(null)}
           >
             Close

@@ -19,7 +19,11 @@ export {
   createInitialActivityEntries,
 } from "./mocks/activity-entries";
 export type { ChatThreadRecord } from "./chat-thread";
-export { likedChatTitle, upsertChatThreadMessages } from "./chat-thread";
+export {
+  likedChatTitle,
+  chatThreadListHeadline,
+  upsertChatThreadMessages,
+} from "./chat-thread";
 export {
   activityEntryToHistoryItem,
   activityEntriesToDrawerHistoryItems,

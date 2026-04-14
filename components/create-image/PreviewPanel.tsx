@@ -1,12 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/utils";
-import { IconAsset } from "@/components/icons/IconAsset";
+import { isDataImageSrc } from "@/lib/is-data-image-src";
 import { ICONS, type IconPath } from "@/components/icons/icon-paths";
 import type { AspectRatio, TemplateDef } from "./types";
 import { formatCreatedAt } from "./types";
+import { threeDotsMainPreviewFrameAnchorClassName } from "@/components/ui/three-dots-menu-trigger";
 import { PreviewActionsMenu } from "./PreviewActionsMenu";
 
 type PreviewPanelProps = {
@@ -20,8 +27,13 @@ type PreviewPanelProps = {
   previewLabel?: string;
   /** When false, mobile does not show the preview title row. */
   showPreviewLabel?: boolean;
-  /** Hide date + prompt snippet below the frame (e.g. mobile uses helper copy in parent). */
+  /** Hide date + prompt snippet below the frame. */
   hideMeta?: boolean;
+  /**
+   * Create Image: anchor prompt description to the preview width — single truncated line by
+   * default, expand chevron pinned right, no horizontal shift (desktop + mobile).
+   */
+  promptDescriptionAnchoredToPreview?: boolean;
   /** Mobile: tighter preview frame from MOBILE-image SVG */
   mobileFrame?: boolean;
   /** Explicit size from column + viewport (short-height screens); preserves aspect ratio */
@@ -30,9 +42,17 @@ type PreviewPanelProps = {
   previewPromptPlaceholder?: string;
   /** Icon in empty preview / empty template slots (default: image placeholder). */
   emptyStatePlaceholderIcon?: IconPath;
+  /**
+   * Rendered inside the meta column directly under the prompt description (same width as the
+   * description block). Create Image mobile uses this for the inline 4-column history grid.
+   */
+  inlineAfterDescription?: ReactNode;
+  /**
+   * Create Image: content directly under the preview meta (or under the frame when meta is
+   * hidden), with the same horizontal alignment as the date/description block.
+   */
+  afterPreviewStack?: ReactNode;
   className?: string;
-  /** Optional: remove frame card surface (bg/border/shadow) for page-level seamless layouts. */
-  unstyledFrame?: boolean;
   onPreviewClick?: () => void;
   onMenuAction?: (action: string) => void;
 };
@@ -76,9 +96,15 @@ function ChevronExpandIcon({
 function PreviewDescriptionText({
   text,
   placeholder,
+  anchoredToPreview = false,
 }: {
   text: string;
   placeholder: string;
+  /**
+   * Create Image: one-line horizontal truncation to preview width; chevron in reserved gutter;
+   * expanded = full text, vertical growth only.
+   */
+  anchoredToPreview?: boolean;
 }) {
   const display = text.trim() ? text : placeholder;
   const isPlaceholder = !text.trim();
@@ -97,33 +123,78 @@ function PreviewDescriptionText({
 
     const measure = () => {
       if (expanded) return;
-      setCanExpand(el.scrollHeight > el.clientHeight + 1);
+      if (anchoredToPreview) {
+        setCanExpand(el.scrollWidth > el.clientWidth + 1);
+      } else {
+        setCanExpand(el.scrollHeight > el.clientHeight + 1);
+      }
     };
 
     measure();
     const ro = new ResizeObserver(() => measure());
     ro.observe(el);
     return () => ro.disconnect();
-  }, [display, expanded]);
+  }, [display, expanded, anchoredToPreview]);
+
+  const typeClass =
+    "text-[10px] leading-4 text-[#315790] xl:text-[13px] xl:leading-[18px]";
+
+  if (anchoredToPreview) {
+    const reserveChevronGutter = canExpand || expanded;
+    return (
+      <div className="relative min-w-0 w-full text-left">
+        <p
+          ref={pRef}
+          className={cn(
+            "min-w-0 w-full text-left",
+            reserveChevronGutter && "pr-7",
+            typeClass,
+            expanded
+              ? "whitespace-pre-wrap break-words"
+              : "truncate",
+          )}
+        >
+          {display}
+        </p>
+        {canExpand ? (
+          <button
+            type="button"
+            className={cn(
+              "absolute right-0 top-0 z-[1] flex h-5 w-5 items-center justify-center rounded outline-none",
+              "hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-primary",
+            )}
+            aria-expanded={expanded}
+            aria-label={expanded ? "Collapse description" : "Expand description"}
+            onClick={() => setExpanded((e) => !e)}
+          >
+            <ChevronExpandIcon
+              expanded={expanded}
+              className={
+                isPlaceholder ? "text-tx-muted" : "text-tx-secondary"
+              }
+            />
+          </button>
+        ) : null}
+      </div>
+    );
+  }
+
+  const legacyTextClass = cn(
+    "min-w-0 break-words",
+    typeClass,
+    !expanded && "line-clamp-1",
+  );
 
   return (
     <div className="flex min-w-0 gap-1.5">
-      <p
-        ref={pRef}
-        className={cn(
-          "min-w-0 flex-1 break-words",
-          !expanded && "line-clamp-1",
-          "text-[10px] leading-4 xl:text-[13px] xl:leading-[18px]",
-          isPlaceholder ? "text-tx-disabled" : "text-tx-secondary",
-        )}
-      >
+      <p ref={pRef} className={cn("min-w-0 flex-1", legacyTextClass)}>
         {display}
       </p>
       {canExpand ? (
         <button
           type="button"
           className={cn(
-            "mt-0.5 shrink-0 self-start rounded-menu-item p-0.5 outline-none",
+            "mt-0.5 shrink-0 self-start rounded p-0.5 outline-none",
             "hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-primary",
           )}
           aria-expanded={expanded}
@@ -133,7 +204,7 @@ function PreviewDescriptionText({
           <ChevronExpandIcon
             expanded={expanded}
             className={
-              isPlaceholder ? "text-tx-disabled" : "text-tx-secondary"
+              isPlaceholder ? "text-tx-muted" : "text-tx-secondary"
             }
           />
         </button>
@@ -206,6 +277,38 @@ function metaWidthClassMobile(aspect: AspectRatio): string {
   }
 }
 
+/** Preview-frame placeholders only — tints raster SVG as #315790 without changing global asset files. */
+function PreviewPlaceholderIcon({
+  src,
+  size,
+  className,
+}: {
+  src: IconPath;
+  size: number;
+  className?: string;
+}) {
+  const mask = `url("${src}")`;
+  return (
+    <span
+      className={cn("inline-block shrink-0", className)}
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: "#315790",
+        maskImage: mask,
+        WebkitMaskImage: mask,
+        maskSize: "contain",
+        WebkitMaskSize: "contain",
+        maskRepeat: "no-repeat",
+        WebkitMaskRepeat: "no-repeat",
+        maskPosition: "center",
+        WebkitMaskPosition: "center",
+      }}
+      aria-hidden
+    />
+  );
+}
+
 function SlotBox({
   label,
   src,
@@ -218,8 +321,8 @@ function SlotBox({
   placeholderIcon: IconPath;
 }) {
   return (
-    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-surface-panel">
-      <span className="absolute left-2 top-2 z-10 text-[9px] font-semibold uppercase tracking-wider text-tx-muted">
+    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#081030]">
+      <span className="absolute left-2 top-2 z-10 text-[9px] font-semibold uppercase tracking-wider text-tx-secondary">
         {label}
       </span>
 
@@ -230,10 +333,11 @@ function SlotBox({
           fill
           className="pointer-events-none object-contain"
           sizes="(min-width: 1280px) 1000px, 900px"
+          unoptimized={isDataImageSrc(src)}
         />
       ) : (
         <div className="flex flex-1 items-center justify-center p-4">
-          <IconAsset
+          <PreviewPlaceholderIcon
             src={placeholderIcon}
             size={32}
             className="opacity-90"
@@ -256,10 +360,10 @@ function NormalLayout({
   if (n === 0) {
     return (
       <div className="flex h-full min-h-[120px] w-full items-center justify-center p-6">
-        <IconAsset
+        <PreviewPlaceholderIcon
           src={placeholderIcon}
           size={76}
-          className="shrink-0 opacity-100"
+          className="opacity-100"
         />
       </div>
     );
@@ -274,6 +378,7 @@ function NormalLayout({
           fill
           className="pointer-events-none object-contain"
           sizes="(min-width: 1280px) 1000px, 900px"
+          unoptimized={isDataImageSrc(urls[0])}
         />
       </div>
     );
@@ -335,10 +440,11 @@ function TemplateLayout({
             fill
             className="pointer-events-none object-contain"
             sizes="1000px"
+            unoptimized={isDataImageSrc(padded[0])}
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <IconAsset src={placeholderIcon} size={76} />
+            <PreviewPlaceholderIcon src={placeholderIcon} size={76} />
           </div>
         )}
       </div>
@@ -392,8 +498,8 @@ function TemplateLayout({
         placeholderIcon={placeholderIcon}
       />
 
-      <div className="relative col-span-2 flex min-h-0 overflow-hidden bg-surface-panel">
-        <span className="absolute left-2 top-2 z-10 text-[9px] font-semibold uppercase tracking-wider text-tx-muted">
+      <div className="relative col-span-2 flex min-h-0 overflow-hidden bg-[#081030]">
+        <span className="absolute left-2 top-2 z-10 text-[9px] font-semibold uppercase tracking-wider text-tx-secondary">
           Image 3
         </span>
 
@@ -404,10 +510,11 @@ function TemplateLayout({
             fill
             className="pointer-events-none object-contain"
             sizes="1000px"
+            unoptimized={isDataImageSrc(padded[2])}
           />
         ) : (
           <div className="flex flex-1 items-center justify-center">
-            <IconAsset src={placeholderIcon} size={32} />
+            <PreviewPlaceholderIcon src={placeholderIcon} size={32} />
           </div>
         )}
       </div>
@@ -415,8 +522,9 @@ function TemplateLayout({
   );
 }
 
+/** Main preview window fill — shared Create Image / Video / Editor (not global `--panel-bg`). */
 const frameShell =
-  "relative overflow-hidden border border-edge-default bg-surface-elevated";
+  "relative overflow-hidden border border-edge-subtle bg-[#081030]";
 
 export function PreviewPanel({
   aspectRatio,
@@ -428,12 +536,14 @@ export function PreviewPanel({
   previewLabel,
   showPreviewLabel = true,
   hideMeta = false,
+  promptDescriptionAnchoredToPreview = false,
   mobileFrame = false,
   layoutFrame = null,
   previewPromptPlaceholder = PREVIEW_PROMPT_PLACEHOLDER,
   emptyStatePlaceholderIcon = ICONS.imagePlaceholder,
+  inlineAfterDescription,
+  afterPreviewStack,
   className,
-  unstyledFrame = false,
   onPreviewClick,
   onMenuAction,
 }: PreviewPanelProps) {
@@ -441,8 +551,35 @@ export function PreviewPanel({
   const hasImage = validImages.length > 0;
   const dateLine = createdAt ? formatCreatedAt(createdAt) : "";
 
-  const measured =
-    layoutFrame != null && layoutFrame.width > 0 && layoutFrame.height > 0;
+  /**
+   * Mobile card (`mobileFrame`) uses fixed CSS aspect/max-width tokens only.
+   * Inline `layoutFrame` from the desktop scroll column can be wrong (e.g. zero-size or
+   * oversized) when desktop refs are `display:none` — never apply it to the mobile preview shell.
+   */
+  const useMeasuredInlineFrame =
+    !mobileFrame &&
+    layoutFrame != null &&
+    layoutFrame.width > 0 &&
+    layoutFrame.height > 0;
+
+  const afterStackOuterClassName = cn(
+    "mt-3 min-w-0 shrink-0 xl:mt-3",
+    useMeasuredInlineFrame && layoutFrame
+      ? "mx-auto"
+      : cn(
+          "mx-auto",
+          mobileFrame
+            ? metaWidthClassMobile(aspectRatio)
+            : metaWidthClassDesktop(aspectRatio),
+        ),
+  );
+  const afterStackOuterStyle =
+    useMeasuredInlineFrame && layoutFrame
+      ? {
+          width: layoutFrame.width,
+          maxWidth: "100%",
+        }
+      : undefined;
 
   const previewBody = (
     <>
@@ -474,10 +611,13 @@ export function PreviewPanel({
         )}
 
         {isLoading ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-surface-base/80 backdrop-blur-sm">
+          <div className="absolute inset-0 flex items-center justify-center bg-[#081030]/80 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-3">
-              <div className="h-9 w-9 animate-spin rounded-action border-2 border-primary border-t-transparent" />
-              <span className="text-[11px] font-medium tracking-wide text-tx-muted">
+              <span
+                className="h-9 w-9 shrink-0 rounded-full bg-primary animate-pulse"
+                aria-hidden
+              />
+              <span className="text-[11px] font-medium tracking-wide text-tx-secondary">
                 Generating…
               </span>
             </div>
@@ -485,7 +625,7 @@ export function PreviewPanel({
         ) : null}
       </div>
 
-      <div className="absolute right-3 top-3 z-20 xl:right-9 xl:top-6">
+      <div className={threeDotsMainPreviewFrameAnchorClassName}>
         <PreviewActionsMenu
           align="right"
           onSelect={(action) => onMenuAction?.(action)}
@@ -493,10 +633,6 @@ export function PreviewPanel({
       </div>
     </>
   );
-
-  const frameBase = unstyledFrame
-    ? "relative overflow-hidden border-0 bg-transparent shadow-none"
-    : frameShell;
 
   return (
     <div className={cn("flex min-w-0 flex-col items-stretch", className)}>
@@ -509,10 +645,10 @@ export function PreviewPanel({
         </p>
       ) : null}
 
-      {measured && layoutFrame ? (
-        mobileFrame ? (
+      {useMeasuredInlineFrame && layoutFrame ? (
+        <div className="flex w-full min-w-0 justify-center">
           <div
-            className={cn("self-start", frameBase)}
+            className={frameShell}
             style={{
               width: layoutFrame.width,
               height: layoutFrame.height,
@@ -520,39 +656,20 @@ export function PreviewPanel({
           >
             {previewBody}
           </div>
-        ) : (
-          <div className="flex w-full min-w-0 justify-center">
-            <div
-              className={frameBase}
-              style={{
-                width: layoutFrame.width,
-                height: layoutFrame.height,
-              }}
-            >
-              {previewBody}
-            </div>
-          </div>
-        )
+        </div>
       ) : mobileFrame ? (
-        <div
-          className={cn(
-            unstyledFrame
-              ? "relative mx-auto overflow-hidden border-0 bg-transparent shadow-none"
-              : "relative mx-auto overflow-hidden border border-edge-default bg-surface-elevated",
-            mobileFrameClass(aspectRatio),
-          )}
-        >
+        <div className={cn("mx-auto", frameShell, mobileFrameClass(aspectRatio))}>
           {previewBody}
         </div>
       ) : aspectRatio === "16:9" ? (
-        <div className={cn(frameBase, desktop169Frame)}>
+        <div className={cn(frameShell, desktop169Frame)}>
           {previewBody}
         </div>
       ) : (
         <div className="flex w-full min-w-0 justify-center">
           <div
             className={cn(
-              frameBase,
+              frameShell,
               desktopOtherAspectInnerClass(aspectRatio),
             )}
           >
@@ -561,14 +678,12 @@ export function PreviewPanel({
         </div>
       )}
 
-      {!hideMeta ? (
+      {!hideMeta && (hasImage || inlineAfterDescription) ? (
         <div
           className={cn(
             "mt-3 min-w-0 shrink-0 xl:mt-3",
-            measured && layoutFrame
-              ? mobileFrame
-                ? "self-start"
-                : "mx-auto"
+            useMeasuredInlineFrame && layoutFrame
+              ? "mx-auto"
               : cn(
                   "mx-auto",
                   mobileFrame
@@ -577,7 +692,7 @@ export function PreviewPanel({
                 ),
           )}
           style={
-            measured && layoutFrame
+            useMeasuredInlineFrame && layoutFrame
               ? {
                   width: layoutFrame.width,
                   maxWidth: "100%",
@@ -585,7 +700,7 @@ export function PreviewPanel({
               : undefined
           }
         >
-          <p className="w-full min-w-0 max-w-none text-[10px] leading-none text-tx-muted">
+          <p className="w-full min-w-0 max-w-none text-[10px] leading-none text-tx-secondary">
             {dateLine}
           </p>
 
@@ -593,8 +708,16 @@ export function PreviewPanel({
             <PreviewDescriptionText
               text={promptText}
               placeholder={previewPromptPlaceholder}
+              anchoredToPreview={promptDescriptionAnchoredToPreview}
             />
           </div>
+          {inlineAfterDescription}
+        </div>
+      ) : null}
+
+      {afterPreviewStack ? (
+        <div className={afterStackOuterClassName} style={afterStackOuterStyle}>
+          {afterPreviewStack}
         </div>
       ) : null}
     </div>

@@ -1,6 +1,6 @@
 /**
  * Single source of truth for primary (shell) navigation routes.
- * Desktop Sidebar and mobile drawer must use these URLs only.
+ * Desktop Sidebar and mobile shell nav must use these URLs only.
  */
 
 import { createNewChat } from "@/lib/create-new-chat";

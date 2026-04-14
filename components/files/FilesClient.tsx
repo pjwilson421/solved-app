@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -13,14 +14,14 @@ import { useShellNav } from "@/lib/use-shell-nav";
 import { useShellNavReset } from "@/lib/shell-nav-reset-context";
 import { Header } from "../create-image/Header";
 import { Sidebar } from "../create-image/Sidebar";
-import { MobileCreateImageDrawer } from "../create-image/MobileCreateImageDrawer";
-import { CREATE_IMAGE_SCROLL_RESERVE } from "../create-image/preview-frame-layout";
-import { useMinWidth1280 } from "../create-image/use-create-image-preview-prompt-layout";
+import { LeftNavRail } from "@/components/shell/LeftNavRail";
 import type { HistoryItem } from "../create-image/types";
+import { MOCK_TEMPLATES } from "../create-image/types";
 import { cn } from "@/lib/utils";
 import { useAppData } from "@/lib/app-data/app-data-context";
 import { useAppItemActions } from "@/lib/app-data/use-app-item-actions";
 import { appItemRef } from "@/lib/app-data/item-ref";
+import { FilesDropZone } from "./FilesDropZone";
 import { FileListRow } from "./FileListRow";
 import { FilesGrid } from "./FilesGrid";
 import { FilesListHeader } from "./FilesListHeader";
@@ -87,14 +88,11 @@ export function FilesClient() {
   const { filesResetVersion } = useShellNavReset();
   const viewFromUrl = viewModeFromSearchParams(searchParams);
   const [viewMode, setViewMode] = useState<FilesViewMode>(viewFromUrl);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>("date-desc");
   const [moveTargetId, setMoveTargetId] = useState<string | null>(null);
-  const [renamingId, setRenamingId] = useState<string | null>(null);
-  const [renameValue, setRenameValue] = useState("");
   const [movePortalReady, setMovePortalReady] = useState(false);
   /** `null` = root (only `parentId == null` items). Otherwise show direct children of this folder. */
   const [folderScopeId, setFolderScopeId] = useState<string | null>(null);
@@ -120,8 +118,12 @@ export function FilesClient() {
   );
 
   const desktopScrollRef = useRef<HTMLDivElement>(null);
+  const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
-  const minWidth1280 = useMinWidth1280();
+  const mobileColumnRef = useRef<HTMLElement>(null);
+
+  const desktopScrollBottomPadPx = 0;
+  const mobileScrollBottomPadPx = 0;
 
   const { fileEntries, updateFileEntries } = useAppData();
   const {
@@ -258,8 +260,11 @@ export function FilesClient() {
           openItem(ref);
           break;
         case "Rename": {
-          setRenamingId(id);
-          setRenameValue(entry.name);
+          const next = window.prompt("Rename", entry.name);
+          if (next == null) return;
+          const trimmed = next.trim();
+          if (!trimmed || trimmed === entry.name) return;
+          renameFile(id, trimmed);
           break;
         }
         case "Download":
@@ -285,37 +290,6 @@ export function FilesClient() {
     ],
   );
 
-  const startInlineRename = useCallback(
-    (id: string) => {
-      const entry = fileEntries.find((e) => e.id === id);
-      if (!entry) return;
-      setRenamingId(id);
-      setRenameValue(entry.name);
-    },
-    [fileEntries],
-  );
-
-  const cancelInlineRename = useCallback(() => {
-    setRenamingId(null);
-    setRenameValue("");
-  }, []);
-
-  const submitInlineRename = useCallback(() => {
-    if (!renamingId) return;
-    const entry = fileEntries.find((e) => e.id === renamingId);
-    if (!entry) {
-      setRenamingId(null);
-      setRenameValue("");
-      return;
-    }
-    const trimmed = renameValue.trim();
-    if (trimmed && trimmed !== entry.name) {
-      renameFile(renamingId, trimmed);
-    }
-    setRenamingId(null);
-    setRenameValue("");
-  }, [fileEntries, renameFile, renameValue, renamingId]);
-
   const filterTypes = useMemo(() => {
     const s = new Set<string>();
     for (const e of fileEntries) s.add(e.typeLabel);
@@ -339,6 +313,8 @@ export function FilesClient() {
         {showDesktopChrome && toolbarVariant === "desktop" ? (
           <FilesDesktopHeaderActions
             menuButtonVariant="list"
+            filterOpen={filterOpen}
+            onToggleFilter={() => setFilterOpen((o) => !o)}
             onListViewClick={() => setFilesViewMode("list")}
             listViewActive={viewMode === "list"}
             onGridViewClick={() => setFilesViewMode("grid")}
@@ -352,16 +328,16 @@ export function FilesClient() {
           <button
             type="button"
             onClick={goFolderUp}
-            className="shrink-0 flex items-center gap-1 rounded-menu-item py-1 pr-2 text-[11px] font-medium text-tx-muted transition-colors hover:text-white"
+            className="shrink-0 flex items-center gap-1 rounded-full py-1 pr-2 text-[11px] font-medium text-tx-secondary transition-colors hover:text-white"
           >
             <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M7.5 9L4.5 6L7.5 3" />
             </svg>
             Back
           </button>
-          <div className="h-3 w-px bg-surface-hover/80 shrink-0" aria-hidden />
+          <div className="h-3 w-px bg-panel-hover/80 shrink-0" aria-hidden />
           <nav
-            className="flex min-w-0 flex-wrap items-center gap-1.5 text-[11px] text-tx-muted ml-1"
+            className="flex min-w-0 flex-wrap items-center gap-1.5 text-[11px] text-tx-secondary ml-1"
             aria-label="Folder path"
           >
             <button
@@ -373,7 +349,7 @@ export function FilesClient() {
             </button>
             {breadcrumbFolders.map((f, i) => (
               <span key={f.id} className="flex min-w-0 items-center gap-1">
-                <span className="shrink-0 text-tx-disabled" aria-hidden>
+                <span className="shrink-0 text-tx-muted" aria-hidden>
                   /
                 </span>
                 {i < breadcrumbFolders.length - 1 ? (
@@ -385,7 +361,7 @@ export function FilesClient() {
                     {f.name}
                   </button>
                 ) : (
-                  <span className="min-w-0 truncate text-white border-b border-transparent">{f.name}</span>
+                  <span className="min-w-0 truncate text-white">{f.name}</span>
                 )}
               </span>
             ))}
@@ -401,20 +377,24 @@ export function FilesClient() {
         filterOpen={filterOpen}
         onToggleFilter={() => setFilterOpen((o) => !o)}
         onFilesUpload={handleFilesUpload}
-        sortOption={sortOption}
-        onSortChange={setSortOption}
       />
 
       {filterOpen ? (
-        <div className="flex flex-wrap gap-2 rounded-card border border-edge-default/80 bg-surface-elevated/80 px-3 py-2">
+        <div
+          className="flex w-full min-w-0 flex-col gap-0.5 bg-transparent py-1"
+          role="listbox"
+          aria-label="Filter by file type"
+        >
           <button
             type="button"
+            role="option"
+            aria-selected={typeFilter === null}
             onClick={() => setTypeFilter(null)}
             className={cn(
-              "cursor-pointer rounded-menu-item px-2.5 py-1 text-[10px] font-medium transition-colors duration-150",
+              "w-full cursor-pointer rounded-full px-3 py-2 text-left text-[11px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-0 focus-visible:bg-panel-hover",
               typeFilter === null
-                ? "bg-primary text-white hover:bg-primary-active active:bg-primary-active"
-                : "text-tx-muted hover:bg-surface-hover hover:text-white active:bg-surface-pressed",
+                ? "bg-panel-pressed text-white hover:bg-panel-hover active:bg-panel-pressed"
+                : "text-tx-secondary hover:bg-panel-hover hover:text-white active:bg-panel-pressed focus-visible:text-white",
             )}
           >
             All types
@@ -423,12 +403,14 @@ export function FilesClient() {
             <button
               key={t}
               type="button"
+              role="option"
+              aria-selected={typeFilter === t}
               onClick={() => setTypeFilter(t)}
               className={cn(
-                "cursor-pointer rounded-menu-item px-2.5 py-1 text-[10px] font-medium transition-colors duration-150",
+                "w-full cursor-pointer rounded-full px-3 py-2 text-left text-[11px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-0 focus-visible:bg-panel-hover",
                 typeFilter === t
-                  ? "bg-primary text-white hover:bg-primary-active active:bg-primary-active"
-                  : "text-tx-muted hover:bg-surface-hover hover:text-white active:bg-surface-pressed",
+                  ? "bg-panel-pressed text-white hover:bg-panel-hover active:bg-panel-pressed"
+                  : "text-tx-secondary hover:bg-panel-hover hover:text-white active:bg-panel-pressed focus-visible:text-white",
               )}
             >
               {t}
@@ -440,7 +422,7 @@ export function FilesClient() {
       <>
         {viewMode === "list" ? <FilesListHeader /> : null}
         {visibleEntries.length === 0 ? (
-          <p className="py-6 text-left text-[12px] leading-relaxed text-tx-muted sm:text-[13px]">
+          <p className="py-6 text-left text-[12px] leading-relaxed text-tx-secondary sm:text-[13px]">
             {!searchQuery.trim() && !typeFilter && scopedEntries.length === 0
               ? folderScopeId === null
                 ? "No files yet."
@@ -448,8 +430,8 @@ export function FilesClient() {
               : "No files match your search or filters."}
           </p>
         ) : viewMode === "list" ? (
-          <div className="flex flex-col gap-2">
-            {visibleEntries.map((entry, i) => (
+          <div className="flex flex-col">
+            {visibleEntries.map((entry) => (
               <FileListRow
                 key={entry.id}
                 entry={entry}
@@ -459,16 +441,9 @@ export function FilesClient() {
                     : 0
                 }
                 variant={toolbarVariant}
-                rowIndex={i}
                 onMenuAction={handleFileMenu}
                 onFolderOpen={handleFolderOpen}
                 onFileOpen={handleFileOpenPreview}
-                isRenaming={renamingId === entry.id}
-                renameValue={renamingId === entry.id ? renameValue : ""}
-                onStartRename={startInlineRename}
-                onRenameValueChange={setRenameValue}
-                onRenameSubmit={submitInlineRename}
-                onRenameCancel={cancelInlineRename}
                 folderIsEmpty={
                   entry.kind === "folder"
                     ? !folderHasChildItems(entry.id)
@@ -484,12 +459,6 @@ export function FilesClient() {
             onFolderOpen={handleFolderOpen}
             onFileOpen={handleFileOpenPreview}
             folderHasChildItems={folderHasChildItems}
-            renamingId={renamingId}
-            renameValue={renameValue}
-            onStartRename={startInlineRename}
-            onRenameValueChange={setRenameValue}
-            onRenameSubmit={submitInlineRename}
-            onRenameCancel={cancelInlineRename}
           />
         )}
       </>
@@ -499,11 +468,11 @@ export function FilesClient() {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
-        "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-bg text-tx-primary",
+        "xl:[--create-image-prompt-max:1000px]",
       )}
     >
-      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden md:flex">
+      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden xl:flex">
         <div className="hidden shrink-0 xl:block">
           <Header variant="desktop" />
         </div>
@@ -511,40 +480,40 @@ export function FilesClient() {
           <Header
             variant="mobile"
             mobileTitle="FILES"
-            onMenuClick={() => setMobileMenuOpen(true)}
+            mobileNavTriggerSide="end"
           />
         </div>
 
         <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
-          <Sidebar
-            className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
-            activeId={activeMainNav}
-            onNavigate={navigate}
-            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
-          />
+          <LeftNavRail className="hidden shrink-0 xl:flex">
+            <Sidebar
+              className="flex min-h-0 min-w-0 w-full flex-1 flex-col"
+              activeId={activeMainNav}
+              onNavigate={navigate}
+            />
+          </LeftNavRail>
 
-          <div
-            className={cn(
-              "flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-10",
-              minWidth1280 && "w-full self-start",
-            )}
-            style={
-              minWidth1280
-                ? {
-                    height: `calc(100% - ${CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}px)`,
-                  }
-                : undefined
-            }
-          >
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-hidden px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:flex-1 xl:overflow-hidden xl:px-0 xl:pr-[40px]">
             <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
               <div
                 ref={desktopScrollRef}
                 className="min-h-0 w-full min-w-0 flex-1 overflow-y-auto"
+                style={{
+                  scrollPaddingBottom: desktopScrollBottomPadPx,
+                }}
               >
-                <div className="flex w-full min-w-0 flex-col items-center pt-6 text-left">
-                  <div className="w-full min-w-0 max-w-[1000px] px-4 md:px-6">
-                    <div className="flex w-full min-w-0 flex-col gap-4 py-4 md:py-6">
-                      {filesMainInner("desktop", true)}
+                <div
+                  ref={desktopMiddleColumnRef}
+                  className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
+                  style={{
+                    paddingBottom: desktopScrollBottomPadPx,
+                  }}
+                >
+                  <div className="px-4 md:px-6">
+                    <div className="rounded-[18px] bg-transparent">
+                      <div className="flex w-full min-w-0 flex-col gap-4 p-4 md:p-6">
+                        {filesMainInner("desktop", true)}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -554,35 +523,34 @@ export function FilesClient() {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-bg xl:hidden">
         <Header
           variant="mobile"
           mobileTitle="FILES"
-          onMenuClick={() => setMobileMenuOpen(true)}
+          mobileNavTriggerSide="end"
         />
-        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] bg-transparent">
           <div
             ref={mobileScrollRef}
             className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
+            style={{
+              scrollPaddingBottom: mobileScrollBottomPadPx,
+            }}
           >
-            <main className="flex w-full min-w-0 flex-col items-center px-4 pt-3">
-              <div className="flex w-full min-w-0 max-w-[1000px] flex-col gap-4">
+            <main
+              ref={mobileColumnRef}
+              className="flex w-full min-w-0 flex-col px-4 pt-3"
+              style={{
+                paddingBottom: mobileScrollBottomPadPx,
+              }}
+            >
+              <div className="flex w-full min-w-0 flex-col gap-4">
                 {filesMainInner("mobile", false)}
               </div>
             </main>
           </div>
         </div>
       </div>
-
-      <MobileCreateImageDrawer
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        historyItems={EMPTY_HISTORY}
-        activeHistoryId={null}
-        onSelectHistory={() => {}}
-        onHistoryMenuAction={() => {}}
-        activeMainNav={activeMainNav}
-      />
 
       {movePortalReady
         ? createPortal(

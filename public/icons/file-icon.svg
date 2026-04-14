@@ -4,17 +4,9 @@
   <defs>
     <style>
       .st0 {
-        fill: none;
-        stroke: #0f0f10;
-        stroke-width: 1.5px;
-      }
-
-      .st1 {
-        fill: #8a8a93;
+        fill: #fff;
       }
     </style>
   </defs>
-  <rect class="st1" x="3.82" y="2" width="16.36" height="20" rx="3" ry="3"/>
-  <line class="st0" x1="7.45" y1="7.45" x2="16.55" y2="7.45"/>
-  <line class="st0" x1="7.45" y1="12" x2="16.55" y2="12"/>
+  <path class="st0" d="M17.18,2H6.82c-1.66,0-3,1.34-3,3v14c0,1.66,1.34,3,3,3h10.36c1.66,0,3-1.34,3-3V5c0-1.66-1.34-3-3-3ZM16.55,12.75H7.45v-1.5h9.1v1.5ZM16.55,8.2H7.45v-1.5h9.1v1.5Z"/>
 </svg>

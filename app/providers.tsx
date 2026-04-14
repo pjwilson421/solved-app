@@ -7,10 +7,10 @@ import { ShellNavResetProvider } from "@/lib/shell-nav-reset-context";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
-    <LikedItemsProvider>
-      <ShellNavResetProvider>
+    <ShellNavResetProvider>
+      <LikedItemsProvider>
         <AppDataProvider>{children}</AppDataProvider>
-      </ShellNavResetProvider>
-    </LikedItemsProvider>
+      </LikedItemsProvider>
+    </ShellNavResetProvider>
   );
 }

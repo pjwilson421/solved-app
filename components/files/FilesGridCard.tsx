@@ -13,35 +13,28 @@ import {
   FileRowActionsMenu,
   type FileRowMenuAction,
 } from "./FileRowActionsMenu";
+import { FileNameInlineEdit } from "./FileNameInlineEdit";
+import type { FileRowNameEditProps } from "./FileListRow";
 
 type FilesGridCardProps = {
   entry: FileEntry;
+  /** Files page inline rename; omit for static title (e.g. Liked). */
+  nameEdit?: FileRowNameEditProps;
   onMenuAction?: (id: string, action: FileRowMenuAction) => void;
   onFolderOpen?: (folderId: string) => void;
   /** Opens image preview when the file has a data or remote image src. */
   onFileOpen?: (entry: FileEntry) => void;
   /** When true, folder uses empty-folder outlined icon. */
   folderIsEmpty?: boolean;
-  isRenaming?: boolean;
-  renameValue?: string;
-  onStartRename?: (id: string) => void;
-  onRenameValueChange?: (next: string) => void;
-  onRenameSubmit?: () => void;
-  onRenameCancel?: () => void;
 };
 
 export function FilesGridCard({
   entry,
+  nameEdit,
   onMenuAction,
   onFolderOpen,
   onFileOpen,
   folderIsEmpty,
-  isRenaming = false,
-  renameValue = "",
-  onStartRename,
-  onRenameValueChange,
-  onRenameSubmit,
-  onRenameCancel,
 }: FilesGridCardProps) {
   const sizeDisplay = entry.sizeLabel ?? "—";
   const meta = `${entry.typeLabel} • ${sizeDisplay}`;
@@ -74,16 +67,15 @@ export function FilesGridCard({
           : undefined
       }
       className={cn(
-        "group flex h-full flex-col rounded-card border border-edge-default bg-surface-elevated transition-[background-color,border-color,box-shadow] duration-150",
-        "hover:border-edge-strong hover:bg-surface-panel hover:shadow-md",
+        "group flex h-full flex-col rounded-xl border border-edge-subtle bg-surface-card transition-colors duration-150",
+        "hover:bg-ix-hover",
         cardActivate ? "cursor-pointer" : "cursor-default",
-        accent === "highlight" &&
-          "border-primary-hover/60 bg-surface-panel/90 hover:border-primary-hover/80 hover:bg-surface-pressed/95",
+        accent === "highlight" && "bg-ix-selected",
       )}
     >
       <div
         className={cn(
-          "relative w-full rounded-t-card bg-surface-panel transition-colors duration-150 group-hover:bg-surface-pressed",
+          "relative w-full rounded-t-xl bg-panel-bg transition-colors duration-150 group-hover:bg-app-shade",
           "aspect-[148/118] sm:aspect-[8/5]",
         )}
       >
@@ -91,13 +83,16 @@ export function FilesGridCard({
           className="absolute right-2 top-2 z-10 flex items-center gap-1"
           onClick={(e) => e.stopPropagation()}
         >
-          <LikeToggleButton itemKey={likedKey.file(entry.id)} />
+          <LikeToggleButton
+            itemKey={likedKey.file(entry.id)}
+            filesHeartAppearance
+          />
           <FileRowActionsMenu
             align="right"
             onSelect={(a) => onMenuAction?.(entry.id, a)}
           />
         </div>
-        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-t-card">
+        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-t-xl">
           {showVisualThumb ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -116,44 +111,23 @@ export function FilesGridCard({
         </div>
       </div>
       <div className="min-w-0 px-2.5 pb-2.5 pt-2 sm:px-3 sm:pb-3 sm:pt-2.5">
-        {isRenaming ? (
-          <input
-            autoFocus
-            value={renameValue}
-            onChange={(e) => onRenameValueChange?.(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                onRenameSubmit?.();
-              }
-              if (e.key === "Escape") {
-                e.preventDefault();
-                onRenameCancel?.();
-              }
-            }}
-            onBlur={() => onRenameSubmit?.()}
-            className="w-full rounded-menu-item bg-transparent text-left text-[12px] font-medium leading-snug text-white sm:text-[13px] outline-none ring-1 ring-edge-strong px-1 -mx-1"
-            aria-label={`Rename ${entry.name}`}
+        {nameEdit ? (
+          <FileNameInlineEdit
+            displayName={entry.name}
+            isEditing={nameEdit.isEditing}
+            draftValue={nameEdit.editedName}
+            onDraftChange={nameEdit.onEditedNameChange}
+            onRequestEdit={nameEdit.onStart}
+            onCommit={nameEdit.onCommit}
+            onCancelEdit={nameEdit.onCancel}
+            textClassName="truncate text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]"
           />
         ) : (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onStartRename?.(entry.id);
-            }}
-            className="w-full truncate text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]"
-          >
+          <p className="truncate text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]">
             {entry.name}
-          </button>
+          </p>
         )}
-        <p
-          className={cn(
-            "mt-1 truncate text-left text-[10px] leading-snug sm:text-[11px]",
-            accent === "highlight" ? "text-tx-secondary" : "text-tx-muted",
-          )}
-        >
+        <p className="mt-1 truncate text-left text-[10px] leading-snug text-[#315790] sm:text-[11px]">
           {meta}
         </p>
       </div>

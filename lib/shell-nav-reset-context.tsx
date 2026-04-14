@@ -22,6 +22,16 @@ const ShellNavResetContext = createContext<ShellNavResetContextValue | null>(
   null,
 );
 
+/** Used when a component calls the hook outside `ShellNavResetProvider` (avoids blank screen). */
+const SHELL_NAV_RESET_FALLBACK: ShellNavResetContextValue = {
+  filesResetVersion: 0,
+  historyResetVersion: 0,
+  likedResetVersion: 0,
+  bumpFiles: () => {},
+  bumpHistory: () => {},
+  bumpLiked: () => {},
+};
+
 export function ShellNavResetProvider({ children }: { children: ReactNode }) {
   const [filesResetVersion, setFiles] = useState(0);
   const [historyResetVersion, setHistory] = useState(0);
@@ -56,10 +66,11 @@ export function ShellNavResetProvider({ children }: { children: ReactNode }) {
 
 export function useShellNavReset(): ShellNavResetContextValue {
   const ctx = useContext(ShellNavResetContext);
-  if (!ctx) {
-    throw new Error(
-      "useShellNavReset must be used within ShellNavResetProvider",
+  if (ctx != null) return ctx;
+  if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
+    console.warn(
+      "[app] useShellNavReset outside ShellNavResetProvider — using no-op bumps. Ensure app/layout.tsx wraps children with <AppProviders>.",
     );
   }
-  return ctx;
+  return SHELL_NAV_RESET_FALLBACK;
 }

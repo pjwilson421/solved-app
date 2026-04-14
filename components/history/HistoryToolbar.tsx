@@ -5,14 +5,55 @@ import { type SortOption, SORT_OPTIONS, SORT_LABEL_BY_VALUE } from "@/lib/app-da
 
 export type HistoryActivityFilter = "all" | "chats" | "images" | "videos" | "edited";
 
-type HistoryToolbarProps = {
-  searchQuery: string;
-  onSearchChange: (q: string) => void;
+type HistoryToolbarFiltersProps = {
   activityFilter: HistoryActivityFilter;
   onActivityFilterChange: (value: HistoryActivityFilter) => void;
   sortOption: SortOption;
   onSortChange: (value: SortOption) => void;
+  /** History/Liked mobile: full-width Type/Sort chips inside `FilesToolbar` filter grid. */
+  compactLayout?: boolean;
 };
+
+const sortDropdownFullWidthProps = {
+  rootClassName: "relative min-w-0 w-full",
+  triggerClassName:
+    "flex w-full min-w-0 max-w-full shrink justify-between",
+} as const;
+
+/** Type + Sort — shared with `FilesToolbar` via `customFilterSortSlot` on History / Liked. */
+export function HistoryToolbarFilters({
+  activityFilter,
+  onActivityFilterChange,
+  sortOption,
+  onSortChange,
+  compactLayout = false,
+}: HistoryToolbarFiltersProps) {
+  const currentFilterLabel = LABEL_BY_VALUE[activityFilter];
+  const currentSortLabel = SORT_LABEL_BY_VALUE[sortOption];
+
+  return (
+    <>
+      <SortDropdown
+        value={activityFilter}
+        onChange={onActivityFilterChange}
+        options={FILTER_OPTIONS}
+        labelPrefix="Type: "
+        currentLabel={currentFilterLabel}
+        triggerAlwaysWhite
+        {...(compactLayout ? sortDropdownFullWidthProps : {})}
+      />
+      <SortDropdown
+        value={sortOption}
+        onChange={onSortChange}
+        options={SORT_OPTIONS}
+        labelPrefix="Sort: "
+        currentLabel={currentSortLabel}
+        triggerAlwaysWhite
+        {...(compactLayout ? sortDropdownFullWidthProps : {})}
+      />
+    </>
+  );
+}
 
 const FILTER_OPTIONS: { value: HistoryActivityFilter; label: string }[] = [
   { value: "all", label: "All Types" },
@@ -29,58 +70,3 @@ const LABEL_BY_VALUE: Record<HistoryActivityFilter, string> = {
   videos: "Videos",
   edited: "Edited Images",
 };
-
-export function HistoryToolbar({
-  searchQuery,
-  onSearchChange,
-  activityFilter,
-  onActivityFilterChange,
-  sortOption,
-  onSortChange,
-}: HistoryToolbarProps) {
-  const currentFilterLabel = LABEL_BY_VALUE[activityFilter];
-  const currentSortLabel = SORT_LABEL_BY_VALUE[sortOption];
-
-  return (
-    <div className="flex w-full min-w-0 flex-col gap-3">
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <label className="sr-only" htmlFor="history-search">
-          Search history
-        </label>
-        <div className="flex h-[30px] min-w-0 max-w-full flex-[1_1_200px] items-center gap-2 rounded-input border border-edge-default bg-input-bg px-3 transition-[border-color,box-shadow] duration-150 hover:border-edge-strong focus-within:border-primary-hover/55 focus-within:ring-2 focus-within:ring-primary/30">
-          <svg
-            className="h-3.5 w-3.5 shrink-0 text-tx-muted"
-            viewBox="0 0 12 12"
-            fill="none"
-            aria-hidden
-          >
-            <circle cx="5" cy="5" r="3.5" stroke="currentColor" strokeWidth="1.2" />
-            <path d="M7.5 7.5L10 10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-          </svg>
-          <input
-            id="history-search"
-            type="search"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search assets..."
-            className="min-w-0 flex-1 bg-transparent text-[11px] text-white placeholder:text-tx-muted outline-none"
-          />
-        </div>
-        <SortDropdown
-          value={activityFilter}
-          onChange={onActivityFilterChange}
-          options={FILTER_OPTIONS}
-          labelPrefix="Type: "
-          currentLabel={currentFilterLabel}
-        />
-        <SortDropdown
-          value={sortOption}
-          onChange={onSortChange}
-          options={SORT_OPTIONS}
-          labelPrefix="Sort: "
-          currentLabel={currentSortLabel}
-        />
-      </div>
-    </div>
-  );
-}

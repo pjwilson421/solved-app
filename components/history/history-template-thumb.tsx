@@ -78,7 +78,7 @@ export function HistoryGridTemplateThumb({
           src={imageUrl}
           alt=""
           fill
-          className="object-cover"
+          className="object-cover transition-opacity duration-150 group-hover:opacity-95"
           sizes="(max-width: 768px) 50vw, 280px"
         />
       ) : (

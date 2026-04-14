@@ -1,11 +1,34 @@
 "use client";
 
-import { IconAsset } from "@/components/icons/IconAsset";
+import { useState, type MouseEvent } from "react";
 import { ICONS, type IconPath } from "@/components/icons/icon-paths";
 import { cn } from "@/lib/utils";
 
+/** Renders a public SVG as a tintable glyph via CSS mask (`backgroundColor: currentColor`). */
+function ImageEditorToolIcon({ src }: { src: IconPath | string }) {
+  const mask = `url("${src}")`;
+  return (
+    <span
+      className="block shrink-0 select-none fill-current text-inherit"
+      style={{
+        width: ICON_PX,
+        height: ICON_PX,
+        backgroundColor: "currentColor",
+        maskImage: mask,
+        WebkitMaskImage: mask,
+        maskSize: "contain",
+        WebkitMaskSize: "contain",
+        maskRepeat: "no-repeat",
+        WebkitMaskRepeat: "no-repeat",
+        maskPosition: "center",
+        WebkitMaskPosition: "center",
+      }}
+      aria-hidden
+    />
+  );
+}
+
 const TOOL_IDS = [
-  "templates",
   "add",
   "remove",
   "enhance",
@@ -17,7 +40,6 @@ const TOOL_IDS = [
 export type ImageEditorToolId = (typeof TOOL_IDS)[number];
 
 const LABELS: Record<ImageEditorToolId, string> = {
-  templates: "Templates",
   add: "Add",
   remove: "Remove",
   enhance: "Enhance",
@@ -30,21 +52,23 @@ const ICONS_BY_TOOL: Record<
   ImageEditorToolId,
   readonly IconPath[]
 > = {
-  templates: [ICONS.templates],
   add: [ICONS.editorAdd],
   remove: [ICONS.editorRemove],
   enhance: [ICONS.editorEnhance],
   regenerate: [ICONS.editorRegenerate],
-  text: [ICONS.editorTextTool, ICONS.editorColorSwatch],
+  /** Swatch rendered after label in the Text tool branch only. */
+  text: [ICONS.editorTextTool],
   draw: [ICONS.editorDraw],
 };
 
 const ICON_PX = 16;
 
-const chip = cn(
-  "flex min-h-[38px] min-w-0 shrink-0 items-center justify-center gap-2 rounded-control border border-edge-default/90",
-  "bg-surface-panel pl-2.5 pr-3 text-[11px] font-medium leading-none text-white transition-colors",
-  "hover:bg-surface-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+/** Layout + shape; default fill + `color` from globals (stroke-free); icons inherit `currentColor`. */
+const toolBtnLayout = cn(
+  "image-editor-tool-btn",
+  "flex min-h-[38px] min-w-0 shrink-0 items-center justify-center gap-2 rounded-full",
+  "appearance-none pl-2.5 pr-3 text-[11px] font-medium leading-none text-inherit",
+  "focus-visible:outline-none focus-visible:ring-0",
 );
 
 type ImageEditorToolStripProps = {
@@ -58,49 +82,71 @@ export function ImageEditorToolStrip({
   onSelect,
   className,
 }: ImageEditorToolStripProps) {
+  const [hoveredToolId, setHoveredToolId] = useState<ImageEditorToolId | null>(
+    null,
+  );
+
+  const clearHoverIfLeavingToolbar = (e: MouseEvent<HTMLDivElement>) => {
+    const next = e.relatedTarget;
+    if (next instanceof Node && e.currentTarget.contains(next)) return;
+    setHoveredToolId(null);
+  };
+
   return (
     <div
       className={cn(
         "flex w-full min-w-0 flex-wrap items-center justify-start gap-2 xl:gap-2.5",
         className,
       )}
-      role="toolbar"
-      aria-label="Edit tools"
+      onMouseLeave={clearHoverIfLeavingToolbar}
     >
       {TOOL_IDS.map((id) => {
-        const active = activeId === id;
+        const isSelected = activeId === id;
+        const isHovered = hoveredToolId === id;
+        const activeVisual =
+          hoveredToolId !== null ? isHovered : isSelected;
         const iconList = ICONS_BY_TOOL[id];
         return (
           <button
             key={id}
             type="button"
-            className={cn(
-              chip,
-              active &&
-                "border-primary-hover bg-primary text-white ring-2 ring-primary/30",
-            )}
+            className={toolBtnLayout}
+            data-active-visual={activeVisual ? "true" : undefined}
+            aria-pressed={isSelected}
+            onMouseEnter={() => setHoveredToolId(id)}
             onClick={() => onSelect(id)}
           >
-            <span
-              className={cn(
-                "flex shrink-0 items-center",
-                id === "text" && "gap-0.5",
-              )}
-              aria-hidden
-            >
-              {iconList.map((src) => (
-                <IconAsset
-                  key={src}
-                  src={src}
-                  size={ICON_PX}
-                  className={cn(
-                    "[&_img]:block",
-                    active ? "[&_img]:opacity-100" : "[&_img]:opacity-90",
-                  )}
-                />
-              ))}
-            </span>
-            <span className="min-w-0">{LABELS[id]}</span>
+            {id === "text" ? (
+              <>
+                <span
+                  className="inline-flex shrink-0 fill-current text-inherit"
+                  aria-hidden
+                >
+                  <ImageEditorToolIcon src={ICONS.editorTextTool} />
+                </span>
+                <span className="min-w-0 shrink-0 text-inherit">
+                  {LABELS.text}
+                </span>
+                <span
+                  className="inline-flex shrink-0 fill-current text-inherit"
+                  aria-hidden
+                >
+                  <ImageEditorToolIcon src={ICONS.editorColorSwatch} />
+                </span>
+              </>
+            ) : (
+              <>
+                <span
+                  className="flex shrink-0 items-center fill-current text-inherit"
+                  aria-hidden
+                >
+                  {iconList.map((src) => (
+                    <ImageEditorToolIcon key={src} src={src} />
+                  ))}
+                </span>
+                <span className="min-w-0 text-inherit">{LABELS[id]}</span>
+              </>
+            )}
           </button>
         );
       })}

@@ -7,37 +7,34 @@ import { useAppData } from "@/lib/app-data/app-data-context";
 import { useRouter } from "next/navigation";
 import type { FileRowMenuAction } from "../files/FileRowActionsMenu";
 
+export type HistoryGridTitleEditConfig = {
+  editingActivityId: string | null;
+  editedName: string;
+  onEditedNameChange: (value: string) => void;
+  onStart: (id: string, title: string) => void;
+  onCommit: (id: string, rawValue: string) => void;
+  onCancel: () => void;
+};
+
 type HistoryGridProps = {
   entries: ActivityHistoryEntry[];
   onMenuAction?: (id: string, action: FileRowMenuAction) => void;
   onItemOpen?: (id: string) => void;
-  enableTitleInlineRename?: boolean;
-  titleRenamingId?: string | null;
-  titleRenameValue?: string;
-  onStartTitleRename?: (id: string) => void;
-  onTitleRenameChange?: (next: string) => void;
-  onTitleRenameSubmit?: () => void;
-  onTitleRenameCancel?: () => void;
+  titleEdit?: HistoryGridTitleEditConfig;
 };
 
 export function HistoryGrid({
   entries,
   onMenuAction,
   onItemOpen,
-  enableTitleInlineRename = false,
-  titleRenamingId = null,
-  titleRenameValue = "",
-  onStartTitleRename,
-  onTitleRenameChange,
-  onTitleRenameSubmit,
-  onTitleRenameCancel,
+  titleEdit,
 }: HistoryGridProps) {
   const { chatThreads } = useAppData();
   const router = useRouter();
 
   return (
     <ul
-      className="grid grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-5 sm:gap-y-8 md:grid-cols-3 xl:grid-cols-4"
+      className="grid w-full min-w-0 grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-5 sm:gap-y-8 xl:grid-cols-4"
       role="list"
     >
       {entries.map((entry, i) => {
@@ -52,15 +49,6 @@ export function HistoryGrid({
                 onOpen={() =>
                   router.push(`/chat?openChat=${encodeURIComponent(record.id)}`)
                 }
-                enableTitleInlineRename={enableTitleInlineRename}
-                isTitleRenaming={titleRenamingId === entry.id}
-                titleRenameValue={
-                  titleRenamingId === entry.id ? titleRenameValue : ""
-                }
-                onStartTitleRename={() => onStartTitleRename?.(entry.id)}
-                onTitleRenameChange={onTitleRenameChange}
-                onTitleRenameSubmit={onTitleRenameSubmit}
-                onTitleRenameCancel={onTitleRenameCancel}
               />
             </li>
           );
@@ -72,15 +60,21 @@ export function HistoryGrid({
               rowIndex={i}
               onMenuAction={onMenuAction}
               onItemOpen={onItemOpen}
-              enableTitleInlineRename={enableTitleInlineRename}
-              isTitleRenaming={titleRenamingId === entry.id}
-              titleRenameValue={
-                titleRenamingId === entry.id ? titleRenameValue : ""
+              titleEdit={
+                titleEdit
+                  ? {
+                      isEditing:
+                        titleEdit.editingActivityId === entry.id,
+                      editedName: titleEdit.editedName,
+                      onEditedNameChange: titleEdit.onEditedNameChange,
+                      onStart: () =>
+                        titleEdit.onStart(entry.id, entry.title),
+                      onCommit: (raw) =>
+                        titleEdit.onCommit(entry.id, raw),
+                      onCancel: titleEdit.onCancel,
+                    }
+                  : undefined
               }
-              onStartTitleRename={() => onStartTitleRename?.(entry.id)}
-              onTitleRenameChange={onTitleRenameChange}
-              onTitleRenameSubmit={onTitleRenameSubmit}
-              onTitleRenameCancel={onTitleRenameCancel}
             />
           </li>
         );

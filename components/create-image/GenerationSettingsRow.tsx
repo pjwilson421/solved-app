@@ -1,43 +1,37 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { IconAsset } from "@/components/icons/IconAsset";
 import { ICONS } from "@/components/icons/icon-paths";
+import {
+  SettingsDropdown,
+  SettingsMenuOptionButton,
+  SettingsTriggerChevron,
+  SETTINGS_ASSET_CONTENT_TRIGGER_WIDTH_DESKTOP,
+  SETTINGS_ASSET_CONTENT_TRIGGER_WIDTH_MOBILE,
+  SETTINGS_CONTROL_ICON_SIZE,
+} from "./settings-dropdown";
 import type { AspectRatio, AssetContentType, Quality } from "./types";
 import {
   ASPECT_RATIOS,
-  ASSET_CONTENT_TYPES,
+  ASSET_TYPE_DROPDOWN_OPTIONS,
   QUALITIES,
   VARIATION_OPTIONS,
 } from "./types";
 
-const CONTROL_ICON_SIZE = 16;
-
-/** Aligned with Templates trigger; slightly softer fill so settings read secondary. */
-const templatesControlStyle =
-  "rounded-control bg-surface-hover/90 px-3 text-[11px] font-normal leading-8 text-white transition-colors hover:bg-surface-pressed/95 outline-none focus:outline-none";
-
-const assetTypeBtn = cn(
-  "flex h-8 min-w-0 cursor-pointer items-center gap-2 text-left",
-  templatesControlStyle,
-);
-
-const selectBase = cn(
-  "h-8 min-w-0 cursor-pointer appearance-none py-0 pr-7 text-[11px] font-normal leading-8 outline-none focus:outline-none",
-  templatesControlStyle,
-);
-
 function assetContentTypeIconSrc(type: AssetContentType): string {
   switch (type) {
+    case "Standard":
+      return "/icons/img-settings-image-icon.svg";
     case "Social Media":
       return ICONS.socialMedia;
     case "Email":
       return ICONS.email;
-    case "Digital Media":
+    case "Digital":
       return ICONS.digitalMedia;
     default:
-      return ICONS.socialMedia;
+      return ICONS.imagePlaceholder;
   }
 }
 
@@ -56,106 +50,6 @@ function aspectIconSrc(ratio: AspectRatio): string {
   }
 }
 
-function SelectChevron({ className }: { className?: string }) {
-  return (
-    <span
-      className={cn(
-        "pointer-events-none absolute inset-y-0 right-3 z-[2] flex w-2 shrink-0 items-center justify-center text-[10px] leading-none text-tx-muted",
-        className,
-      )}
-      aria-hidden
-    >
-      ▾
-    </span>
-  );
-}
-
-function AssetContentTypeMenu({
-  value,
-  onChange,
-  isDesktop,
-}: {
-  value: AssetContentType;
-  onChange: (v: AssetContentType) => void;
-  isDesktop: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        "group relative z-30 min-w-0 shrink-0",
-        isDesktop ? "w-[min(100%,8.5rem)]" : "min-w-0 w-full",
-      )}
-    >
-      <button
-        type="button"
-        className={cn(assetTypeBtn, "w-full")}
-        aria-haspopup="listbox"
-        aria-label="Content type"
-      >
-        <IconAsset
-          src={assetContentTypeIconSrc(value)}
-          size={CONTROL_ICON_SIZE}
-          className="size-4 shrink-0 opacity-90 [&_img]:block"
-        />
-        <span className="min-w-0 flex-1 truncate leading-8">{value}</span>
-        <span
-          className="shrink-0 text-[10px] leading-none text-tx-muted"
-          aria-hidden
-        >
-          ▾
-        </span>
-      </button>
-      <div
-        className={cn(
-          "pointer-events-none invisible absolute left-0 top-full z-[60] min-w-full pt-1 opacity-0 transition-opacity duration-100",
-          "group-hover:visible group-hover:pointer-events-auto group-hover:opacity-100",
-          "group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:opacity-100",
-        )}
-      >
-        <ul
-          role="listbox"
-          aria-label="Content type"
-          className="rounded-card border border-edge-default bg-surface-hover py-1 text-[11px] shadow-lg"
-        >
-          {ASSET_CONTENT_TYPES.map((opt) => (
-            <li key={opt} role="none">
-              <button
-                type="button"
-                role="option"
-                aria-selected={value === opt}
-                className={cn(
-                  "flex w-full items-center gap-2 px-3 py-2 text-left text-white transition-colors hover:bg-surface-hover",
-                  value === opt && "bg-primary/60",
-                )}
-                onClick={() => onChange(opt)}
-              >
-                <IconAsset
-                  src={assetContentTypeIconSrc(opt)}
-                  size={CONTROL_ICON_SIZE}
-                  className="size-4 shrink-0 opacity-90 [&_img]:block"
-                />
-                <span className="min-w-0">{opt}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
-
-function SelectShell({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={cn("relative min-w-0 shrink-0", className)}>{children}</div>
-  );
-}
-
 export type GenerationSettingsRowProps = {
   assetContentType: AssetContentType;
   onAssetContentType: (v: AssetContentType) => void;
@@ -167,6 +61,11 @@ export type GenerationSettingsRowProps = {
   onVariations: (v: number) => void;
   variant?: "desktop" | "mobile";
   className?: string;
+  /**
+   * Create Image / Image Editor dock row: pill chrome + dropdown panel `bg-[#081030]`
+   * (`SettingsDropdown` `imagePagesPillChrome`).
+   */
+  imagePagesPillStyle?: boolean;
 };
 
 export function GenerationSettingsRow({
@@ -180,91 +79,142 @@ export function GenerationSettingsRow({
   onVariations,
   variant = "desktop",
   className,
+  imagePagesPillStyle = false,
 }: GenerationSettingsRowProps) {
   const isDesktop = variant === "desktop";
-  const selectWithIcon = cn(selectBase, "pl-9");
-  const selectTextOnly = cn(selectBase, "pl-3");
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
-  const aspectSelect = (
-    <SelectShell
-      className={cn(isDesktop ? "w-[5.5rem]" : "min-w-0 w-full")}
-    >
-      <span
-        className="pointer-events-none absolute inset-y-0 left-3 z-[1] flex h-8 w-4 items-center justify-center"
-        aria-hidden
-      >
-        <IconAsset
-          src={aspectIconSrc(aspectRatio)}
-          size={CONTROL_ICON_SIZE}
-          className="size-4 [&_img]:block"
-        />
+  const close = useCallback(() => setOpenMenu(null), []);
+  const chevronClassName = imagePagesPillStyle ? "text-white" : undefined;
+
+  const contentWidth = isDesktop
+    ? SETTINGS_ASSET_CONTENT_TRIGGER_WIDTH_DESKTOP
+    : SETTINGS_ASSET_CONTENT_TRIGGER_WIDTH_MOBILE;
+  const aspectWidth = isDesktop ? "w-[5.5rem]" : "min-w-0 w-full";
+  const qualityWidth = isDesktop ? "w-[5.625rem]" : "min-w-0 w-full";
+  const variationsWidth = isDesktop ? "w-14" : "min-w-0 w-full";
+
+  const assetTrigger: ReactNode = (
+    <>
+      <IconAsset
+        src={assetContentTypeIconSrc(assetContentType)}
+        size={SETTINGS_CONTROL_ICON_SIZE}
+        className="size-4 shrink-0 opacity-90 [&_img]:block"
+      />
+      <span className="min-w-0 flex-1 truncate leading-normal">
+        {assetContentType}
       </span>
-      <select
-        aria-label="Aspect ratio"
-        value={aspectRatio}
-        onChange={(e) => onAspectRatio(e.target.value as AspectRatio)}
-        className={cn(selectWithIcon, "box-border h-8 w-full leading-8")}
-      >
-        {ASPECT_RATIOS.map((a) => (
-          <option key={a} value={a}>
-            {a}
-          </option>
-        ))}
-      </select>
-      <SelectChevron />
-    </SelectShell>
+      <SettingsTriggerChevron className={chevronClassName} />
+    </>
   );
 
-  const qualitySelect = (
-    <SelectShell
-      className={cn(isDesktop ? "w-[5.625rem]" : "min-w-0 w-full")}
+  const assetOptions = ASSET_TYPE_DROPDOWN_OPTIONS.map((opt) => (
+    <SettingsMenuOptionButton
+      key={opt}
+      itemKey={opt}
+      selected={assetContentType === opt}
+      onPick={() => {
+        onAssetContentType(opt);
+        close();
+      }}
     >
-      <span
-        className="pointer-events-none absolute inset-y-0 left-3 z-[1] flex h-8 w-4 items-center justify-center"
-        aria-hidden
-      >
-        <IconAsset
-          src={ICONS.resolutionDiamond}
-          size={CONTROL_ICON_SIZE}
-          className="size-4 [&_img]:block"
-        />
+      <IconAsset
+        src={assetContentTypeIconSrc(opt)}
+        size={SETTINGS_CONTROL_ICON_SIZE}
+        className="size-4 shrink-0 opacity-90 [&_img]:block"
+      />
+      <span className="min-w-0">{opt}</span>
+    </SettingsMenuOptionButton>
+  ));
+
+  const aspectTrigger: ReactNode = (
+    <>
+      <IconAsset
+        src={aspectIconSrc(aspectRatio)}
+        size={SETTINGS_CONTROL_ICON_SIZE}
+        className="size-4 shrink-0 [&_img]:block"
+      />
+      <span className="min-w-0 flex-1 truncate leading-normal tabular-nums">
+        {aspectRatio}
       </span>
-      <select
-        aria-label="Quality"
-        value={quality}
-        onChange={(e) => onQuality(e.target.value as Quality)}
-        className={cn(
-          selectWithIcon,
-          "box-border h-8 w-full text-left tabular-nums leading-8",
-        )}
-      >
-        {QUALITIES.map((q) => (
-          <option key={q} value={q}>
-            {q}
-          </option>
-        ))}
-      </select>
-      <SelectChevron />
-    </SelectShell>
+      <SettingsTriggerChevron className={chevronClassName} />
+    </>
   );
 
-  const variationsSelect = (
-    <SelectShell className={cn(isDesktop ? "w-14" : "min-w-0 w-full")}>
-      <select
-        aria-label="Variations"
-        value={variations}
-        onChange={(e) => onVariations(Number(e.target.value))}
-        className={cn(selectTextOnly, "box-border h-8 w-full leading-8")}
-      >
-        {VARIATION_OPTIONS.map((n) => (
-          <option key={n} value={n}>
-            {n}/4
-          </option>
-        ))}
-      </select>
-      <SelectChevron />
-    </SelectShell>
+  const aspectOptions = ASPECT_RATIOS.map((a) => (
+    <SettingsMenuOptionButton
+      key={a}
+      itemKey={a}
+      selected={aspectRatio === a}
+      onPick={() => {
+        onAspectRatio(a);
+        close();
+      }}
+    >
+      <IconAsset
+        src={aspectIconSrc(a)}
+        size={SETTINGS_CONTROL_ICON_SIZE}
+        className="size-4 shrink-0 [&_img]:block"
+      />
+      <span className="min-w-0">{a}</span>
+    </SettingsMenuOptionButton>
+  ));
+
+  const qualityTrigger: ReactNode = (
+    <>
+      <IconAsset
+        src={ICONS.resolutionDiamond}
+        size={SETTINGS_CONTROL_ICON_SIZE}
+        className="size-4 shrink-0 [&_img]:block"
+      />
+      <span className="min-w-0 flex-1 truncate leading-normal tabular-nums">
+        {quality}
+      </span>
+      <SettingsTriggerChevron className={chevronClassName} />
+    </>
   );
+
+  const qualityOptions = QUALITIES.map((q) => (
+    <SettingsMenuOptionButton
+      key={q}
+      itemKey={q}
+      selected={quality === q}
+      onPick={() => {
+        onQuality(q);
+        close();
+      }}
+    >
+      <IconAsset
+        src={ICONS.resolutionDiamond}
+        size={SETTINGS_CONTROL_ICON_SIZE}
+        className="size-4 shrink-0 [&_img]:block"
+      />
+      <span className="min-w-0">{q}</span>
+    </SettingsMenuOptionButton>
+  ));
+
+  const variationsTrigger: ReactNode = (
+    <>
+      <span className="min-w-0 flex-1 truncate leading-normal tabular-nums">
+        {variations}/4
+      </span>
+      <SettingsTriggerChevron className={chevronClassName} />
+    </>
+  );
+
+  const variationsOptions = VARIATION_OPTIONS.map((n) => (
+    <SettingsMenuOptionButton
+      key={n}
+      itemKey={String(n)}
+      selected={variations === n}
+      onPick={() => {
+        onVariations(n);
+        close();
+      }}
+    >
+      <span className="min-w-0">{n}/4</span>
+    </SettingsMenuOptionButton>
+  ));
 
   return (
     <div
@@ -274,25 +224,103 @@ export function GenerationSettingsRow({
     >
       {isDesktop ? (
         <div className="flex flex-nowrap items-center justify-start gap-x-3">
-          <AssetContentTypeMenu
-            value={assetContentType}
-            onChange={onAssetContentType}
-            isDesktop={isDesktop}
-          />
-          {aspectSelect}
-          {qualitySelect}
-          {variationsSelect}
+          <SettingsDropdown
+            menuId="asset"
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
+            widthClass={contentWidth}
+            ariaLabel="Content type"
+            imagePagesPillChrome={imagePagesPillStyle}
+            triggerContent={assetTrigger}
+          >
+            {assetOptions}
+          </SettingsDropdown>
+
+          <SettingsDropdown
+            menuId="aspect"
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
+            widthClass={aspectWidth}
+            ariaLabel="Aspect ratio"
+            imagePagesPillChrome={imagePagesPillStyle}
+            triggerContent={aspectTrigger}
+          >
+            {aspectOptions}
+          </SettingsDropdown>
+
+          <SettingsDropdown
+            menuId="quality"
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
+            widthClass={qualityWidth}
+            ariaLabel="Quality"
+            imagePagesPillChrome={imagePagesPillStyle}
+            triggerContent={qualityTrigger}
+          >
+            {qualityOptions}
+          </SettingsDropdown>
+
+          <SettingsDropdown
+            menuId="variations"
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
+            widthClass={variationsWidth}
+            ariaLabel="Variations"
+            imagePagesPillChrome={imagePagesPillStyle}
+            triggerContent={variationsTrigger}
+          >
+            {variationsOptions}
+          </SettingsDropdown>
         </div>
       ) : (
         <div className="inline-grid w-fit max-w-full grid-cols-2 justify-items-stretch gap-x-3 gap-y-1.5">
-          <AssetContentTypeMenu
-            value={assetContentType}
-            onChange={onAssetContentType}
-            isDesktop={isDesktop}
-          />
-          {aspectSelect}
-          {qualitySelect}
-          {variationsSelect}
+          <SettingsDropdown
+            menuId="asset"
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
+            widthClass={contentWidth}
+            ariaLabel="Content type"
+            imagePagesPillChrome={imagePagesPillStyle}
+            triggerContent={assetTrigger}
+          >
+            {assetOptions}
+          </SettingsDropdown>
+
+          <SettingsDropdown
+            menuId="aspect"
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
+            widthClass={aspectWidth}
+            ariaLabel="Aspect ratio"
+            imagePagesPillChrome={imagePagesPillStyle}
+            triggerContent={aspectTrigger}
+          >
+            {aspectOptions}
+          </SettingsDropdown>
+
+          <SettingsDropdown
+            menuId="quality"
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
+            widthClass={qualityWidth}
+            ariaLabel="Quality"
+            imagePagesPillChrome={imagePagesPillStyle}
+            triggerContent={qualityTrigger}
+          >
+            {qualityOptions}
+          </SettingsDropdown>
+
+          <SettingsDropdown
+            menuId="variations"
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
+            widthClass={variationsWidth}
+            ariaLabel="Variations"
+            imagePagesPillChrome={imagePagesPillStyle}
+            triggerContent={variationsTrigger}
+          >
+            {variationsOptions}
+          </SettingsDropdown>
         </div>
       )}
     </div>

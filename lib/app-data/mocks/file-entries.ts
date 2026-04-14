@@ -29,7 +29,6 @@ export const DEMO_FILE_ENTRIES: FileEntry[] = [
     dateModified: "Mar 27, 2026",
     sizeLabel: "2.4 MB",
     parentId: null,
-    accent: "highlight",
   },
   {
     id: "f4",

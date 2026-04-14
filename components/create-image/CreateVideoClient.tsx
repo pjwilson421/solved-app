@@ -10,20 +10,15 @@ import { VideoFrameReferences } from "./VideoFrameReferences";
 import { PromptBar } from "./PromptBar";
 import { HistoryPanel } from "./HistoryPanel";
 import {
-  CREATE_IMAGE_SCROLL_RESERVE,
   createImageScrollContentBottomPaddingPx,
   createImageScrollContentBottomPaddingPxDesktopXl,
 } from "./preview-frame-layout";
-import {
-  useCreateImagePreviewPromptLayout,
-  useMinWidth1280,
-} from "./use-create-image-preview-prompt-layout";
+import { useCreateImagePreviewPromptLayout } from "./use-create-image-preview-prompt-layout";
 import type { AspectRatio, Quality, ReferenceFile, VideoDuration } from "./types";
-import { mobileCreateVideoHelperLines } from "./mobile-create-video-copy";
-import { MobileCreateImageDrawer } from "./MobileCreateImageDrawer";
 import { FixedPromptBarDock } from "./FixedPromptBarDock";
 import { useShellNav } from "@/lib/use-shell-nav";
 import { ICONS } from "@/components/icons/icon-paths";
+import { DesktopThreeColumnShell } from "@/components/shell/DesktopThreeColumnShell";
 import { cn } from "@/lib/utils";
 import { likedKey } from "@/lib/liked-item-keys";
 import { useLikedItems } from "@/components/liked-items/liked-items-context";
@@ -111,13 +106,12 @@ export function CreateVideoClient() {
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [fullScreen, setFullScreen] = useState<FullScreenPreview>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const desktopScrollRef = useRef<HTMLDivElement>(null);
   const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const mobileColumnRef = useRef<HTMLElement>(null);
 
-  const { layoutFrame, promptBar: promptBarGeom, minWidth768 } =
+  const { layoutFrame, promptBar: promptBarGeom, minWidth1280 } =
     useCreateImagePreviewPromptLayout({
       desktopScrollRef,
       desktopMiddleColumnRef,
@@ -125,9 +119,10 @@ export function CreateVideoClient() {
       mobileColumnRef,
       aspectRatio,
       templatesOpen: false,
+      previewLayoutIgnoreTemplatesOpen: true,
+      templatesInScrollColumn: false,
     });
 
-  const minWidth1280 = useMinWidth1280();
   const desktopScrollBottomPadPx = minWidth1280
     ? createImageScrollContentBottomPaddingPxDesktopXl()
     : createImageScrollContentBottomPaddingPx("desktop");
@@ -382,34 +377,38 @@ export function CreateVideoClient() {
   return (
     <div
       className={cn(
-        "flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base text-tx-primary",
-        "md:[--create-image-prompt-max:900px] xl:[--create-image-prompt-max:1000px]",
+        "flex h-dvh min-h-0 flex-col overflow-hidden bg-app-bg text-tx-primary",
+        "xl:[--create-image-prompt-max:1000px]",
       )}
     >
-      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden md:flex">
+      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden xl:flex">
         <div className="hidden shrink-0 xl:block">
           <Header variant="desktop" />
         </div>
         <div className="shrink-0 xl:hidden">
-          <Header
-            variant="mobile"
-            mobileTitle="CREATE"
-            onMenuClick={() => setMobileMenuOpen(true)}
-          />
+          <Header variant="mobile" mobileTitle="CREATE" />
         </div>
-        <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden xl:grid xl:grid-cols-[300px_minmax(0,1fr)_300px]">
-          <Sidebar
-            className="hidden shrink-0 xl:flex xl:w-[300px] xl:min-w-[300px]"
-            activeId={activeMainNav}
-            onNavigate={navigate}
-            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
-          />
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:grid xl:h-full xl:min-h-0 xl:min-w-0 xl:max-w-none xl:grid-cols-[minmax(0,1fr)_minmax(0,1000px)_minmax(0,1fr)] xl:items-stretch xl:overflow-hidden xl:px-0">
-            <div
-              className="hidden min-w-0 xl:block xl:min-h-0"
-              aria-hidden="true"
+        <DesktopThreeColumnShell
+          sidebar={
+            <Sidebar
+              className="flex min-h-0 h-full min-w-0 w-full flex-1 flex-col"
+              activeId={activeMainNav}
+              onNavigate={navigate}
             />
-            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col xl:max-w-none xl:w-full xl:min-h-0 xl:min-w-0">
+          }
+          rail={
+            <HistoryPanel
+              title="VIDEO HISTORY"
+              items={createVideoSidebarHistory}
+              activeId={activeHistoryId}
+              onSelect={loadHistory}
+              onMenuAction={handleHistoryMenu}
+              className="min-h-0 w-full min-w-0 flex-1 flex-col"
+            />
+          }
+        >
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:overflow-hidden xl:px-0">
+            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col xl:mx-auto xl:w-[min(100%,1000px)] xl:max-w-[1000px] xl:min-h-0 xl:min-w-0">
               <div
                 ref={desktopScrollRef}
                 className="min-h-0 flex-1 overflow-y-auto"
@@ -435,12 +434,80 @@ export function CreateVideoClient() {
                         VIDEO_PREVIEW_PROMPT_PLACEHOLDER
                       }
                       emptyStatePlaceholderIcon={ICONS.videoPlaceholder}
+                      promptDescriptionAnchoredToPreview
+                      onPreviewClick={handlePreviewClick}
+                      onMenuAction={handlePreviewMenu}
+                      afterPreviewStack={
+                        <div className="mb-6 w-full">
+                          <VideoFrameReferences
+                            className="w-full"
+                            variant="compact"
+                            startFrame={startFrame}
+                            endFrame={endFrame}
+                            onStartFrame={addStartFrame}
+                            onEndFrame={addEndFrame}
+                            onRemoveStart={removeStartFrame}
+                            onRemoveEnd={removeEndFrame}
+                          />
+                        </div>
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DesktopThreeColumnShell>
+      </div>
+
+      {/* Below xl: same shell as Create Image mobile — app-bg column, no inner panel card. */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-bg xl:hidden">
+        <Header
+          variant="mobile"
+          mobileTitle="VIDEO"
+          mobileNavTriggerSide="end"
+        />
+        <div className="mx-4 mb-1 mt-2 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 sm:px-8">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center">
+            <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col">
+              <div
+                ref={mobileScrollRef}
+                className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
+                style={{
+                  scrollPaddingBottom:
+                    createImageScrollContentBottomPaddingPx("mobile"),
+                }}
+              >
+                <main
+                  ref={mobileColumnRef}
+                  className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
+                  style={{
+                    paddingBottom:
+                      createImageScrollContentBottomPaddingPx("mobile"),
+                  }}
+                >
+                  <div className="min-w-0 xl:mb-8">
+                    <PreviewPanel
+                      aspectRatio={aspectRatio}
+                      template={null}
+                      slotImages={slotImages}
+                      promptText={previewPrompt}
+                      createdAt={previewAt}
+                      isLoading={isGenerating}
+                      previewLabel="VIDEO PREVIEW"
+                      showPreviewLabel={false}
+                      layoutFrame={layoutFrame}
+                      previewPromptPlaceholder={
+                        VIDEO_PREVIEW_PROMPT_PLACEHOLDER
+                      }
+                      emptyStatePlaceholderIcon={ICONS.videoPlaceholder}
+                      promptDescriptionAnchoredToPreview
                       onPreviewClick={handlePreviewClick}
                       onMenuAction={handlePreviewMenu}
                     />
                   </div>
                   <div
-                    className="mx-auto mb-6 flex w-full min-w-0 flex-col items-stretch"
+                    className="mx-auto mb-6 mt-3 flex w-full min-w-0 flex-col items-stretch"
                     style={previewContentCapStyle}
                   >
                     <VideoFrameReferences
@@ -453,106 +520,18 @@ export function CreateVideoClient() {
                       onRemoveEnd={removeEndFrame}
                     />
                   </div>
-                </div>
+                </main>
               </div>
             </div>
-            <div
-              className="hidden min-w-0 xl:block xl:min-h-0"
-              aria-hidden="true"
-            />
-          </div>
-          <HistoryPanel
-            items={createVideoSidebarHistory}
-            activeId={activeHistoryId}
-            onSelect={loadHistory}
-            onMenuAction={handleHistoryMenu}
-            className="hidden max-h-screen shrink-0 !bg-transparent xl:flex xl:w-[300px] xl:min-w-[300px]"
-            panelClassName="w-full rounded-panel border border-edge-default bg-surface-elevated"
-            fixedDockClearancePx={CREATE_IMAGE_SCROLL_RESERVE.desktop.bottomInset}
-            flushBottom
-          />
-        </div>
-      </div>
-
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base md:hidden">
-        <Header
-          variant="mobile"
-          mobileTitle="VIDEO"
-          onMenuClick={() => setMobileMenuOpen(true)}
-        />
-        <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <div
-            ref={mobileScrollRef}
-            className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
-            style={{
-              scrollPaddingBottom:
-                createImageScrollContentBottomPaddingPx("mobile"),
-            }}
-          >
-            <main
-              ref={mobileColumnRef}
-              className="flex w-full min-w-0 flex-col px-4 pt-3"
-              style={{
-                paddingBottom:
-                  createImageScrollContentBottomPaddingPx("mobile"),
-              }}
-            >
-              <p
-                className="mb-[14px] text-[11px] font-bold tracking-[0.09em] text-white"
-                style={{ letterSpacing: "0.11em" }}
-              >
-                VIDEO PREVIEW
-              </p>
-              <PreviewPanel
-                aspectRatio={aspectRatio}
-                template={null}
-                slotImages={slotImages}
-                promptText={previewPrompt}
-                createdAt={previewAt}
-                isLoading={isGenerating}
-                showPreviewLabel={false}
-                hideMeta
-                mobileFrame
-                layoutFrame={layoutFrame}
-                previewPromptPlaceholder={VIDEO_PREVIEW_PROMPT_PLACEHOLDER}
-                emptyStatePlaceholderIcon={ICONS.videoPlaceholder}
-                onPreviewClick={handlePreviewClick}
-                onMenuAction={handlePreviewMenu}
-              />
-              {(() => {
-                const [lineA, lineB] =
-                  mobileCreateVideoHelperLines(aspectRatio);
-                return (
-                  <div className="mt-2 space-y-0.5">
-                    <p className="text-[11px] leading-[18px] text-tx-muted">
-                      {lineA}
-                    </p>
-                    <p className="text-[11px] leading-[18px] text-tx-muted">
-                      {lineB}
-                    </p>
-                  </div>
-                );
-              })()}
-              <div
-                className="mx-auto mt-5 mb-4 flex w-full min-w-0 flex-col items-stretch"
-                style={previewContentCapStyle}
-              >
-                <VideoFrameReferences
-                  className="w-full"
-                  startFrame={startFrame}
-                  endFrame={endFrame}
-                  onStartFrame={addStartFrame}
-                  onEndFrame={addEndFrame}
-                  onRemoveStart={removeStartFrame}
-                  onRemoveEnd={removeEndFrame}
-                />
-              </div>
-            </main>
           </div>
         </div>
       </div>
 
       <FixedPromptBarDock geometry={promptBarGeom} ariaLabel="Create video">
+        {/*
+          Dock uses `flex-col-reverse`: first child sits at the screen bottom. Keep PromptBar
+          first so it stays under the settings row on mobile and desktop (matches Create Image).
+        */}
         <PromptBar
           className="w-full shrink-0"
           prompt={barPrompt}
@@ -563,40 +542,28 @@ export function CreateVideoClient() {
           onGenerate={handleGenerate}
           isGenerating={isGenerating}
           generateDisabled={generateDisabled}
-          variant={minWidth768 ? "desktop" : "mobile"}
+          variant={minWidth1280 ? "desktop" : "mobile"}
           placeholder="Describe your video"
           generateAriaLabel="Generate video"
         />
         <VideoGenerationSettingsRow
           className="w-full shrink-0"
+          imagePagesPillStyle
           aspectRatio={aspectRatio}
           onAspectRatio={setAspectRatio}
           quality={quality}
           onQuality={setQuality}
           duration={duration}
           onDuration={setDuration}
-          variant={minWidth768 ? "desktop" : "mobile"}
+          variant={minWidth1280 ? "desktop" : "mobile"}
         />
       </FixedPromptBarDock>
 
-      <MobileCreateImageDrawer
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        historyItems={createVideoSidebarHistory}
-        activeHistoryId={activeHistoryId}
-        onSelectHistory={(id) => {
-          loadHistory(id);
-          setMobileMenuOpen(false);
-        }}
-        onHistoryMenuAction={handleHistoryMenu}
-        activeMainNav={activeMainNav}
-      />
-
       {fullScreen ? (
-        <div className="fixed inset-0 z-[1200] flex flex-col bg-surface-base/95 p-4">
+        <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
           <button
             type="button"
-            className="mb-4 self-end rounded-control px-4 py-2 text-sm text-white hover:bg-white/10"
+            className="mb-4 self-end rounded-full px-4 py-2 text-sm text-white hover:bg-white/10"
             onClick={() => setFullScreen(null)}
           >
             Close

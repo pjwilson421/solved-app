@@ -7,18 +7,18 @@ import {
   type PromptBarDockRefs,
 } from "./prompt-bar-dock-geometry";
 
-function subscribeMin768(cb: () => void) {
-  const mq = window.matchMedia("(min-width: 768px)");
+function subscribeMin1280(cb: () => void) {
+  const mq = window.matchMedia("(min-width: 1280px)");
   mq.addEventListener("change", cb);
   return () => mq.removeEventListener("change", cb);
 }
 
-function getMin768Snapshot(): boolean {
-  return window.matchMedia("(min-width: 768px)").matches;
+function getMin1280Snapshot(): boolean {
+  return window.matchMedia("(min-width: 1280px)").matches;
 }
 
-function useMinWidth768(): boolean {
-  return useSyncExternalStore(subscribeMin768, getMin768Snapshot, () => true);
+function useMinWidth1280(): boolean {
+  return useSyncExternalStore(subscribeMin1280, getMin1280Snapshot, () => false);
 }
 
 /**
@@ -31,16 +31,16 @@ export function usePromptBarDockLayout({
   mobileColumnRef,
 }: PromptBarDockRefs): {
   promptBar: PromptBarDockGeometry | null;
-  minWidth768: boolean;
+  minWidth1280: boolean;
 } {
-  const minWidth768 = useMinWidth768();
+  const minWidth1280 = useMinWidth1280();
   const [promptBar, setPromptBar] = useState<PromptBarDockGeometry | null>(
     null,
   );
 
   const measure = useCallback(() => {
     if (typeof window === "undefined") return;
-    const next = readPromptBarDockGeometry(minWidth768, {
+    const next = readPromptBarDockGeometry(minWidth1280, {
       desktopScrollRef,
       desktopMiddleColumnRef,
       mobileScrollRef,
@@ -48,7 +48,7 @@ export function usePromptBarDockLayout({
     });
     if (next) setPromptBar(next);
   }, [
-    minWidth768,
+    minWidth1280,
     desktopScrollRef,
     desktopMiddleColumnRef,
     mobileScrollRef,
@@ -59,7 +59,7 @@ export function usePromptBarDockLayout({
     measure();
     const ro = new ResizeObserver(() => measure());
 
-    if (minWidth768) {
+    if (minWidth1280) {
       const scrollEl = desktopScrollRef.current;
       const colEl = desktopMiddleColumnRef.current;
       if (scrollEl) ro.observe(scrollEl);
@@ -81,12 +81,12 @@ export function usePromptBarDockLayout({
     };
   }, [
     measure,
-    minWidth768,
+    minWidth1280,
     desktopScrollRef,
     desktopMiddleColumnRef,
     mobileScrollRef,
     mobileColumnRef,
   ]);
 
-  return { promptBar, minWidth768 };
+  return { promptBar, minWidth1280 };
 }

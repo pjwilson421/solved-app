@@ -1,8 +1,14 @@
 /** Measured from public/design/Desktop-Main-Create-Image-16x9.svg */
 
 /**
+ * Rounded square corners for Create Video Start/End frame slots (`VideoFrameReferences`)
+ * and Create Image template tiles (strip + grid) — keep in sync.
+ */
+export const FRAME_SLOT_ROUNDED = "rounded-[11px]" as const;
+
+/**
  * Square tile in `DesktopTemplatesStrip` (xl+).
- * Also used for Start/End frame slots on Create Video (`VideoFrameReferences` at `xl:`).
+ * Also used for Start/End frame slots on Create Video (`VideoFrameReferences` default: fixed 115×115 below `xl`; `compact`: 184×184 at `xl+`).
  */
 export const DESKTOP_TEMPLATE_TILE_PX = 120;
 

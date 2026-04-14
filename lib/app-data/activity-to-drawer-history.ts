@@ -2,7 +2,7 @@ import type { HistoryItem } from "@/components/create-image/types";
 import type { ActivityHistoryEntry } from "@/components/history/types";
 
 /**
- * Maps catalog activity rows to `HistoryItem` for MobileCreateImageDrawer / HistoryPanel.
+ * Maps catalog activity rows to `HistoryItem` for HistoryPanel and other history UIs.
  * Placeholder thumbs match prior mock behavior where non-chat rows had a preview image.
  */
 export function activityEntryToHistoryItem(
