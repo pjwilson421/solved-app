@@ -299,7 +299,7 @@ export function FilesToolbar({
           </label>
           <div className="flex h-[30px] w-full min-w-0 items-center gap-2 rounded-full border border-edge-subtle bg-transparent px-3 transition-[border-color,background-color] duration-150 hover:bg-panel-hover/40 focus-within:border-white">
             <svg
-              className="h-3.5 w-3.5 shrink-0 text-tx-secondary"
+              className="h-3.5 w-3.5 shrink-0 text-[#315790]"
               viewBox="0 0 12 12"
               fill="none"
               aria-hidden
@@ -316,6 +316,7 @@ export function FilesToolbar({
                 stroke="currentColor"
                 strokeWidth="1.2"
                 strokeLinecap="round"
+                strokeLinejoin="round"
                 />
             </svg>
             <input
@@ -324,7 +325,7 @@ export function FilesToolbar({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder={searchPlaceholder}
-              className="min-w-0 flex-1 bg-transparent text-[11px] text-white placeholder:text-tx-secondary outline-none ring-0 focus:outline-none focus:ring-0"
+              className="min-w-0 flex-1 bg-transparent text-[11px] text-white placeholder:text-[#315790] outline-none ring-0 focus:outline-none focus:ring-0"
               />
           </div>
         </div>

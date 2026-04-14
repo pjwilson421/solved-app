@@ -174,7 +174,7 @@ export function SettingsDropdown({
       </button>
       <div
         className={cn(
-          "absolute bottom-full left-0 z-[60] min-w-full pt-1 transition-opacity duration-100",
+          "absolute bottom-full left-0 z-[60] min-w-full pb-[6px] transition-opacity duration-100",
           open
             ? "visible pointer-events-auto opacity-100"
             : "invisible pointer-events-none opacity-0",
