@@ -7,14 +7,14 @@ import { ICONS } from "@/components/icons/icon-paths";
 import { IconMenu } from "../create-image/icons";
 
 const filesToolbarPrimaryBtnClass =
-  "inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-primary px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg";
+  "inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-[#07195b] px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-[#0a256e] active:bg-[#082050] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg";
 
 const filterIconBtnClass = (active: boolean) =>
   cn(
     "inline-flex h-[30px] w-[30px] shrink-0 cursor-pointer items-center justify-center rounded-md text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
     active
-      ? "bg-panel-pressed hover:bg-panel-pressed"
-      : "hover:bg-panel-hover active:bg-panel-pressed",
+      ? "bg-[#07195b] hover:bg-[#0a256e]"
+      : "bg-[#07195b] hover:bg-[#0a256e] active:bg-[#082050]",
   );
 
 /** Menu, grid, and account controls — share row with page title on desktop. */
@@ -64,11 +64,11 @@ export function FilesDesktopHeaderActions({
         aria-label="List view"
         aria-pressed={listViewActive}
         className={cn(
-          "flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
+          "flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-full text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
           onListViewClick ? "" : "cursor-default",
           listViewActive
-            ? "bg-primary hover:bg-primary-active active:bg-primary-active"
-            : "hover:bg-panel-hover active:bg-panel-pressed",
+            ? "bg-[#07195b] ring-1 ring-inset ring-white/10"
+            : "bg-transparent hover:bg-[#0a256e] active:bg-[#082050]",
         )}
       >
         {menuButtonVariant === "list" ? (
@@ -88,10 +88,10 @@ export function FilesDesktopHeaderActions({
           aria-label="Grid view"
           aria-pressed={gridViewActive}
           className={cn(
-            "flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
+            "flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-full text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg",
             gridViewActive
-              ? "bg-primary hover:bg-primary-active active:bg-primary-active"
-              : "hover:bg-panel-hover active:bg-panel-pressed",
+              ? "bg-[#07195b] ring-1 ring-inset ring-white/10"
+              : "bg-transparent hover:bg-[#0a256e] active:bg-[#082050]",
           )}
         >
           <span className="grid grid-cols-2 gap-0.5" aria-hidden>
@@ -105,7 +105,7 @@ export function FilesDesktopHeaderActions({
       {showAddUserButton ? (
         <button
           type="button"
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-white transition-colors duration-150 hover:bg-panel-hover active:bg-panel-pressed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+          className="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-md bg-transparent text-white transition-colors duration-150 hover:bg-[#0a256e] active:bg-[#082050] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
           aria-label="Add user"
         >
           <IconAsset
@@ -139,6 +139,8 @@ type FilesToolbarProps = {
   searchInputId?: string;
   /** Desktop: Grid/List toggle row (Files) or custom actions (History). */
   desktopTrailingSlot?: React.ReactNode;
+  /** Files: align right actions on the same row as Upload/New. */
+  desktopPrimaryRightSlot?: React.ReactNode;
   sortOption?: string;
   onSortChange?: (val: any) => void;
   typeFilter?: string | null;
@@ -185,6 +187,7 @@ export function FilesToolbar({
   searchLabel = "Search files",
   searchInputId = "files-search",
   desktopTrailingSlot,
+  desktopPrimaryRightSlot,
   sortOption,
   onSortChange,
   typeFilter,
@@ -195,78 +198,90 @@ export function FilesToolbar({
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-3">
-      {!omitPrimaryFileActions && (
+      {(!omitPrimaryFileActions || (variant === "desktop" && !!desktopPrimaryRightSlot)) && (
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => uploadRef.current?.click()}
-            className={filesToolbarPrimaryBtnClass}
-          >
-            <IconAsset
-              src={ICONS.filesToolbarUpload}
-              size={15}
-              className="[&_img]:block [&_img]:shrink-0"
-            />
-            Upload
-          </button>
-          <input
-            ref={uploadRef}
-            type="file"
-            className="sr-only"
-            multiple
-            aria-hidden
-            onChange={(e) => {
-              const files = e.target.files ? Array.from(e.target.files) : [];
-              if (files.length) onFilesUpload?.(files);
-              e.target.value = "";
-            }}
-          />
-          {variant === "desktop" && showDesktopExtras ? (
-            <>
+          {!omitPrimaryFileActions && (
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               <button
                 type="button"
-                className={cn(
-                  "hidden sm:inline-flex",
-                  filesToolbarPrimaryBtnClass,
-                )}
+                onClick={() => uploadRef.current?.click()}
+                className={filesToolbarPrimaryBtnClass}
               >
                 <IconAsset
-                  src={ICONS.filesToolbarAddFolder}
+                  src={ICONS.filesToolbarUpload}
                   size={15}
                   className="[&_img]:block [&_img]:shrink-0"
                 />
-                New Folder
+                Upload
               </button>
-              <button
-                type="button"
-                className={cn(
-                  "hidden sm:inline-flex",
-                  filesToolbarPrimaryBtnClass,
-                )}
-              >
-                <IconAsset
-                  src={ICONS.filesToolbarNewFile}
-                  size={15}
-                  className="[&_img]:block [&_img]:shrink-0"
-                />
-                New File
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                type="button"
-                className="inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary px-3 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
-              >
-                + New
-              </button>
-              {omitMobileFilterButton || !onToggleFilter ? null : (
-                <FilesFilterIconButton
-                  filterOpen={filterOpen}
-                  onToggleFilter={onToggleFilter}
-                />
+              <input
+                ref={uploadRef}
+                type="file"
+                className="sr-only"
+                multiple
+                aria-hidden
+                onChange={(e) => {
+                  const files = e.target.files ? Array.from(e.target.files) : [];
+                  if (files.length) onFilesUpload?.(files);
+                  e.target.value = "";
+                }}
+              />
+              {variant === "desktop" && showDesktopExtras ? (
+                <>
+                  <button
+                    type="button"
+                    className={cn(
+                      "hidden sm:inline-flex",
+                      filesToolbarPrimaryBtnClass,
+                    )}
+                  >
+                    <IconAsset
+                      src={ICONS.filesToolbarAddFolder}
+                      size={15}
+                      className="[&_img]:block [&_img]:shrink-0"
+                    />
+                    New Folder
+                  </button>
+                  <button
+                    type="button"
+                    className={cn(
+                      "hidden sm:inline-flex",
+                      filesToolbarPrimaryBtnClass,
+                    )}
+                  >
+                    <IconAsset
+                      src={ICONS.filesToolbarNewFile}
+                      size={15}
+                      className="[&_img]:block [&_img]:shrink-0"
+                    />
+                    New File
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className={cn(
+                      "inline-flex h-[30px] shrink-0 cursor-pointer items-center justify-center rounded-full px-3 text-[11px] font-medium text-white transition-colors duration-150",
+                      "bg-[#07195b] hover:bg-[#0a256e] active:bg-[#082050] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                    )}
+                  >
+                    + New
+                  </button>
+                  {omitMobileFilterButton || !onToggleFilter ? null : (
+                    <FilesFilterIconButton
+                      filterOpen={filterOpen}
+                      onToggleFilter={onToggleFilter}
+                    />
+                  )}
+                </>
               )}
-            </>
+            </div>
+          )}
+          {variant === "desktop" && !!desktopPrimaryRightSlot && (
+            <div className={cn("hidden shrink-0 md:flex items-center ml-auto")}>
+              {desktopPrimaryRightSlot}
+            </div>
           )}
         </div>
       )}

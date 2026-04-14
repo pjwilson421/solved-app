@@ -13,7 +13,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useShellNav } from "@/lib/use-shell-nav";
 import { useShellNavReset } from "@/lib/shell-nav-reset-context";
 import { Header } from "../create-image/Header";
-import { Sidebar } from "../create-image/Sidebar";
+import {
+  Sidebar,
+  SIDEBAR_SECTION_HEADING_TYPOGRAPHY_CLASS,
+} from "../create-image/Sidebar";
 import { LeftNavRail } from "@/components/shell/LeftNavRail";
 import type { HistoryItem } from "../create-image/types";
 import { MOCK_TEMPLATES } from "../create-image/types";
@@ -26,6 +29,7 @@ import { FileListRow } from "./FileListRow";
 import { FilesGrid } from "./FilesGrid";
 import { FilesListHeader } from "./FilesListHeader";
 import { FilesDesktopHeaderActions, FilesToolbar } from "./FilesToolbar";
+import { FilesToolbarFilters } from "./FilesToolbarFilters";
 import { FileMoveDialog } from "./FileMoveDialog";
 import { createUploadedFileEntryAsync } from "./file-upload-entry";
 import { fileEntryHasCatalogPreview } from "./file-entry-image-src";
@@ -304,23 +308,13 @@ export function FilesClient() {
       <div className="flex items-center justify-between gap-4">
         <h1
           className={cn(
-            "min-w-0 flex-1 text-left font-bold uppercase leading-none text-white",
-            "text-[11px] tracking-[0.11em] md:text-[12px] md:font-semibold md:tracking-[0.09em] lg:text-[13px] lg:tracking-[0.08em]",
+            "min-w-0 flex-1 truncate text-left",
+            SIDEBAR_SECTION_HEADING_TYPOGRAPHY_CLASS,
           )}
         >
-          {currentFolder ? currentFolder.name : "All files"}
+          {currentFolder ? currentFolder.name : (toolbarVariant === "mobile" ? "All files" : "All files")}
         </h1>
-        {showDesktopChrome && toolbarVariant === "desktop" ? (
-          <FilesDesktopHeaderActions
-            menuButtonVariant="list"
-            filterOpen={filterOpen}
-            onToggleFilter={() => setFilterOpen((o) => !o)}
-            onListViewClick={() => setFilesViewMode("list")}
-            listViewActive={viewMode === "list"}
-            onGridViewClick={() => setFilesViewMode("grid")}
-            gridViewActive={viewMode === "grid"}
-          />
-        ) : null}
+
       </div>
 
       {folderScopeId !== null ? (
@@ -374,14 +368,34 @@ export function FilesClient() {
         showDesktopExtras={showDesktopChrome}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        filterOpen={filterOpen}
-        onToggleFilter={() => setFilterOpen((o) => !o)}
         onFilesUpload={handleFilesUpload}
+        desktopPrimaryRightSlot={
+          showDesktopChrome && toolbarVariant === "desktop" ? (
+            <div className="flex items-center gap-2">
+              <FilesToolbarFilters
+                typeFilter={typeFilter}
+                onTypeFilterChange={setTypeFilter}
+                sortOption={sortOption}
+                onSortChange={setSortOption}
+                availableTypes={filterTypes}
+                compactLayout={false}
+              />
+              <FilesDesktopHeaderActions
+                menuButtonVariant="list"
+                showAddUserButton={true}
+                onListViewClick={() => setFilesViewMode("list")}
+                listViewActive={viewMode === "list"}
+                onGridViewClick={() => setFilesViewMode("grid")}
+                gridViewActive={viewMode === "grid"}
+              />
+            </div>
+          ) : undefined
+        }
       />
 
       {filterOpen ? (
         <div
-          className="flex w-full min-w-0 flex-col gap-0.5 bg-transparent py-1"
+          className="flex w-full min-w-0 flex-col gap-0.5 bg-[#07195b] px-1 py-1 rounded-2xl mt-1 shadow-lg"
           role="listbox"
           aria-label="Filter by file type"
         >
@@ -397,7 +411,7 @@ export function FilesClient() {
                 : "text-tx-secondary hover:bg-panel-hover hover:text-white active:bg-panel-pressed focus-visible:text-white",
             )}
           >
-            All types
+            All Types
           </button>
           {filterTypes.map((t) => (
             <button
@@ -479,7 +493,7 @@ export function FilesClient() {
         <div className="shrink-0 xl:hidden">
           <Header
             variant="mobile"
-            mobileTitle="FILES"
+            mobileTitle="ALL FILES"
             mobileNavTriggerSide="end"
           />
         </div>
@@ -504,7 +518,7 @@ export function FilesClient() {
               >
                 <div
                   ref={desktopMiddleColumnRef}
-                  className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
+                  className="flex w-full min-w-0 flex-col items-stretch pt-3 text-left"
                   style={{
                     paddingBottom: desktopScrollBottomPadPx,
                   }}
@@ -526,7 +540,7 @@ export function FilesClient() {
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-app-bg xl:hidden">
         <Header
           variant="mobile"
-          mobileTitle="FILES"
+          mobileTitle="ALL FILES"
           mobileNavTriggerSide="end"
         />
         <div className="mx-4 mt-2 mb-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[22px] bg-transparent">

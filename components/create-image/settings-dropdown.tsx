@@ -42,7 +42,7 @@ export const settingsPillTriggerBase =
 const triggerOpenHover = "bg-[#0a236f]";
 
 export const settingsMenuPanelClass =
-  "rounded-lg border border-edge-subtle bg-surface-card py-1 text-[11px] shadow-lg";
+  "rounded-lg bg-[#07195b] py-1 text-[11px] shadow-lg";
 
 /** Layout only — hover/selected are applied in `SettingsMenuOptionButton` so selected styling is not overridden by hover. */
 export const settingsMenuItemBase =
@@ -186,7 +186,7 @@ export function SettingsDropdown({
           aria-label={ariaLabel}
           className={cn(
             settingsMenuPanelClass,
-            imagePagesPillChrome && "bg-[#081030]",
+            imagePagesPillChrome && "bg-[#07195b]",
           )}
           onMouseLeave={handleMenuMouseLeave}
         >
@@ -236,7 +236,7 @@ export function SettingsMenuOptionButton({
         aria-selected={selected}
         className={cn(
           settingsMenuItemBase,
-          activeVisual && "bg-ix-selected text-brand",
+          activeVisual && "bg-ix-selected text-white",
         )}
         onMouseEnter={() => setHoveredItemKey?.(itemKey)}
         onClick={() => {

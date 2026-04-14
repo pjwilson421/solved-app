@@ -76,7 +76,7 @@ export function LikedChatEntryRow({
             <p className="truncate text-left text-[12px] font-medium leading-snug text-white">
               {title}
             </p>
-            <p className="mt-1 text-left text-[10px] leading-none text-tx-secondary">
+            <p className="mt-1 text-left text-[10px] leading-none text-[#315790]">
               {dateDisplay}
             </p>
           </div>
@@ -85,10 +85,10 @@ export function LikedChatEntryRow({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-right">
-              <p className="text-[10px] leading-snug text-tx-secondary">
+              <p className="text-[10px] leading-snug text-[#315790]">
                 Chat
               </p>
-              <p className="mt-0.5 text-[10px] leading-none text-tx-secondary">
+              <p className="mt-0.5 text-[10px] leading-none text-[#315790]">
                 {msgCount}
               </p>
             </div>
@@ -132,13 +132,13 @@ export function LikedChatEntryRow({
             {title}
           </p>
         </div>
-        <p className="hidden text-[11px] text-tx-secondary sm:block">
+        <p className="hidden text-[11px] text-[#315790] sm:block">
           Chat
         </p>
-        <p className="hidden text-[11px] text-tx-secondary sm:block">
+        <p className="hidden text-[11px] text-[#315790] sm:block">
           {dateDisplay}
         </p>
-        <p className="hidden text-[11px] text-tx-secondary sm:block">
+        <p className="hidden text-[11px] text-[#315790] sm:block">
           {msgCount}
         </p>
         <div className="hidden items-center justify-end gap-1 sm:flex" />

@@ -189,7 +189,7 @@ export function HistoryListRow({
           />
           <div className="min-w-0 flex-1">
             {titleNameBlockMobile}
-            <p className="mt-1 text-left text-[10px] leading-none text-tx-secondary">
+            <p className="mt-1 text-left text-[10px] leading-none text-[#315790]">
               {dateDisplay}
             </p>
           </div>
@@ -198,11 +198,14 @@ export function HistoryListRow({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-right">
-              <p className="text-[10px] leading-snug text-tx-secondary">
+              <p className="text-[10px] leading-snug text-[#315790]">
                 {type}
               </p>
             </div>
-            <LikeToggleButton itemKey={likedKey.activity(entry.id)} />
+            <LikeToggleButton
+              itemKey={likedKey.activity(entry.id)}
+              color="#315790"
+            />
             <FileRowActionsMenu
               align="right"
               menuAriaLabel="History item actions"
@@ -247,20 +250,23 @@ export function HistoryListRow({
           />
           {titleNameBlockDesktop}
         </div>
-        <p className="hidden text-[11px] text-tx-secondary sm:block">
+        <p className="hidden text-[11px] text-[#315790] sm:block">
           {type}
         </p>
-        <p className="hidden text-[11px] text-tx-secondary sm:block">
+        <p className="hidden text-[11px] text-[#315790] sm:block">
           {dateDisplay}
         </p>
-        <p className="hidden text-[11px] text-tx-secondary sm:block">
+        <p className="hidden text-[11px] text-[#315790] sm:block">
           —
         </p>
         <div
           className="hidden items-center justify-end gap-1 sm:flex"
           onClick={(e) => e.stopPropagation()}
         >
-          <LikeToggleButton itemKey={likedKey.activity(entry.id)} />
+          <LikeToggleButton
+            itemKey={likedKey.activity(entry.id)}
+            color="#315790"
+          />
           <FileRowActionsMenu
             align="right"
             menuAriaLabel="History item actions"

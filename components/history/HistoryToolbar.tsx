@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { SortDropdown } from "@/components/global/SortDropdown";
 import { type SortOption, SORT_OPTIONS, SORT_LABEL_BY_VALUE } from "@/lib/app-data/sort-filter-utils";
 
@@ -32,7 +33,13 @@ export function HistoryToolbarFilters({
   const currentSortLabel = SORT_LABEL_BY_VALUE[sortOption];
 
   return (
-    <>
+    <div
+      className={cn(
+        compactLayout
+          ? "flex flex-col gap-2 bg-[#07195b] p-2 rounded-2xl"
+          : "flex flex-row items-center gap-2",
+      )}
+    >
       <SortDropdown
         value={activityFilter}
         onChange={onActivityFilterChange}
@@ -49,7 +56,7 @@ export function HistoryToolbarFilters({
         currentLabel={currentSortLabel}
         {...(compactLayout ? sortDropdownFullWidthProps : {})}
       />
-    </>
+    </div>
   );
 }
 

@@ -420,28 +420,13 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
               SIDEBAR_SECTION_HEADING_TYPOGRAPHY_CLASS,
             )}
           >
-            {page === "liked"
-              ? toolbarVariant === "mobile"
-                ? "All liked"
-                : "Liked"
-              : toolbarVariant === "mobile"
-                ? "All activity"
-                : "All history"}
+            {page === "liked" ? "ALL LIKED" : "ALL HISTORY"}
           </h1>
         </div>
 
         <FilesToolbar
           variant={toolbarVariant}
           showDesktopExtras={showDesktopChrome}
-          customFilterSortSlot={
-            <HistoryToolbarFilters
-              activityFilter={activityFilter}
-              onActivityFilterChange={setActivityFilter}
-              sortOption={sortOption}
-              onSortChange={setSortOption}
-              compactLayout={toolbarVariant === "mobile"}
-            />
-          }
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           sortOption={sortOption}
@@ -449,14 +434,34 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
           typeFilter={null}
           onTypeFilterChange={() => {}}
           fileTypeLabelsForFilter={[]}
-          desktopTrailingSlot={
+          desktopPrimaryRightSlot={
             showDesktopChrome && toolbarVariant === "desktop" ? (
-              <FilesDesktopHeaderActions
-                menuButtonVariant="list"
-                onListViewClick={setHistoryListView}
-                listViewActive={!gridView}
-                onGridViewClick={setHistoryGridView}
-                gridViewActive={gridView}
+              <div className="flex items-center gap-2">
+                <HistoryToolbarFilters
+                  activityFilter={activityFilter}
+                  onActivityFilterChange={setActivityFilter}
+                  sortOption={sortOption}
+                  onSortChange={setSortOption}
+                  compactLayout={false}
+                />
+                <FilesDesktopHeaderActions
+                  menuButtonVariant="list"
+                  onListViewClick={setHistoryListView}
+                  listViewActive={!gridView}
+                  onGridViewClick={setHistoryGridView}
+                  gridViewActive={gridView}
+                />
+              </div>
+            ) : undefined
+          }
+          customFilterSortSlot={
+            toolbarVariant === "mobile" ? (
+              <HistoryToolbarFilters
+                activityFilter={activityFilter}
+                onActivityFilterChange={setActivityFilter}
+                sortOption={sortOption}
+                onSortChange={setSortOption}
+                compactLayout={true}
               />
             ) : undefined
           }

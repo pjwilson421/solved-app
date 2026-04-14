@@ -11,6 +11,8 @@ const iconClass =
 type LikeToggleButtonProps = {
   itemKey: string;
   className?: string;
+  /** Optional override for the icon/text color (e.g. #315790 for Files). */
+  color?: string;
 };
 
 /**
@@ -19,7 +21,7 @@ type LikeToggleButtonProps = {
  *   and reloads until the same button is clicked again.
  * - Filled heart = liked. One click → removes like and shows outline again.
  */
-export function LikeToggleButton({ itemKey, className }: LikeToggleButtonProps) {
+export function LikeToggleButton({ itemKey, className, color }: LikeToggleButtonProps) {
   const { isLiked, toggle } = useLikedItems();
   const liked = isLiked(itemKey);
 
@@ -34,6 +36,7 @@ export function LikeToggleButton({ itemKey, className }: LikeToggleButtonProps) 
           : "text-tx-secondary hover:bg-panel-hover hover:text-white active:bg-panel-pressed",
         className,
       )}
+      style={!liked && color ? { color } : undefined}
       aria-label={liked ? "Unlike" : "Like"}
       aria-pressed={liked}
       data-state={liked ? "liked" : "unliked"}
@@ -42,16 +45,24 @@ export function LikeToggleButton({ itemKey, className }: LikeToggleButtonProps) 
         toggle(itemKey);
       }}
     >
-      <IconAsset
+      <span
         key={liked ? "filled" : "outline"}
-        src={liked ? ICONS.likedFilled : ICONS.likedOutlined}
-        size={20}
         className={cn(
-          iconClass,
-          liked
-            ? "[&_img]:opacity-100"
-            : "[&_img]:opacity-95",
+          "pointer-events-none block h-5 w-5 shrink-0",
+          liked ? "opacity-100" : "opacity-95",
         )}
+        style={{
+          backgroundColor: !liked && color ? color : "currentColor",
+          maskImage: `url("${liked ? ICONS.likedFilled : ICONS.likedOutlined}")`,
+          WebkitMaskImage: `url("${liked ? ICONS.likedFilled : ICONS.likedOutlined}")`,
+          maskSize: "contain",
+          WebkitMaskSize: "contain",
+          maskRepeat: "no-repeat",
+          WebkitMaskRepeat: "no-repeat",
+          maskPosition: "center",
+          WebkitMaskPosition: "center",
+        }}
+        aria-hidden
       />
     </button>
   );
