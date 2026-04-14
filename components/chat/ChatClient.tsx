@@ -421,7 +421,7 @@ export function ChatClient() {
                 >
                   <div
                     ref={desktopMiddleColumnRef}
-                    className="flex w-full min-w-0 flex-col items-stretch pt-6 text-left"
+                    className="flex w-full min-w-0 flex-col items-stretch pt-[68px] text-left"
                     style={{
                       paddingBottom: desktopScrollBottomPadPx,
                     }}
@@ -466,7 +466,7 @@ export function ChatClient() {
               ref={mobileColumnRef}
               className={cn(
                 "flex min-h-0 w-full min-w-0 flex-col bg-transparent outline-none",
-                messages.length > 0 ? "pt-6" : "pt-2",
+                messages.length > 0 ? "pt-[68px]" : "pt-2",
               )}
               style={{
                 paddingBottom: mobileScrollBottomPadPx,
