@@ -352,6 +352,13 @@ export function CreateImageClient() {
     });
   }, []);
 
+  const handleAddCatalogReference = useCallback((reference: ReferenceFile) => {
+    setReferences((prev) => {
+      if (prev.some((r) => r.url === reference.url)) return prev;
+      return [...prev, reference];
+    });
+  }, []);
+
   const handlePreviewMenu = useCallback(
     (action: string) => {
       const url = displaySlots.find((u) => typeof u === "string" && u.length > 0);
@@ -602,6 +609,7 @@ export function CreateImageClient() {
           isGenerating={isGenerating}
           generateDisabled={generateDisabled}
           variant={minWidth1280 ? "desktop" : "mobile"}
+          onAddCatalogReference={handleAddCatalogReference}
         />
         <GenerationSettingsRow
           className="w-full shrink-0"

@@ -45,6 +45,7 @@ export function CreateVideoClient() {
     useAppData();
 
   const [barPrompt, setBarPrompt] = useState("");
+  const [references, setReferences] = useState<ReferenceFile[]>([]);
   const [startFrame, setStartFrame] = useState<ReferenceFile | null>(null);
   const [endFrame, setEndFrame] = useState<ReferenceFile | null>(null);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
@@ -365,6 +366,38 @@ export function CreateVideoClient() {
     });
   }, []);
 
+  const handleAddReferences = useCallback((files: FileList | null) => {
+    if (!files?.length) return;
+    setReferences((prev) => {
+      const next = [...prev];
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        if (!/^image\/(jpeg|png|webp)$/i.test(f.type)) continue;
+        next.push({
+          id: uid(),
+          url: URL.createObjectURL(f),
+          name: f.name,
+        });
+      }
+      return next;
+    });
+  }, []);
+
+  const handleRemoveReference = useCallback((id: string) => {
+    setReferences((prev) => {
+      const t = prev.find((x) => x.id === id);
+      if (t) URL.revokeObjectURL(t.url);
+      return prev.filter((x) => x.id !== id);
+    });
+  }, []);
+
+  const handleAddCatalogReference = useCallback((reference: ReferenceFile) => {
+    setReferences((prev) => {
+      if (prev.some((r) => r.url === reference.url)) return prev;
+      return [...prev, reference];
+    });
+  }, []);
+
   return (
     <div
       className={cn(
@@ -535,15 +568,16 @@ export function CreateVideoClient() {
           className="w-full shrink-0"
           prompt={barPrompt}
           onPromptChange={setBarPrompt}
-          references={[]}
-          onAddReferences={() => {}}
-          onRemoveReference={() => {}}
+          references={references}
+          onAddReferences={handleAddReferences}
+          onRemoveReference={handleRemoveReference}
           onGenerate={handleGenerate}
           isGenerating={isGenerating}
           generateDisabled={generateDisabled}
           variant={minWidth1280 ? "desktop" : "mobile"}
           placeholder="Describe your video"
           generateAriaLabel="Generate video"
+          onAddCatalogReference={handleAddCatalogReference}
         />
         <VideoGenerationSettingsRow
           className="w-full shrink-0"

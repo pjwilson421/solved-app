@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, type RefObject } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { cn } from "@/lib/utils";
 import { PromptBarShell } from "@/components/icons/PromptBarShell";
 import { ICONS } from "@/components/icons/icon-paths";
+import { useAppData } from "@/lib/app-data/app-data-context";
+import { imageSrcFromFileEntry } from "@/components/files/image-editor-source";
 import type { ReferenceFile } from "./types";
 
 /** White glyph from raster SVG via mask (`IconAsset` is `<img>` — no `fill-current` on paths). */
@@ -74,6 +76,8 @@ type PromptBarProps = {
   generateAriaLabel?: string;
   /** When set, attached to the prompt textarea (desktop or mobile branch). */
   promptTextAreaRef?: RefObject<HTMLTextAreaElement | null>;
+  /** Adds a catalog-backed reference file (used by desktop folder dropdown). */
+  onAddCatalogReference?: (reference: ReferenceFile) => void;
 };
 
 export function PromptBar({
@@ -87,19 +91,64 @@ export function PromptBar({
   generateDisabled,
   className,
   variant = "desktop",
-  placeholder = "Describe your image",
+  placeholder = "Describe your image…",
   generateAriaLabel = "Generate",
   promptTextAreaRef,
+  onAddCatalogReference,
 }: PromptBarProps) {
+  const MIN_TEXTAREA_HEIGHT_PX = 24;
   const fileRef = useRef<HTMLInputElement>(null);
+  const folderMenuRootRef = useRef<HTMLDivElement>(null);
   const desktopTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const mobileTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [folderMenuOpen, setFolderMenuOpen] = useState(false);
   const isDesktop = variant === "desktop";
+  const { fileEntries } = useAppData();
+
+  const catalogAttachOptions = useMemo(
+    () =>
+      fileEntries
+        .filter((entry) => entry.kind === "file" && entry.typeLabel === "Image")
+        .map((entry) => {
+          const url = imageSrcFromFileEntry(entry);
+          if (!url) return null;
+          return {
+            id: entry.id,
+            name: entry.name,
+            url,
+            typeLabel: entry.typeLabel,
+          };
+        })
+        .filter((entry): entry is { id: string; name: string; url: string; typeLabel: string } => entry !== null),
+    [fileEntries],
+  );
+
+  useEffect(() => {
+    if (!folderMenuOpen) return;
+    const onDocMouseDown = (e: MouseEvent) => {
+      if (!folderMenuRootRef.current?.contains(e.target as Node)) {
+        setFolderMenuOpen(false);
+      }
+    };
+    const onDocKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setFolderMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", onDocMouseDown);
+    document.addEventListener("keydown", onDocKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onDocMouseDown);
+      document.removeEventListener("keydown", onDocKeyDown);
+    };
+  }, [folderMenuOpen]);
 
   const autoResizeTextArea = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
+    el.style.height = `${Math.max(el.scrollHeight, MIN_TEXTAREA_HEIGHT_PX)}px`;
   }, []);
 
   useEffect(() => {
@@ -188,29 +237,105 @@ export function PromptBar({
     });
   };
 
+  const handleAttachCatalogFile = useCallback(
+    (option: { id: string; name: string; url: string }) => {
+      const refId =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `${option.id}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+      onAddCatalogReference?.({
+        id: refId,
+        name: option.name,
+        url: option.url,
+      });
+      setFolderMenuOpen(false);
+    },
+    [onAddCatalogReference],
+  );
+
   const controlsRow =
-    variant === "desktop" ? (
-      <form
+    <form
+      suppressHydrationWarning
+      className={cn(
+        "flex h-full w-full min-h-0 min-w-0 flex-nowrap items-center",
+        isDesktop ? "gap-2 lg:gap-[10px]" : "gap-3",
+      )}
+      onSubmit={(e) => {
+        e.preventDefault();
+        submitGenerate();
+      }}
+    >
+      {fileInput}
+      <button
+        type="button"
         suppressHydrationWarning
-        className="flex w-full min-h-0 min-w-0 flex-nowrap items-center gap-2 lg:gap-[10px]"
-        onSubmit={(e) => {
-          e.preventDefault();
-          submitGenerate();
-        }}
+        onClick={() => fileRef.current?.click()}
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
+        aria-label="Add reference images"
       >
-        {fileInput}
-        <button
-          type="button"
-          suppressHydrationWarning
-          onClick={() => fileRef.current?.click()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
-          aria-label="Add reference images"
-        >
-          <PromptBarMaskedIcon src={ICONS.attachPrompt} size={28} />
-        </button>
+        <PromptBarMaskedIcon src={ICONS.attachPrompt} size={28} />
+      </button>
+      {isDesktop ? (
+        <div ref={folderMenuRootRef} className="relative shrink-0">
+          <button
+            type="button"
+            suppressHydrationWarning
+            onClick={() => setFolderMenuOpen((open) => !open)}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-[#081030] p-0 text-white transition-opacity hover:opacity-70"
+            aria-label="Attach from files"
+            aria-haspopup="menu"
+            aria-expanded={folderMenuOpen}
+          >
+            <PromptBarMaskedIcon
+              src="/icons/prompt-bar-folder-icon.svg"
+              size={22}
+            />
+          </button>
+
+          {folderMenuOpen ? (
+            <div
+              role="menu"
+              className="absolute bottom-full left-0 z-[1300] mb-2 w-[260px] max-w-[min(80vw,320px)]"
+            >
+              <div className="max-h-[260px] overflow-y-auto rounded-xl border border-edge-subtle bg-surface-card p-1.5 shadow-xl">
+                {catalogAttachOptions.length === 0 ? (
+                  <p className="px-3 py-2 text-[11px] text-tx-secondary">
+                    No compatible files available
+                  </p>
+                ) : (
+                  catalogAttachOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center justify-between gap-2 rounded-full px-3 py-2 text-left text-[11px] text-white transition-colors hover:bg-[#0d1d45] focus-visible:bg-[#0d1d45]"
+                      onClick={() => handleAttachCatalogFile(option)}
+                    >
+                      <span className="min-w-0 flex-1 truncate">{option.name}</span>
+                      <span className="shrink-0 text-[10px] text-white/60">
+                        {option.typeLabel}
+                      </span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      <div className="relative flex min-h-0 min-w-0 flex-1 items-center self-stretch">
+        {isDesktop && prompt.length === 0 ? (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-1.5 right-0 top-1/2 -translate-y-1/2 truncate text-[16px] leading-6 text-white/50"
+          >
+            {placeholder}
+          </span>
+        ) : null}
         <textarea
           suppressHydrationWarning
-          ref={setDesktopTextAreaRef}
+          ref={isDesktop ? setDesktopTextAreaRef : setMobileTextAreaRef}
           readOnly={false}
           value={prompt}
           onChange={(e) => onPromptChange(e.target.value)}
@@ -224,50 +349,14 @@ export function PromptBar({
           }}
           placeholder={placeholder}
           rows={1}
-          className="min-w-0 flex-1 self-center resize-none rounded-none border-0 bg-transparent px-1.5 py-2 text-[16px] leading-6 text-[#ffffff] placeholder:text-white/50 placeholder:leading-6 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0"
+          className={cn(
+            "min-w-0 flex-1 self-center resize-none rounded-none border-0 bg-transparent px-1.5 py-2 text-[16px] leading-6 text-[#ffffff] !text-[#ffffff] caret-[#ffffff] [-webkit-text-fill-color:#ffffff] placeholder:text-white/50 placeholder:leading-6 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0",
+            isDesktop ? "placeholder:opacity-0" : "placeholder:opacity-100",
+          )}
         />
-        <div className="flex shrink-0 pl-0.5">{generateBtn}</div>
-      </form>
-    ) : (
-      <form
-        suppressHydrationWarning
-        className="flex w-full items-center gap-3"
-        onSubmit={(e) => {
-          e.preventDefault();
-          submitGenerate();
-        }}
-      >
-        {fileInput}
-        <button
-          type="button"
-          suppressHydrationWarning
-          onClick={() => fileRef.current?.click()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
-          aria-label="Add reference images"
-        >
-          <PromptBarMaskedIcon src={ICONS.attachPrompt} size={28} />
-        </button>
-        <textarea
-          suppressHydrationWarning
-          ref={setMobileTextAreaRef}
-          readOnly={false}
-          value={prompt}
-          onChange={(e) => onPromptChange(e.target.value)}
-          onInput={(e) => autoResizeTextArea(e.currentTarget)}
-          onKeyDown={(e) => {
-            const isEnter = e.key === "Enter" || e.key === "NumpadEnter";
-            if (!isEnter || e.shiftKey) return;
-            if (e.nativeEvent.isComposing) return;
-            e.preventDefault();
-            submitGenerate();
-          }}
-          placeholder={placeholder}
-          rows={1}
-          className="min-w-0 flex-1 self-center resize-none rounded-none border-0 bg-transparent px-1.5 py-2 text-[16px] leading-6 text-[#ffffff] placeholder:text-white/50 placeholder:leading-6 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0"
-        />
-        <div className="flex shrink-0 pl-0.5">{generateBtn}</div>
-      </form>
-    );
+      </div>
+      <div className="flex shrink-0 pl-0.5">{generateBtn}</div>
+    </form>;
 
   const referenceThumbs =
     references.length > 0 ? (
@@ -295,7 +384,12 @@ export function PromptBar({
   return (
     <div className={cn(className)}>
       {referenceThumbs}
-      <PromptBarShell variant={variant}>{controlsRow}</PromptBarShell>
+      <PromptBarShell
+        variant={variant}
+        allowDesktopOverflowVisible={isDesktop}
+      >
+        {controlsRow}
+      </PromptBarShell>
     </div>
   );
 }

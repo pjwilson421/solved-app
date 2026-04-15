@@ -56,7 +56,7 @@ export function ImageEditorClient({
   const { activityEntries, updateActivityEntries, fileEntries } = useAppData();
 
   const [barPrompt, setBarPrompt] = useState("");
-  const [references] = useState<ReferenceFile[]>([]);
+  const [references, setReferences] = useState<ReferenceFile[]>([]);
   const [assetContentType, setAssetContentType] =
     useState<AssetContentType>("Standard");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
@@ -255,6 +255,38 @@ export function ImageEditorClient({
     setActiveTool(id);
   }, []);
 
+  const handleAddReferences = useCallback((files: FileList | null) => {
+    if (!files?.length) return;
+    setReferences((prev) => {
+      const next = [...prev];
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        if (!/^image\/(jpeg|png|webp)$/i.test(f.type)) continue;
+        next.push({
+          id: uid(),
+          url: URL.createObjectURL(f),
+          name: f.name,
+        });
+      }
+      return next;
+    });
+  }, []);
+
+  const handleRemoveReference = useCallback((id: string) => {
+    setReferences((prev) => {
+      const target = prev.find((x) => x.id === id);
+      if (target) URL.revokeObjectURL(target.url);
+      return prev.filter((x) => x.id !== id);
+    });
+  }, []);
+
+  const handleAddCatalogReference = useCallback((reference: ReferenceFile) => {
+    setReferences((prev) => {
+      if (prev.some((r) => r.url === reference.url)) return prev;
+      return [...prev, reference];
+    });
+  }, []);
+
   const metaMaxWidth = useMemo(() => {
     if (layoutFrame?.width) return { width: layoutFrame.width, maxWidth: "100%" as const };
     return undefined;
@@ -440,14 +472,15 @@ export function ImageEditorClient({
           prompt={barPrompt}
           onPromptChange={setBarPrompt}
           references={references}
-          onAddReferences={() => {}}
-          onRemoveReference={() => {}}
+          onAddReferences={handleAddReferences}
+          onRemoveReference={handleRemoveReference}
           onGenerate={handleApplyEdits}
           isGenerating={isGenerating}
           generateDisabled={generateDisabled}
           variant={minWidth1280 ? "desktop" : "mobile"}
           placeholder="Describe your edits"
           generateAriaLabel="Apply edits"
+          onAddCatalogReference={handleAddCatalogReference}
         />
         <GenerationSettingsRow
           className="w-full shrink-0"

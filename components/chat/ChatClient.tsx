@@ -429,6 +429,13 @@ export function ChatClient() {
     });
   }, []);
 
+  const handleAddCatalogReference = useCallback((reference: ReferenceFile) => {
+    setReferences((prev) => {
+      if (prev.some((r) => r.url === reference.url)) return prev;
+      return [...prev, reference];
+    });
+  }, []);
+
   const handleChip = useCallback((label: string) => {
     setBarPrompt(label);
   }, []);
@@ -572,6 +579,7 @@ export function ChatClient() {
           placeholder="Ask anything…"
           generateAriaLabel="Send message"
           promptTextAreaRef={promptTextAreaRef}
+          onAddCatalogReference={handleAddCatalogReference}
         />
         <div
           className={cn(
