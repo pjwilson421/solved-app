@@ -44,13 +44,42 @@ import {
   type ChatHistoryThreadMenuAction,
 } from "./ChatHistoryPanel";
 import type { AssistantMessageMenuAction } from "./ChatOptionsMenu";
-import { chatThreadListHeadline } from "@/lib/app-data/chat-thread";
 import { DesktopThreeColumnShell } from "@/components/shell/DesktopThreeColumnShell";
+import {
+  setChatThreadCustomTitle,
+  setChatThreadPinned,
+} from "@/lib/app-data/chat-thread";
 import { cn } from "@/lib/utils";
+import { IconDots } from "@/components/create-image/icons";
+import { threeDotsMenuTriggerButtonClassName } from "@/components/ui/three-dots-menu-trigger";
+import { IconAsset } from "@/components/icons/IconAsset";
+import { ICONS } from "@/components/icons/icon-paths";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
+
+type MainChatMenuAction = "Like" | "Pin" | "Delete";
+
+const MAIN_CHAT_MENU_ITEMS: MainChatMenuAction[] = ["Like", "Pin", "Delete"];
+
+function mainChatMenuIconSrc(action: MainChatMenuAction, liked: boolean): string {
+  if (action === "Like") return liked ? ICONS.liked : ICONS.likedOutlined;
+  if (action === "Pin") return ICONS.pin;
+  return ICONS.delete;
+}
+
+const CHAT_ASSISTANT_FEEDBACK_STORAGE_KEY =
+  "solved-app-chat-assistant-feedback-v1";
+
+type ChatAssistantFeedback = {
+  chatId: string;
+  messageId: string;
+  prompt: string;
+  responseText: string;
+  feedbackType: "good" | "bad";
+  createdAt: string;
+};
 
 export function ChatClient() {
   const router = useRouter();
@@ -74,13 +103,16 @@ export function ChatClient() {
   const [dockParityTemplateId, setDockParityTemplateId] = useState<
     string | null
   >(null);
+  const [mainChatMenuOpen, setMainChatMenuOpen] = useState(false);
+  const desktopMainChatMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMainChatMenuRef = useRef<HTMLDivElement>(null);
   const [chatSessionId, setChatSessionId] = useState(() =>
     typeof crypto !== "undefined" && "randomUUID" in crypto
       ? crypto.randomUUID()
       : `chat-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
   );
 
-  const { chatThreads, upsertChatThreadSnapshot, updateFileEntries } =
+  const { chatThreads, upsertChatThreadSnapshot, updateChatThreads } =
     useAppData();
   const { isLiked } = useLikedItems();
   const { toggleLike, deleteCatalogItem } = useAppItemActions();
@@ -90,90 +122,150 @@ export function ChatClient() {
     [chatThreads, chatSessionId],
   );
   const messages: ChatThreadMessage[] = currentThread?.messages ?? [];
+  const currentChatLiked = isLiked(likedKey.chat(chatSessionId));
+
+  const createNewChatSessionId = useCallback(
+    () =>
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `chat-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    [],
+  );
+
+  const resetComposerForNewChat = useCallback(() => {
+    setBarPrompt("");
+    setReferences((prev) => {
+      for (const r of prev) URL.revokeObjectURL(r.url);
+      return [];
+    });
+    setIsSending(false);
+    setFullScreenUrl(null);
+  }, []);
+
+  const requestAssistantReply = useCallback(async (transcriptPayload: string) => {
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: transcriptPayload }),
+      });
+      const data: unknown = await res.json().catch(() => null);
+      if (
+        !res.ok ||
+        !data ||
+        typeof data !== "object" ||
+        typeof (data as { text?: unknown }).text !== "string"
+      ) {
+        return "Sorry, something went wrong.";
+      }
+      return (data as { text: string }).text;
+    } catch {
+      return "Sorry, something went wrong.";
+    }
+  }, []);
+
+  const persistAssistantFeedback = useCallback((feedback: ChatAssistantFeedback) => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(CHAT_ASSISTANT_FEEDBACK_STORAGE_KEY);
+      const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+      const prev = Array.isArray(parsed)
+        ? parsed.filter((item): item is ChatAssistantFeedback => {
+            if (!item || typeof item !== "object") return false;
+            const candidate = item as Partial<ChatAssistantFeedback>;
+            return (
+              typeof candidate.chatId === "string" &&
+              typeof candidate.messageId === "string" &&
+              typeof candidate.prompt === "string" &&
+              typeof candidate.responseText === "string" &&
+              (candidate.feedbackType === "good" || candidate.feedbackType === "bad") &&
+              typeof candidate.createdAt === "string"
+            );
+          })
+        : [];
+      window.localStorage.setItem(
+        CHAT_ASSISTANT_FEEDBACK_STORAGE_KEY,
+        JSON.stringify([...prev, feedback]),
+      );
+    } catch (error) {
+      console.warn("[chat-feedback] failed to persist assistant feedback", error);
+    }
+  }, []);
 
   const handleAssistantMessageMenuAction = useCallback(
     (message: ChatThreadMessage, action: AssistantMessageMenuAction) => {
-      const messageText = message.text?.trim() ?? "";
-      const messageRefId = `${chatSessionId}:assistant:${message.id}`;
+      if (!currentThread || message.role !== "assistant") return;
 
-      if (action === "Like") {
-        toggleLike(appItemRef.chat(messageRefId));
-        return;
-      }
+      const threadMessages = currentThread.messages;
+      const targetIndex = threadMessages.findIndex((m) => m.id === message.id);
+      if (targetIndex < 0) return;
 
-      if (action === "Save To Files") {
-        if (!messageText) return;
-        const firstLine = messageText.split(/\r?\n/)[0]?.trim() ?? "";
-        const base =
-          firstLine.replace(/[^\w.\-()\s]+/g, "_").trim().slice(0, 60) ||
-          "Assistant_Message";
-        const body = `ASSISTANT: ${messageText}`;
-        const sizeKb = Math.max(1, Math.ceil(new Blob([body]).size / 1024));
-        const dateModified = new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
-        updateFileEntries((prev) => [
-          ...prev,
-          {
-            id: uid(),
-            name: `${base}.txt`,
-            kind: "file",
-            typeLabel: "Text",
-            dateModified,
-            sizeLabel: `${sizeKb} KB`,
-            parentId: null,
-          },
-        ]);
-        return;
-      }
-
-      if (action === "Share") {
-        const shareUrl = `${window.location.origin}/chat?openChat=${encodeURIComponent(chatSessionId)}`;
-        const shareText = messageText || "Assistant message";
-        if (typeof navigator !== "undefined" && navigator.share) {
-          void navigator.share({
-            title: "Solved Chat",
-            text: shareText,
-            url: shareUrl,
-          });
-        } else {
-          const fallback = `${shareText}\n\n${shareUrl}`;
-          void navigator.clipboard?.writeText?.(fallback);
+      const promptText = (() => {
+        for (let i = targetIndex - 1; i >= 0; i -= 1) {
+          const candidate = threadMessages[i];
+          if (candidate.role !== "user") continue;
+          return candidate.text?.trim() ?? "";
         }
+        return "";
+      })();
+
+      if (action === "Regenerate") {
+        if (isSending) return;
+        const contextMessages = threadMessages.slice(0, targetIndex);
+        const transcriptPayload =
+          contextMessages
+            .map((m) => {
+              const label = m.role === "user" ? "User" : "Assistant";
+              return `${label}: ${m.text ?? ""}`.trim();
+            })
+            .join("\n\n")
+            .trim() || `User: ${promptText || "Please regenerate the last assistant response."}`;
+
+        setIsSending(true);
+        void requestAssistantReply(transcriptPayload)
+          .then((assistantText) => {
+            const nextMessages = threadMessages.map((m, index) => {
+              if (index !== targetIndex) return m;
+              return {
+                ...m,
+                text: assistantText,
+                sentAt: new Date().toISOString(),
+              };
+            });
+            upsertChatThreadSnapshot(chatSessionId, nextMessages);
+          })
+          .finally(() => {
+            setIsSending(false);
+          });
         return;
       }
 
-      if (action === "Delete") {
-        if (!currentThread) return;
-        const nextMessages = currentThread.messages.filter((m) => m.id !== message.id);
-        upsertChatThreadSnapshot(chatSessionId, nextMessages);
+      if (action === "Good response" || action === "Bad response") {
+        const feedbackType = action === "Good response" ? "good" : "bad";
+        persistAssistantFeedback({
+          chatId: chatSessionId,
+          messageId: message.id,
+          prompt: promptText,
+          responseText: message.text ?? "",
+          feedbackType,
+          createdAt: new Date().toISOString(),
+        });
       }
     },
     [
       chatSessionId,
       currentThread,
-      toggleLike,
-      updateFileEntries,
+      isSending,
+      persistAssistantFeedback,
+      requestAssistantReply,
       upsertChatThreadSnapshot,
     ],
   );
 
   useEffect(() => {
     if (searchParams.get("new") === "1") {
-      setReferences((prev) => {
-        for (const r of prev) URL.revokeObjectURL(r.url);
-        return [];
-      });
-      setBarPrompt("");
-      setFullScreenUrl(null);
-      setChatSessionId(
-        typeof crypto !== "undefined" && "randomUUID" in crypto
-          ? crypto.randomUUID()
-          : `chat-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      );
-      setIsSending(false);
+      resetComposerForNewChat();
+      setChatSessionId(createNewChatSessionId());
       setPromptFocusNonce((n) => n + 1);
       router.replace("/chat", { scroll: false });
       return;
@@ -186,7 +278,77 @@ export function ChatClient() {
     }
     setChatSessionId(rec.id);
     router.replace("/chat", { scroll: false });
-  }, [openChatId, router, searchParams, chatThreads]);
+  }, [
+    createNewChatSessionId,
+    openChatId,
+    resetComposerForNewChat,
+    router,
+    searchParams,
+    chatThreads,
+  ]);
+
+  useEffect(() => {
+    if (!mainChatMenuOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (desktopMainChatMenuRef.current?.contains(e.target as Node)) return;
+      if (mobileMainChatMenuRef.current?.contains(e.target as Node)) return;
+      setMainChatMenuOpen(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMainChatMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mainChatMenuOpen]);
+
+  const handleMainChatMenuAction = useCallback(
+    (action: MainChatMenuAction) => {
+      setMainChatMenuOpen(false);
+
+      if (action === "Like") {
+        if (!currentThread) return;
+        if (!isLiked(likedKey.chat(chatSessionId))) {
+          upsertChatThreadSnapshot(chatSessionId, currentThread.messages);
+          toggleLike(appItemRef.chat(chatSessionId));
+        }
+        return;
+      }
+
+      if (action === "Pin") {
+        if (!currentThread) return;
+        const currentlyPinned = Boolean(currentThread.pinnedAt);
+        if (currentlyPinned) return;
+        updateChatThreads((prev) => setChatThreadPinned(prev, chatSessionId, true));
+        return;
+      }
+
+      if (action === "Delete") {
+        if (isLiked(likedKey.chat(chatSessionId))) {
+          toggleLike(appItemRef.chat(chatSessionId));
+        }
+        deleteCatalogItem(appItemRef.chat(chatSessionId));
+        resetComposerForNewChat();
+        setChatSessionId(createNewChatSessionId());
+        setPromptFocusNonce((n) => n + 1);
+      }
+    },
+    [
+      chatSessionId,
+      createNewChatSessionId,
+      currentThread,
+      deleteCatalogItem,
+      isLiked,
+      resetComposerForNewChat,
+      toggleLike,
+      updateChatThreads,
+      upsertChatThreadSnapshot,
+    ],
+  );
 
   useLayoutEffect(() => {
     if (promptFocusNonce === 0) return;
@@ -209,76 +371,49 @@ export function ChatClient() {
         return;
       }
 
-      if (action === "Save To Files") {
-        const headline = chatThreadListHeadline(thread);
-        const base =
-          headline.replace(/[^\w.\-()\s]+/g, "_").trim().slice(0, 60) ||
-          "Chat";
-        const body = thread.messages
-          .map((m) => `${m.role.toUpperCase()}: ${m.text ?? ""}`)
-          .join("\n\n");
-        const sizeKb = Math.max(1, Math.ceil(new Blob([body]).size / 1024));
-        const dateModified = new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
-        updateFileEntries((prev) => [
-          ...prev,
-          {
-            id: uid(),
-            name: `${base}_chat.txt`,
-            kind: "file",
-            typeLabel: "Text",
-            dateModified,
-            sizeLabel: `${sizeKb} KB`,
-            parentId: null,
-          },
-        ]);
-        return;
-      }
-
-      if (action === "Share") {
-        const url = `${window.location.origin}/chat?openChat=${encodeURIComponent(threadId)}`;
-        const title = chatThreadListHeadline(thread);
-        if (typeof navigator !== "undefined" && navigator.share) {
-          void navigator.share({ title, text: title, url });
-        } else {
-          void navigator.clipboard?.writeText?.(url);
-        }
-        return;
-      }
-
       if (action === "Delete") {
+        const shouldDelete =
+          typeof window === "undefined"
+            ? true
+            : window.confirm("Delete this chat permanently?");
+        if (!shouldDelete) return;
+
+        if (isLiked(likedKey.chat(threadId))) {
+          toggleLike(appItemRef.chat(threadId));
+        }
+
         if (threadId === chatSessionId) {
           const nextThreads = chatThreads.filter((t) => t.id !== threadId);
           if (nextThreads.length > 0) {
             setChatSessionId(nextThreads[0].id);
           } else {
-            setChatSessionId(
-              typeof crypto !== "undefined" && "randomUUID" in crypto
-                ? crypto.randomUUID()
-                : `chat-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-            );
-            setBarPrompt("");
-            setReferences((prev) => {
-              for (const r of prev) URL.revokeObjectURL(r.url);
-              return [];
-            });
+            setChatSessionId(createNewChatSessionId());
+            resetComposerForNewChat();
           }
         }
+
         deleteCatalogItem(appItemRef.chat(threadId));
       }
     },
     [
       chatSessionId,
       chatThreads,
+      createNewChatSessionId,
       deleteCatalogItem,
       isLiked,
+      resetComposerForNewChat,
       toggleLike,
-      updateFileEntries,
       upsertChatThreadSnapshot,
     ],
+  );
+
+  const handleRenameChat = useCallback(
+    (threadId: string, title: string) => {
+      const next = title.trim();
+      if (!next) return;
+      updateChatThreads((prev) => setChatThreadCustomTitle(prev, threadId, next));
+    },
+    [updateChatThreads],
   );
 
   const desktopScrollRef = useRef<HTMLDivElement>(null);
@@ -365,27 +500,7 @@ export function ChatClient() {
         .join("\n\n")
         .trim() || "User sent a message without text.";
 
-    let assistantText: string;
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: transcriptPayload }),
-      });
-      const data: unknown = await res.json().catch(() => null);
-      if (
-        !res.ok ||
-        !data ||
-        typeof data !== "object" ||
-        typeof (data as { text?: unknown }).text !== "string"
-      ) {
-        assistantText = "Sorry, something went wrong.";
-      } else {
-        assistantText = (data as { text: string }).text;
-      }
-    } catch {
-      assistantText = "Sorry, something went wrong.";
-    }
+    const assistantText = await requestAssistantReply(transcriptPayload);
 
     const assistantMsg: ChatThreadMessage = {
       id: uid(),
@@ -402,6 +517,7 @@ export function ChatClient() {
     messages,
     chatSessionId,
     upsertChatThreadSnapshot,
+    requestAssistantReply,
   ]);
 
   const handleAddReferences = useCallback((files: FileList | null) => {
@@ -453,6 +569,11 @@ export function ChatClient() {
     [chatSessionId],
   );
 
+  const isThreadLiked = useCallback(
+    (threadId: string) => isLiked(likedKey.chat(threadId)),
+    [isLiked],
+  );
+
   return (
     <div
       className={cn(
@@ -482,6 +603,8 @@ export function ChatClient() {
               activeChatId={chatSessionId}
               onSelectChat={selectChatFromHistory}
               onThreadMenuAction={handleChatHistoryThreadMenuAction}
+              isThreadLiked={isThreadLiked}
+              onRenameChat={handleRenameChat}
               className="min-h-0 w-full min-w-0 flex-1 flex-col"
             />
           }
@@ -489,6 +612,49 @@ export function ChatClient() {
           <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center px-4 sm:px-8 xl:h-full xl:min-h-0 xl:min-w-0 xl:overflow-hidden xl:px-0">
             <div className="flex min-h-0 w-full min-w-0 max-w-[900px] flex-1 flex-col xl:mx-auto xl:w-[min(100%,1000px)] xl:max-w-[1000px] xl:min-h-0 xl:min-w-0">
               <div className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col">
+                <div
+                  ref={desktopMainChatMenuRef}
+                  className="absolute right-0 top-4 z-[30]"
+                >
+                  <button
+                    type="button"
+                    aria-label="Chat options"
+                    aria-haspopup="menu"
+                    aria-expanded={mainChatMenuOpen}
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-full",
+                      threeDotsMenuTriggerButtonClassName,
+                    )}
+                    onClick={() => setMainChatMenuOpen((open) => !open)}
+                  >
+                    <IconDots className="h-4 w-4" />
+                  </button>
+                  {mainChatMenuOpen ? (
+                    <div
+                      role="menu"
+                      className="absolute right-0 top-full z-[70] mt-1 min-w-[160px]"
+                    >
+                      <div className="rounded-xl border border-edge-subtle bg-surface-card py-1.5 shadow-xl">
+                        {MAIN_CHAT_MENU_ITEMS.map((label) => (
+                          <button
+                            key={label}
+                            type="button"
+                            role="menuitem"
+                            className="flex w-full items-center rounded-lg px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors duration-150 hover:bg-[#0d1d45] hover:text-white active:bg-ix-pressed"
+                            onClick={() => handleMainChatMenuAction(label)}
+                          >
+                            <IconAsset
+                              src={mainChatMenuIconSrc(label, currentChatLiked)}
+                              size={14}
+                              className="mr-2.5"
+                            />
+                            <span>{label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
                 <div
                   ref={desktopScrollRef}
                   className="relative z-[1] min-h-0 w-full min-w-0 flex-1 overflow-y-auto"
@@ -532,6 +698,8 @@ export function ChatClient() {
             activeChatId={chatSessionId}
             onSelectChat={selectChatFromHistory}
             onThreadMenuAction={handleChatHistoryThreadMenuAction}
+            isThreadLiked={isThreadLiked}
+            onRenameChat={handleRenameChat}
           />
           <div
             ref={mobileScrollRef}
@@ -543,13 +711,56 @@ export function ChatClient() {
             <main
               ref={mobileColumnRef}
               className={cn(
-                "flex min-h-0 w-full min-w-0 flex-col bg-transparent outline-none",
+                "relative flex min-h-0 w-full min-w-0 flex-col bg-transparent outline-none",
                 messages.length > 0 ? "pt-[68px]" : "pt-2",
               )}
               style={{
                 paddingBottom: mobileScrollBottomPadPx,
               }}
             >
+              <div
+                ref={mobileMainChatMenuRef}
+                className="absolute right-0 top-2 z-[30]"
+              >
+                <button
+                  type="button"
+                  aria-label="Chat options"
+                  aria-haspopup="menu"
+                  aria-expanded={mainChatMenuOpen}
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-full",
+                    threeDotsMenuTriggerButtonClassName,
+                  )}
+                  onClick={() => setMainChatMenuOpen((open) => !open)}
+                >
+                  <IconDots className="h-4 w-4" />
+                </button>
+                {mainChatMenuOpen ? (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full z-[70] mt-1 min-w-[160px]"
+                  >
+                    <div className="rounded-xl border border-edge-subtle bg-surface-card py-1.5 shadow-xl">
+                      {MAIN_CHAT_MENU_ITEMS.map((label) => (
+                        <button
+                          key={label}
+                          type="button"
+                          role="menuitem"
+                          className="flex w-full items-center rounded-lg px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors duration-150 hover:bg-[#0d1d45] hover:text-white active:bg-ix-pressed"
+                          onClick={() => handleMainChatMenuAction(label)}
+                        >
+                          <IconAsset
+                            src={mainChatMenuIconSrc(label, currentChatLiked)}
+                            size={14}
+                            className="mr-2.5"
+                          />
+                          <span>{label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
               <div className="w-full min-w-0">
                 <ChatMessageThread
                   messages={messages}

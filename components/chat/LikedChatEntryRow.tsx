@@ -5,6 +5,22 @@ import { IconAsset } from "@/components/icons/IconAsset";
 import { ICONS } from "@/components/icons/icon-paths";
 import { likedChatTitle, type LikedChatRecord } from "./liked-chats-storage";
 
+function ChatPinnedIcon() {
+  return (
+    <svg
+      className="h-3.5 w-3.5 shrink-0 text-white/70"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M8 3h8v1.5l-1.5 2v4.5l2 1.5V14h-3.5L12 21l-1-7H7.5v-1.5l2-1.5V6.5L8 4.5V3Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 function formatSavedAt(iso: string) {
   try {
     return new Date(iso).toLocaleString(undefined, {
@@ -73,8 +89,9 @@ export function LikedChatEntryRow({
             className={cn("mt-0.5 shrink-0", rowIconHoverClass)}
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-left text-[12px] font-medium leading-snug text-white">
-              {title}
+            <p className="flex items-center gap-1.5 truncate text-left text-[12px] font-medium leading-snug text-white">
+              {record.pinnedAt ? <ChatPinnedIcon /> : null}
+              <span className="min-w-0 truncate">{title}</span>
             </p>
             <p className="mt-1 text-left text-[10px] leading-none text-[#315790]">
               {dateDisplay}
@@ -128,8 +145,9 @@ export function LikedChatEntryRow({
             size={22}
             className={rowIconHoverClass}
           />
-          <p className="min-w-0 truncate text-left text-[13px] font-medium text-white">
-            {title}
+          <p className="flex min-w-0 items-center gap-1.5 truncate text-left text-[13px] font-medium text-white">
+            {record.pinnedAt ? <ChatPinnedIcon /> : null}
+            <span className="min-w-0 truncate">{title}</span>
           </p>
         </div>
         <p className="hidden text-[11px] text-[#315790] sm:block">

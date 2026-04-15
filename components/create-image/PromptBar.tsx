@@ -98,10 +98,12 @@ export function PromptBar({
 }: PromptBarProps) {
   const MIN_TEXTAREA_HEIGHT_PX = 24;
   const fileRef = useRef<HTMLInputElement>(null);
-  const folderMenuRootRef = useRef<HTMLDivElement>(null);
+  const attachMenuRootRef = useRef<HTMLDivElement>(null);
   const desktopTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const mobileTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [folderMenuOpen, setFolderMenuOpen] = useState(false);
+  const [attachMenuOpen, setAttachMenuOpen] = useState(false);
+  const [filesPanelOpen, setFilesPanelOpen] = useState(false);
+  const [selectedCatalogIds, setSelectedCatalogIds] = useState<string[]>([]);
   const isDesktop = variant === "desktop";
   const { fileEntries } = useAppData();
 
@@ -124,16 +126,20 @@ export function PromptBar({
   );
 
   useEffect(() => {
-    if (!folderMenuOpen) return;
+    if (!attachMenuOpen && !filesPanelOpen) return;
     const onDocMouseDown = (e: MouseEvent) => {
-      if (!folderMenuRootRef.current?.contains(e.target as Node)) {
-        setFolderMenuOpen(false);
+      if (!attachMenuRootRef.current?.contains(e.target as Node)) {
+        setAttachMenuOpen(false);
+        setFilesPanelOpen(false);
+        setSelectedCatalogIds([]);
       }
     };
     const onDocKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        setFolderMenuOpen(false);
+        setAttachMenuOpen(false);
+        setFilesPanelOpen(false);
+        setSelectedCatalogIds([]);
       }
     };
 
@@ -143,7 +149,7 @@ export function PromptBar({
       document.removeEventListener("mousedown", onDocMouseDown);
       document.removeEventListener("keydown", onDocKeyDown);
     };
-  }, [folderMenuOpen]);
+  }, [attachMenuOpen, filesPanelOpen]);
 
   const autoResizeTextArea = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
@@ -237,22 +243,39 @@ export function PromptBar({
     });
   };
 
-  const handleAttachCatalogFile = useCallback(
-    (option: { id: string; name: string; url: string }) => {
-      const refId =
-        typeof crypto !== "undefined" && "randomUUID" in crypto
-          ? crypto.randomUUID()
-          : `${option.id}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  const makeReferenceId = useCallback((seed: string) => {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+      return crypto.randomUUID();
+    }
+    return `${seed}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  }, []);
 
-      onAddCatalogReference?.({
-        id: refId,
-        name: option.name,
-        url: option.url,
-      });
-      setFolderMenuOpen(false);
+  const handleAttachCatalogFiles = useCallback(
+    (options: Array<{ id: string; name: string; url: string }>) => {
+      for (const option of options) {
+        onAddCatalogReference?.({
+          id: makeReferenceId(option.id),
+          name: option.name,
+          url: option.url,
+        });
+      }
+      setAttachMenuOpen(false);
+      setFilesPanelOpen(false);
+      setSelectedCatalogIds([]);
     },
-    [onAddCatalogReference],
+    [makeReferenceId, onAddCatalogReference],
   );
+
+  const selectedCatalogOptions = useMemo(() => {
+    const selected = new Set(selectedCatalogIds);
+    return catalogAttachOptions.filter((option) => selected.has(option.id));
+  }, [catalogAttachOptions, selectedCatalogIds]);
+
+  const handleToggleCatalogSelection = useCallback((id: string) => {
+    setSelectedCatalogIds((prev) =>
+      prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id],
+    );
+  }, []);
 
   const controlsRow =
     <form
@@ -267,63 +290,124 @@ export function PromptBar({
       }}
     >
       {fileInput}
-      <button
-        type="button"
-        suppressHydrationWarning
-        onClick={() => fileRef.current?.click()}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
-        aria-label="Add reference images"
-      >
-        <PromptBarMaskedIcon src={ICONS.attachPrompt} size={28} />
-      </button>
       {isDesktop ? (
-        <div ref={folderMenuRootRef} className="relative shrink-0">
+        <div ref={attachMenuRootRef} className="relative shrink-0">
           <button
             type="button"
             suppressHydrationWarning
-            onClick={() => setFolderMenuOpen((open) => !open)}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-[#081030] p-0 text-white transition-opacity hover:opacity-70"
-            aria-label="Attach from files"
+            onClick={() => {
+              setFilesPanelOpen(false);
+              setSelectedCatalogIds([]);
+              setAttachMenuOpen((open) => !open);
+            }}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
+            aria-label="Add reference images"
             aria-haspopup="menu"
-            aria-expanded={folderMenuOpen}
+            aria-expanded={attachMenuOpen || filesPanelOpen}
           >
-            <PromptBarMaskedIcon
-              src="/icons/prompt-bar-folder-icon.svg"
-              size={22}
-            />
+            <PromptBarMaskedIcon src={ICONS.attachPrompt} size={28} />
           </button>
 
-          {folderMenuOpen ? (
+          {attachMenuOpen ? (
             <div
               role="menu"
-              className="absolute bottom-full left-0 z-[1300] mb-2 w-[260px] max-w-[min(80vw,320px)]"
+              className="absolute bottom-full left-0 z-[1300] mb-2 w-[220px] max-w-[min(80vw,320px)]"
             >
-              <div className="max-h-[260px] overflow-y-auto rounded-xl border border-edge-subtle bg-surface-card p-1.5 shadow-xl">
-                {catalogAttachOptions.length === 0 ? (
-                  <p className="px-3 py-2 text-[11px] text-tx-secondary">
-                    No compatible files available
-                  </p>
-                ) : (
-                  catalogAttachOptions.map((option) => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      role="menuitem"
-                      className="flex w-full items-center justify-between gap-2 rounded-full px-3 py-2 text-left text-[11px] text-white transition-colors hover:bg-[#0d1d45] focus-visible:bg-[#0d1d45]"
-                      onClick={() => handleAttachCatalogFile(option)}
-                    >
-                      <span className="min-w-0 flex-1 truncate">{option.name}</span>
-                      <span className="shrink-0 text-[10px] text-white/60">
-                        {option.typeLabel}
-                      </span>
-                    </button>
-                  ))
-                )}
+              <div className="rounded-xl border border-edge-subtle bg-surface-card p-1.5 shadow-xl">
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="flex w-full items-center rounded-full px-3 py-2 text-left text-[11px] text-white transition-colors hover:bg-[#0d1d45] focus-visible:bg-[#0d1d45]"
+                  onClick={() => {
+                    setAttachMenuOpen(false);
+                    fileRef.current?.click();
+                  }}
+                >
+                  Upload from computer
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="flex w-full items-center rounded-full px-3 py-2 text-left text-[11px] text-white transition-colors hover:bg-[#0d1d45] focus-visible:bg-[#0d1d45]"
+                  onClick={() => {
+                    setAttachMenuOpen(false);
+                    setSelectedCatalogIds([]);
+                    setFilesPanelOpen(true);
+                  }}
+                >
+                  Attach from files
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {filesPanelOpen ? (
+            <div className="absolute bottom-full left-0 z-[1300] mb-2 w-[320px] max-w-[min(92vw,420px)]">
+              <div className="rounded-xl border border-edge-subtle bg-surface-card p-1.5 shadow-xl">
+                <div className="max-h-[260px] overflow-y-auto">
+                  {catalogAttachOptions.length === 0 ? (
+                    <p className="px-3 py-2 text-[11px] text-tx-secondary">
+                      No compatible files available
+                    </p>
+                  ) : (
+                    catalogAttachOptions.map((option) => {
+                      const isSelected = selectedCatalogIds.includes(option.id);
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          className={cn(
+                            "flex w-full items-center justify-between gap-2 rounded-full px-3 py-2 text-left text-[11px] text-white transition-colors hover:bg-[#0d1d45] focus-visible:bg-[#0d1d45]",
+                            isSelected && "bg-[#0d1d45]",
+                          )}
+                          onClick={() => handleToggleCatalogSelection(option.id)}
+                          aria-pressed={isSelected}
+                        >
+                          <span className="min-w-0 flex-1 truncate">{option.name}</span>
+                          <span className="shrink-0 text-[10px] text-white/60">
+                            {option.typeLabel}
+                          </span>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+
+                <div className="mt-1.5 flex items-center justify-end gap-2 px-1">
+                  <button
+                    type="button"
+                    className="rounded-full px-3 py-1.5 text-[11px] text-tx-secondary transition-colors hover:bg-[#0d1d45] hover:text-white"
+                    onClick={() => {
+                      setFilesPanelOpen(false);
+                      setSelectedCatalogIds([]);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-full bg-[#0d1d45] px-3 py-1.5 text-[11px] text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={selectedCatalogOptions.length === 0}
+                    onClick={() => handleAttachCatalogFiles(selectedCatalogOptions)}
+                  >
+                    Select
+                  </button>
+                </div>
               </div>
             </div>
           ) : null}
         </div>
-      ) : null}
+      ) : (
+        <button
+          type="button"
+          suppressHydrationWarning
+          onClick={() => fileRef.current?.click()}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-rail-navy p-0 text-white transition-opacity hover:opacity-70"
+          aria-label="Add reference images"
+        >
+          <PromptBarMaskedIcon src={ICONS.attachPrompt} size={28} />
+        </button>
+      )}
       <div className="relative flex min-h-0 min-w-0 flex-1 items-center self-stretch">
         {isDesktop && prompt.length === 0 ? (
           <span

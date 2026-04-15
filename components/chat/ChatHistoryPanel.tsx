@@ -17,22 +17,28 @@ import {
   RightRailPanelChevron,
 } from "@/components/ui/right-rail-collapsible";
 import { IconDots } from "@/components/create-image/icons";
+import { IconAsset } from "@/components/icons/IconAsset";
+import { ICONS } from "@/components/icons/icon-paths";
 import { threeDotsMenuTriggerButtonClassName } from "@/components/ui/three-dots-menu-trigger";
 import { cn } from "@/lib/utils";
 import type { ChatThreadRecord } from "@/lib/app-data/chat-thread";
 
 export type ChatHistoryThreadMenuAction =
   | "Like"
-  | "Save To Files"
-  | "Share"
+  | "Rename"
   | "Delete";
 
 const THREAD_MENU_ITEMS: ChatHistoryThreadMenuAction[] = [
   "Like",
-  "Save To Files",
-  "Share",
+  "Rename",
   "Delete",
 ];
+
+function threadMenuIconSrc(action: ChatHistoryThreadMenuAction, liked: boolean): string {
+  if (action === "Like") return liked ? ICONS.liked : ICONS.likedOutlined;
+  if (action === "Rename") return ICONS.rename;
+  return ICONS.delete;
+}
 
 type ChatHistoryPanelProps = {
   threads: ChatThreadRecord[];
@@ -43,6 +49,8 @@ type ChatHistoryPanelProps = {
     threadId: string,
     action: ChatHistoryThreadMenuAction,
   ) => void;
+  isThreadLiked?: (threadId: string) => boolean;
+  onRenameChat?: (threadId: string, title: string) => void;
   /** Merged onto the root `aside` — use the same string as {@link HistoryPanel} on Create Image. */
   className?: string;
   /**
@@ -57,6 +65,8 @@ type ChatHistoryPanelProps = {
 };
 
 function chatHistoryTitlePreview(record: ChatThreadRecord): string {
+  const custom = record.customTitle?.trim();
+  if (custom) return custom;
   const firstUser = record.messages.find((m) => m.role === "user");
   const firstLine = firstUser?.text?.trim().split(/\r?\n/)[0]?.trim() ?? "";
   if (!firstLine) return "Chat";
@@ -84,6 +94,22 @@ function chatHistoryTimestampLabel(savedAt: string): string {
   return `${dayLabel} • ${timeLabel}`;
 }
 
+function ChatPinnedIcon() {
+  return (
+    <svg
+      className="h-3.5 w-3.5 shrink-0 text-white/70"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M8 3h8v1.5l-1.5 2v4.5l2 1.5V14h-3.5L12 21l-1-7H7.5v-1.5l2-1.5V6.5L8 4.5V3Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 /**
  * Chat thread picker: desktop xl+ right rail, or mobile compact trigger + overlay list.
  */
@@ -92,6 +118,8 @@ export function ChatHistoryPanel({
   activeChatId,
   onSelectChat,
   onThreadMenuAction,
+  isThreadLiked,
+  onRenameChat,
   className,
   variant = "rail",
   mobileTriggerAlign = "start",
@@ -100,8 +128,11 @@ export function ChatHistoryPanel({
   const [actionsMenuThreadId, setActionsMenuThreadId] = useState<string | null>(
     null,
   );
+  const [renamingThreadId, setRenamingThreadId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
   const bodyId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
+  const renameInputRef = useRef<HTMLInputElement>(null);
   const rowMenuRootRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const setRowMenuRoot = useCallback((id: string, el: HTMLDivElement | null) => {
@@ -118,6 +149,22 @@ export function ChatHistoryPanel({
     setActionsMenuThreadId(null);
   }, []);
 
+  const cancelRename = useCallback(() => {
+    setRenamingThreadId(null);
+    setRenameValue("");
+  }, []);
+
+  const commitRename = useCallback(() => {
+    if (!renamingThreadId) return;
+    const next = renameValue.trim();
+    if (!next) {
+      cancelRename();
+      return;
+    }
+    onRenameChat?.(renamingThreadId, next);
+    cancelRename();
+  }, [cancelRename, onRenameChat, renameValue, renamingThreadId]);
+
   const toggleActionsMenu = useCallback((threadId: string) => {
     setActionsMenuThreadId((cur) => (cur === threadId ? null : threadId));
   }, []);
@@ -125,6 +172,15 @@ export function ChatHistoryPanel({
   useEffect(() => {
     if (!menuOpen) closeActionsMenu();
   }, [menuOpen, closeActionsMenu]);
+
+  useEffect(() => {
+    if (!renamingThreadId) return;
+    const id = requestAnimationFrame(() => {
+      renameInputRef.current?.focus();
+      renameInputRef.current?.select();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [renamingThreadId]);
 
   useEffect(() => {
     if (!menuOpen && !actionsMenuThreadId) return;
@@ -161,24 +217,42 @@ export function ChatHistoryPanel({
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [actionsMenuThreadId]);
 
+  useEffect(() => {
+    if (!renamingThreadId) return;
+    const exists = threads.some((t) => t.id === renamingThreadId);
+    if (!exists) {
+      cancelRename();
+    }
+  }, [cancelRename, renamingThreadId, threads]);
+
   const sortedThreads = useMemo(() => {
     const completedThreads = threads.filter((t) =>
       t.messages.some((m) => m.role === "user" && m.text.trim().length > 0),
     );
-    return [...completedThreads].sort((a, b) =>
-      a.savedAt < b.savedAt ? 1 : a.savedAt > b.savedAt ? -1 : 0,
-    );
+    return [...completedThreads].sort((a, b) => {
+      const aPinned = typeof a.pinnedAt === "string";
+      const bPinned = typeof b.pinnedAt === "string";
+      if (aPinned !== bPinned) return aPinned ? -1 : 1;
+      if (aPinned && bPinned && a.pinnedAt && b.pinnedAt) {
+        if (a.pinnedAt < b.pinnedAt) return 1;
+        if (a.pinnedAt > b.pinnedAt) return -1;
+      }
+      if (a.savedAt < b.savedAt) return 1;
+      if (a.savedAt > b.savedAt) return -1;
+      return 0;
+    });
   }, [threads]);
 
   const rowPad = "px-1";
 
   const handlePickChat = useCallback(
     (id: string) => {
+      if (renamingThreadId) return;
       setMenuOpen(false);
       closeActionsMenu();
       onSelectChat(id);
     },
-    [closeActionsMenu, onSelectChat],
+    [closeActionsMenu, onSelectChat, renamingThreadId],
   );
 
   const titleTextClass =
@@ -198,6 +272,9 @@ export function ChatHistoryPanel({
       sortedThreads.map((t) => {
         const selected = t.id === activeChatId;
         const actionsOpen = actionsMenuThreadId === t.id;
+        const isRenaming = renamingThreadId === t.id;
+        const titlePreview = chatHistoryTitlePreview(t);
+        const threadLiked = isThreadLiked?.(t.id) ?? false;
         return (
           <div
             key={t.id}
@@ -212,6 +289,7 @@ export function ChatHistoryPanel({
               tabIndex={0}
               onClick={() => handlePickChat(t.id)}
               onKeyDown={(e) => {
+                if (isRenaming) return;
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   handlePickChat(t.id);
@@ -226,10 +304,41 @@ export function ChatHistoryPanel({
                 <p
                   className={cn(
                     titleTextClass,
+                    "flex items-center gap-1.5",
                     "truncate overflow-hidden whitespace-nowrap text-ellipsis",
                   )}
                 >
-                  {chatHistoryTitlePreview(t)}
+                  {t.pinnedAt ? <ChatPinnedIcon /> : null}
+                  {isRenaming ? (
+                    <input
+                      ref={renameInputRef}
+                      value={renameValue}
+                      onChange={(e) => setRenameValue(e.target.value)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          commitRename();
+                          return;
+                        }
+                        if (e.key === "Escape") {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          cancelRename();
+                        }
+                      }}
+                      onBlur={() => {
+                        commitRename();
+                      }}
+                      className="min-w-0 flex-1 bg-transparent text-[11px] leading-[18px] text-white outline-none"
+                      aria-label="Rename chat"
+                    />
+                  ) : (
+                    <span className="min-w-0 truncate">{titlePreview}</span>
+                  )}
                 </p>
                 <p className="mt-0.5 truncate text-[10px] leading-[14px] text-white/60">
                   {chatHistoryTimestampLabel(t.savedAt)}
@@ -271,11 +380,21 @@ export function ChatHistoryPanel({
                           className="flex w-full cursor-pointer items-center rounded-lg px-4 py-2 text-left text-[11px] text-tx-secondary transition-colors duration-150 hover:bg-[#0d1d45] hover:text-white active:bg-ix-pressed"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onThreadMenuAction?.(t.id, label);
+                            if (label === "Rename") {
+                              setRenamingThreadId(t.id);
+                              setRenameValue(titlePreview);
+                            } else {
+                              onThreadMenuAction?.(t.id, label);
+                            }
                             closeActionsMenu();
                           }}
                         >
-                          {label}
+                          <IconAsset
+                            src={threadMenuIconSrc(label, threadLiked)}
+                            size={14}
+                            className="mr-2.5"
+                          />
+                          <span>{label}</span>
                         </button>
                       ))}
                     </div>

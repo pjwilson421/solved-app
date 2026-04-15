@@ -2,14 +2,15 @@
 
 import { useEffect, useRef } from "react";
 import { IconDots } from "@/components/create-image/icons";
+import { IconAsset } from "@/components/icons/IconAsset";
+import { ICONS } from "@/components/icons/icon-paths";
 import { threeDotsMenuTriggerButtonClassName } from "@/components/ui/three-dots-menu-trigger";
 import { cn } from "@/lib/utils";
 
 const ASSISTANT_MESSAGE_MENU_ITEMS = [
-  "Like",
-  "Save To Files",
-  "Share",
-  "Delete",
+  "Regenerate",
+  "Good response",
+  "Bad response",
 ] as const;
 
 export type AssistantMessageMenuAction =
@@ -19,6 +20,12 @@ const triggerClass = cn(
   "flex h-8 w-8 shrink-0 items-center justify-center",
   threeDotsMenuTriggerButtonClassName,
 );
+
+function assistantMenuIconSrc(action: AssistantMessageMenuAction): string {
+  if (action === "Regenerate") return ICONS.regenerate;
+  if (action === "Good response") return ICONS.thumbsUp;
+  return ICONS.thumbsDown;
+}
 
 type ChatOptionsMenuProps = {
   open: boolean;
@@ -42,8 +49,16 @@ export function ChatOptionsMenu({
     function handleMouseDown(e: MouseEvent) {
       if (!rootRef.current?.contains(e.target as Node)) onOpenChange(false);
     }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key !== "Escape") return;
+      onOpenChange(false);
+    }
     document.addEventListener("mousedown", handleMouseDown);
-    return () => document.removeEventListener("mousedown", handleMouseDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [open, onOpenChange]);
 
   return (
@@ -78,7 +93,12 @@ export function ChatOptionsMenu({
                   onOpenChange(false);
                 }}
               >
-                {label}
+                <IconAsset
+                  src={assistantMenuIconSrc(label)}
+                  size={14}
+                  className="mr-2.5"
+                />
+                <span>{label}</span>
               </button>
             ))}
           </div>

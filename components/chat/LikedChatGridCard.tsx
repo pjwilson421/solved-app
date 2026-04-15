@@ -5,6 +5,22 @@ import { IconAsset } from "@/components/icons/IconAsset";
 import { ICONS } from "@/components/icons/icon-paths";
 import { likedChatTitle, type LikedChatRecord } from "./liked-chats-storage";
 
+function ChatPinnedIcon() {
+  return (
+    <svg
+      className="h-3.5 w-3.5 shrink-0 text-white/70"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M8 3h8v1.5l-1.5 2v4.5l2 1.5V14h-3.5L12 21l-1-7H7.5v-1.5l2-1.5V6.5L8 4.5V3Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 function formatSavedAt(iso: string) {
   try {
     return new Date(iso).toLocaleDateString(undefined, {
@@ -19,13 +35,11 @@ function formatSavedAt(iso: string) {
 
 type LikedChatGridCardProps = {
   record: LikedChatRecord;
-  rowIndex: number;
   onOpen: () => void;
 };
 
 export function LikedChatGridCard({
   record,
-  rowIndex: _rowIndex,
   onOpen,
 }: LikedChatGridCardProps) {
   const title = likedChatTitle(record);
@@ -50,8 +64,9 @@ export function LikedChatGridCard({
         </span>
       </div>
       <div className="min-w-0 px-2.5 pb-2.5 pt-2 sm:px-3 sm:pb-3 sm:pt-2.5">
-        <p className="line-clamp-2 text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]">
-          {title}
+        <p className="line-clamp-2 flex items-center gap-1.5 text-left text-[12px] font-medium leading-snug text-white sm:text-[13px]">
+          {record.pinnedAt ? <ChatPinnedIcon /> : null}
+          <span className="min-w-0 line-clamp-2">{title}</span>
         </p>
         <p className="mt-1 line-clamp-2 text-left text-[10px] text-tx-secondary sm:text-[11px]">
           {meta}

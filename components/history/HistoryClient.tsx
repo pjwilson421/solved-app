@@ -270,13 +270,7 @@ export function HistoryClient({ page = "history" }: HistoryClientProps) {
       (e) => e.title,
       (e) => e.occurredAt.getTime(),
     );
-    /*
-     * History (not Liked): omit `kind === "chat"` entries — they render via
-     * LikedChatEntryRow / LikedChatGridCard, which still use `text-tx-secondary`
-     * (legacy violet). Activity rows use the Files-aligned #315790 metadata.
-     */
-    if (page !== "history") return sorted;
-    return sorted.filter((e) => e.kind !== "chat");
+    return sorted;
   }, [page, sourceEntries, searchQuery, activityFilter, sortOption]);
 
   const grouped = useMemo(
