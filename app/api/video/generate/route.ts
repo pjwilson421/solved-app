@@ -152,7 +152,10 @@ export async function POST(request: Request) {
       }
 
       await sleep(POLL_INTERVAL_MS);
-      operation = await ai.operations.getVideosOperation({ operation });
+
+      operation = await ai.operations.getVideosOperation({
+        operation: operation as any,
+      });
     }
 
     if (operation.error) {
