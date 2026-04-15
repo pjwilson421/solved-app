@@ -1,11 +1,9 @@
 "use client";
 
 import type { MouseEvent, RefObject } from "react";
-import { useMemo } from "react";
+import { useState } from "react";
 import { IconAsset } from "@/components/icons/IconAsset";
 import { ICONS } from "@/components/icons/icon-paths";
-import { IconDots } from "@/components/create-image/icons";
-import { threeDotsMenuTriggerButtonClassName } from "@/components/ui/three-dots-menu-trigger";
 import { cn } from "@/lib/utils";
 import {
   bubbleStackMarginTopClass,
@@ -19,6 +17,10 @@ import {
   CHAT_TIMESTAMP_REVEAL_PX,
   useChatTimestampReveal,
 } from "./use-chat-timestamp-reveal";
+import {
+  ChatOptionsMenu,
+  type AssistantMessageMenuAction,
+} from "./ChatOptionsMenu";
 
 /** Copies full plain text; clipboard API with execCommand fallback for older / non-HTTPS contexts. */
 async function copyMessageText(text: string): Promise<boolean> {
@@ -80,6 +82,10 @@ type ChatMessageThreadProps = {
   /** Mobile SVG: optional quick-action row above the prompt. */
   showSuggestedChips?: boolean;
   onChipClick?: (label: string) => void;
+  onAssistantMessageAction?: (
+    message: ChatThreadMessage,
+    action: AssistantMessageMenuAction,
+  ) => void;
   /** Anchor for auto-scroll to latest message. */
   bottomRef?: RefObject<HTMLDivElement | null>;
 };
@@ -216,17 +222,17 @@ export function ChatMessageThread({
   className,
   showSuggestedChips = false,
   onChipClick,
+  onAssistantMessageAction,
   bottomRef,
 }: ChatMessageThreadProps) {
   const { reveal, horizontalLock, transitionClass, handlers } =
     useChatTimestampReveal();
+  const [openAssistantMenuMessageId, setOpenAssistantMenuMessageId] = useState<
+    string | null
+  >(null);
 
-  const now = useMemo(() => new Date(), [messages.length]);
-
-  const dates = useMemo(
-    () => resolveMessageDates(messages, now),
-    [messages, now],
-  );
+  const now = new Date();
+  const dates = resolveMessageDates(messages, now);
 
   return (
     <div
@@ -275,20 +281,13 @@ export function ChatMessageThread({
                       stackMarginClass={stackMarginClass}
                     />
                     <div className="mt-1.5 flex w-full justify-end max-w-[95%]">
-                      <button
-                        type="button"
-                        aria-label="Assistant message actions"
-                        className={cn(
-                          "flex h-8 w-8 shrink-0 items-center justify-center",
-                          threeDotsMenuTriggerButtonClassName,
-                        )}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
+                      <ChatOptionsMenu
+                        open={openAssistantMenuMessageId === m.id}
+                        onOpenChange={(open) => {
+                          setOpenAssistantMenuMessageId(open ? m.id : null);
                         }}
-                      >
-                        <IconDots className="h-4 w-4" />
-                      </button>
+                        onSelect={(action) => onAssistantMessageAction?.(m, action)}
+                      />
                     </div>
                   </div>
                   <MessageTimestampColumn

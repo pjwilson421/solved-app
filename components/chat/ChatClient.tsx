@@ -43,6 +43,7 @@ import {
   ChatHistoryPanel,
   type ChatHistoryThreadMenuAction,
 } from "./ChatHistoryPanel";
+import type { AssistantMessageMenuAction } from "./ChatOptionsMenu";
 import { chatThreadListHeadline } from "@/lib/app-data/chat-thread";
 import { DesktopThreeColumnShell } from "@/components/shell/DesktopThreeColumnShell";
 import { cn } from "@/lib/utils";
@@ -50,9 +51,6 @@ import { cn } from "@/lib/utils";
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
-
-const INITIAL_ASSISTANT_GREETING =
-  "Hello there, how can I help you today?";
 
 export function ChatClient() {
   const router = useRouter();
@@ -93,17 +91,74 @@ export function ChatClient() {
   );
   const messages: ChatThreadMessage[] = currentThread?.messages ?? [];
 
-  const displayMessages = useMemo<ChatThreadMessage[]>(() => {
-    if (messages.length > 0) return messages;
-    return [
-      {
-        id: "greeting",
-        role: "assistant",
-        text: INITIAL_ASSISTANT_GREETING,
-        sentAt: new Date().toISOString(),
-      },
-    ];
-  }, [messages]);
+  const handleAssistantMessageMenuAction = useCallback(
+    (message: ChatThreadMessage, action: AssistantMessageMenuAction) => {
+      const messageText = message.text?.trim() ?? "";
+      const messageRefId = `${chatSessionId}:assistant:${message.id}`;
+
+      if (action === "Like") {
+        toggleLike(appItemRef.chat(messageRefId));
+        return;
+      }
+
+      if (action === "Save To Files") {
+        if (!messageText) return;
+        const firstLine = messageText.split(/\r?\n/)[0]?.trim() ?? "";
+        const base =
+          firstLine.replace(/[^\w.\-()\s]+/g, "_").trim().slice(0, 60) ||
+          "Assistant_Message";
+        const body = `ASSISTANT: ${messageText}`;
+        const sizeKb = Math.max(1, Math.ceil(new Blob([body]).size / 1024));
+        const dateModified = new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+        updateFileEntries((prev) => [
+          ...prev,
+          {
+            id: uid(),
+            name: `${base}.txt`,
+            kind: "file",
+            typeLabel: "Text",
+            dateModified,
+            sizeLabel: `${sizeKb} KB`,
+            parentId: null,
+          },
+        ]);
+        return;
+      }
+
+      if (action === "Share") {
+        const shareUrl = `${window.location.origin}/chat?openChat=${encodeURIComponent(chatSessionId)}`;
+        const shareText = messageText || "Assistant message";
+        if (typeof navigator !== "undefined" && navigator.share) {
+          void navigator.share({
+            title: "Solved Chat",
+            text: shareText,
+            url: shareUrl,
+          });
+        } else {
+          const fallback = `${shareText}\n\n${shareUrl}`;
+          void navigator.clipboard?.writeText?.(fallback);
+        }
+        return;
+      }
+
+      if (action === "Delete") {
+        if (!currentThread) return;
+        const nextMessages = currentThread.messages.filter((m) => m.id !== message.id);
+        upsertChatThreadSnapshot(chatSessionId, nextMessages);
+      }
+    },
+    [
+      chatSessionId,
+      currentThread,
+      toggleLike,
+      updateFileEntries,
+      upsertChatThreadSnapshot,
+    ],
+  );
 
   useEffect(() => {
     if (searchParams.get("new") === "1") {
@@ -442,9 +497,10 @@ export function ChatClient() {
                     }}
                   >
                     <ChatMessageThread
-                      messages={displayMessages}
+                      messages={messages}
                       showSuggestedChips={false}
                       onChipClick={handleChip}
+                      onAssistantMessageAction={handleAssistantMessageMenuAction}
                       bottomRef={messagesEndDesktopRef}
                     />
                   </div>
@@ -489,9 +545,10 @@ export function ChatClient() {
             >
               <div className="w-full min-w-0">
                 <ChatMessageThread
-                  messages={displayMessages}
+                  messages={messages}
                   showSuggestedChips={false}
                   onChipClick={handleChip}
+                  onAssistantMessageAction={handleAssistantMessageMenuAction}
                   bottomRef={messagesEndMobileRef}
                 />
               </div>

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export function PromptBarShell({
   children,
   className,
-  variant: _variant = "desktop",
+  variant = "desktop",
 }: {
   children: ReactNode;
   className?: string;
@@ -15,7 +15,8 @@ export function PromptBarShell({
     <div
       suppressHydrationWarning
       className={cn(
-        "relative z-[1] flex h-[76px] w-full shrink-0 items-center overflow-visible rounded-full bg-[#07195b] px-[23px] pointer-events-auto",
+        "relative z-[1] flex h-[76px] w-full shrink-0 items-center rounded-full bg-[#07195b] px-[23px] pointer-events-auto",
+        variant === "desktop" ? "overflow-hidden" : "overflow-visible",
         className,
       )}
     >

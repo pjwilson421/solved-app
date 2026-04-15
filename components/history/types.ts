@@ -3,6 +3,8 @@ export type HistoryActivityKind = "image" | "video" | "editor" | "chat";
 export type ActivityHistoryEntry = {
   id: string;
   kind: HistoryActivityKind;
+  /** Storage-friendly media type mirror (for compatibility with external/history payloads). */
+  type?: "image" | "video" | "editor" | "chat";
   /** Primary label, e.g. "Generated Image", "Edited Image". */
   title: string;
   /** Secondary line: prompt or project snippet. */
@@ -12,8 +14,14 @@ export type ActivityHistoryEntry = {
   promptText?: string;
   /** Thumbnail for History grid/list (generated images). */
   thumbnailUrl?: string;
+  /** Primary image URL (typically mirrors `thumbnailUrl` for generated image rows). */
+  imageUrl?: string;
   /** All variation URLs for restoring Create Image preview. */
   imageUrls?: string[];
+  /** Create Image generation setting snapshot. */
+  aspectRatio?: "16:9" | "1:1" | "4:5" | "9:16";
+  /** Create Image generation quality snapshot. */
+  resolution?: "1K" | "4K" | "6K" | "8K";
   /** Primary video URL for generated video (Create Video restore / playback). */
   videoUrl?: string;
   /** Rows from Create Image / Create Video / Image Editor (sidebar filtering). */

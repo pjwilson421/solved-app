@@ -209,7 +209,7 @@ body {
 
 /* Firefox */
 * {
-  scrollbar-color: #07c4ff transparent;
+  scrollbar-color: #22c55e transparent;
   scrollbar-width: auto;
 }
 
@@ -224,16 +224,16 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #07c4ff;
+  background-color: #22c55e;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #06b4ef;
+  background-color: #16a34a;
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background-color: #059fe0;
+  background-color: #15803d;
 }
 
 /* Templates Strip: single horizontal scrollbar with #07195b thumb, persistent visibility */
@@ -246,18 +246,18 @@ body {
   border-radius: 10px;
 }
 .templates-strip-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #07195b;
+  background-color: #22c55e;
   border-radius: 10px;
   min-width: 40px;
 }
 .templates-strip-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #0a256e;
+  background-color: #16a34a;
 }
 
 /* Firefox */
 .templates-strip-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #07195b rgba(7, 25, 91, 0.4);
+  scrollbar-color: #22c55e rgba(7, 25, 91, 0.4);
 }
 
 /* Hide native scrollbar; overflow-x/y scroll still works (e.g. Create Image templates row). */

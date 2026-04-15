@@ -9,7 +9,6 @@ import {
   historyPanelRailTitleRowClassName,
   historyPanelRailTitleSurfaceClassName,
   historyPanelRailTitleToggleLabelClassName,
-  historyPanelRailListRowInsetClassName,
   historyPanelRailRowActionsTriggerButtonClassName,
   historyPanelRightRailUnifiedShellClassName,
   historyPanelRightRailUnifiedShellCollapsedClassName,
@@ -171,7 +170,7 @@ export function ChatHistoryPanel({
     );
   }, [threads]);
 
-  const rowPad = historyPanelRailListRowInsetClassName;
+  const rowPad = "px-1";
 
   const handlePickChat = useCallback(
     (id: string) => {
@@ -182,8 +181,8 @@ export function ChatHistoryPanel({
     [closeActionsMenu, onSelectChat],
   );
 
-  const titleButtonClass =
-    "group min-w-0 flex-1 truncate text-left text-[11px] leading-[18px] text-white transition-colors duration-150";
+  const titleTextClass =
+    "min-w-0 truncate text-left text-[11px] leading-[18px] text-white";
 
   const listContent =
     sortedThreads.length === 0 ? (
@@ -207,20 +206,31 @@ export function ChatHistoryPanel({
               rowPad,
             )}
           >
-            <div className="flex w-full min-w-0 items-start justify-between gap-0">
+            <div
+              role="option"
+              aria-selected={selected ? "true" : undefined}
+              tabIndex={0}
+              onClick={() => handlePickChat(t.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handlePickChat(t.id);
+                }
+              }}
+              className={cn(
+                "flex w-full min-w-0 cursor-pointer items-start justify-between gap-0 rounded-full px-3 py-2 transition-colors duration-150",
+                selected ? "bg-[#0C1E6A]" : "bg-transparent hover:bg-[#0C1E6A]",
+              )}
+            >
               <div className="min-w-0 flex-1">
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={selected ? "true" : undefined}
-                  onClick={() => handlePickChat(t.id)}
+                <p
                   className={cn(
-                    titleButtonClass,
+                    titleTextClass,
                     "truncate overflow-hidden whitespace-nowrap text-ellipsis",
                   )}
                 >
                   {chatHistoryTitlePreview(t)}
-                </button>
+                </p>
                 <p className="mt-0.5 truncate text-[10px] leading-[14px] text-white/60">
                   {chatHistoryTimestampLabel(t.savedAt)}
                 </p>

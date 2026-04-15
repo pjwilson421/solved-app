@@ -23,6 +23,27 @@ const ORIGINS: NonNullable<ActivityHistoryEntry["origin"]>[] = [
   "image-editor",
 ];
 
+const TYPES: NonNullable<ActivityHistoryEntry["type"]>[] = [
+  "image",
+  "video",
+  "editor",
+  "chat",
+];
+
+const ASPECT_RATIOS: NonNullable<ActivityHistoryEntry["aspectRatio"]>[] = [
+  "16:9",
+  "1:1",
+  "4:5",
+  "9:16",
+];
+
+const RESOLUTIONS: NonNullable<ActivityHistoryEntry["resolution"]>[] = [
+  "1K",
+  "4K",
+  "6K",
+  "8K",
+];
+
 function parseOccurredAt(v: unknown): Date | null {
   if (typeof v === "string" || typeof v === "number") {
     const d = new Date(v);
@@ -75,8 +96,39 @@ function normalizeStoredActivityEntry(
 
   const promptText = optionalString(o.promptText, MAX_PROMPT);
   const thumbnailUrl = optionalUrl(o.thumbnailUrl);
+  const imageUrl = optionalUrl(o.imageUrl);
   const imageUrls = optionalImageUrls(o.imageUrls);
   const videoUrl = optionalUrl(o.videoUrl);
+
+  let type: ActivityHistoryEntry["type"];
+  if (
+    typeof o.type === "string" &&
+    TYPES.includes(o.type as (typeof TYPES)[number])
+  ) {
+    type = o.type as ActivityHistoryEntry["type"];
+  } else {
+    type = undefined;
+  }
+
+  let aspectRatio: ActivityHistoryEntry["aspectRatio"];
+  if (
+    typeof o.aspectRatio === "string" &&
+    ASPECT_RATIOS.includes(o.aspectRatio as (typeof ASPECT_RATIOS)[number])
+  ) {
+    aspectRatio = o.aspectRatio as ActivityHistoryEntry["aspectRatio"];
+  } else {
+    aspectRatio = undefined;
+  }
+
+  let resolution: ActivityHistoryEntry["resolution"];
+  if (
+    typeof o.resolution === "string" &&
+    RESOLUTIONS.includes(o.resolution as (typeof RESOLUTIONS)[number])
+  ) {
+    resolution = o.resolution as ActivityHistoryEntry["resolution"];
+  } else {
+    resolution = undefined;
+  }
 
   let origin: ActivityHistoryEntry["origin"];
   if (o.origin === undefined || o.origin === null) {
@@ -117,9 +169,13 @@ function normalizeStoredActivityEntry(
     title: o.title,
     subtitle: o.subtitle,
     occurredAt,
+    ...(type ? { type } : {}),
     ...(promptText ? { promptText } : {}),
     ...(thumbnailUrl ? { thumbnailUrl } : {}),
+    ...(imageUrl ? { imageUrl } : {}),
     ...(imageUrls ? { imageUrls } : {}),
+    ...(aspectRatio ? { aspectRatio } : {}),
+    ...(resolution ? { resolution } : {}),
     ...(videoUrl ? { videoUrl } : {}),
     ...(origin ? { origin } : {}),
     ...(sourceFileEntryId ? { sourceFileEntryId } : {}),

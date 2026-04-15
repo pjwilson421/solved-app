@@ -248,12 +248,16 @@ export function CreateImageClient() {
       const activity: ActivityHistoryEntry = {
         id: batchId,
         kind: "image",
+        type: "image",
         title,
         subtitle,
         occurredAt: createdAt,
         promptText,
         thumbnailUrl: urls[0],
+        imageUrl: urls[0],
         imageUrls: urls,
+        aspectRatio,
+        resolution: quality,
         origin: "generated-image",
       };
       updateActivityEntries((prev) => [activity, ...prev]);
