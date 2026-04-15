@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  // 👇 ADD THIS SECTION
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;

@@ -57,15 +57,9 @@ function MobileNavDropdown({
         align === "end" ? "right-0 left-auto" : "left-0 right-auto",
       )}
     >
-      <nav
-        className="flex flex-col px-1.5"
-        aria-label="Main navigation"
-      >
+      <nav className="flex flex-col px-1.5" aria-label="Main navigation">
         {SHELL_NAV_MOBILE_MENU_SECTIONS.map((section, sectionIndex) => (
-          <div
-            key={section.id}
-            className={cn(sectionIndex > 0 && "mt-5")}
-          >
+          <div key={section.id} className={cn(sectionIndex > 0 && "mt-5")}>
             <p
               className={cn(
                 "mb-3 px-4",
@@ -181,7 +175,7 @@ export function Header({
         <MobileNavDropdown
           open={mobileNavOpen}
           onClose={() => setMobileNavOpen(false)}
-          activeMainNav={activeMainNav}
+          activeMainNav={activeMainNav ?? "chat"}
           onNavigate={onMobileNavigate}
           onSettings={onMobileSettings}
           align={dropdownAlign}
