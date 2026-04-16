@@ -25,17 +25,20 @@ import type { ChatThreadRecord } from "@/lib/app-data/chat-thread";
 
 export type ChatHistoryThreadMenuAction =
   | "Like"
+  | "Pin"
   | "Rename"
   | "Delete";
 
 const THREAD_MENU_ITEMS: ChatHistoryThreadMenuAction[] = [
   "Like",
+  "Pin",
   "Rename",
   "Delete",
 ];
 
 function threadMenuIconSrc(action: ChatHistoryThreadMenuAction, liked: boolean): string {
   if (action === "Like") return liked ? ICONS.liked : ICONS.likedOutlined;
+  if (action === "Pin") return ICONS.pin;
   if (action === "Rename") return ICONS.rename;
   return ICONS.delete;
 }

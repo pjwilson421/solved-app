@@ -72,6 +72,8 @@ function mainChatMenuIconSrc(action: MainChatMenuAction, liked: boolean): string
 const CHAT_ASSISTANT_FEEDBACK_STORAGE_KEY =
   "solved-app-chat-assistant-feedback-v1";
 
+const INITIAL_CHAT_SESSION_ID = "chat-session-initial";
+
 type ChatAssistantFeedback = {
   chatId: string;
   messageId: string;
@@ -106,11 +108,7 @@ export function ChatClient() {
   const [mainChatMenuOpen, setMainChatMenuOpen] = useState(false);
   const desktopMainChatMenuRef = useRef<HTMLDivElement>(null);
   const mobileMainChatMenuRef = useRef<HTMLDivElement>(null);
-  const [chatSessionId, setChatSessionId] = useState(() =>
-    typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `chat-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-  );
+  const [chatSessionId, setChatSessionId] = useState(INITIAL_CHAT_SESSION_ID);
 
   const { chatThreads, upsertChatThreadSnapshot, updateChatThreads } =
     useAppData();
@@ -211,15 +209,8 @@ export function ChatClient() {
 
       if (action === "Regenerate") {
         if (isSending) return;
-        const contextMessages = threadMessages.slice(0, targetIndex);
-        const transcriptPayload =
-          contextMessages
-            .map((m) => {
-              const label = m.role === "user" ? "User" : "Assistant";
-              return `${label}: ${m.text ?? ""}`.trim();
-            })
-            .join("\n\n")
-            .trim() || `User: ${promptText || "Please regenerate the last assistant response."}`;
+        if (!promptText) return;
+        const transcriptPayload = `User: ${promptText}`;
 
         setIsSending(true);
         void requestAssistantReply(transcriptPayload)
@@ -278,12 +269,26 @@ export function ChatClient() {
     }
     setChatSessionId(rec.id);
     router.replace("/chat", { scroll: false });
+    return;
   }, [
     createNewChatSessionId,
     openChatId,
     resetComposerForNewChat,
     router,
     searchParams,
+    chatThreads,
+  ]);
+
+  useEffect(() => {
+    if (chatSessionId !== INITIAL_CHAT_SESSION_ID) return;
+    if (chatThreads.length > 0) {
+      setChatSessionId(chatThreads[0].id);
+      return;
+    }
+    setChatSessionId(createNewChatSessionId());
+  }, [
+    chatSessionId,
+    createNewChatSessionId,
     chatThreads,
   ]);
 
@@ -371,6 +376,12 @@ export function ChatClient() {
         return;
       }
 
+      if (action === "Pin") {
+        const currentlyPinned = Boolean(thread.pinnedAt);
+        updateChatThreads((prev) => setChatThreadPinned(prev, threadId, !currentlyPinned));
+        return;
+      }
+
       if (action === "Delete") {
         const shouldDelete =
           typeof window === "undefined"
@@ -403,6 +414,7 @@ export function ChatClient() {
       isLiked,
       resetComposerForNewChat,
       toggleLike,
+      updateChatThreads,
       upsertChatThreadSnapshot,
     ],
   );
