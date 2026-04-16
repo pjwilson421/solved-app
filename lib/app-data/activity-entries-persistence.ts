@@ -49,8 +49,8 @@ const ASPECT_RATIOS: NonNullable<ActivityHistoryEntry["aspectRatio"]>[] = [
 
 const RESOLUTIONS: NonNullable<ActivityHistoryEntry["resolution"]>[] = [
   "1K",
+  "2K",
   "4K",
-  "6K",
   "8K",
 ];
 
@@ -263,11 +263,19 @@ function normalizeStoredActivityEntry(
   }
 
   let resolution: ActivityHistoryEntry["resolution"];
-  if (
-    typeof o.resolution === "string" &&
-    RESOLUTIONS.includes(o.resolution as (typeof RESOLUTIONS)[number])
-  ) {
-    resolution = o.resolution as ActivityHistoryEntry["resolution"];
+  if (typeof o.resolution === "string") {
+    const u = o.resolution.trim().toUpperCase();
+    const mapped: ActivityHistoryEntry["resolution"] | null =
+      u === "6K"
+        ? "4K"
+        : u === "1K" || u === "2K" || u === "4K" || u === "8K"
+          ? u
+          : null;
+    if (mapped && RESOLUTIONS.includes(mapped)) {
+      resolution = mapped;
+    } else {
+      resolution = undefined;
+    }
   } else {
     resolution = undefined;
   }

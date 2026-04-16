@@ -1,6 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type DragEvent,
+  type RefObject,
+} from "react";
 import { cn } from "@/lib/utils";
 import { PromptBarShell } from "@/components/icons/PromptBarShell";
 import { ICONS } from "@/components/icons/icon-paths";
@@ -59,6 +67,34 @@ function PromptBarGenerateArrowIcon({ className }: { className?: string }) {
   );
 }
 
+const REFERENCE_IMAGE_MIME = /^image\/(jpeg|png|webp)$/i;
+
+function dataTransferHasFiles(dt: DataTransfer | null): boolean {
+  if (!dt) return false;
+  return Array.from(dt.types).includes("Files");
+}
+
+/** Matches {@link PromptBar} file input `accept` and parent `handleAddReferences` filters. */
+function isReferenceImageFile(file: File): boolean {
+  return REFERENCE_IMAGE_MIME.test(file.type);
+}
+
+function orderedAcceptedImageFiles(fileList: FileList): File[] {
+  const out: File[] = [];
+  for (let i = 0; i < fileList.length; i++) {
+    const f = fileList.item(i);
+    if (f && isReferenceImageFile(f)) out.push(f);
+  }
+  return out;
+}
+
+function fileListFromFiles(files: File[]): FileList | null {
+  if (files.length === 0) return null;
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  return dt.files;
+}
+
 type PromptBarProps = {
   prompt: string;
   onPromptChange: (v: string) => void;
@@ -104,6 +140,7 @@ export function PromptBar({
   const [attachMenuOpen, setAttachMenuOpen] = useState(false);
   const [filesPanelOpen, setFilesPanelOpen] = useState(false);
   const [selectedCatalogIds, setSelectedCatalogIds] = useState<string[]>([]);
+  const [fileDragActive, setFileDragActive] = useState(false);
   const isDesktop = variant === "desktop";
   const { fileEntries } = useAppData();
 
@@ -248,6 +285,46 @@ export function PromptBar({
       console.error("[PromptBar] Generate action failed:", err);
     });
   };
+
+  const handleFileDragEnterCapture = useCallback((e: DragEvent<HTMLDivElement>) => {
+    if (!dataTransferHasFiles(e.dataTransfer)) return;
+    e.preventDefault();
+  }, []);
+
+  const handleFileDragEnter = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (!dataTransferHasFiles(e.dataTransfer)) return;
+    setFileDragActive(true);
+  }, []);
+
+  const handleFileDragOverCapture = useCallback((e: DragEvent<HTMLDivElement>) => {
+    if (!dataTransferHasFiles(e.dataTransfer)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+  }, []);
+
+  const handleFileDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const next = e.relatedTarget as Node | null;
+    if (next && e.currentTarget.contains(next)) return;
+    setFileDragActive(false);
+  }, []);
+
+  /** Capture so drops on the textarea / controls still hit this handler and the browser does not open the file. */
+  const handleFileDropCapture = useCallback(
+    (e: DragEvent<HTMLDivElement>) => {
+      if (!dataTransferHasFiles(e.dataTransfer)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      setFileDragActive(false);
+      const { files } = e.dataTransfer;
+      if (!files?.length) return;
+      const accepted = orderedAcceptedImageFiles(files);
+      const list = fileListFromFiles(accepted);
+      if (list) onAddReferences(list);
+    },
+    [onAddReferences],
+  );
 
   const makeReferenceId = useCallback((seed: string) => {
     if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -415,10 +492,10 @@ export function PromptBar({
         </button>
       )}
       <div className="relative flex min-h-0 min-w-0 flex-1 items-center self-stretch">
-        {isDesktop && prompt.length === 0 ? (
+        {prompt.length === 0 ? (
           <span
             aria-hidden
-            className="pointer-events-none absolute left-1.5 right-0 top-1/2 -translate-y-1/2 truncate text-[16px] leading-6 text-white/50"
+            className="pointer-events-none absolute left-1.5 right-0 top-1/2 z-0 -translate-y-1/2 truncate text-[16px] font-normal leading-6 tracking-normal text-white/50"
           >
             {placeholder}
           </span>
@@ -441,10 +518,10 @@ export function PromptBar({
           rows={1}
           style={{ minHeight: MIN_TEXTAREA_HEIGHT_PX, height: MIN_TEXTAREA_HEIGHT_PX }}
           className={cn(
-            "block min-w-0 flex-1 self-center resize-none overflow-hidden rounded-none border-0 bg-transparent px-1.5 text-[16px] text-[#ffffff] !text-[#ffffff] caret-[#ffffff] [-webkit-text-fill-color:#ffffff] placeholder:text-white/50 pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0",
-            isDesktop
-              ? "h-full py-0 leading-normal placeholder:opacity-0 placeholder:leading-normal"
-              : "py-2 leading-6 placeholder:opacity-100 placeholder:leading-6",
+            "relative z-[1] m-0 box-border block min-w-0 flex-1 appearance-none self-center text-base font-normal leading-6 tracking-normal",
+            "resize-none overflow-hidden rounded-none border-0 bg-transparent px-1.5 py-0 text-[16px] text-[#ffffff] !text-[#ffffff] caret-[#ffffff] [-webkit-text-fill-color:#ffffff]",
+            "placeholder:text-white/50 placeholder:opacity-0 placeholder:leading-6",
+            "pointer-events-auto cursor-text outline-none focus:outline-none focus:ring-0",
           )}
         />
       </div>
@@ -475,11 +552,19 @@ export function PromptBar({
     ) : null;
 
   return (
-    <div className={cn(className)}>
+    <div
+      className={cn(className)}
+      onDragEnterCapture={handleFileDragEnterCapture}
+      onDragEnter={handleFileDragEnter}
+      onDragOverCapture={handleFileDragOverCapture}
+      onDragLeave={handleFileDragLeave}
+      onDropCapture={handleFileDropCapture}
+    >
       {referenceThumbs}
       <PromptBarShell
         variant={variant}
         allowDesktopOverflowVisible={isDesktop}
+        className={cn(fileDragActive && "ring-2 ring-inset ring-white/40")}
       >
         {controlsRow}
       </PromptBarShell>

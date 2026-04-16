@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Full-filesystem snapshots at repo root (large; restore from folder, not Git)
+backup_snapshot_*/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

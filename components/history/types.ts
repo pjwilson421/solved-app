@@ -26,7 +26,7 @@ export type ActivityHistoryEntry = {
   /** Create Image generation setting snapshot. */
   aspectRatio?: "16:9" | "1:1" | "4:5" | "9:16";
   /** Create Image generation quality snapshot. */
-  resolution?: "1K" | "4K" | "6K" | "8K";
+  resolution?: "1K" | "2K" | "4K" | "8K";
   /** Primary video URL for generated video (Create Video restore / playback). */
   videoUrl?: string;
   /** Rows from Create Image / Create Video / Image Editor (sidebar filtering). */

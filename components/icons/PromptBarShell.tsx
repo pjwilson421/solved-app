@@ -1,5 +1,12 @@
-import type { ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+
+export type PromptBarShellProps = {
+  children: ReactNode;
+  className?: string;
+  variant?: "desktop" | "mobile";
+  allowDesktopOverflowVisible?: boolean;
+} & Omit<ComponentPropsWithoutRef<"div">, "className" | "children">;
 
 /** Flat bar surface; fixed height for pill curvature; content row vertically centered. */
 export function PromptBarShell({
@@ -7,12 +14,8 @@ export function PromptBarShell({
   className,
   variant = "desktop",
   allowDesktopOverflowVisible = false,
-}: {
-  children: ReactNode;
-  className?: string;
-  variant?: "desktop" | "mobile";
-  allowDesktopOverflowVisible?: boolean;
-}) {
+  ...rootProps
+}: PromptBarShellProps) {
   return (
     <div
       suppressHydrationWarning
@@ -25,6 +28,7 @@ export function PromptBarShell({
           : "overflow-visible",
         className,
       )}
+      {...rootProps}
     >
       {children}
     </div>

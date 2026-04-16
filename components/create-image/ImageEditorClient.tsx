@@ -26,7 +26,7 @@ import type {
   Quality,
   ReferenceFile,
 } from "./types";
-import { ASPECT_RATIOS, MOCK_TEMPLATES, QUALITIES } from "./types";
+import { ASPECT_RATIOS, MOCK_TEMPLATES, normalizeQuality } from "./types";
 import { ICONS } from "@/components/icons/icon-paths";
 import type { PreviewMenuEvent } from "./preview-menu-config";
 import { DesktopThreeColumnShell } from "@/components/shell/DesktopThreeColumnShell";
@@ -37,6 +37,7 @@ import { useAppData } from "@/lib/app-data/app-data-context";
 import { useAppItemActions } from "@/lib/app-data/use-app-item-actions";
 import { appItemRef } from "@/lib/app-data/item-ref";
 import {
+  bestFullscreenImageUrlForEntry,
   bestImageUrlForEntry,
   downloadImageFromUrl,
   openImageInNewTab,
@@ -129,11 +130,8 @@ export function ImageEditorClient({
       ) {
         setAspectRatio(pending.aspectRatio as AspectRatio);
       }
-      if (
-        pending.resolution &&
-        QUALITIES.includes(pending.resolution as Quality)
-      ) {
-        setQuality(pending.resolution as Quality);
+      if (pending.resolution) {
+        setQuality(normalizeQuality(pending.resolution));
       }
       return;
     }
@@ -214,6 +212,8 @@ export function ImageEditorClient({
         promptText,
         editPrompt: promptText,
         thumbnailUrl: previewSrc,
+        imageUrl: previewSrc,
+        fullResolutionUrl: previewSrc,
         imageUrls: [previewSrc],
         origin: "image-editor",
         edited: true,
@@ -263,6 +263,10 @@ export function ImageEditorClient({
   const handlePreviewMenu = useCallback(
     (event: PreviewMenuEvent) => {
       const url = editorBestUrl;
+      const downloadSrc =
+        activeHistoryRecord != null
+          ? bestFullscreenImageUrlForEntry(activeHistoryRecord) ?? url
+          : url;
       const at = activeHistoryRecord?.occurredAt ?? previewAt;
 
       switch (event.type) {
@@ -306,14 +310,18 @@ export function ImageEditorClient({
           }
           break;
         case "download":
-          if (url) void downloadImageFromUrl(url, at);
+          if (downloadSrc) void downloadImageFromUrl(downloadSrc, at);
           break;
         case "share":
           if (url) {
             void handleShareTarget(event.target, {
-              imageUrl: url,
-              shareableHttpUrl: pickShareableHttpUrl(activeHistoryRecord, url),
-              offerManualDownload: () => downloadImageFromUrl(url, at),
+              imageUrl: downloadSrc ?? url,
+              shareableHttpUrl: pickShareableHttpUrl(
+                activeHistoryRecord,
+                downloadSrc ?? url,
+              ),
+              offerManualDownload: () =>
+                downloadImageFromUrl(downloadSrc ?? url, at),
             });
           }
           break;

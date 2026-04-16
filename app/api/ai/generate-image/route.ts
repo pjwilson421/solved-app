@@ -1,5 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import sharp from "sharp";
+import {
+  resolveGenerationDimensions,
+  type GenerationResolutionKey,
+} from "@/lib/create-image/generation-dimensions";
 
 const DEFAULT_IMAGE_MODEL = "gemini-2.5-flash-image";
 
@@ -18,44 +23,14 @@ const VALID_ASSET_TYPES = new Set([
 
 const VALID_ASPECT_RATIOS = new Set(["16:9", "1:1", "4:5", "9:16"]);
 
-/** Target pixel dimensions for prompt guidance (Gemini uses imageConfig for actual output tier). */
-const DIMENSION_MAP: Record<
-  string,
-  Record<string, { width: number; height: number }>
-> = {
-  "16:9": {
-    "1K": { width: 1024, height: 576 },
-    "4K": { width: 3840, height: 2160 },
-    "6K": { width: 5760, height: 3240 },
-    "8K": { width: 7680, height: 4320 },
-  },
-  "1:1": {
-    "1K": { width: 1024, height: 1024 },
-    "4K": { width: 4096, height: 4096 },
-    "6K": { width: 6144, height: 6144 },
-    "8K": { width: 8192, height: 8192 },
-  },
-  "4:5": {
-    "1K": { width: 1024, height: 1280 },
-    "4K": { width: 3277, height: 4096 },
-    "6K": { width: 4915, height: 6144 },
-    "8K": { width: 6554, height: 8192 },
-  },
-  "9:16": {
-    "1K": { width: 576, height: 1024 },
-    "4K": { width: 2160, height: 3840 },
-    "6K": { width: 3240, height: 5760 },
-    "8K": { width: 4320, height: 7680 },
-  },
-};
-
-type ResolutionKey = "1K" | "4K" | "6K" | "8K";
+type ResolutionKey = GenerationResolutionKey;
 
 function normalizeResolution(raw: string): ResolutionKey {
   const u = raw.trim().toUpperCase();
   if (u === "1K") return "1K";
+  if (u === "2K") return "2K";
   if (u === "4K") return "4K";
-  if (u === "6K") return "6K";
+  if (u === "6K") return "4K";
   if (u === "8K") return "8K";
   return "4K";
 }
@@ -72,18 +47,56 @@ function normalizeAssetType(raw: string): string {
   return "Standard";
 }
 
-function resolveDimensions(
-  aspectRatio: string,
-  resolution: ResolutionKey,
-): { width: number; height: number } {
-  const byAspect = DIMENSION_MAP[aspectRatio];
-  if (byAspect?.[resolution]) return byAspect[resolution];
-  return DIMENSION_MAP["16:9"][resolution] ?? DIMENSION_MAP["16:9"]["4K"];
+/**
+ * Gemini image models return a tiered raster that may not match our canonical pixel grid.
+ * Resize with `cover` (center crop) so the final file is exactly WxH without non-uniform stretch.
+ */
+async function ensureImagePixelDimensions(
+  base64: string,
+  mime: string,
+  targetWidth: number,
+  targetHeight: number,
+): Promise<{ base64: string; mime: string }> {
+  try {
+    const inputBuffer = Buffer.from(base64, "base64");
+    if (inputBuffer.length === 0) {
+      throw new Error("empty decoded image");
+    }
+    const meta = await sharp(inputBuffer).metadata();
+    const w = meta.width ?? 0;
+    const h = meta.height ?? 0;
+    if (w === targetWidth && h === targetHeight) {
+      return { base64, mime };
+    }
+    console.warn("[api/ai/generate-image] Normalizing model output to canonical pixels", {
+      modelPixels: { width: w, height: h },
+      targetPixels: { width: targetWidth, height: targetHeight },
+    });
+    const outBuffer = await sharp(inputBuffer)
+      .rotate()
+      .resize(targetWidth, targetHeight, {
+        fit: "cover",
+        position: "centre",
+      })
+      .png({ compressionLevel: 6, effort: 4 })
+      .toBuffer();
+    return {
+      base64: outBuffer.toString("base64"),
+      mime: "image/png",
+    };
+  } catch (e) {
+    console.error(
+      "[api/ai/generate-image] Pixel normalize failed; returning raw model image (dimensions may differ)",
+      e,
+    );
+    return { base64, mime };
+  }
 }
 
 /** Gemini `imageConfig.imageSize`: 1K / 2K / 4K — map app qualities to closest tier. */
 function qualityToGeminiImageSize(resolution: ResolutionKey): "1K" | "2K" | "4K" {
   if (resolution === "1K") return "1K";
+  if (resolution === "2K") return "2K";
   if (resolution === "4K") return "4K";
   return "4K";
 }
@@ -125,6 +138,7 @@ function buildGenerationPrompt({
   targetHeight,
   variationIndex,
   variationTotal,
+  referenceImageCount,
 }: {
   userPrompt: string;
   assetType: string;
@@ -134,9 +148,16 @@ function buildGenerationPrompt({
   targetHeight: number;
   variationIndex: number;
   variationTotal: number;
+  referenceImageCount: number;
 }) {
   const assetNarrative = describeAssetTypeForPrompt(assetType);
   const aspectNarrative = describeAspectForPrompt(aspectRatio);
+  const referenceBlock =
+    referenceImageCount > 0
+      ? `
+  - Reference images: The user attached ${referenceImageCount} image(s) in this request. Use them for subject matter, palette, composition, and style unless the written brief clearly conflicts — then prioritize the text.
+`
+      : "";
   const variationBlock =
     variationTotal > 1
       ? `
@@ -153,7 +174,9 @@ function buildGenerationPrompt({
   Generation requirements:
   - Asset type: ${assetType} — ${assetNarrative}
   - Aspect ratio: ${aspectRatio} — ${aspectNarrative}. Frame for this ratio natively (do not show letterboxing or crop guides).
-  - Resolution target: ${resolution} — design detail appropriate for approximately ${targetWidth}×${targetHeight}px output tier.
+  - Output dimensions (mandatory): the final image MUST be exactly ${targetWidth} pixels wide by ${targetHeight} pixels tall — no other width or height. Compose the full frame for this exact raster.
+  - Resolution label: ${resolution} — match detail level appropriate for ${targetWidth}×${targetHeight}px.
+  ${referenceBlock}
   - Composition must be designed correctly for ${aspectRatio}; subject and environment should feel native to that frame, not cropped from another ratio.
 
   High-end, cinematic execution: ultra-detailed, sharp focus, perfect composition.
@@ -258,18 +281,42 @@ function extractInlineImageFromResponse(data: unknown): {
   return null;
 }
 
+const MAX_REFERENCE_IMAGES = 8;
+const MAX_REFERENCE_BASE64_CHARS = 18_000_000;
+
+function parseReferenceImages(raw: unknown): { mimeType: string; data: string }[] {
+  if (!Array.isArray(raw)) return [];
+  const out: { mimeType: string; data: string }[] = [];
+  for (const item of raw) {
+    if (out.length >= MAX_REFERENCE_IMAGES) break;
+    if (!item || typeof item !== "object") continue;
+    const rec = item as Record<string, unknown>;
+    const mimeType =
+      typeof rec.mimeType === "string" ? rec.mimeType.trim() : "";
+    const data =
+      typeof rec.data === "string" ? rec.data.trim().replace(/\s/g, "") : "";
+    if (!mimeType || !data || !/^image\//i.test(mimeType)) continue;
+    if (data.length > MAX_REFERENCE_BASE64_CHARS) continue;
+    out.push({ mimeType, data });
+  }
+  return out;
+}
+
 function parseBodySettings(body: unknown): {
   prompt: string;
   assetType: string;
   aspectRatio: string;
   resolution: ResolutionKey;
   numberOfVariations: number;
+  referenceImages: { mimeType: string; data: string }[];
 } | null {
   if (!body || typeof body !== "object") return null;
   const o = body as Record<string, unknown>;
 
+  const referenceImages = parseReferenceImages(o.referenceImages);
+
   const rawPrompt = typeof o.prompt === "string" ? o.prompt.trim() : "";
-  if (!rawPrompt) return null;
+  if (!rawPrompt && referenceImages.length === 0) return null;
 
   const assetType =
     typeof o.assetType === "string"
@@ -305,6 +352,7 @@ function parseBodySettings(body: unknown): {
     aspectRatio,
     resolution,
     numberOfVariations: n,
+    referenceImages,
   };
 }
 
@@ -313,12 +361,23 @@ async function generateOneImage(params: {
   fullPrompt: string;
   aspectRatio: string;
   geminiImageSize: "1K" | "2K" | "4K";
+  targetWidth: number;
+  targetHeight: number;
+  referenceImages: { mimeType: string; data: string }[];
 }): Promise<string> {
+  const parts: object[] = params.referenceImages.map((img) => ({
+    inlineData: {
+      mimeType: img.mimeType,
+      data: img.data,
+    },
+  }));
+  parts.push({ text: params.fullPrompt });
+
   const res = await fetch(params.apiUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: params.fullPrompt }] }],
+      contents: [{ parts }],
       generationConfig: {
         responseModalities: ["TEXT", "IMAGE"],
         imageConfig: {
@@ -348,7 +407,13 @@ async function generateOneImage(params: {
     throw new Error("No image was returned from Gemini.");
   }
 
-  return `data:${extracted.mime};base64,${extracted.base64}`;
+  const normalized = await ensureImagePixelDimensions(
+    extracted.base64,
+    extracted.mime,
+    params.targetWidth,
+    params.targetHeight,
+  );
+  return `data:${normalized.mime};base64,${normalized.base64}`;
 }
 
 export async function POST(req: Request) {
@@ -367,10 +432,16 @@ export async function POST(req: Request) {
       return Response.json({ error: "Missing or empty prompt" }, { status: 400 });
     }
 
-    const { prompt, assetType, aspectRatio, resolution, numberOfVariations } =
-      parsed;
+    const {
+      prompt,
+      assetType,
+      aspectRatio,
+      resolution,
+      numberOfVariations,
+      referenceImages,
+    } = parsed;
 
-    const { width, height } = resolveDimensions(aspectRatio, resolution);
+    const { width, height } = resolveGenerationDimensions(aspectRatio, resolution);
     const geminiImageSize = qualityToGeminiImageSize(resolution);
 
     console.log("[api/ai/generate-image] Received image generation settings:", {
@@ -379,6 +450,7 @@ export async function POST(req: Request) {
       aspectRatio,
       resolution,
       numberOfVariations,
+      referenceImageCount: referenceImages.length,
     });
     console.log("[api/ai/generate-image] Resolved target dimensions:", {
       width,
@@ -421,12 +493,16 @@ export async function POST(req: Request) {
             targetHeight: height,
             variationIndex,
             variationTotal: numberOfVariations,
+            referenceImageCount: referenceImages.length,
           });
           return generateOneImage({
             apiUrl,
             fullPrompt,
             aspectRatio,
             geminiImageSize,
+            targetWidth: width,
+            targetHeight: height,
+            referenceImages,
           });
         }),
       );

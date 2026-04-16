@@ -22,7 +22,11 @@ import type {
   Quality,
   ReferenceFile,
 } from "./types";
-import { MOCK_TEMPLATES } from "./types";
+import {
+  CREATE_IMAGE_VARIATION_OPTIONS,
+  MOCK_TEMPLATES,
+  normalizeQuality,
+} from "./types";
 import type { PreviewMenuEvent } from "./preview-menu-config";
 import { FixedPromptBarDock } from "./FixedPromptBarDock";
 import { DesktopThreeColumnShell } from "@/components/shell/DesktopThreeColumnShell";
@@ -39,6 +43,7 @@ import {
   downloadImageFromUrl,
   pickShareableHttpUrl,
 } from "@/lib/create-image/media-actions";
+import { encodeReferenceFilesForApi } from "@/lib/create-image/encode-reference-images";
 import {
   writePendingEditorImage,
   type EditorHandoffMode,
@@ -131,6 +136,7 @@ async function fetchGeneratedImages(opts: {
   aspectRatio: AspectRatio;
   resolution: Quality;
   numberOfVariations: number;
+  referenceImages?: { mimeType: string; data: string }[];
 }): Promise<string[]> {
   const {
     prompt,
@@ -138,6 +144,7 @@ async function fetchGeneratedImages(opts: {
     aspectRatio,
     resolution,
     numberOfVariations,
+    referenceImages = [],
   } = opts;
   console.log("Generate request settings:", {
     prompt,
@@ -145,6 +152,7 @@ async function fetchGeneratedImages(opts: {
     aspectRatio,
     resolution,
     numberOfVariations,
+    referenceImageCount: referenceImages.length,
   });
 
   const res = await fetch("/api/ai/generate-image", {
@@ -156,6 +164,7 @@ async function fetchGeneratedImages(opts: {
       aspectRatio,
       resolution,
       numberOfVariations,
+      ...(referenceImages.length > 0 ? { referenceImages } : {}),
     }),
   });
   const data: unknown = await res.json().catch(() => null);
@@ -241,6 +250,11 @@ export function CreateImageClient() {
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
   const [quality, setQuality] = useState<Quality>("4K");
   const [variations, setVariations] = useState(1);
+
+  useEffect(() => {
+    const max = Math.max(...CREATE_IMAGE_VARIATION_OPTIONS);
+    setVariations((v) => Math.min(v, max));
+  }, []);
   const [templateId, setTemplateId] = useState<string | null>(null);
 
   const [previewPrompt, setPreviewPrompt] = useState("");
@@ -385,12 +399,14 @@ export function CreateImageClient() {
       const promptForApi =
         trimmed ||
         "Generate a compelling image based on the attached reference images.";
+      const referenceImages = await encodeReferenceFilesForApi(references);
       const urls = await fetchGeneratedImages({
         prompt: promptForApi,
         assetType: assetContentType,
         aspectRatio,
         resolution: quality,
         numberOfVariations: variations,
+        referenceImages,
       });
       const thumbnailUrls = await Promise.all(
         urls.map((url) => makePersistableThumbnail(url)),
@@ -471,7 +487,7 @@ export function CreateImageClient() {
       setSlotImages(urls);
       setSlotFileIds(fileIdsForImageUrls(fileEntries, urls));
       setDisplayAspectRatio(item.aspectRatio ?? aspectRatio);
-      setDisplayQuality(item.resolution ?? quality);
+      setDisplayQuality(normalizeQuality(item.resolution ?? quality));
       setDisplayVariations(Math.max(1, urls.length));
       setBarPrompt(promptRestore);
     },
@@ -564,6 +580,10 @@ export function CreateImageClient() {
   const handlePreviewMenu = useCallback(
     (e: PreviewMenuEvent) => {
       const url = mainBestUrl;
+      const downloadSrc =
+        activeEntry != null
+          ? bestFullscreenImageUrlForEntry(activeEntry) ?? url
+          : url;
       const at = activeEntry?.occurredAt ?? previewAt;
 
       switch (e.type) {
@@ -584,14 +604,15 @@ export function CreateImageClient() {
           }
           break;
         case "download":
-          if (url) void downloadImageFromUrl(url, at);
+          if (downloadSrc) void downloadImageFromUrl(downloadSrc, at);
           break;
         case "share":
           if (url) {
             void handleShareTarget(e.target, {
-              imageUrl: url,
-              shareableHttpUrl: pickShareableHttpUrl(activeEntry, url),
-              offerManualDownload: () => downloadImageFromUrl(url, at),
+              imageUrl: downloadSrc ?? url,
+              shareableHttpUrl: pickShareableHttpUrl(activeEntry, downloadSrc ?? url),
+              offerManualDownload: () =>
+                downloadImageFromUrl(downloadSrc ?? url, at),
             });
           }
           break;
@@ -649,7 +670,10 @@ export function CreateImageClient() {
     (itemId: string, e: PreviewMenuEvent) => {
       const entry = activityEntries.find((a) => a.id === itemId);
       const url =
-        entry != null ? bestImageUrlForEntry(entry) : undefined;
+        entry != null
+          ? bestFullscreenImageUrlForEntry(entry) ??
+            bestImageUrlForEntry(entry)
+          : undefined;
       if (!entry || !url) return;
 
       switch (e.type) {
@@ -885,6 +909,7 @@ export function CreateImageClient() {
           onQuality={setQuality}
           variations={variations}
           onVariations={setVariations}
+          variationOptions={CREATE_IMAGE_VARIATION_OPTIONS}
           variant={minWidth1280 ? "desktop" : "mobile"}
         />
       </FixedPromptBarDock>

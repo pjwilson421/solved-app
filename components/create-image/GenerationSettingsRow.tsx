@@ -41,6 +41,11 @@ export type GenerationSettingsRowProps = {
   onQuality: (v: Quality) => void;
   variations: number;
   onVariations: (v: number) => void;
+  /**
+   * Variation count choices for the dropdown. Defaults to {@link VARIATION_OPTIONS}.
+   * Create Image passes a shorter list; Chat / Image Editor use the default.
+   */
+  variationOptions?: readonly number[];
   variant?: "desktop" | "mobile";
   className?: string;
   /**
@@ -59,12 +64,14 @@ export function GenerationSettingsRow({
   onQuality,
   variations,
   onVariations,
+  variationOptions = VARIATION_OPTIONS,
   variant = "desktop",
   className,
   imagePagesPillStyle = false,
 }: GenerationSettingsRowProps) {
   const isDesktop = variant === "desktop";
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const variationDenominator = variationOptions[variationOptions.length - 1] ?? 4;
 
   const close = useCallback(() => setOpenMenu(null), []);
   const chevronClassName = imagePagesPillStyle ? "text-white" : undefined;
@@ -142,13 +149,13 @@ export function GenerationSettingsRow({
   const variationsTrigger: ReactNode = (
     <>
       <span className="min-w-0 flex-1 truncate leading-normal tabular-nums">
-        {variations}/4
+        {variations}/{variationDenominator}
       </span>
       <SettingsTriggerChevron className={chevronClassName} />
     </>
   );
 
-  const variationsOptions = VARIATION_OPTIONS.map((n) => (
+  const variationsOptions = variationOptions.map((n) => (
     <SettingsMenuOptionButton
       key={n}
       itemKey={String(n)}
@@ -158,7 +165,9 @@ export function GenerationSettingsRow({
         close();
       }}
     >
-      <span className="min-w-0">{n}/4</span>
+      <span className="min-w-0">
+        {n}/{variationDenominator}
+      </span>
     </SettingsMenuOptionButton>
   ));
 

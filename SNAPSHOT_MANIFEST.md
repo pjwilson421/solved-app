@@ -1,82 +1,94 @@
-# Project snapshot manifest
+# Snapshot manifest
 
-## Snapshot identity
+## Snapshot folder
 
-- **Snapshot folder:** `backup_snapshot_2026_04_16_1240`
-- **Snapshot date/time (local):** 2026-04-16 12:40
-- **Filesystem copy notes:** The backup folder is produced with `rsync` excluding `node_modules/`, `.next/`, common build/cache/output dirs, and all `.git` directories at any depth. All other project files are copied as plain files for restoration.
-- **Nested Git warning:** A root-level `backup_snapshot_2026_04_16_1011/` folder contains an embedded/broken `.git`. Its files are still copied into the new backup, but nested `.git` metadata is excluded so the backup can be created safely. Git staging in the main repo excludes that broken root folder for the same reason.
+- **Name:** `backup_snapshot_2026_04_16_1549`
+- **Created (local):** 2026-04-16 — wall time stamp encoded in folder name (`1549` = HHMM)
+- **UTC reference:** 2026-04-16T21:49:57Z (at snapshot run)
 
-## Current routes / pages
+## What was copied
+
+- Full project tree from repository root into the snapshot folder.
+- **Excluded from copy:** `node_modules/`, `.next/`, `out/`, `build/`, `dist/`, `.vercel/`, `coverage/`, and the destination folder itself (to avoid rsync recursion).
+- **Included:** `app/`, `components/`, `lib/`, `public/`, config files, `package.json`, `package-lock.json`, docs, nested historical folders (e.g. older `project-snapshot-*` / `backup_snapshot-*` that existed in the tree), and **`.env.local` if present** (contains secrets — treat the backup as sensitive).
+
+## Nested `.git` directories
+
+- Some older `backup_snapshot_*` trees under this repo have contained their own `.git` folder (e.g. from prior experiments). Those were copied as-is if present in the source tree. The **main** repo `.git` at the project root is included in the backup when present.
+
+## Restore from filesystem backup
+
+1. Copy the snapshot folder to the desired machine or rename it to your project directory.
+2. From that directory: `npm ci` or `npm install`
+3. Ensure `.env.local` exists (copy from `.env.example` and fill keys, or restore your secrets from a secure store).
+4. `npm run dev` for development, or `npm run build` / `npm start` for production.
+
+## Restore via Git
+
+- **Commit message:** `Snapshot: full app state`
+- **Tag:** `snapshot-2026-04-16-1549`
+- This records the **source tree** at snapshot time. Run `npm install` after checkout. Snapshot folders under `backup_snapshot_*/` are **gitignored** to avoid committing large duplicates; use the filesystem backup folder for a byte-level copy including ignored files.
+
+```bash
+git fetch --tags
+git checkout snapshot-2026-04-16-1549
+npm ci
+```
+
+## Main routes / pages
 
 | Route | Purpose |
-| --- | --- |
+|-------|---------|
 | `/` | Home |
-| `/chat` | Chat workspace |
-| `/create-image` | Image generation workspace |
-| `/create-video` | Video generation workspace |
+| `/chat` | Chat |
+| `/create-image` | Create Image |
+| `/create-video` | Create Video |
 | `/image-editor` | Image editor |
-| `/files` | Files / uploads |
-| `/history` | Unified history |
+| `/files` | Files |
+| `/history` | History |
 | `/liked` | Liked items |
-| `/settings/general` | General settings |
-| `/settings/appearance` | Appearance settings |
-| `/settings/help` | Help / support settings |
+| `/settings/appearance` | Settings |
+| `/settings/general` | Settings |
+| `/settings/help` | Settings |
 
-## Current core features
+## Core features (high level)
 
-- Anthropic-backed chat with persisted client-side threads.
-- Gemini-backed Create Image flow with prompt bar, settings row, preview, history rail, share/download/edit/upscale actions, and fullscreen expand behavior.
-- Create Video generation flow with its own media actions.
-- Image Editor handoff via session storage payloads.
-- Files catalog, unified history, and liked-item systems.
+- **Chat:** docked prompt bar, Claude API (`/api/chat`).
+- **Create Image:** generation settings, Gemini image API (`/api/ai/generate-image`), attachments, drag-and-drop on prompt bar, activity/history integration, dimension map + `sharp` normalization.
+- **Create Video:** prompt bar, video generation API (`/api/video/generate`), Gemini.
+- **Image editor:** handoff from Create Image, tools, history.
+- **Files / history / liked:** app data context, localStorage-backed activity entries (metadata-focused persistence).
+- **Shared UI:** `PromptBar`, `PromptBarShell`, `FixedPromptBarDock`, shell navigation.
 
-## Current UI / design direction
+## Data / storage
 
-- Desktop app shell with left navigation, centered work surface, and right-side history rail.
-- Mobile flow keeps the same creation flow in a stacked single-column layout.
-- Dense dark-theme product UI with docked prompt/settings controls and image-preview-first workflows.
+- **localStorage:** activity entries (`solved-app-activity-entries-v1`), liked keys, pending editor image payload, etc. (see `lib/app-data/`).
+- **No server DB** in-tree for core flows; APIs are stateless aside from env keys.
 
-## Key shared systems
+## API integrations
 
-- `lib/app-navigation.ts` primary shell navigation and settings routing.
-- `lib/app-data/*` shared app data context, storage, and catalog actions.
-- `components/global/GlobalPreviewModal.tsx` shared global preview modal for app-wide preview use.
-- `components/create-image/*` Create Image preview, history, prompt dock, and editor handoff flow.
+- **Google Gemini** — image generation (`generate-image`), video generation; keys via `GEMINI_API_KEY` and aliases listed in `.env.example`.
+- **Anthropic** — chat completions (`ANTHROPIC_API_KEY`).
 
-## Persistence / storage systems
-
-- `localStorage`: `solved-app-activity-entries-v1`
-- `localStorage`: `solved-app-chat-threads-v1`
-- `localStorage`: `solved-app-file-entries-v1`
-- `localStorage`: `solved-app-liked-item-keys-v2`
-- `sessionStorage`: pending image-editor handoff payload
-
-## Important environment variable names
+## Environment variables (names only)
 
 - `GEMINI_API_KEY`
-- `GOOGLE_GENERATIVE_AI_API_KEY`
-- `GOOGLE_AI_API_KEY`
-- `GEMINI_IMAGE_MODEL`
+- `GOOGLE_GENERATIVE_AI_API_KEY` (optional alias read by image route)
+- `GOOGLE_AI_API_KEY` (optional alias read by image route)
+- `GEMINI_IMAGE_MODEL` (optional)
 - `ANTHROPIC_API_KEY`
 
-## Obvious known issues
+See `.env.example` for a template.
 
-- The Create Image fullscreen Expand viewer is still reported as visually incorrect by the user at the time of this snapshot.
-- Earlier typechecking runs reported unrelated `rowIndex` prop issues in history/liked grid components.
-- `.env.local` contains local secrets and is intentionally not committed.
+## Known issues / notes
 
-## Simple restore instructions
+- `next.config.ts` sets `typescript.ignoreBuildErrors: true` (build may skip type validation).
+- Repository may contain large nested `backup_snapshot_*` / `project-snapshot-*` trees from earlier exports; they increase disk usage.
+- Full-repo `tsc` may report issues in those snapshot trees if included in `tsconfig` `include` globs.
 
-1. Restore from files:
-   - Use `backup_snapshot_2026_04_16_1240/`.
-   - Run `npm ci` or `npm install`.
-   - Recreate `.env.local` from `.env.example`.
-   - Run `npm run dev`.
+## Verification checklist
 
-2. Restore from Git:
-   - Checkout commit message `Snapshot: preserve full current app state` or tag `snapshot-2026-04-16-1240`.
-   - Reinstall dependencies and restore `.env.local`.
-
-3. Backup portability:
-   - Generated folders and `.git` metadata are excluded from the filesystem backup; use the Git tag for exact VCS restoration.
+- [x] Filesystem backup folder `backup_snapshot_2026_04_16_1549` created
+- [x] `SNAPSHOT_MANIFEST.md` at repo root
+- [x] `.env.example` at repo root
+- [x] `.gitignore` updated to ignore `backup_snapshot_*/` (Git commit tracks source, not duplicate snapshot blobs)
