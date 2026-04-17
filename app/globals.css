@@ -301,9 +301,7 @@ body {
 .ui-stroke-free .image-editor-tool-btn {
   -webkit-appearance: none;
   appearance: none;
-  transition:
-    background-color 150ms ease-out,
-    color 150ms ease-out;
+  /* `transition-*` lives on the component (Tailwind) so opacity hover can animate cleanly. */
 }
 .ui-stroke-free .image-editor-tool-btn:not([data-active-visual]),
 .ui-stroke-free .image-editor-tool-btn[data-active-visual],

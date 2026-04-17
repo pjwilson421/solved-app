@@ -137,6 +137,8 @@ const toolBtnLayout = cn(
   "flex min-h-[38px] min-w-0 shrink-0 items-center justify-center gap-2 rounded-full",
   "appearance-none pl-2.5 pr-3 text-[11px] font-medium leading-none text-inherit",
   "focus-visible:outline-none focus-visible:ring-0",
+  "opacity-100 transition-[background-color,color,opacity] duration-200 ease-in-out",
+  "[@media(hover:hover)_and_(pointer:fine)]:hover:opacity-70",
 );
 
 type ImageEditorToolStripProps = {
