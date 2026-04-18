@@ -1,0 +1,347 @@
+@import "tailwindcss";
+
+/*
+ * Centralized blue system — all UI colors flow from :root.
+ * Tailwind utilities via @theme inline (bg-app-bg, text-tx-primary, border-edge-subtle, …).
+ */
+:root {
+  /*
+   * Desktop 3-column shell: symmetric horizontal inset from the viewport to the outer edges
+   * of the left/right 300px rails. Center column stays flex-1 between them (true geometric center).
+   */
+  --desktop-shell-viewport-gutter-x: 0px;
+  /*
+   * Horizontal padding inside each 300px side rail (nav card + history/file panels).
+   * Must match Tailwind `px-5` (1.25rem) — used by Sidebar + `historyPanelRailInnerClassName`.
+   */
+  --desktop-side-rail-inner-gutter-x: 1.25rem;
+  /*
+   * Fixed prompt dock `bottom` + side-rail `padding-bottom`.
+   * Matches main shell horizontal rhythm: `mx-4` (1rem) default, `sm:px-8` / dock geometry pad (2rem) ≥sm,
+   * rail inner gutter (1.25rem) at xl+.
+   */
+  --prompt-dock-viewport-bottom: 1rem;
+
+  --app-bg: #060819;
+  /* Sidebar rail card, prompt bar shell (`PromptBarShell`), and other panel surfaces */
+  --panel-bg: #07195b;
+  --primary: #3ABEFF;
+
+  --brand: #3ABEFF;
+  --ix-hover: rgba(58, 190, 255, 0.08);
+  --ix-selected: rgba(58, 190, 255, 0.14);
+  --ix-pressed: rgba(58, 190, 255, 0.20);
+
+  --panel-hover: #0a256e;
+  --panel-pressed: #082050;
+  --border-subtle: rgba(0, 144, 216, 0.22);
+  --text-primary: #ffffff;
+  --text-secondary: #b9c2ff;
+  --text-muted: #7a8ad4;
+  --surface-card: #0b1f6f;
+
+  /*
+   * Deep navy fills: right history / file-info rail, sidebar selected pill, compact icon buttons,
+   * Files toolbar, sort menus (`bg-rail-navy` / `ring-offset-rail-navy`, …).
+   */
+  --rail-navy: #081030;
+
+  --primary-hover: #31A2D9;
+  --primary-active: #2C8FBF;
+  --primary-soft: #e6f4fb;
+
+  /* Aliases for body / legacy */
+  --background: var(--app-bg);
+  --foreground: var(--text-primary);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --prompt-dock-viewport-bottom: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --prompt-dock-viewport-bottom: var(--desktop-side-rail-inner-gutter-x);
+  }
+}
+
+@theme inline {
+  --color-app-bg: var(--app-bg);
+  --color-panel-bg: var(--panel-bg);
+  --color-panel-hover: var(--panel-hover);
+  --color-panel-pressed: var(--panel-pressed);
+  --color-surface-card: var(--surface-card);
+  --color-rail-navy: var(--rail-navy);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+
+  --color-brand: var(--brand);
+  --color-ix-hover: var(--ix-hover);
+  --color-ix-selected: var(--ix-selected);
+  --color-ix-pressed: var(--ix-pressed);
+
+  --color-tx-primary: var(--text-primary);
+  --color-tx-secondary: var(--text-secondary);
+  --color-tx-muted: var(--text-muted);
+
+  --color-edge-subtle: var(--border-subtle);
+
+  --color-background: var(--app-bg);
+  --color-foreground: var(--text-primary);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--app-bg);
+  color: var(--text-primary);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Header fire emoji — drift + opacity flicker only (no drop-shadow glow) */
+@keyframes header-fire-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 1.5px, 0) scale(1) rotate(-2deg);
+  }
+  25% {
+    transform: translate3d(1.5px, -2px, 0) scale(1.1) rotate(1.5deg);
+  }
+  50% {
+    transform: translate3d(-1px, -3.5px, 0) scale(1.06) rotate(-1deg);
+  }
+  75% {
+    transform: translate3d(-1.5px, -1px, 0) scale(1.12) rotate(2deg);
+  }
+}
+
+@keyframes header-fire-flicker {
+  0%,
+  100% {
+    opacity: 0.88;
+  }
+  7% {
+    opacity: 1;
+  }
+  11% {
+    opacity: 0.72;
+  }
+  18% {
+    opacity: 0.96;
+  }
+  24% {
+    opacity: 0.8;
+  }
+  31% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 0.85;
+  }
+  44% {
+    opacity: 0.94;
+  }
+  52% {
+    opacity: 0.76;
+  }
+  58% {
+    opacity: 1;
+  }
+  65% {
+    opacity: 0.82;
+  }
+  72% {
+    opacity: 0.98;
+  }
+  80% {
+    opacity: 0.79;
+  }
+  88% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.9;
+  }
+}
+
+.animate-header-fire {
+  animation:
+    header-fire-drift 2.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite,
+    header-fire-flicker 1.15s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-header-fire {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Create Image / shared: templates expand below the Templates pill */
+@keyframes create-image-templates-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.create-image-templates-panel-enter {
+  animation: create-image-templates-panel-enter 0.2s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .create-image-templates-panel-enter {
+    animation: none;
+  }
+}
+
+/* ── Global scrollbar color (document / native scroll; no scroll wrapper) ─ */
+
+/* Firefox */
+* {
+  scrollbar-color: #22c55e transparent;
+  scrollbar-width: auto;
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #22c55e;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #16a34a;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: #15803d;
+}
+
+/* Templates Strip: single horizontal scrollbar with #07195b thumb, persistent visibility */
+.templates-strip-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  display: block;
+}
+.templates-strip-scrollbar::-webkit-scrollbar-track {
+  background: rgba(7, 25, 91, 0.4);
+  border-radius: 10px;
+}
+.templates-strip-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #22c55e;
+  border-radius: 10px;
+  min-width: 40px;
+}
+.templates-strip-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #16a34a;
+}
+
+/* Firefox */
+.templates-strip-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #22c55e rgba(7, 25, 91, 0.4);
+}
+
+/* Hide native scrollbar; overflow-x/y scroll still works (e.g. Create Image templates row). */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/*
+ * Global stroke-free UI: no visible borders, outlines, rings, or box-shadows
+ * (Tailwind rings and many “elevation” shadows use box-shadow).
+ * SVG path strokes from <img> icons are unchanged; inline SVG keeps presentation strokes.
+ */
+.ui-stroke-free *,
+.ui-stroke-free *::before,
+.ui-stroke-free *::after {
+  border-width: 0 !important;
+  border-style: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.ui-stroke-free * {
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+  --tw-inset-shadow: 0 0 #0000 !important;
+  --tw-inset-ring-shadow: 0 0 #0000 !important;
+}
+
+/* HistoryPanel thumbnail selection — ui-stroke-free removes all box-shadows/rings globally */
+.ui-stroke-free .history-panel-thumb-frame--selected {
+  box-shadow: inset 0 0 0 2px #08a8f7 !important;
+}
+
+/* Image editor tool strip — solid fill #315790, no ring (below Templates on Image Editor only). */
+.ui-stroke-free .image-editor-tool-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+}
+.ui-stroke-free .image-editor-tool-btn:not([data-active-visual]),
+.ui-stroke-free .image-editor-tool-btn[data-active-visual],
+.ui-stroke-free .image-editor-tool-btn:hover,
+.ui-stroke-free .image-editor-tool-btn:active,
+.ui-stroke-free .image-editor-tool-btn:focus-visible {
+  box-shadow: none !important;
+  background-color: #315790 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+}
+
+/*
+ * Create Image / Image Editor — generation settings above prompt bar (not Templates): filled pill, no ring.
+ */
+.ui-stroke-free button.settings-pill-image-pages,
+.ui-stroke-free button.settings-pill-image-pages:hover,
+.ui-stroke-free button.settings-pill-image-pages:active,
+.ui-stroke-free button.settings-pill-image-pages:focus-visible {
+  box-shadow: none !important;
+  background-color: #07195b !important;
+  color: #ffffff !important;
+}
+.ui-stroke-free button.settings-pill-image-pages img {
+  filter: brightness(0) invert(1);
+}
+
+/*
+ * Create Image / Image Editor — Templates pill: outlined only (no fill); inset ring = #315790 stroke.
+ */
+.ui-stroke-free button.create-image-templates-toggle,
+.ui-stroke-free button.create-image-templates-toggle:hover,
+.ui-stroke-free button.create-image-templates-toggle:active,
+.ui-stroke-free button.create-image-templates-toggle:focus-visible {
+  box-shadow: none !important;
+  background-color: #081030 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+}
+
+/* Editor tool icons: mask + backgroundColor are set inline on the span; inherit `currentColor` from wrapper. */
