@@ -1,0 +1,1012 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 375 812">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
+  <defs>
+    <style>
+      .st0, .st1, .st2, .st3, .st4, .st5, .st6, .st7, .st8, .st9, .st10, .st11, .st12, .st13, .st14, .st15 {
+        isolation: isolate;
+      }
+
+      .st0, .st1, .st2, .st9 {
+        fill: #a1a1aa;
+      }
+
+      .st0, .st2, .st3, .st4, .st5, .st9 {
+        font-size: 10px;
+      }
+
+      .st0, .st10 {
+        font-family: ArialMT, Arial;
+      }
+
+      .st16, .st17, .st18 {
+        fill: #141418;
+      }
+
+      .st17, .st19, .st20, .st21 {
+        stroke-miterlimit: 10;
+      }
+
+      .st17, .st22, .st18, .st20, .st21, .st23, .st24, .st25 {
+        stroke: #2a2a2e;
+      }
+
+      .st26 {
+        filter: url(#outer-glow-1);
+      }
+
+      .st26, .st27, .st28, .st29, .st30, .st31, .st32, .st33, .st34, .st20, .st23 {
+        fill: #18181b;
+      }
+
+      .st27 {
+        filter: url(#outer-glow-9);
+      }
+
+      .st28 {
+        filter: url(#outer-glow-6);
+      }
+
+      .st29 {
+        filter: url(#outer-glow-8);
+      }
+
+      .st30 {
+        filter: url(#outer-glow-7);
+      }
+
+      .st31 {
+        filter: url(#outer-glow-4);
+      }
+
+      .st32 {
+        filter: url(#outer-glow-5);
+      }
+
+      .st33 {
+        filter: url(#outer-glow-2);
+      }
+
+      .st34 {
+        filter: url(#outer-glow-3);
+      }
+
+      .st1, .st3, .st5, .st7, .st8, .st9, .st14 {
+        font-family: Helvetica, Helvetica;
+      }
+
+      .st1, .st35, .st10, .st12, .st13, .st14 {
+        font-size: 11px;
+      }
+
+      .st36 {
+        fill: #222226;
+      }
+
+      .st37, .st21, .st25 {
+        fill: #1e1e22;
+      }
+
+      .st38, .st19, .st39 {
+        fill: #2a2440;
+      }
+
+      .st2 {
+        letter-spacing: .1em;
+      }
+
+      .st2, .st35, .st4, .st6, .st11, .st12, .st13 {
+        font-family: Helvetica-Bold, Helvetica;
+        font-weight: 700;
+      }
+
+      .st40 {
+        fill: #2a2a2e;
+      }
+
+      .st3, .st35, .st41, .st6, .st8, .st10, .st11, .st12, .st13, .st14 {
+        fill: #fff;
+      }
+
+      .st42 {
+        stroke-width: 1.2px;
+      }
+
+      .st42, .st24, .st43 {
+        fill: none;
+      }
+
+      .st42, .st43 {
+        stroke: #0f0f10;
+      }
+
+      .st35, .st13 {
+        letter-spacing: .11em;
+      }
+
+      .st19, .st39 {
+        stroke: #3b3158;
+      }
+
+      .st4, .st44, .st5 {
+        fill: #8a8a93;
+      }
+
+      .st22 {
+        fill: #15161b;
+      }
+
+      .st6 {
+        letter-spacing: .08em;
+      }
+
+      .st6, .st11 {
+        font-size: 13px;
+      }
+
+      .st7 {
+        font-size: 18px;
+      }
+
+      .st7, .st45 {
+        fill: #7c5cff;
+      }
+
+      .st8 {
+        font-size: 12px;
+      }
+
+      .st46 {
+        stroke: #7c5cff;
+        stroke-width: 2px;
+      }
+
+      .st46, .st43 {
+        stroke-linecap: round;
+      }
+
+      .st47 {
+        fill: #15151a;
+      }
+
+      .st43 {
+        stroke-linejoin: round;
+        stroke-width: 1.8px;
+      }
+
+      .st12 {
+        letter-spacing: .09em;
+      }
+
+      .st48, .st15 {
+        fill: #0f0f10;
+      }
+
+      .st49 {
+        display: none;
+      }
+
+      .st15 {
+        opacity: .15;
+      }
+    </style>
+    <filter id="outer-glow-1" x="26" y="688" width="323" height="98" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur" stdDeviation="2"/>
+      <feFlood flood-color="#7c5cff" flood-opacity=".5"/>
+      <feComposite in2="blur" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="outer-glow-2" x="26" y="600" width="323" height="99" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur1" stdDeviation="2"/>
+      <feFlood flood-color="#7c5cff" flood-opacity=".5"/>
+      <feComposite in2="blur1" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="outer-glow-3" x="26" y="588" width="323" height="98" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur2" stdDeviation="2"/>
+      <feFlood flood-color="#7c5cff" flood-opacity=".5"/>
+      <feComposite in2="blur2" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="outer-glow-4" x="26" y="654" width="323" height="98" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur3" stdDeviation="2"/>
+      <feFlood flood-color="#7c5cff" flood-opacity=".5"/>
+      <feComposite in2="blur3" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="outer-glow-5" x="26" y="672" width="323" height="99" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur4" stdDeviation="2"/>
+      <feFlood flood-color="#7c5cff" flood-opacity=".5"/>
+      <feComposite in2="blur4" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="outer-glow-6" x="26" y="696" width="323" height="99" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur5" stdDeviation="2"/>
+      <feFlood flood-color="#7c5cff" flood-opacity=".5"/>
+      <feComposite in2="blur5" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="outer-glow-7" x="26" y="612" width="323" height="98" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur6" stdDeviation="2"/>
+      <feFlood flood-color="#7c5cff" flood-opacity=".5"/>
+      <feComposite in2="blur6" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="outer-glow-8" x="26" y="710" width="323" height="76" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur7" stdDeviation="2"/>
+      <feFlood flood-color="#7c5cff" flood-opacity=".5"/>
+      <feComposite in2="blur7" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="outer-glow-9" x="26" y="710" width="323" height="76" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur8" stdDeviation="2"/>
+      <feFlood flood-color="#7c5cff" flood-opacity=".5"/>
+      <feComposite in2="blur8" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="_x31_-MOBILE-CHAT" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st17" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <path class="st26" d="M337.98,774.99l-.06.06c-3.19,3.17-7.5,4.95-12,4.95H49.02c-4.53,0-8.88-1.81-12.07-5.02h0c-3.17-3.19-4.95-7.5-4.95-12v-51.96c0-4.5,1.78-8.81,4.95-12h0c3.19-3.21,7.54-5.02,12.07-5.02h276.9c4.5,0,8.81,1.78,12,4.95l.06.06c3.21,3.19,5.02,7.54,5.02,12.07v51.84c0,4.53-1.81,8.88-5.02,12.07Z"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">CHAT</tspan></text>
+    <circle class="st25" cx="54" cy="737" r="12"/>
+    <text class="st7" transform="translate(48.5 741.58)"><tspan x="0" y="0">+</tspan></text>
+    <text class="st8" transform="translate(76 741)"><tspan x="0" y="0">Ask anything</tspan></text>
+    <text class="st5" transform="translate(150 136)"><tspan x="0" y="0">Today • 11:42 AM</tspan></text>
+    <rect class="st36" x="32" y="156" width="255" height="86" rx="20" ry="20"/>
+    <text class="st14" transform="translate(48 180)"><tspan x="0" y="0">Here are 3 stronger campaign directions</tspan></text>
+    <text class="st14" transform="translate(48 196)"><tspan x="0" y="0">for your launch. I can keep them</tspan></text>
+    <text class="st14" transform="translate(48 212)"><tspan x="0" y="0">premium, futuristic, and visually</tspan></text>
+    <text class="st14" transform="translate(48 228)"><tspan x="0" y="0">driven if you want.</tspan></text>
+    <rect class="st45" x="105" y="262.75" width="238" height="68" rx="20" ry="20"/>
+    <text class="st14" transform="translate(121 286.75)"><tspan x="0" y="0">Make them more cinematic and</tspan></text>
+    <text class="st14" transform="translate(121 302.75)"><tspan x="0" y="0">fashion-forward. Give me 3 options.</tspan></text>
+    <rect class="st36" x="32" y="350.75" width="276" height="126" rx="20" ry="20"/>
+    <text class="st14" transform="translate(48 374.75)"><tspan x="0" y="0">Absolutely. Here are 5 directions:</tspan></text>
+    <text class="st14" transform="translate(48 392.75)"><tspan x="0" y="0">1. Chrome Pulse — reflective metallic</tspan></text>
+    <text class="st14" transform="translate(48 408.75)"><tspan x="0" y="0">worlds with dramatic light</tspan></text>
+    <text class="st14" transform="translate(48 426.75)"><tspan x="0" y="0">2. Velvet Signal — luxury texture + soft</tspan></text>
+    <text class="st14" transform="translate(48 442.75)"><tspan x="0" y="0">electric blue accents</tspan></text>
+    <text class="st14" transform="translate(48 460.75)"><tspan x="0" y="0">3. Zero Gravity Glamour — outer-space</tspan></text>
+    <circle class="st45" cx="315.61" cy="737" r="18"/>
+    <g>
+      <path class="st41" d="M324.43,734.09h0c.41-.41.41-1.07,0-1.45l-8.09-7.54c-.41-.41-1.07-.41-1.45,0h0c-.41.41-.41,1.07,0,1.45l8.09,7.54c.41.41,1.07.41,1.45,0Z"/>
+      <path class="st41" d="M315.61,749.2h0c-.55,0-1.03-.45-1.03-1.03v-22.34c0-.55.45-1.03,1.03-1.03h0c.55,0,1.03.45,1.03,1.03v22.34c0,.55-.45,1.03-1.03,1.03Z"/>
+      <path class="st41" d="M306.8,734.09h0c-.41-.41-.41-1.07,0-1.45l8.09-7.54c.41-.41,1.07-.41,1.45,0h0c.41.41.41,1.07,0,1.45l-8.09,7.54c-.41.41-1.07.41-1.45,0Z"/>
+    </g>
+    <circle class="st20" cx="42" cy="124.5" r="10"/>
+    <circle class="st21" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <rect class="st41" x="35.73" y="120.05" width="12.42" height="2.01" rx="1" ry="1"/>
+    <path class="st41" d="M42,127.16h-5.26c-.55,0-1-.45-1-1h0c0-.55.45-1,1-1h5.26c.55,0,1,.45,1,1h0c0,.55-.45,1-1,1Z"/>
+    <circle class="st20" cx="333" cy="124.5" r="10"/>
+    <circle class="st41" cx="329" cy="124.5" r="1.2"/>
+    <circle class="st41" cx="333" cy="124.5" r="1.2"/>
+    <circle class="st41" cx="337" cy="124.5" r="1.2"/>
+  </g>
+  <g id="_x32_-MOBILE-CREATE-VIDEO" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st17" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <path class="st33" d="M337.98,687.82l-.06.06c-3.19,3.17-7.5,4.95-12,4.95H49.02c-4.53,0-8.88-1.81-12.07-5.02h0c-3.17-3.19-4.95-7.5-4.95-12v-51.96c0-4.5,1.78-8.81,4.95-12h0c3.19-3.21,7.54-5.02,12.07-5.02h276.9c4.5,0,8.81,1.78,12,4.95l.06.06c3.21,3.19,5.02,7.54,5.02,12.07v51.84c0,4.53-1.81,8.88-5.02,12.07Z"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st11" transform="translate(58 44)"><tspan x="0" y="0">VIDEO</tspan></text>
+    <text class="st13" transform="translate(32 122)"><tspan x="0" y="0">VIDEO PREVIEW</tspan></text>
+    <rect class="st20" x="32" y="136" width="311" height="175"/>
+    <circle class="st21" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <text class="st35" transform="translate(32 390)"><tspan x="0" y="0">FRAMES</tspan></text>
+    <rect class="st21" x="32" y="404" width="150" height="90" rx="10" ry="10"/>
+    <text class="st0" transform="translate(55 454)"><tspan x="0" y="0">Start Frame</tspan></text>
+    <rect class="st21" x="193" y="404" width="150" height="90" rx="10" ry="10"/>
+    <text class="st0" transform="translate(220 454)"><tspan x="0" y="0">End Frame</tspan></text>
+    <text class="st35" transform="translate(32 524)"><tspan x="0" y="0">SETTINGS</tspan></text>
+    <rect class="st19" x="32" y="538" width="90" height="32" rx="8" ry="8"/>
+    <text class="st10" transform="translate(55 558)"><tspan x="0" y="0">16:9</tspan></text>
+    <rect class="st21" x="132" y="538" width="70" height="32" rx="8" ry="8"/>
+    <text class="st10" transform="translate(150 558)"><tspan x="0" y="0">4K</tspan></text>
+    <rect class="st21" x="212" y="538" width="70" height="32" rx="8" ry="8"/>
+    <text class="st10" transform="translate(230 558)"><tspan x="0" y="0">10s</tspan></text>
+    <text class="st35" transform="translate(32 594)"><tspan x="0" y="0">PROMPT</tspan></text>
+    <circle class="st25" cx="54" cy="651" r="12"/>
+    <text class="st7" transform="translate(48.5 655.58)"><tspan x="0" y="0">+</tspan></text>
+    <text class="st8" transform="translate(76 655)"><tspan x="0" y="0">Describe your video</tspan></text>
+    <circle class="st45" cx="315.61" cy="651" r="18"/>
+    <g>
+      <path class="st41" d="M324.43,648.09h0c.41-.41.41-1.07,0-1.45l-8.09-7.54c-.41-.41-1.07-.41-1.45,0h0c-.41.41-.41,1.07,0,1.45l8.09,7.54c.41.41,1.07.41,1.45,0Z"/>
+      <path class="st41" d="M315.61,663.2h0c-.55,0-1.03-.45-1.03-1.03v-22.34c0-.55.45-1.03,1.03-1.03h0c.55,0,1.03.45,1.03,1.03v22.34c0,.55-.45,1.03-1.03,1.03Z"/>
+      <path class="st41" d="M306.8,648.09h0c-.41-.41-.41-1.07,0-1.45l8.09-7.54c.41-.41,1.07-.41,1.45,0h0c.41.41.41,1.07,0,1.45l-8.09,7.54c-.41.41-1.07.41-1.45,0Z"/>
+    </g>
+    <text class="st1" transform="translate(32 334)"><tspan x="0" y="0">Create 16:9 videos from prompts, and</tspan></text>
+    <text class="st1" transform="translate(32 350)"><tspan x="0" y="0">reference images. Preview scales to export size.</tspan></text>
+    <g>
+      <path class="st40" d="M217.34,209.47l-8.22,6.54v14.99l9.49,7.55c1.27,1.01,3.14.11,3.14-1.51v-27.05c0-1.63-1.88-2.53-3.14-1.51l-1.27,1.01Z"/>
+      <path class="st40" d="M198.2,202.45h-39.46c-3.02,0-5.49,2.47-5.49,5.49v31.13c0,3.02,2.45,5.47,5.47,5.47h39.48c3.02,0,5.49-2.47,5.49-5.49v-31.12c0-3.02-2.47-5.49-5.49-5.49h0Z"/>
+    </g>
+  </g>
+  <g id="_x33_-MOBILE-CREATE-IMAGE-16:9" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">CREATE</tspan></text>
+    <circle class="st21" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <rect class="st17" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <text class="st13" transform="translate(32 122)"><tspan x="0" y="0">IMAGE PREVIEW</tspan></text>
+    <rect class="st20" x="32" y="136" width="311" height="175"/>
+    <circle class="st21" cx="314" cy="152" r="10"/>
+    <circle class="st41" cx="310" cy="152" r="1.2"/>
+    <circle class="st41" cx="314" cy="152" r="1.2"/>
+    <circle class="st41" cx="318" cy="152" r="1.2"/>
+    <text class="st1" transform="translate(32 336)"><tspan x="0" y="0">Create high-quality 16:9 images from prompts, templates,</tspan></text>
+    <text class="st1" transform="translate(32 352)"><tspan x="0" y="0">and reference images. Output preview scales to export size.</tspan></text>
+    <line class="st24" x1="32" y1="372" x2="343" y2="372"/>
+    <text class="st13" transform="translate(32 396)"><tspan x="0" y="0">TEMPLATES</tspan></text>
+    <rect class="st21" x="32" y="410" width="92" height="64" rx="10" ry="10"/>
+    <rect class="st21" x="141" y="410" width="92" height="64" rx="10" ry="10"/>
+    <rect class="st21" x="250" y="410" width="92" height="64" rx="10" ry="10"/>
+    <text class="st13" transform="translate(32 504)"><tspan x="0" y="0">SETTINGS</tspan></text>
+    <rect class="st21" x="32" y="518" width="98" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(58 538)"><tspan x="0" y="0">Social</tspan></text>
+    <rect class="st19" x="139" y="518" width="72" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(164 538)"><tspan x="0" y="0">16:9</tspan></text>
+    <rect class="st21" x="220" y="518" width="56" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(240 538)"><tspan x="0" y="0">4K</tspan></text>
+    <rect class="st21" x="285" y="518" width="58" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(307 538)"><tspan x="0" y="0">1/4</tspan></text>
+    <text class="st13" transform="translate(32 580)"><tspan x="0" y="0">PROMPT</tspan></text>
+    <path class="st40" d="M158.86,197.49c-3.09,0-5.62,2.53-5.62,5.63v40.77c0,3.09,2.52,5.63,5.62,5.63h57.27c3.09,0,5.62-2.53,5.62-5.63v-40.77c0-3.09-2.53-5.63-5.62-5.63h-57.27ZM158.86,199.63h57.27c1.95,0,3.48,1.54,3.48,3.49v33.16l-11.29-13.5c-2.15-2.57-5.21-3.85-8.27-3.85s-6.12,1.29-8.26,3.85l-11.27,13.47-4.89-5.79c-1.71-2.02-4.13-3.03-6.55-3.03s-4.83,1.01-6.54,3.03l-7.14,8.46v-35.81c0-1.95,1.53-3.49,3.48-3.49h0ZM181.16,205.9c-4.09,0-7.43,3.34-7.43,7.43s3.34,7.42,7.43,7.42,7.43-3.33,7.43-7.42-3.34-7.43-7.43-7.43ZM181.03,208.04h.13c2.93,0,5.29,2.35,5.29,5.29s-2.36,5.29-5.29,5.29-5.29-2.36-5.29-5.29,2.28-5.21,5.15-5.29h0ZM200.05,221.04c2.45,0,4.89,1.04,6.63,3.11l12.93,15.46v4.28c0,1.95-1.53,3.49-3.48,3.49h-42.13l19.42-23.22c1.73-2.07,4.18-3.11,6.63-3.11h0ZM169.08,229.55c1.81,0,3.62.76,4.91,2.29l5.13,6.08-7.91,9.45h-12.35c-1.95,0-3.48-1.54-3.48-3.49v-1.64l8.78-10.4c1.29-1.53,3.1-2.29,4.91-2.29h0Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <path class="st34" d="M337.98,674.99l-.06.06c-3.19,3.17-7.5,4.95-12,4.95H49.02c-4.53,0-8.88-1.81-12.07-5.02h0c-3.17-3.19-4.95-7.5-4.95-12v-51.96c0-4.5,1.78-8.81,4.95-12h0c3.19-3.21,7.54-5.02,12.07-5.02h276.9c4.5,0,8.81,1.78,12,4.95l.06.06c3.21,3.19,5.02,7.54,5.02,12.07v51.84c0,4.53-1.81,8.88-5.02,12.07Z"/>
+    <circle class="st25" cx="54" cy="638.17" r="12"/>
+    <text class="st7" transform="translate(48.5 642.75)"><tspan x="0" y="0">+</tspan></text>
+    <text class="st8" transform="translate(76 642.17)"><tspan x="0" y="0">Describe your video</tspan></text>
+    <circle class="st45" cx="315.61" cy="638.17" r="18"/>
+    <g>
+      <path class="st41" d="M324.43,635.26h0c.41-.41.41-1.07,0-1.45l-8.09-7.54c-.41-.41-1.07-.41-1.45,0h0c-.41.41-.41,1.07,0,1.45l8.09,7.54c.41.41,1.07.41,1.45,0Z"/>
+      <path class="st41" d="M315.61,650.37h0c-.55,0-1.03-.45-1.03-1.03v-22.34c0-.55.45-1.03,1.03-1.03h0c.55,0,1.03.45,1.03,1.03v22.34c0,.55-.45,1.03-1.03,1.03Z"/>
+      <path class="st41" d="M306.8,635.26h0c-.41-.41-.41-1.07,0-1.45l8.09-7.54c.41-.41,1.07-.41,1.45,0h0c.41.41.41,1.07,0,1.45l-8.09,7.54c-.41.41-1.07.41-1.45,0Z"/>
+    </g>
+  </g>
+  <g id="_x33_-MOBILE-CREATE-IMAGE-1:1" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">CREATE</tspan></text>
+    <circle class="st21" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <rect class="st17" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <text class="st13" transform="translate(32 122)"><tspan x="0" y="0">IMAGE PREVIEW</tspan></text>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <line class="st24" x1="32" y1="438" x2="343" y2="438"/>
+    <text class="st13" transform="translate(32 462)"><tspan x="0" y="0">TEMPLATES</tspan></text>
+    <rect class="st21" x="32" y="476" width="92" height="64" rx="10" ry="10"/>
+    <rect class="st21" x="141" y="476" width="92" height="64" rx="10" ry="10"/>
+    <rect class="st21" x="250" y="476" width="92" height="64" rx="10" ry="10"/>
+    <text class="st13" transform="translate(32 570)"><tspan x="0" y="0">SETTINGS</tspan></text>
+    <rect class="st21" x="32" y="584" width="98" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(58 604)"><tspan x="0" y="0">Social</tspan></text>
+    <rect class="st19" x="139" y="584" width="72" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(164 604)"><tspan x="0" y="0">1:1</tspan></text>
+    <rect class="st21" x="220" y="584" width="56" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(240 604)"><tspan x="0" y="0">4K</tspan></text>
+    <rect class="st21" x="285" y="584" width="58" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(307 604)"><tspan x="0" y="0">1/4</tspan></text>
+    <text class="st13" transform="translate(32 646)"><tspan x="0" y="0">PROMPT</tspan></text>
+    <path class="st31" d="M337.98,740.99l-.06.06c-3.19,3.17-7.5,4.95-12,4.95H49.02c-4.53,0-8.88-1.81-12.07-5.02h0c-3.17-3.19-4.95-7.5-4.95-12v-51.96c0-4.5,1.78-8.81,4.95-12h0c3.19-3.21,7.54-5.02,12.07-5.02h276.9c4.5,0,8.81,1.78,12,4.95l.06.06c3.21,3.19,5.02,7.54,5.02,12.07v51.84c0,4.53-1.81,8.88-5.02,12.07Z"/>
+    <circle class="st25" cx="54" cy="704.17" r="12"/>
+    <text class="st7" transform="translate(48.5 708.75)"><tspan x="0" y="0">+</tspan></text>
+    <text class="st8" transform="translate(76 708.17)"><tspan x="0" y="0">Describe your image</tspan></text>
+    <circle class="st45" cx="315.61" cy="704.17" r="18"/>
+    <g>
+      <path class="st41" d="M324.43,701.26h0c.41-.41.41-1.07,0-1.45l-8.09-7.54c-.41-.41-1.07-.41-1.45,0h0c-.41.41-.41,1.07,0,1.45l8.09,7.54c.41.41,1.07.41,1.45,0Z"/>
+      <path class="st41" d="M315.61,716.37h0c-.55,0-1.03-.45-1.03-1.03v-22.34c0-.55.45-1.03,1.03-1.03h0c.55,0,1.03.45,1.03,1.03v22.34c0,.55-.45,1.03-1.03,1.03Z"/>
+      <path class="st41" d="M306.8,701.26h0c-.41-.41-.41-1.07,0-1.45l8.09-7.54c.41-.41,1.07-.41,1.45,0h0c.41.41.41,1.07,0,1.45l-8.09,7.54c-.41.41-1.07.41-1.45,0Z"/>
+    </g>
+    <rect class="st20" x="67" y="136" width="241" height="241"/>
+    <circle class="st21" cx="279" cy="152" r="10"/>
+    <circle class="st41" cx="275" cy="152" r="1.2"/>
+    <circle class="st41" cx="279" cy="152" r="1.2"/>
+    <circle class="st41" cx="283" cy="152" r="1.2"/>
+    <text class="st1" transform="translate(32 402)"><tspan x="0" y="0">Create 1:1 images for square social posts, product cards,</tspan></text>
+    <text class="st1" transform="translate(32 418)"><tspan x="0" y="0">and clean layouts. Preview scales to final export size.</tspan></text>
+    <path class="st40" d="M158.86,230.49c-3.09,0-5.62,2.53-5.62,5.63v40.77c0,3.09,2.52,5.63,5.62,5.63h57.27c3.09,0,5.62-2.53,5.62-5.63v-40.77c0-3.09-2.53-5.63-5.62-5.63h-57.27ZM158.86,232.63h57.27c1.95,0,3.48,1.54,3.48,3.49v33.16l-11.29-13.5c-2.15-2.57-5.21-3.85-8.27-3.85s-6.12,1.29-8.26,3.85l-11.27,13.47-4.89-5.79c-1.71-2.02-4.13-3.03-6.55-3.03s-4.83,1.01-6.54,3.03l-7.14,8.46v-35.81c0-1.95,1.53-3.49,3.48-3.49h0ZM181.16,238.9c-4.09,0-7.43,3.34-7.43,7.43s3.34,7.42,7.43,7.42,7.43-3.33,7.43-7.42-3.34-7.43-7.43-7.43ZM181.03,241.04h.13c2.93,0,5.29,2.35,5.29,5.29s-2.36,5.29-5.29,5.29-5.29-2.36-5.29-5.29,2.28-5.21,5.15-5.29h0ZM200.05,254.04c2.45,0,4.89,1.04,6.63,3.11l12.93,15.46v4.28c0,1.95-1.53,3.49-3.48,3.49h-42.13l19.42-23.22c1.73-2.07,4.18-3.11,6.63-3.11h0ZM169.08,262.55c1.81,0,3.62.76,4.91,2.29l5.13,6.08-7.91,9.45h-12.35c-1.95,0-3.48-1.54-3.48-3.49v-1.64l8.78-10.4c1.29-1.53,3.1-2.29,4.91-2.29h0Z"/>
+  </g>
+  <g id="_x33_-MOBILE-CREATE-IMAGE-4:5" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">CREATE</tspan></text>
+    <circle class="st21" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <rect class="st17" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <text class="st13" transform="translate(32 122)"><tspan x="0" y="0">IMAGE PREVIEW</tspan></text>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <rect class="st20" x="80" y="136" width="215" height="269"/>
+    <circle class="st21" cx="266" cy="152" r="10"/>
+    <circle class="st41" cx="262" cy="152" r="1.2"/>
+    <circle class="st41" cx="266" cy="152" r="1.2"/>
+    <circle class="st41" cx="270" cy="152" r="1.2"/>
+    <text class="st1" transform="translate(32 430)"><tspan x="0" y="0">Create 4:5 images for portrait social posts, editorial layouts,</tspan></text>
+    <text class="st1" transform="translate(32 446)"><tspan x="0" y="0">and vertical promotional content. Preview scales to export size.</tspan></text>
+    <line class="st24" x1="32" y1="456.35" x2="343" y2="456.35"/>
+    <text class="st13" transform="translate(32 480.35)"><tspan x="0" y="0">TEMPLATES</tspan></text>
+    <rect class="st21" x="32" y="494.35" width="92" height="64" rx="10" ry="10"/>
+    <rect class="st21" x="141" y="494.35" width="92" height="64" rx="10" ry="10"/>
+    <rect class="st21" x="250" y="494.35" width="92" height="64" rx="10" ry="10"/>
+    <text class="st13" transform="translate(32 588.35)"><tspan x="0" y="0">SETTINGS</tspan></text>
+    <rect class="st21" x="32" y="602.35" width="98" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(58 622.35)"><tspan x="0" y="0">Social</tspan></text>
+    <rect class="st19" x="139" y="602.35" width="72" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(164 622.35)"><tspan x="0" y="0">4:5</tspan></text>
+    <rect class="st21" x="220" y="602.35" width="56" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(240 622.35)"><tspan x="0" y="0">4K</tspan></text>
+    <rect class="st21" x="285" y="602.35" width="58" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(307 622.35)"><tspan x="0" y="0">1/4</tspan></text>
+    <text class="st13" transform="translate(32 664.35)"><tspan x="0" y="0">PROMPT</tspan></text>
+    <path class="st32" d="M337.98,759.35l-.06.06c-3.19,3.17-7.5,4.95-12,4.95H49.02c-4.53,0-8.88-1.81-12.07-5.02h0c-3.17-3.19-4.95-7.5-4.95-12v-51.96c0-4.5,1.78-8.81,4.95-12h0c3.19-3.21,7.54-5.02,12.07-5.02h276.9c4.5,0,8.81,1.78,12,4.95l.06.06c3.21,3.19,5.02,7.54,5.02,12.07v51.84c0,4.53-1.81,8.88-5.02,12.07Z"/>
+    <circle class="st25" cx="54" cy="722.52" r="12"/>
+    <text class="st7" transform="translate(48.5 727.1)"><tspan x="0" y="0">+</tspan></text>
+    <text class="st8" transform="translate(76 726.52)"><tspan x="0" y="0">Describe your image</tspan></text>
+    <circle class="st45" cx="315.61" cy="722.52" r="18"/>
+    <g>
+      <path class="st41" d="M324.43,719.61h0c.41-.41.41-1.07,0-1.45l-8.09-7.54c-.41-.41-1.07-.41-1.45,0h0c-.41.41-.41,1.07,0,1.45l8.09,7.54c.41.41,1.07.41,1.45,0Z"/>
+      <path class="st41" d="M315.61,734.73h0c-.55,0-1.03-.45-1.03-1.03v-22.34c0-.55.45-1.03,1.03-1.03h0c.55,0,1.03.45,1.03,1.03v22.34c0,.55-.45,1.03-1.03,1.03Z"/>
+      <path class="st41" d="M306.8,719.61h0c-.41-.41-.41-1.07,0-1.45l8.09-7.54c.41-.41,1.07-.41,1.45,0h0c.41.41.41,1.07,0,1.45l-8.09,7.54c-.41.41-1.07.41-1.45,0Z"/>
+    </g>
+    <path class="st40" d="M158.86,241.17c-3.09,0-5.62,2.53-5.62,5.63v40.77c0,3.09,2.52,5.63,5.62,5.63h57.27c3.09,0,5.62-2.53,5.62-5.63v-40.77c0-3.09-2.53-5.63-5.62-5.63h-57.27ZM158.86,243.31h57.27c1.95,0,3.48,1.54,3.48,3.49v33.16l-11.29-13.5c-2.15-2.57-5.21-3.85-8.27-3.85s-6.12,1.29-8.26,3.85l-11.27,13.47-4.89-5.79c-1.71-2.02-4.13-3.03-6.55-3.03s-4.83,1.01-6.54,3.03l-7.14,8.46v-35.81c0-1.95,1.53-3.49,3.48-3.49h0ZM181.16,249.57c-4.09,0-7.43,3.34-7.43,7.43s3.34,7.42,7.43,7.42,7.43-3.33,7.43-7.42-3.34-7.43-7.43-7.43ZM181.03,251.72h.13c2.93,0,5.29,2.35,5.29,5.29s-2.36,5.29-5.29,5.29-5.29-2.36-5.29-5.29,2.28-5.21,5.15-5.29h0ZM200.05,264.72c2.45,0,4.89,1.04,6.63,3.11l12.93,15.46v4.28c0,1.95-1.53,3.49-3.48,3.49h-42.13l19.42-23.22c1.73-2.07,4.18-3.11,6.63-3.11h0ZM169.08,273.23c1.81,0,3.62.76,4.91,2.29l5.13,6.08-7.91,9.45h-12.35c-1.95,0-3.48-1.54-3.48-3.49v-1.64l8.78-10.4c1.29-1.53,3.1-2.29,4.91-2.29h0Z"/>
+  </g>
+  <g id="_x33_-MOBILE-CREATE-IMAGE-9:16" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">CREATE</tspan></text>
+    <circle class="st21" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <rect class="st17" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <text class="st13" transform="translate(32 122)"><tspan x="0" y="0">IMAGE PREVIEW</tspan></text>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <rect class="st20" x="105" y="136" width="165" height="293"/>
+    <circle class="st21" cx="241" cy="152" r="10"/>
+    <circle class="st41" cx="237" cy="152" r="1.2"/>
+    <circle class="st41" cx="241" cy="152" r="1.2"/>
+    <circle class="st41" cx="245" cy="152" r="1.2"/>
+    <text class="st1" transform="translate(32 454)"><tspan x="0" y="0">Create 9:16 images for portrait social posts, editorial layouts,</tspan></text>
+    <text class="st1" transform="translate(32 470)"><tspan x="0" y="0">and vertical promotional content. Preview scales to export size.</tspan></text>
+    <line class="st24" x1="32" y1="480.35" x2="343" y2="480.35"/>
+    <text class="st13" transform="translate(32 504.35)"><tspan x="0" y="0">TEMPLATES</tspan></text>
+    <rect class="st21" x="32" y="518.35" width="92" height="64" rx="10" ry="10"/>
+    <rect class="st21" x="141" y="518.35" width="92" height="64" rx="10" ry="10"/>
+    <rect class="st21" x="250" y="518.35" width="92" height="64" rx="10" ry="10"/>
+    <text class="st13" transform="translate(32 612.35)"><tspan x="0" y="0">SETTINGS</tspan></text>
+    <rect class="st21" x="32" y="626.35" width="98" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(58 646.35)"><tspan x="0" y="0">Social</tspan></text>
+    <rect class="st19" x="139" y="626.35" width="72" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(164 646.35)"><tspan x="0" y="0">9:16</tspan></text>
+    <rect class="st21" x="220" y="626.35" width="56" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(240 646.35)"><tspan x="0" y="0">4K</tspan></text>
+    <rect class="st21" x="285" y="626.35" width="58" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(307 646.35)"><tspan x="0" y="0">1/4</tspan></text>
+    <text class="st13" transform="translate(32 688.35)"><tspan x="0" y="0">PROMPT</tspan></text>
+    <path class="st28" d="M337.98,783.34l-.06.06c-3.19,3.17-7.5,4.95-12,4.95H49.02c-4.53,0-8.88-1.81-12.07-5.02h0c-3.17-3.19-4.95-7.5-4.95-12v-51.96c0-4.5,1.78-8.81,4.95-12h0c3.19-3.21,7.54-5.02,12.07-5.02h276.9c4.5,0,8.81,1.78,12,4.95l.06.06c3.21,3.19,5.02,7.54,5.02,12.07v51.84c0,4.53-1.81,8.88-5.02,12.07Z"/>
+    <circle class="st25" cx="54" cy="746.52" r="12"/>
+    <text class="st7" transform="translate(48.5 751.1)"><tspan x="0" y="0">+</tspan></text>
+    <text class="st8" transform="translate(76 750.52)"><tspan x="0" y="0">Describe your image</tspan></text>
+    <circle class="st45" cx="315.61" cy="746.52" r="18"/>
+    <g>
+      <path class="st41" d="M324.43,743.61h0c.41-.41.41-1.07,0-1.45l-8.09-7.54c-.41-.41-1.07-.41-1.45,0h0c-.41.41-.41,1.07,0,1.45l8.09,7.54c.41.41,1.07.41,1.45,0Z"/>
+      <path class="st41" d="M315.61,758.73h0c-.55,0-1.03-.45-1.03-1.03v-22.34c0-.55.45-1.03,1.03-1.03h0c.55,0,1.03.45,1.03,1.03v22.34c0,.55-.45,1.03-1.03,1.03Z"/>
+      <path class="st41" d="M306.8,743.61h0c-.41-.41-.41-1.07,0-1.45l8.09-7.54c.41-.41,1.07-.41,1.45,0h0c.41.41.41,1.07,0,1.45l-8.09,7.54c-.41.41-1.07.41-1.45,0Z"/>
+    </g>
+    <path class="st40" d="M158.86,249.84c-3.09,0-5.62,2.53-5.62,5.63v40.77c0,3.09,2.52,5.63,5.62,5.63h57.27c3.09,0,5.62-2.53,5.62-5.63v-40.77c0-3.09-2.53-5.63-5.62-5.63h-57.27ZM158.86,251.98h57.27c1.95,0,3.48,1.54,3.48,3.49v33.16l-11.29-13.5c-2.15-2.57-5.21-3.85-8.27-3.85s-6.12,1.29-8.26,3.85l-11.27,13.47-4.89-5.79c-1.71-2.02-4.13-3.03-6.55-3.03s-4.83,1.01-6.54,3.03l-7.14,8.46v-35.81c0-1.95,1.53-3.49,3.48-3.49h0ZM181.16,258.25c-4.09,0-7.43,3.34-7.43,7.43s3.34,7.42,7.43,7.42,7.43-3.33,7.43-7.42-3.34-7.43-7.43-7.43ZM181.03,260.39h.13c2.93,0,5.29,2.35,5.29,5.29s-2.36,5.29-5.29,5.29-5.29-2.36-5.29-5.29,2.28-5.21,5.15-5.29h0ZM200.05,273.39c2.45,0,4.89,1.04,6.63,3.11l12.93,15.46v4.28c0,1.95-1.53,3.49-3.48,3.49h-42.13l19.42-23.22c1.73-2.07,4.18-3.11,6.63-3.11h0ZM169.08,281.9c1.81,0,3.62.76,4.91,2.29l5.13,6.08-7.91,9.45h-12.35c-1.95,0-3.48-1.54-3.48-3.49v-1.64l8.78-10.4c1.29-1.53,3.1-2.29,4.91-2.29h0Z"/>
+  </g>
+  <g id="_x34_-MOBILE-EDIT-IMAGE" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">EDIT</tspan></text>
+    <circle class="st21" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <rect class="st17" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <text class="st13" transform="translate(32 122)"><tspan x="0" y="0">IMAGE PREVIEW</tspan></text>
+    <rect class="st20" x="32" y="136" width="311" height="175"/>
+    <circle class="st21" cx="314" cy="152" r="10"/>
+    <circle class="st41" cx="310" cy="152" r="1.2"/>
+    <circle class="st41" cx="314" cy="152" r="1.2"/>
+    <circle class="st41" cx="318" cy="152" r="1.2"/>
+    <text class="st13" transform="translate(32 528)"><tspan x="0" y="0">SETTINGS</tspan></text>
+    <rect class="st21" x="32" y="542" width="98" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(58 562)"><tspan x="0" y="0">Social</tspan></text>
+    <rect class="st19" x="139" y="542" width="72" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(164 562)"><tspan x="0" y="0">16:9</tspan></text>
+    <rect class="st21" x="220" y="542" width="56" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(240 562)"><tspan x="0" y="0">4K</tspan></text>
+    <rect class="st21" x="285" y="542" width="58" height="32" rx="8" ry="8"/>
+    <text class="st14" transform="translate(307 562)"><tspan x="0" y="0">1/4</tspan></text>
+    <text class="st13" transform="translate(32 604)"><tspan x="0" y="0">PROMPT</tspan></text>
+    <path class="st40" d="M158.86,197.49c-3.09,0-5.62,2.53-5.62,5.63v40.77c0,3.09,2.52,5.63,5.62,5.63h57.27c3.09,0,5.62-2.53,5.62-5.63v-40.77c0-3.09-2.53-5.63-5.62-5.63h-57.27ZM158.86,199.63h57.27c1.95,0,3.48,1.54,3.48,3.49v33.16l-11.29-13.5c-2.15-2.57-5.21-3.85-8.27-3.85s-6.12,1.29-8.26,3.85l-11.27,13.47-4.89-5.79c-1.71-2.02-4.13-3.03-6.55-3.03s-4.83,1.01-6.54,3.03l-7.14,8.46v-35.81c0-1.95,1.53-3.49,3.48-3.49h0ZM181.16,205.9c-4.09,0-7.43,3.34-7.43,7.43s3.34,7.42,7.43,7.42,7.43-3.33,7.43-7.42-3.34-7.43-7.43-7.43ZM181.03,208.04h.13c2.93,0,5.29,2.35,5.29,5.29s-2.36,5.29-5.29,5.29-5.29-2.36-5.29-5.29,2.28-5.21,5.15-5.29h0ZM200.05,221.04c2.45,0,4.89,1.04,6.63,3.11l12.93,15.46v4.28c0,1.95-1.53,3.49-3.48,3.49h-42.13l19.42-23.22c1.73-2.07,4.18-3.11,6.63-3.11h0ZM169.08,229.55c1.81,0,3.62.76,4.91,2.29l5.13,6.08-7.91,9.45h-12.35c-1.95,0-3.48-1.54-3.48-3.49v-1.64l8.78-10.4c1.29-1.53,3.1-2.29,4.91-2.29h0Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <path class="st30" d="M337.98,698.99l-.06.06c-3.19,3.17-7.5,4.95-12,4.95H49.02c-4.53,0-8.88-1.81-12.07-5.02h0c-3.17-3.19-4.95-7.5-4.95-12v-51.96c0-4.5,1.78-8.81,4.95-12h0c3.19-3.21,7.54-5.02,12.07-5.02h276.9c4.5,0,8.81,1.78,12,4.95l.06.06c3.21,3.19,5.02,7.54,5.02,12.07v51.84c0,4.53-1.81,8.88-5.02,12.07Z"/>
+    <circle class="st25" cx="54" cy="662.17" r="12"/>
+    <text class="st7" transform="translate(48.5 666.75)"><tspan x="0" y="0">+</tspan></text>
+    <text class="st8" transform="translate(76 666.17)"><tspan x="0" y="0">Describe your edits</tspan></text>
+    <circle class="st45" cx="315.61" cy="662.17" r="18"/>
+    <g>
+      <path class="st41" d="M324.43,659.26h0c.41-.41.41-1.07,0-1.45l-8.09-7.54c-.41-.41-1.07-.41-1.45,0h0c-.41.41-.41,1.07,0,1.45l8.09,7.54c.41.41,1.07.41,1.45,0Z"/>
+      <path class="st41" d="M315.61,674.37h0c-.55,0-1.03-.45-1.03-1.03v-22.34c0-.55.45-1.03,1.03-1.03h0c.55,0,1.03.45,1.03,1.03v22.34c0,.55-.45,1.03-1.03,1.03Z"/>
+      <path class="st41" d="M306.8,659.26h0c-.41-.41-.41-1.07,0-1.45l8.09-7.54c.41-.41,1.07-.41,1.45,0h0c.41.41.41,1.07,0,1.45l-8.09,7.54c-.41.41-1.07.41-1.45,0Z"/>
+    </g>
+    <text class="st12" transform="translate(32 336)"><tspan x="0" y="0">FILE INFORMATION</tspan></text>
+    <text class="st1" transform="translate(32 356)"><tspan x="0" y="0">Edit, enhance, regenerate, remove elements,</tspan></text>
+    <text class="st1" transform="translate(32 372)"><tspan x="0" y="0">add content, draw, and update text before export.</tspan></text>
+    <line class="st24" x1="32" y1="390" x2="343" y2="390"/>
+    <text class="st12" transform="translate(32 414)"><tspan x="0" y="0">TOOLS</tspan></text>
+    <rect class="st25" x="32" y="428" width="88" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(62 447)"><tspan x="0" y="0">Add</tspan></text>
+    <rect class="st39" x="128" y="428" width="88" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(152 447)"><tspan x="0" y="0">Enhance</tspan></text>
+    <rect class="st25" x="224" y="428" width="119" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(246 447)"><tspan x="0" y="0">Regenerate</tspan></text>
+    <rect class="st25" x="32" y="468" width="88" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(52 487)"><tspan x="0" y="0">Remove</tspan></text>
+    <rect class="st25" x="128" y="468" width="88" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(159 487)"><tspan x="0" y="0">Text</tspan></text>
+    <rect class="st25" x="224" y="468" width="119" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(269 487)"><tspan x="0" y="0">Draw</tspan></text>
+  </g>
+  <g id="_x35_-MOBILE-FILES-LIST-VIEW" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st18" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <path class="st29" d="M337.98,774.99l-.06.06c-3.19,3.17-7.5,4.95-12,4.95H49.02c-4.53,0-8.88-1.81-12.07-5.02h0c-3.17-3.19-4.95-7.5-4.95-12v-29.96c0-4.5,1.78-8.81,4.95-12h0c3.19-3.21,7.54-5.02,12.07-5.02h276.9c4.5,0,8.81,1.78,12,4.95l.06.06c3.21,3.19,5.02,7.54,5.02,12.07v29.84c0,4.53-1.81,8.88-5.02,12.07Z"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">FILES</tspan></text>
+    <circle class="st21" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <text class="st12" transform="translate(32 122)"><tspan x="0" y="0">ALL FILES</tspan></text>
+    <rect class="st25" x="32" y="136" width="88" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(58 155)"><tspan x="0" y="0">Upload</tspan></text>
+    <rect class="st25" x="128" y="136" width="86" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(154 155)"><tspan x="0" y="0">+ New</tspan></text>
+    <path class="st22" d="M237,136h91c8.28,0,15,6.72,15,15h0c0,8.28-6.72,15-15,15h-91c-8.28,0-15-6.72-15-15h0c0-8.28,6.72-15,15-15Z"/>
+    <text class="st5" transform="translate(248 155)"><tspan x="0" y="0">Search files</tspan></text>
+    <rect class="st39" x="32" y="178" width="74" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(53 196)"><tspan x="0" y="0">List</tspan></text>
+    <rect class="st25" x="114" y="178" width="70" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(137 196)"><tspan x="0" y="0">Grid</tspan></text>
+    <rect class="st25" x="192" y="178" width="74" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(214 196)"><tspan x="0" y="0">Filter</tspan></text>
+    <rect class="st23" x="32" y="220" width="311" height="34" rx="10" ry="10"/>
+    <text class="st4" transform="translate(48 241)"><tspan x="0" y="0">NAME</tspan></text>
+    <text class="st4" transform="translate(235 241)"><tspan x="0" y="0">TYPE</tspan></text>
+    <text class="st4" transform="translate(292 241)"><tspan x="0" y="0">SIZE</tspan></text>
+    <rect class="st40" x="32" y="266" width="311" height="54" rx="10" ry="10"/>
+    <text class="st14" transform="translate(74 289)"><tspan x="0" y="0">Campaign Assets</tspan></text>
+    <text class="st5" transform="translate(74 305)"><tspan x="0" y="0">Mar 28, 2026</tspan></text>
+    <text class="st9" transform="translate(236 297)"><tspan x="0" y="0">Folder</tspan></text>
+    <text class="st9" transform="translate(297 297)"><tspan x="0" y="0">—</tspan></text>
+    <rect class="st16" x="32" y="328" width="311" height="54" rx="10" ry="10"/>
+    <rect class="st44" x="46" y="342" width="14" height="18" rx="2" ry="2"/>
+    <line class="st42" x1="49" y1="347" x2="57" y2="347"/>
+    <line class="st42" x1="49" y1="351" x2="57" y2="351"/>
+    <text class="st14" transform="translate(74 351)"><tspan x="0" y="0">Launch_Concept_01.txt</tspan></text>
+    <text class="st5" transform="translate(74 367)"><tspan x="0" y="0">Mar 28, 2026</tspan></text>
+    <text class="st9" transform="translate(236 359)"><tspan x="0" y="0">Text</tspan></text>
+    <text class="st9" transform="translate(292 359)"><tspan x="0" y="0">14KB</tspan></text>
+    <rect class="st38" x="32" y="390" width="311" height="54" rx="10" ry="10"/>
+    <rect class="st41" x="46" y="404" width="14" height="18" rx="2" ry="2"/>
+    <rect class="st15" x="48" y="406" width="10" height="6"/>
+    <text class="st14" transform="translate(74 413)"><tspan x="0" y="0">Moodboard_A_v3.pdf</tspan></text>
+    <text class="st9" transform="translate(74 429)"><tspan x="0" y="0">Mar 27, 2026</tspan></text>
+    <text class="st3" transform="translate(236 421)"><tspan x="0" y="0">PDF</tspan></text>
+    <text class="st3" transform="translate(289 421)"><tspan x="0" y="0">2.4MB</tspan></text>
+    <rect class="st16" x="32" y="452" width="311" height="54" rx="10" ry="10"/>
+    <text class="st14" transform="translate(74 475)"><tspan x="0" y="0">Hero_Render_Final.png</tspan></text>
+    <text class="st5" transform="translate(74 491)"><tspan x="0" y="0">Mar 26, 2026</tspan></text>
+    <text class="st9" transform="translate(236 483)"><tspan x="0" y="0">Image</tspan></text>
+    <text class="st9" transform="translate(289 483)"><tspan x="0" y="0">8.1MB</tspan></text>
+    <rect class="st16" x="32" y="514" width="311" height="54" rx="10" ry="10"/>
+    <rect class="st44" x="46" y="528" width="14" height="18" rx="2" ry="2"/>
+    <line class="st42" x1="49" y1="533" x2="57" y2="533"/>
+    <line class="st42" x1="49" y1="537" x2="57" y2="537"/>
+    <text class="st14" transform="translate(74 537)"><tspan x="0" y="0">Storyboard_Notes.doc</tspan></text>
+    <text class="st5" transform="translate(74 553)"><tspan x="0" y="0">Mar 25, 2026</tspan></text>
+    <text class="st9" transform="translate(236 545)"><tspan x="0" y="0">Doc</tspan></text>
+    <text class="st9" transform="translate(286 545)"><tspan x="0" y="0">486KB</tspan></text>
+    <rect class="st16" x="32" y="576" width="311" height="54" rx="10" ry="10"/>
+    <path class="st43" d="M44,595h7l2,3h13"/>
+    <text class="st14" transform="translate(74 599)"><tspan x="0" y="0">Source Footage</tspan></text>
+    <text class="st5" transform="translate(74 615)"><tspan x="0" y="0">Mar 24, 2026</tspan></text>
+    <text class="st9" transform="translate(236 607)"><tspan x="0" y="0">Folder</tspan></text>
+    <text class="st9" transform="translate(297 607)"><tspan x="0" y="0">—</tspan></text>
+    <line class="st24" x1="52" y1="630" x2="52" y2="660"/>
+    <line class="st24" x1="52" y1="660" x2="68" y2="660"/>
+    <rect class="st44" x="74" y="646" width="14" height="18" rx="2" ry="2"/>
+    <text class="st14" transform="translate(98 657)"><tspan x="0" y="0">Clip_Select_03.mov</tspan></text>
+    <text class="st5" transform="translate(98 673)"><tspan x="0" y="0">Mar 23, 2026</tspan></text>
+    <text class="st9" transform="translate(236 665)"><tspan x="0" y="0">Video</tspan></text>
+    <text class="st9" transform="translate(282 665)"><tspan x="0" y="0">128MB</tspan></text>
+    <circle class="st25" cx="54" cy="748" r="12"/>
+    <path class="st46" d="M48,748h12M54,742v12"/>
+    <text class="st14" transform="translate(76 744)"><tspan x="0" y="0">Drop files here or click Upload</tspan></text>
+    <text class="st5" transform="translate(76 761)"><tspan x="0" y="0">Supports images, video, PDFs, docs</tspan></text>
+    <path class="st41" d="M59.22,284.04h-6.11c-.13,0-.25-.07-.31-.19l-.76-1.52s-.03-.04-.04-.06c-.02-.03-.04-.06-.07-.08-.02-.02-.05-.04-.08-.05-.02-.01-.05-.04-.08-.04-.04-.01-.07-.01-.11-.02-.02,0-.04-.01-.07-.01h-4.71c-.54.07-.75.52-.75.79v10.27c0,.47.38.84.84.84h12.2c.47,0,.84-.38.84-.84v-8.28c0-.28-.22-.74-.77-.8h-.04.02Z"/>
+    <path class="st41" d="M59.22,594.04h-6.11c-.13,0-.25-.07-.31-.19l-.76-1.52s-.03-.04-.04-.06c-.02-.03-.04-.06-.07-.08-.02-.02-.05-.04-.08-.05-.02-.01-.05-.04-.08-.04-.04-.01-.07-.01-.11-.02-.02,0-.04-.01-.07-.01h-4.71c-.54.07-.75.52-.75.79v10.27c0,.47.38.84.84.84h12.2c.47,0,.84-.38.84-.84v-8.28c0-.28-.22-.74-.77-.8h-.04.02Z"/>
+    <path class="st44" d="M64,465.98c0-1.06-.86-1.92-1.92-1.93h-14.16c-1.06,0-1.92.87-1.92,1.93,0,.13,0,14.01,0,14.05,0,1.06.86,1.92,1.92,1.93h14.16c1.06,0,1.92-.87,1.92-1.93,0-.04,0-13.92,0-14.05ZM57.4,466.88h0c1.31,0,2.36,1.06,2.36,2.36s-1.06,2.36-2.36,2.36-2.36-1.06-2.36-2.36,1.06-2.36,2.36-2.36ZM62.27,478.73c-.01.87-.72,1.57-1.59,1.58h-11.38c-.86-.02-1.56-.71-1.57-1.57v-3.24c0-.13.05-.25.14-.34l3.38-3.38c.25-.25.59-.38.92-.38h.01c.34,0,.68.13.93.39l3.32,3.32,1.13-1.13c.26-.26.6-.39.93-.39h0c.33,0,.67.13.93.38l2.7,2.7c.09.09.14.21.14.34v1.72Z"/>
+    <path d="M84.06,655c0,.3-.16.56-.42.7l-4.54,2.39c-.12.06-.24.09-.37.09-.14,0-.28-.04-.41-.11-.24-.15-.38-.4-.38-.68v-4.78c0-.28.15-.53.38-.68.24-.15.53-.15.78-.02l4.54,2.39c.26.14.42.41.42.7h0Z"/>
+  </g>
+  <g id="_x35_-MOBILE-FILES-GRID-VIEW" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st18" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <path class="st27" d="M337.98,774.99l-.06.06c-3.19,3.17-7.5,4.95-12,4.95H49.02c-4.53,0-8.88-1.81-12.07-5.02h0c-3.17-3.19-4.95-7.5-4.95-12v-29.96c0-4.5,1.78-8.81,4.95-12h0c3.19-3.21,7.54-5.02,12.07-5.02h276.9c4.5,0,8.81,1.78,12,4.95l.06.06c3.21,3.19,5.02,7.54,5.02,12.07v29.84c0,4.53-1.81,8.88-5.02,12.07Z"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">FILES</tspan></text>
+    <circle class="st37" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <text class="st12" transform="translate(32 122)"><tspan x="0" y="0">ALL FILES</tspan></text>
+    <rect class="st25" x="32" y="136" width="88" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(58 155)"><tspan x="0" y="0">Upload</tspan></text>
+    <rect class="st25" x="128" y="136" width="86" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(154 155)"><tspan x="0" y="0">+ New</tspan></text>
+    <path class="st22" d="M237,136h91c8.28,0,15,6.72,15,15h0c0,8.28-6.72,15-15,15h-91c-8.28,0-15-6.72-15-15h0c0-8.28,6.72-15,15-15Z"/>
+    <text class="st5" transform="translate(248 155)"><tspan x="0" y="0">Search files</tspan></text>
+    <rect class="st39" x="32" y="178" width="74" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(53 196)"><tspan x="0" y="0">List</tspan></text>
+    <rect class="st25" x="114" y="178" width="70" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(137 196)"><tspan x="0" y="0">Grid</tspan></text>
+    <rect class="st25" x="192" y="178" width="74" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(214 196)"><tspan x="0" y="0">Filter</tspan></text>
+    <circle class="st25" cx="54" cy="748" r="12"/>
+    <path class="st46" d="M48,748h12M54,742v12"/>
+    <text class="st14" transform="translate(76 744)"><tspan x="0" y="0">Drop files here or click Upload</tspan></text>
+    <text class="st5" transform="translate(76 761)"><tspan x="0" y="0">Supports images, video, PDFs, docs</tspan></text>
+    <rect class="st23" x="32" y="220" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="166" cy="234" r="9"/>
+    <circle class="st41" cx="163" cy="234" r="1.1"/>
+    <circle class="st41" cx="166" cy="234" r="1.1"/>
+    <circle class="st41" cx="169" cy="234" r="1.1"/>
+    <text class="st14" transform="translate(32 352)"><tspan x="0" y="0">Hero_Render.png</tspan></text>
+    <text class="st5" transform="translate(32 368)"><tspan x="0" y="0">Image • 8.1MB</tspan></text>
+    <rect class="st39" x="195" y="220" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="329" cy="234" r="9"/>
+    <circle class="st41" cx="326" cy="234" r="1.1"/>
+    <circle class="st41" cx="329" cy="234" r="1.1"/>
+    <circle class="st41" cx="332" cy="234" r="1.1"/>
+    <text class="st14" transform="translate(195 352)"><tspan x="0" y="0">Moodboard_A_v3.pdf</tspan></text>
+    <text class="st9" transform="translate(195 368)"><tspan x="0" y="0">PDF • 2.4MB</tspan></text>
+    <rect class="st23" x="32" y="390" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="166" cy="404" r="9"/>
+    <circle class="st41" cx="163" cy="404" r="1.1"/>
+    <circle class="st41" cx="166" cy="404" r="1.1"/>
+    <circle class="st41" cx="169" cy="404" r="1.1"/>
+    <text class="st14" transform="translate(32 522)"><tspan x="0" y="0">Campaign_A.mp4</tspan></text>
+    <text class="st5" transform="translate(32 538)"><tspan x="0" y="0">Video • 128MB</tspan></text>
+    <rect class="st23" x="195" y="390" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="329" cy="404" r="9"/>
+    <circle class="st41" cx="326" cy="404" r="1.1"/>
+    <circle class="st41" cx="329" cy="404" r="1.1"/>
+    <circle class="st41" cx="332" cy="404" r="1.1"/>
+    <text class="st14" transform="translate(195 522)"><tspan x="0" y="0">Storyboard.doc</tspan></text>
+    <text class="st5" transform="translate(195 538)"><tspan x="0" y="0">Doc • 486KB</tspan></text>
+    <rect class="st23" x="32" y="560" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="166" cy="574" r="9"/>
+    <circle class="st41" cx="163" cy="574" r="1.1"/>
+    <circle class="st41" cx="166" cy="574" r="1.1"/>
+    <circle class="st41" cx="169" cy="574" r="1.1"/>
+    <text class="st14" transform="translate(32 692)"><tspan x="0" y="0">Source Footage</tspan></text>
+    <text class="st5" transform="translate(32 708)"><tspan x="0" y="0">Folder • —</tspan></text>
+    <rect class="st23" x="195" y="560" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="329" cy="574" r="9"/>
+    <circle class="st41" cx="326" cy="574" r="1.1"/>
+    <circle class="st41" cx="329" cy="574" r="1.1"/>
+    <circle class="st41" cx="332" cy="574" r="1.1"/>
+    <text class="st14" transform="translate(195 692)"><tspan x="0" y="0">Launch_01.txt</tspan></text>
+    <text class="st5" transform="translate(195 708)"><tspan x="0" y="0">Text • 14KB</tspan></text>
+  </g>
+  <g id="_x36_-MOBILE-HISTORY-LIST-VIEW">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">HISTORY</tspan></text>
+    <circle class="st37" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <rect class="st18" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <text class="st12" transform="translate(32 122)"><tspan x="0" y="0">ALL ACTIVITY</tspan></text>
+    <path class="st22" d="M47,136h130c8.28,0,15,6.72,15,15h0c0,8.28-6.72,15-15,15H47c-8.28,0-15-6.72-15-15h0c0-8.28,6.72-15,15-15Z"/>
+    <text class="st5" transform="translate(56 155)"><tspan x="0" y="0">Search history</tspan></text>
+    <rect class="st25" x="201" y="136" width="66" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(221 155)"><tspan x="0" y="0">List</tspan></text>
+    <rect class="st25" x="276" y="136" width="67" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(294 155)"><tspan x="0" y="0">Grid</tspan></text>
+    <text class="st2" transform="translate(32 198)"><tspan x="0" y="0">TODAY</tspan></text>
+    <rect class="st23" x="32" y="212" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="226" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 240)"><tspan x="0" y="0">Generated Image</tspan></text>
+    <text class="st9" transform="translate(122 256)"><tspan x="0" y="0">Luxury watch campaign</tspan></text>
+    <text class="st5" transform="translate(122 272)"><tspan x="0" y="0">Image • 4:32 PM</tspan></text>
+    <circle class="st25" cx="324" cy="232" r="8"/>
+    <circle class="st41" cx="321" cy="232" r="1.1"/>
+    <circle class="st41" cx="324" cy="232" r="1.1"/>
+    <circle class="st41" cx="327" cy="232" r="1.1"/>
+    <rect class="st18" x="32" y="296" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="310" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 324)"><tspan x="0" y="0">Edited Image</tspan></text>
+    <text class="st9" transform="translate(122 340)"><tspan x="0" y="0">Portrait retouch</tspan></text>
+    <text class="st5" transform="translate(122 356)"><tspan x="0" y="0">Editor • 3:10 PM</tspan></text>
+    <circle class="st25" cx="324" cy="316" r="8"/>
+    <circle class="st41" cx="321" cy="316" r="1.1"/>
+    <circle class="st41" cx="324" cy="316" r="1.1"/>
+    <circle class="st41" cx="327" cy="316" r="1.1"/>
+    <text class="st2" transform="translate(32 402)"><tspan x="0" y="0">YESTERDAY</tspan></text>
+    <rect class="st23" x="32" y="416" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="430" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 444)"><tspan x="0" y="0">Generated Video</tspan></text>
+    <text class="st9" transform="translate(122 460)"><tspan x="0" y="0">Car reveal</tspan></text>
+    <text class="st5" transform="translate(122 476)"><tspan x="0" y="0">Video • 6:50 PM</tspan></text>
+    <circle class="st25" cx="324" cy="436" r="8"/>
+    <circle class="st41" cx="321" cy="436" r="1.1"/>
+    <circle class="st41" cx="324" cy="436" r="1.1"/>
+    <circle class="st41" cx="327" cy="436" r="1.1"/>
+    <rect class="st18" x="32" y="500" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="514" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 528)"><tspan x="0" y="0">Generated Image</tspan></text>
+    <text class="st9" transform="translate(122 544)"><tspan x="0" y="0">Editorial poster concept</tspan></text>
+    <text class="st5" transform="translate(122 560)"><tspan x="0" y="0">Image • 1:12 PM</tspan></text>
+    <circle class="st25" cx="324" cy="520" r="8"/>
+    <circle class="st41" cx="321" cy="520" r="1.1"/>
+    <circle class="st41" cx="324" cy="520" r="1.1"/>
+    <circle class="st41" cx="327" cy="520" r="1.1"/>
+    <text class="st2" transform="translate(32 606)"><tspan x="0" y="0">OLDER</tspan></text>
+    <rect class="st23" x="32" y="620" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="634" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 648)"><tspan x="0" y="0">Edited Image</tspan></text>
+    <text class="st9" transform="translate(122 664)"><tspan x="0" y="0">Background cleanup</tspan></text>
+    <text class="st5" transform="translate(122 680)"><tspan x="0" y="0">Editor • Mar 24</tspan></text>
+    <circle class="st25" cx="324" cy="640" r="8"/>
+    <circle class="st41" cx="321" cy="640" r="1.1"/>
+    <circle class="st41" cx="324" cy="640" r="1.1"/>
+    <circle class="st41" cx="327" cy="640" r="1.1"/>
+    <rect class="st22" x="32" y="716" width="311" height="64" rx="18" ry="18"/>
+    <text class="st14" transform="translate(54 744)"><tspan x="0" y="0">Scroll to load more history</tspan></text>
+    <text class="st5" transform="translate(54 761)"><tspan x="0" y="0">Browse previous generations, edits, and outputs</tspan></text>
+  </g>
+  <g id="_x36_-MOBILE-HISTORY-GRID-VIEW" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">HISTORY</tspan></text>
+    <circle class="st37" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <rect class="st18" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <text class="st12" transform="translate(32 122)"><tspan x="0" y="0">ALL ACTIVITY</tspan></text>
+    <path class="st22" d="M47,136h130c8.28,0,15,6.72,15,15h0c0,8.28-6.72,15-15,15H47c-8.28,0-15-6.72-15-15h0c0-8.28,6.72-15,15-15Z"/>
+    <text class="st5" transform="translate(56 155)"><tspan x="0" y="0">Search history</tspan></text>
+    <rect class="st25" x="201" y="136" width="66" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(221 155)"><tspan x="0" y="0">Filter</tspan></text>
+    <rect class="st25" x="276" y="136" width="67" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(294 155)"><tspan x="0" y="0">New</tspan></text>
+    <rect class="st25" x="32" y="178" width="74" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(53 196)"><tspan x="0" y="0">List</tspan></text>
+    <rect class="st39" x="114" y="178" width="70" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(137 196)"><tspan x="0" y="0">Grid</tspan></text>
+    <rect class="st25" x="192" y="178" width="74" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(213 196)"><tspan x="0" y="0">Type</tspan></text>
+    <rect class="st25" x="274" y="178" width="69" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(293 196)"><tspan x="0" y="0">Date</tspan></text>
+    <rect class="st23" x="32" y="220" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="166" cy="234" r="9"/>
+    <circle class="st41" cx="163" cy="234" r="1.1"/>
+    <circle class="st41" cx="166" cy="234" r="1.1"/>
+    <circle class="st41" cx="169" cy="234" r="1.1"/>
+    <text class="st14" transform="translate(32 352)"><tspan x="0" y="0">Luxury watch</tspan></text>
+    <text class="st5" transform="translate(32 368)"><tspan x="0" y="0">Image • Today</tspan></text>
+    <rect class="st39" x="195" y="220" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="329" cy="234" r="9"/>
+    <circle class="st41" cx="326" cy="234" r="1.1"/>
+    <circle class="st41" cx="329" cy="234" r="1.1"/>
+    <circle class="st41" cx="332" cy="234" r="1.1"/>
+    <text class="st14" transform="translate(195 352)"><tspan x="0" y="0">Car reveal</tspan></text>
+    <text class="st9" transform="translate(195 368)"><tspan x="0" y="0">Video • Today</tspan></text>
+    <rect class="st23" x="32" y="390" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="166" cy="404" r="9"/>
+    <circle class="st41" cx="163" cy="404" r="1.1"/>
+    <circle class="st41" cx="166" cy="404" r="1.1"/>
+    <circle class="st41" cx="169" cy="404" r="1.1"/>
+    <text class="st14" transform="translate(32 522)"><tspan x="0" y="0">Portrait retouch</tspan></text>
+    <text class="st5" transform="translate(32 538)"><tspan x="0" y="0">Edit • Yesterday</tspan></text>
+    <rect class="st23" x="195" y="390" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="329" cy="404" r="9"/>
+    <circle class="st41" cx="326" cy="404" r="1.1"/>
+    <circle class="st41" cx="329" cy="404" r="1.1"/>
+    <circle class="st41" cx="332" cy="404" r="1.1"/>
+    <text class="st14" transform="translate(195 522)"><tspan x="0" y="0">Poster concept</tspan></text>
+    <text class="st5" transform="translate(195 538)"><tspan x="0" y="0">Image • Yesterday</tspan></text>
+    <rect class="st23" x="32" y="560" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="166" cy="574" r="9"/>
+    <circle class="st41" cx="163" cy="574" r="1.1"/>
+    <circle class="st41" cx="166" cy="574" r="1.1"/>
+    <circle class="st41" cx="169" cy="574" r="1.1"/>
+    <text class="st14" transform="translate(32 692)"><tspan x="0" y="0">Watch motion</tspan></text>
+    <text class="st5" transform="translate(32 708)"><tspan x="0" y="0">Video • Mar 24</tspan></text>
+    <rect class="st23" x="195" y="560" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="329" cy="574" r="9"/>
+    <circle class="st41" cx="326" cy="574" r="1.1"/>
+    <circle class="st41" cx="329" cy="574" r="1.1"/>
+    <circle class="st41" cx="332" cy="574" r="1.1"/>
+    <text class="st14" transform="translate(195 692)"><tspan x="0" y="0">Cleanup edit</tspan></text>
+    <text class="st5" transform="translate(195 708)"><tspan x="0" y="0">Edit • Mar 23</tspan></text>
+    <rect class="st22" x="32" y="724" width="311" height="56" rx="18" ry="18"/>
+    <text class="st14" transform="translate(54 748)"><tspan x="0" y="0">Scroll to load more history</tspan></text>
+    <text class="st5" transform="translate(54 764)"><tspan x="0" y="0">Browse previous generations, edits, and outputs</tspan></text>
+  </g>
+  <g id="_x37_-MOBILE-LIKED-LIST-VIEW" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">LIKED</tspan></text>
+    <circle class="st37" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <rect class="st18" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <text class="st12" transform="translate(32 122)"><tspan x="0" y="0">ALL ACTIVITY</tspan></text>
+    <path class="st22" d="M47,136h130c8.28,0,15,6.72,15,15h0c0,8.28-6.72,15-15,15H47c-8.28,0-15-6.72-15-15h0c0-8.28,6.72-15,15-15Z"/>
+    <text class="st5" transform="translate(56 155)"><tspan x="0" y="0">Search history</tspan></text>
+    <rect class="st25" x="201" y="136" width="66" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(221 155)"><tspan x="0" y="0">List</tspan></text>
+    <rect class="st25" x="276" y="136" width="67" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(294 155)"><tspan x="0" y="0">Grid</tspan></text>
+    <text class="st2" transform="translate(32 198)"><tspan x="0" y="0">TODAY</tspan></text>
+    <rect class="st23" x="32" y="212" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="226" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 240)"><tspan x="0" y="0">Generated Image</tspan></text>
+    <text class="st9" transform="translate(122 256)"><tspan x="0" y="0">Luxury watch campaign</tspan></text>
+    <text class="st5" transform="translate(122 272)"><tspan x="0" y="0">Image • 4:32 PM</tspan></text>
+    <circle class="st25" cx="324" cy="232" r="8"/>
+    <circle class="st41" cx="321" cy="232" r="1.1"/>
+    <circle class="st41" cx="324" cy="232" r="1.1"/>
+    <circle class="st41" cx="327" cy="232" r="1.1"/>
+    <rect class="st18" x="32" y="296" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="310" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 324)"><tspan x="0" y="0">Edited Image</tspan></text>
+    <text class="st9" transform="translate(122 340)"><tspan x="0" y="0">Portrait retouch</tspan></text>
+    <text class="st5" transform="translate(122 356)"><tspan x="0" y="0">Editor • 3:10 PM</tspan></text>
+    <circle class="st25" cx="324" cy="316" r="8"/>
+    <circle class="st41" cx="321" cy="316" r="1.1"/>
+    <circle class="st41" cx="324" cy="316" r="1.1"/>
+    <circle class="st41" cx="327" cy="316" r="1.1"/>
+    <text class="st2" transform="translate(32 402)"><tspan x="0" y="0">YESTERDAY</tspan></text>
+    <rect class="st23" x="32" y="416" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="430" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 444)"><tspan x="0" y="0">Generated Video</tspan></text>
+    <text class="st9" transform="translate(122 460)"><tspan x="0" y="0">Car reveal</tspan></text>
+    <text class="st5" transform="translate(122 476)"><tspan x="0" y="0">Video • 6:50 PM</tspan></text>
+    <circle class="st25" cx="324" cy="436" r="8"/>
+    <circle class="st41" cx="321" cy="436" r="1.1"/>
+    <circle class="st41" cx="324" cy="436" r="1.1"/>
+    <circle class="st41" cx="327" cy="436" r="1.1"/>
+    <rect class="st18" x="32" y="500" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="514" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 528)"><tspan x="0" y="0">Generated Image</tspan></text>
+    <text class="st9" transform="translate(122 544)"><tspan x="0" y="0">Editorial poster concept</tspan></text>
+    <text class="st5" transform="translate(122 560)"><tspan x="0" y="0">Image • 1:12 PM</tspan></text>
+    <circle class="st25" cx="324" cy="520" r="8"/>
+    <circle class="st41" cx="321" cy="520" r="1.1"/>
+    <circle class="st41" cx="324" cy="520" r="1.1"/>
+    <circle class="st41" cx="327" cy="520" r="1.1"/>
+    <text class="st2" transform="translate(32 606)"><tspan x="0" y="0">OLDER</tspan></text>
+    <rect class="st23" x="32" y="620" width="311" height="74" rx="12" ry="12"/>
+    <rect class="st40" x="46" y="634" width="64" height="36" rx="6" ry="6"/>
+    <text class="st14" transform="translate(122 648)"><tspan x="0" y="0">Edited Image</tspan></text>
+    <text class="st9" transform="translate(122 664)"><tspan x="0" y="0">Background cleanup</tspan></text>
+    <text class="st5" transform="translate(122 680)"><tspan x="0" y="0">Editor • Mar 24</tspan></text>
+    <circle class="st25" cx="324" cy="640" r="8"/>
+    <circle class="st41" cx="321" cy="640" r="1.1"/>
+    <circle class="st41" cx="324" cy="640" r="1.1"/>
+    <circle class="st41" cx="327" cy="640" r="1.1"/>
+    <rect class="st22" x="32" y="716" width="311" height="64" rx="18" ry="18"/>
+    <text class="st14" transform="translate(54 744)"><tspan x="0" y="0">Scroll to load more liked files</tspan></text>
+    <text class="st5" transform="translate(54 761)"><tspan x="0" y="0">Browse previous generations, edits, and outputs</tspan></text>
+  </g>
+  <g id="_x37_-MOBILE-LIKED-GRID-VIEW" class="st49">
+    <rect class="st48" width="375" height="812"/>
+    <rect class="st47" width="375" height="78"/>
+    <text class="st6" transform="translate(58 44)"><tspan x="0" y="0">LIKED</tspan></text>
+    <circle class="st25" cx="343" cy="39" r="16"/>
+    <path class="st41" d="M337.25,33h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,38h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st41" d="M337.25,43h11.5c.69,0,1.25.56,1.25,1.25h0c0,.69-.56,1.25-1.25,1.25h-11.5c-.69,0-1.25-.56-1.25-1.25h0c0-.69.56-1.25,1.25-1.25Z"/>
+    <path class="st45" d="M48,39c0,7.73-6.27,14-14,14s-14-6.27-14-14,6.27-14,14-14,14,6.27,14,14ZM40.82,46.76c.24,0,.43-.19.43-.43v-3.87c0-1-.86-1.06-2.04-.31s-1.86-.16-2.18-1.35.37-2.52,1.14-2.52,1.5.58,1.5.58c1.71.83,1.58-.86,1.58-.86l.02-3.47c0-.24-.19-.43-.43-.43h-3.5c-1.45,0-1.64-.24-1.64-.24-.88-.73.52-1.7.44-2.83s-2.02-1.79-3.4-1c-1.12.64-.79,1.63-.19,2.82s-.88,1.24-.88,1.24h-4.47c-.23,0-.43.19-.43.43v3.61c0,1.37,1.17,1.03,1.7.62s1.06-.44,1.06-.44c.86-.05,1.49.57,1.49,1.89s-.61,2.2-1.5,2.2-1.06-.79-1.95-.79-.83,1.22-.83,1.22v3.52c0,.24.19.44.44.43,2.14-.04,11.53,0,13.66,0h0Z"/>
+    <rect class="st18" x="16" y="94" width="343" height="702" rx="22" ry="22"/>
+    <text class="st12" transform="translate(32 122)"><tspan x="0" y="0">ALL ACTIVITY</tspan></text>
+    <path class="st22" d="M47,136h130c8.28,0,15,6.72,15,15h0c0,8.28-6.72,15-15,15H47c-8.28,0-15-6.72-15-15h0c0-8.28,6.72-15,15-15Z"/>
+    <text class="st5" transform="translate(56 155)"><tspan x="0" y="0">Search history</tspan></text>
+    <rect class="st25" x="201" y="136" width="66" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(221 155)"><tspan x="0" y="0">Filter</tspan></text>
+    <rect class="st25" x="276" y="136" width="67" height="30" rx="8" ry="8"/>
+    <text class="st3" transform="translate(294 155)"><tspan x="0" y="0">New</tspan></text>
+    <rect class="st25" x="32" y="178" width="74" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(53 196)"><tspan x="0" y="0">List</tspan></text>
+    <rect class="st39" x="114" y="178" width="70" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(137 196)"><tspan x="0" y="0">Grid</tspan></text>
+    <rect class="st25" x="192" y="178" width="74" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(213 196)"><tspan x="0" y="0">Type</tspan></text>
+    <rect class="st25" x="274" y="178" width="69" height="28" rx="8" ry="8"/>
+    <text class="st3" transform="translate(293 196)"><tspan x="0" y="0">Date</tspan></text>
+    <rect class="st23" x="32" y="220" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="166" cy="234" r="9"/>
+    <circle class="st41" cx="163" cy="234" r="1.1"/>
+    <circle class="st41" cx="166" cy="234" r="1.1"/>
+    <circle class="st41" cx="169" cy="234" r="1.1"/>
+    <text class="st14" transform="translate(32 352)"><tspan x="0" y="0">Luxury watch</tspan></text>
+    <text class="st5" transform="translate(32 368)"><tspan x="0" y="0">Image • Today</tspan></text>
+    <rect class="st39" x="195" y="220" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="329" cy="234" r="9"/>
+    <circle class="st41" cx="326" cy="234" r="1.1"/>
+    <circle class="st41" cx="329" cy="234" r="1.1"/>
+    <circle class="st41" cx="332" cy="234" r="1.1"/>
+    <text class="st14" transform="translate(195 352)"><tspan x="0" y="0">Car reveal</tspan></text>
+    <text class="st9" transform="translate(195 368)"><tspan x="0" y="0">Video • Today</tspan></text>
+    <rect class="st23" x="32" y="390" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="166" cy="404" r="9"/>
+    <circle class="st41" cx="163" cy="404" r="1.1"/>
+    <circle class="st41" cx="166" cy="404" r="1.1"/>
+    <circle class="st41" cx="169" cy="404" r="1.1"/>
+    <text class="st14" transform="translate(32 522)"><tspan x="0" y="0">Portrait retouch</tspan></text>
+    <text class="st5" transform="translate(32 538)"><tspan x="0" y="0">Edit • Yesterday</tspan></text>
+    <rect class="st23" x="195" y="390" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="329" cy="404" r="9"/>
+    <circle class="st41" cx="326" cy="404" r="1.1"/>
+    <circle class="st41" cx="329" cy="404" r="1.1"/>
+    <circle class="st41" cx="332" cy="404" r="1.1"/>
+    <text class="st14" transform="translate(195 522)"><tspan x="0" y="0">Poster concept</tspan></text>
+    <text class="st5" transform="translate(195 538)"><tspan x="0" y="0">Image • Yesterday</tspan></text>
+    <rect class="st23" x="32" y="560" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="166" cy="574" r="9"/>
+    <circle class="st41" cx="163" cy="574" r="1.1"/>
+    <circle class="st41" cx="166" cy="574" r="1.1"/>
+    <circle class="st41" cx="169" cy="574" r="1.1"/>
+    <text class="st14" transform="translate(32 692)"><tspan x="0" y="0">Watch motion</tspan></text>
+    <text class="st5" transform="translate(32 708)"><tspan x="0" y="0">Video • Mar 24</tspan></text>
+    <rect class="st23" x="195" y="560" width="148" height="118" rx="12" ry="12"/>
+    <circle class="st25" cx="329" cy="574" r="9"/>
+    <circle class="st41" cx="326" cy="574" r="1.1"/>
+    <circle class="st41" cx="329" cy="574" r="1.1"/>
+    <circle class="st41" cx="332" cy="574" r="1.1"/>
+    <text class="st14" transform="translate(195 692)"><tspan x="0" y="0">Cleanup edit</tspan></text>
+    <text class="st5" transform="translate(195 708)"><tspan x="0" y="0">Edit • Mar 23</tspan></text>
+    <rect class="st22" x="32" y="724" width="311" height="56" rx="18" ry="18"/>
+    <text class="st14" transform="translate(54 748)"><tspan x="0" y="0">Scroll to load more liked files</tspan></text>
+    <text class="st5" transform="translate(54 764)"><tspan x="0" y="0">Browse previous generations, edits, and outputs</tspan></text>
+  </g>
+</svg>
