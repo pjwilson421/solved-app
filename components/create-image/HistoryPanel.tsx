@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import {
@@ -20,6 +20,70 @@ import type { HistoryItem } from "./types";
 import { formatCreatedAt } from "./types";
 import { PreviewActionsMenu } from "./PreviewActionsMenu";
 import type { PreviewMenuEvent, PreviewMenuPreset } from "./preview-menu-config";
+
+/** VIDEO HISTORY: show decoded frame at t≈0 (not a separate poster asset). */
+function VideoHistoryFirstFrameThumb({
+  src,
+  posterFallback,
+  className,
+}: {
+  src: string;
+  /** Shown if the video element fails to load (CORS / format). */
+  posterFallback?: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLVideoElement | null>(null);
+  const [videoFailed, setVideoFailed] = useState(false);
+
+  useLayoutEffect(() => {
+    setVideoFailed(false);
+  }, [src]);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const showFirstFrame = () => {
+      try {
+        el.pause();
+        el.currentTime = 0;
+      } catch {
+        /* seek before buffer */
+      }
+    };
+
+    el.addEventListener("loadeddata", showFirstFrame);
+    if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      showFirstFrame();
+    }
+    return () => el.removeEventListener("loadeddata", showFirstFrame);
+  }, [src]);
+
+  if (videoFailed && posterFallback) {
+    return (
+      <Image
+        src={posterFallback}
+        alt=""
+        fill
+        className={className}
+        sizes="300px"
+      />
+    );
+  }
+
+  return (
+    <video
+      ref={ref}
+      src={src}
+      muted
+      playsInline
+      preload="auto"
+      onError={() => setVideoFailed(true)}
+      className={className}
+      aria-hidden
+    />
+  );
+}
 
 type HistoryPanelProps = {
   items: HistoryItem[];
@@ -73,6 +137,7 @@ export function HistoryPanel({
     ) : (
       items.map((item, idx) => {
         const thumb = item.imageUrls[0];
+        const videoSrc = item.videoUrl?.trim() || null;
         const highlighted = hoveredId
           ? item.id === hoveredId
           : activeId
@@ -96,7 +161,17 @@ export function HistoryPanel({
                 className="block w-full text-left"
               >
                 <div className="relative aspect-[200/112.5] w-full overflow-hidden rounded-[11px] bg-panel-bg">
-                  {thumb ? (
+                  {videoSrc ? (
+                    <VideoHistoryFirstFrameThumb
+                      src={videoSrc}
+                      posterFallback={thumb}
+                      className={cn(
+                        "absolute inset-0 h-full w-full object-cover",
+                        thumbnailHoverOpacityOnItemHover &&
+                          "opacity-100 transition-opacity duration-200 ease-in-out hover:opacity-70",
+                      )}
+                    />
+                  ) : thumb ? (
                     <Image
                       src={thumb}
                       alt=""
@@ -115,6 +190,7 @@ export function HistoryPanel({
                 </p>
                 <p className="mt-1 text-left text-[10px] leading-none text-tx-muted">
                   {formatCreatedAt(item.createdAt)}
+                  {item.metadataLine ? ` · ${item.metadataLine}` : ""}
                 </p>
               </button>
               <div className="absolute right-2 top-2 z-20">

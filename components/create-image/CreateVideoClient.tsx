@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Header } from "./Header";
@@ -16,6 +22,7 @@ import {
 } from "./preview-frame-layout";
 import { useCreateImagePreviewPromptLayout } from "./use-create-image-preview-prompt-layout";
 import type { AspectRatio, Quality, ReferenceFile, VideoDuration } from "./types";
+import { ASPECT_RATIOS, normalizeQuality, VIDEO_DURATIONS } from "./types";
 import { FixedPromptBarDock } from "./FixedPromptBarDock";
 import { useShellNav } from "@/lib/use-shell-nav";
 import { ICONS } from "@/components/icons/icon-paths";
@@ -30,12 +37,32 @@ import { appItemRef } from "@/lib/app-data/item-ref";
 import {
   downloadImageFromUrl,
   generatedImageDownloadBasename,
-  openImageInNewTab,
 } from "@/lib/create-image/media-actions";
 import { writePendingEditorImage } from "@/lib/create-image/pending-editor-image";
 import { handleShareTarget } from "@/lib/share/web-share";
 import { activityEntryToHistoryItem } from "@/lib/app-data/activity-to-drawer-history";
 import type { ActivityHistoryEntry } from "@/components/history/types";
+import { encodeReferenceFilesForApi } from "@/lib/create-image/encode-reference-images";
+import {
+  clearCreateVideoPreviewPersistence,
+  getCreateVideoPreviewUrlForActivity,
+  loadCreateVideoPreviewFromPersistence,
+  readCreateVideoPreviewMetaSync,
+  writeCreateVideoPreviewPersistence,
+} from "@/lib/create-image/create-video-preview-persistence";
+
+function pickLatestGeneratedVideoEntry(
+  entries: ActivityHistoryEntry[],
+): ActivityHistoryEntry | null {
+  let best: ActivityHistoryEntry | null = null;
+  for (const e of entries) {
+    if (e.kind !== "video" || e.origin !== "generated-video") continue;
+    if (!best || e.occurredAt.getTime() > best.occurredAt.getTime()) {
+      best = e;
+    }
+  }
+  return best;
+}
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -54,7 +81,11 @@ export function CreateVideoClient() {
   const { navigate, activeMainNav } = useShellNav();
   const { toggle: toggleLiked, isLiked } = useLikedItems();
   const { deleteCatalogItem } = useAppItemActions();
-  const { activityEntries, updateActivityEntries } = useAppData();
+  const { activityEntries, activityCatalogHydrated, updateActivityEntries } =
+    useAppData();
+
+  const activityEntriesRef = useRef(activityEntries);
+  activityEntriesRef.current = activityEntries;
 
   const [barPrompt, setBarPrompt] = useState("");
   const [references, setReferences] = useState<ReferenceFile[]>([]);
@@ -77,13 +108,28 @@ export function CreateVideoClient() {
       activityEntries
         .filter((e) => e.kind === "video" && e.origin === "generated-video")
         .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime())
-        .map(activityEntryToHistoryItem),
+        .map((entry) => {
+          const item = activityEntryToHistoryItem(entry);
+          const parts = [
+            entry.aspectRatio,
+            entry.resolution,
+            entry.videoDuration,
+          ].filter(
+            (value): value is string =>
+              typeof value === "string" && value.length > 0,
+          );
+          return parts.length > 0
+            ? { ...item, metadataLine: parts.join(" · ") }
+            : item;
+        }),
     [activityEntries],
   );
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [fullScreen, setFullScreen] = useState<FullScreenPreview>(null);
   const desktopScrollRef = useRef<HTMLDivElement>(null);
+  const didApplyCreateVideoPreviewHydrationRef = useRef(false);
+  const previewWriteGenerationRef = useRef(0);
   const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const mobileColumnRef = useRef<HTMLElement>(null);
@@ -104,6 +150,131 @@ export function CreateVideoClient() {
     ? createImageScrollContentBottomPaddingPxDesktopXl()
     : createImageScrollContentBottomPaddingPx("desktop");
 
+  /**
+   * After activity catalog is hydrated, restore the last successful preview from
+   * durable storage and reconcile with the newest generated-video activity row.
+   */
+  useEffect(() => {
+    if (
+      !activityCatalogHydrated ||
+      didApplyCreateVideoPreviewHydrationRef.current
+    ) {
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      let persisted: Awaited<
+        ReturnType<typeof loadCreateVideoPreviewFromPersistence>
+      > = null;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const gen = previewWriteGenerationRef.current;
+        persisted = await loadCreateVideoPreviewFromPersistence();
+        if (cancelled) return;
+        if (previewWriteGenerationRef.current === gen) break;
+      }
+      if (cancelled) return;
+
+      const latest = pickLatestGeneratedVideoEntry(activityEntriesRef.current);
+
+      const persistedMs =
+        persisted && persisted.savedAtMs > 0
+          ? persisted.savedAtMs
+          : persisted
+            ? Date.parse(persisted.previewAtIso) || 0
+            : 0;
+
+      const latestResolved =
+        latest &&
+        (latest.videoUrl && latest.videoUrl.length > 0
+          ? latest.videoUrl
+          : getCreateVideoPreviewUrlForActivity(latest.id));
+
+      let chosen: {
+        videoUrl: string;
+        activityId: string;
+        previewPrompt: string;
+        previewAt: Date;
+      } | null = null;
+
+      if (persisted && latest && latestResolved) {
+        const latestMs = latest.occurredAt.getTime();
+        if (latestMs >= persistedMs) {
+          chosen = {
+            videoUrl: latestResolved,
+            activityId: latest.id,
+            previewPrompt:
+              latest.promptText ??
+              latest.subtitle ??
+              persisted.previewPrompt,
+            previewAt: latest.occurredAt,
+          };
+        } else {
+          chosen = {
+            videoUrl: persisted.videoUrl,
+            activityId: persisted.activityId,
+            previewPrompt: persisted.previewPrompt,
+            previewAt: (() => {
+              const d = new Date(persisted.previewAtIso);
+              return Number.isNaN(d.getTime())
+                ? new Date(persisted.savedAtMs || Date.now())
+                : d;
+            })(),
+          };
+        }
+      } else if (persisted) {
+        chosen = {
+          videoUrl: persisted.videoUrl,
+          activityId: persisted.activityId,
+          previewPrompt: persisted.previewPrompt,
+          previewAt: (() => {
+            const d = new Date(persisted.previewAtIso);
+            return Number.isNaN(d.getTime())
+              ? new Date(persisted.savedAtMs || Date.now())
+              : d;
+          })(),
+        };
+      } else if (latest && latestResolved) {
+        chosen = {
+          videoUrl: latestResolved,
+          activityId: latest.id,
+          previewPrompt: latest.promptText ?? latest.subtitle,
+          previewAt: latest.occurredAt,
+        };
+      }
+
+      if (cancelled) return;
+      if (chosen) {
+        setPreviewVideoUrl(chosen.videoUrl);
+        setActiveHistoryId(chosen.activityId);
+        setPreviewPrompt(chosen.previewPrompt);
+        setPreviewAt(chosen.previewAt);
+        setSlotImages([]);
+        const entry = activityEntriesRef.current.find(
+          (e) => e.id === chosen.activityId,
+        );
+        if (
+          entry?.aspectRatio &&
+          ASPECT_RATIOS.includes(entry.aspectRatio as AspectRatio)
+        ) {
+          setAspectRatio(entry.aspectRatio as AspectRatio);
+        }
+        if (entry?.resolution) {
+          setQuality(normalizeQuality(entry.resolution));
+        }
+        if (
+          entry?.videoDuration &&
+          VIDEO_DURATIONS.includes(entry.videoDuration)
+        ) {
+          setDuration(entry.videoDuration);
+        }
+      }
+      didApplyCreateVideoPreviewHydrationRef.current = true;
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [activityCatalogHydrated]);
+
   /** Cap below-preview content to measured preview frame width; prompt dock uses dockLayoutStyle. */
   const previewContentCapStyle = useMemo(() => {
     if (layoutFrame && layoutFrame.width > 0) {
@@ -120,22 +291,51 @@ export function CreateVideoClient() {
     [activityEntries, activeHistoryId],
   );
 
+  const previewVideoSpecsLine = useMemo(() => {
+    const ar = activeEntry?.aspectRatio ?? aspectRatio;
+    const res = normalizeQuality(activeEntry?.resolution ?? quality);
+    const dur = activeEntry?.videoDuration ?? duration;
+    return `${ar} · ${res} · ${dur}`;
+  }, [
+    activeEntry?.aspectRatio,
+    activeEntry?.resolution,
+    activeEntry?.videoDuration,
+    aspectRatio,
+    quality,
+    duration,
+  ]);
+
   const generateDisabled = useMemo(() => {
     const hasPrompt = barPrompt.trim().length > 0;
-    return !hasPrompt;
-  }, [barPrompt]);
+    const hasFrames = startFrame != null || endFrame != null;
+    return !(hasPrompt || hasFrames);
+  }, [barPrompt, startFrame, endFrame]);
 
   const handleGenerate = useCallback(async () => {
     if (generateDisabled || isGenerating) return;
     setIsGenerating(true);
     setGenerationError(null);
     try {
+      const startParts = startFrame
+        ? await encodeReferenceFilesForApi([startFrame])
+        : [];
+      const endParts = endFrame
+        ? await encodeReferenceFilesForApi([endFrame])
+        : [];
+
       const response = await fetch("/api/video/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt: barPrompt.trim() }),
+        body: JSON.stringify({
+          prompt: barPrompt.trim(),
+          aspectRatio,
+          resolution: quality,
+          duration,
+          startFrame: startParts[0] ?? null,
+          endFrame: endParts[0] ?? null,
+        }),
       });
 
       const data: unknown = await response.json().catch(() => null);
@@ -164,7 +364,12 @@ export function CreateVideoClient() {
       const createdAt = new Date();
       const promptText = barPrompt.trim();
       const subtitle =
-        promptText.length > 120 ? `${promptText.slice(0, 117)}…` : promptText;
+        promptText.length > 120
+          ? `${promptText.slice(0, 117)}…`
+          : promptText ||
+            (startFrame || endFrame
+              ? "Video from start/end frames"
+              : "Generated video");
 
       const videoCount = activityEntries.filter((e) => e.kind === "video" && e.origin === "generated-video").length;
       const sequenceNum = String(videoCount + 1).padStart(2, "0");
@@ -176,18 +381,32 @@ export function CreateVideoClient() {
         title,
         subtitle,
         occurredAt: createdAt,
-        promptText,
+        promptText: promptText || undefined,
         imageUrls: [],
         videoUrl,
+        aspectRatio,
+        resolution: quality,
+        videoDuration: duration,
         origin: "generated-video",
       };
       updateActivityEntries((prev) => [activity, ...prev]);
 
       setActiveHistoryId(batchId);
-      setPreviewPrompt(promptText);
+      setPreviewPrompt(promptText || subtitle);
       setPreviewAt(createdAt);
       setSlotImages([]);
       setPreviewVideoUrl(videoUrl);
+      try {
+        await writeCreateVideoPreviewPersistence({
+          videoUrl,
+          activityId: batchId,
+          previewPrompt: promptText || subtitle,
+          previewAtIso: createdAt.toISOString(),
+        });
+        previewWriteGenerationRef.current += 1;
+      } catch {
+        /* persistence best-effort; preview already in memory and activity catalog */
+      }
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Video generation failed.";
       setGenerationError(msg);
@@ -223,9 +442,24 @@ export function CreateVideoClient() {
       setPreviewAt(entry.occurredAt);
       setSlotImages(urls);
       setBarPrompt(promptRestore);
-      setPreviewVideoUrl(entry.videoUrl ?? null);
+      const resolvedVideo =
+        entry.videoUrl ?? getCreateVideoPreviewUrlForActivity(id) ?? null;
+      setPreviewVideoUrl(resolvedVideo);
+      if (
+        entry.aspectRatio &&
+        ASPECT_RATIOS.includes(entry.aspectRatio as AspectRatio)
+      ) {
+        setAspectRatio(entry.aspectRatio as AspectRatio);
+      }
+      setQuality(normalizeQuality(entry.resolution ?? quality));
+      if (
+        entry.videoDuration &&
+        VIDEO_DURATIONS.includes(entry.videoDuration)
+      ) {
+        setDuration(entry.videoDuration);
+      }
     },
-    [activityEntries],
+    [activityEntries, quality],
   );
 
   const handlePreviewClick = useCallback(() => {
@@ -249,8 +483,15 @@ export function CreateVideoClient() {
 
       switch (e.type) {
         case "expand":
-          if (previewVideoUrl) openImageInNewTab(previewVideoUrl);
-          else if (poster) openImageInNewTab(poster);
+          if (previewVideoUrl) {
+            setFullScreen({
+              mode: "video",
+              src: previewVideoUrl,
+              poster,
+            });
+          } else if (poster) {
+            setFullScreen({ mode: "image", url: poster });
+          }
           break;
         case "download":
           if (previewVideoUrl) {
@@ -330,6 +571,12 @@ export function CreateVideoClient() {
         case "delete":
           if (activeHistoryId) {
             deleteCatalogItem(appItemRef.activity(activeHistoryId));
+            {
+              const meta = readCreateVideoPreviewMetaSync();
+              if (meta?.activityId === activeHistoryId) {
+                void clearCreateVideoPreviewPersistence();
+              }
+            }
           }
           setSlotImages([]);
           setPreviewPrompt("");
@@ -371,10 +618,22 @@ export function CreateVideoClient() {
       const at = entry.occurredAt;
 
       switch (e.type) {
-        case "expand":
-          if (videoUrl) openImageInNewTab(videoUrl);
-          else if (poster) openImageInNewTab(poster);
+        case "expand": {
+          const src =
+            (videoUrl && videoUrl.trim()) ||
+            getCreateVideoPreviewUrlForActivity(itemId) ||
+            null;
+          if (src) {
+            setFullScreen({
+              mode: "video",
+              src,
+              poster: poster ?? undefined,
+            });
+          } else if (poster) {
+            setFullScreen({ mode: "image", url: poster });
+          }
           break;
+        }
         case "download":
           if (videoUrl) {
             const stamp = generatedImageDownloadBasename(at);
@@ -444,6 +703,12 @@ export function CreateVideoClient() {
           break;
         case "delete":
           deleteCatalogItem(appItemRef.activity(itemId));
+          {
+            const meta = readCreateVideoPreviewMetaSync();
+            if (meta?.activityId === itemId) {
+              void clearCreateVideoPreviewPersistence();
+            }
+          }
           if (activeHistoryId === itemId) {
             setActiveHistoryId(null);
             setSlotImages([]);
@@ -563,6 +828,7 @@ export function CreateVideoClient() {
               onSelect={loadHistory}
               onMenuEvent={handleHistoryMenu}
               previewMenuLikeActive={historyMenuLikeActive}
+              previewMenuPreset="create-video-preview"
               className="min-h-0 w-full min-w-0 flex-1 flex-col"
             />
           }
@@ -602,6 +868,9 @@ export function CreateVideoClient() {
                         activeHistoryId != null &&
                         isLiked(likedKey.activity(activeHistoryId))
                       }
+                      previewMenuPreset="create-video-preview"
+                      previewSpecsLine={previewVideoSpecsLine}
+                      previewSpecsInlineWithDate
                       afterPreviewStack={
                         <div className="mb-6 mt-[5px] w-full">
                           {generationError ? (
@@ -677,6 +946,9 @@ export function CreateVideoClient() {
                         activeHistoryId != null &&
                         isLiked(likedKey.activity(activeHistoryId))
                       }
+                      previewMenuPreset="create-video-preview"
+                      previewSpecsLine={previewVideoSpecsLine}
+                      previewSpecsInlineWithDate
                     />
                   </div>
                   <div
@@ -737,33 +1009,44 @@ export function CreateVideoClient() {
       </FixedPromptBarDock>
 
       {fullScreen ? (
-        <div className="fixed inset-0 z-[1200] flex flex-col bg-black/95 p-4">
+        <div
+          className="fixed left-0 top-0 z-[1200] flex h-[100dvh] w-screen max-w-[100vw] flex-col overflow-hidden bg-black"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Fullscreen video"
+        >
           <button
             type="button"
-            className="mb-4 self-end rounded-full px-4 py-2 text-sm text-white hover:bg-white/10"
+            className={cn(
+              "absolute z-20 rounded-full px-4 py-2 text-sm text-white outline-none",
+              "hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/80",
+              "top-[max(0.75rem,env(safe-area-inset-top))]",
+              "right-[max(0.75rem,env(safe-area-inset-right))]",
+            )}
             onClick={() => setFullScreen(null)}
           >
             Close
           </button>
-          <div className="relative flex min-h-0 flex-1 items-center justify-center">
+          <div className="relative min-h-0 min-w-0 flex-1">
             {fullScreen.mode === "video" ? (
               <video
                 poster={fullScreen.poster}
                 controls
                 playsInline
                 autoPlay
-                className="max-h-full max-w-full object-contain"
+                className="absolute inset-0 box-border h-full w-full object-contain"
               >
                 <source src={fullScreen.src} type="video/mp4" />
               </video>
             ) : (
-              <div className="relative h-full w-full">
+              <div className="absolute inset-0 min-h-0 min-w-0">
                 <Image
                   src={fullScreen.url}
                   alt="Full preview"
                   fill
                   className="object-contain"
                   sizes="100vw"
+                  unoptimized={/^data:/.test(fullScreen.url)}
                 />
               </div>
             )}

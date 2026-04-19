@@ -74,6 +74,12 @@ type PreviewPanelProps = {
    */
   previewMediaFilter?: string;
   /**
+   * When true, slot preview rasters use `next/image` with `unoptimized` so the browser loads the
+   * source URL at full resolution (not the Image Optimization pipeline). Create Image and Image
+   * Editor pass true; Create Video keeps the default.
+   */
+  rasterSourceUnoptimized?: boolean;
+  /**
    * When false, the preview media area is not a keyboard/click target for `onPreviewClick`
    * (e.g. while an editor paint tool owns pointer interaction).
    */
@@ -82,10 +88,21 @@ type PreviewPanelProps = {
   /** Slot index aligns with `slotImages` / Create Image `displaySlots` (variation index). */
   onPreviewClick?: (detail?: { slotIndex: number }) => void;
   onMenuEvent?: (event: PreviewMenuEvent) => void;
-  /** Preview ⋮ menu: Create Image / Video (default) vs Image Editor (includes Save). */
+  /** Preview ⋮ menu: Create Image / Video (default), Image Editor rail, or editor preview-only. */
   previewMenuPreset?: PreviewMenuPreset;
   /** Whether the current item is liked (heart icon). */
   previewMenuLikeActive?: boolean;
+  /**
+   * Optional line under the date and above the prompt (e.g. `16:9 · 4K` for the asset shown in
+   * the preview).
+   */
+  previewSpecsLine?: string | null;
+  /**
+   * When true with {@link previewSpecsLine}, aspect/resolution are appended on the same line as
+   * the date/time (`{date} · {specs}`). Create Image only; other pages keep the default two-line
+   * layout.
+   */
+  previewSpecsInlineWithDate?: boolean;
 };
 
 /** Desktop meta: copy when no prompt yet (replaces the old "—" empty state). */
@@ -347,6 +364,7 @@ function SlotBox({
   placeholderIcon,
   imageObjectFit = "contain",
   onSlotClick,
+  rasterSourceUnoptimized = false,
 }: {
   label: string;
   src?: string;
@@ -354,6 +372,7 @@ function SlotBox({
   placeholderIcon: IconPath;
   imageObjectFit?: "contain" | "cover";
   onSlotClick?: () => void;
+  rasterSourceUnoptimized?: boolean;
 }) {
   return (
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#081030]">
@@ -371,7 +390,7 @@ function SlotBox({
             imageObjectFit === "cover" ? "object-cover" : "object-contain",
           )}
           sizes={PREVIEW_RASTER_IMAGE_SIZES}
-          unoptimized={isDataImageSrc(src)}
+          unoptimized={rasterSourceUnoptimized || isDataImageSrc(src)}
         />
       ) : (
         <div className="flex flex-1 items-center justify-center p-4">
@@ -403,6 +422,7 @@ function NormalLayout({
   imageObjectFit = "contain",
   onSlotClick,
   mediaFilter,
+  rasterSourceUnoptimized = false,
 }: {
   urls: string[];
   placeholderIcon: IconPath;
@@ -410,6 +430,7 @@ function NormalLayout({
   onSlotClick?: (slotIndex: number) => void;
   /** Single-slot preview only (Image Editor). */
   mediaFilter?: string;
+  rasterSourceUnoptimized?: boolean;
 }) {
   const n = urls.length;
   const slotHandler = (i: number) =>
@@ -442,7 +463,7 @@ function NormalLayout({
             imageObjectFit === "cover" ? "object-cover" : "object-contain",
           )}
           sizes={PREVIEW_RASTER_IMAGE_SIZES}
-          unoptimized={isDataImageSrc(urls[0])}
+          unoptimized={rasterSourceUnoptimized || isDataImageSrc(urls[0])}
         />
         {urls[0] && onSlotClick ? (
           <button
@@ -469,6 +490,7 @@ function NormalLayout({
           placeholderIcon={placeholderIcon}
           imageObjectFit={imageObjectFit}
           onSlotClick={slotHandler(0)}
+          rasterSourceUnoptimized={rasterSourceUnoptimized}
         />
         <SlotBox
           label="Image 2"
@@ -477,6 +499,7 @@ function NormalLayout({
           placeholderIcon={placeholderIcon}
           imageObjectFit={imageObjectFit}
           onSlotClick={slotHandler(1)}
+          rasterSourceUnoptimized={rasterSourceUnoptimized}
         />
       </div>
     );
@@ -493,6 +516,7 @@ function NormalLayout({
           placeholderIcon={placeholderIcon}
           imageObjectFit={imageObjectFit}
           onSlotClick={slotHandler(i)}
+          rasterSourceUnoptimized={rasterSourceUnoptimized}
         />
       ))}
     </div>
@@ -505,12 +529,14 @@ function TemplateLayout({
   placeholderIcon,
   imageObjectFit = "contain",
   onSlotClick,
+  rasterSourceUnoptimized = false,
 }: {
   template: TemplateDef;
   urls: string[];
   placeholderIcon: IconPath;
   imageObjectFit?: "contain" | "cover";
   onSlotClick?: (slotIndex: number) => void;
+  rasterSourceUnoptimized?: boolean;
 }) {
   const slots = template.slots;
   const padded = Array.from({ length: slots }, (_, i) => urls[i]);
@@ -530,7 +556,7 @@ function TemplateLayout({
               imageObjectFit === "cover" ? "object-cover" : "object-contain",
             )}
             sizes={PREVIEW_RASTER_IMAGE_SIZES}
-            unoptimized={isDataImageSrc(padded[0])}
+            unoptimized={rasterSourceUnoptimized || isDataImageSrc(padded[0])}
           />
         ) : (
           <div className="flex h-full items-center justify-center">
@@ -564,6 +590,7 @@ function TemplateLayout({
             placeholderIcon={placeholderIcon}
             imageObjectFit={imageObjectFit}
             onSlotClick={slotHandler(i)}
+            rasterSourceUnoptimized={rasterSourceUnoptimized}
           />
         ))}
       </div>
@@ -582,6 +609,7 @@ function TemplateLayout({
             placeholderIcon={placeholderIcon}
             imageObjectFit={imageObjectFit}
             onSlotClick={slotHandler(i)}
+            rasterSourceUnoptimized={rasterSourceUnoptimized}
           />
         ))}
       </div>
@@ -597,6 +625,7 @@ function TemplateLayout({
         placeholderIcon={placeholderIcon}
         imageObjectFit={imageObjectFit}
         onSlotClick={slotHandler(0)}
+        rasterSourceUnoptimized={rasterSourceUnoptimized}
       />
       <SlotBox
         label="Image 2"
@@ -605,6 +634,7 @@ function TemplateLayout({
         placeholderIcon={placeholderIcon}
         imageObjectFit={imageObjectFit}
         onSlotClick={slotHandler(1)}
+        rasterSourceUnoptimized={rasterSourceUnoptimized}
       />
 
       <div className="relative col-span-2 flex min-h-0 overflow-hidden bg-[#081030]">
@@ -622,7 +652,7 @@ function TemplateLayout({
               imageObjectFit === "cover" ? "object-cover" : "object-contain",
             )}
             sizes={PREVIEW_RASTER_IMAGE_SIZES}
-            unoptimized={isDataImageSrc(padded[2])}
+            unoptimized={rasterSourceUnoptimized || isDataImageSrc(padded[2])}
           />
         ) : (
           <div className="flex flex-1 items-center justify-center">
@@ -676,13 +706,17 @@ export function PreviewPanel({
   onMenuEvent,
   previewMenuPreset = "create-image",
   previewMenuLikeActive = false,
+  previewSpecsLine = null,
+  previewSpecsInlineWithDate = false,
   composedPreview,
+  rasterSourceUnoptimized = false,
 }: PreviewPanelProps) {
   const validImages = slotImages.filter(Boolean);
   const hasImage = validImages.length > 0;
   const hasVideo = typeof previewVideoUrl === "string" && previewVideoUrl.length > 0;
   const hasPreviewMedia = hasVideo || hasImage;
   const dateLine = createdAt ? formatCreatedAt(createdAt) : "";
+  const specsTrim = previewSpecsLine?.trim() ?? "";
 
   /**
    * Mobile card (`mobileFrame`) uses fixed CSS aspect/max-width tokens only.
@@ -778,6 +812,7 @@ export function PreviewPanel({
             placeholderIcon={emptyStatePlaceholderIcon}
             imageObjectFit={imageObjectFit}
             onSlotClick={slotClickHandler}
+            rasterSourceUnoptimized={rasterSourceUnoptimized}
           />
         ) : (
           <NormalLayout
@@ -786,6 +821,7 @@ export function PreviewPanel({
             imageObjectFit={imageObjectFit}
             onSlotClick={slotClickHandler}
             mediaFilter={previewMediaFilter}
+            rasterSourceUnoptimized={rasterSourceUnoptimized}
           />
         )}
 
@@ -883,9 +919,24 @@ export function PreviewPanel({
               : undefined
           }
         >
-          <p className="w-full min-w-0 max-w-none text-[10px] leading-none text-tx-secondary">
-            {dateLine}
-          </p>
+          {previewSpecsInlineWithDate ? (
+            [dateLine, specsTrim].some((s) => s.length > 0) ? (
+              <p className="w-full min-w-0 max-w-none text-[10px] leading-none text-tx-secondary">
+                {[dateLine, specsTrim].filter((s) => s.length > 0).join(" · ")}
+              </p>
+            ) : null
+          ) : (
+            <>
+              <p className="w-full min-w-0 max-w-none text-[10px] leading-none text-tx-secondary">
+                {dateLine}
+              </p>
+              {specsTrim ? (
+                <p className="mt-0.5 w-full min-w-0 max-w-none text-[10px] leading-none text-tx-secondary">
+                  {specsTrim}
+                </p>
+              ) : null}
+            </>
+          )}
 
           <div className="mt-1 w-full min-w-0 max-w-none xl:mt-0">
             <PreviewDescriptionText

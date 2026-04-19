@@ -11,7 +11,13 @@ export type PreviewMenuSimpleAction =
 /** @deprecated Use {@link PreviewMenuEvent} — kept for gradual migration. */
 export type PreviewMenuActionId = PreviewMenuSimpleAction | "share";
 
-export type PreviewMenuPreset = "create-image" | "image-editor";
+export type PreviewMenuPreset =
+  | "create-image"
+  | "image-editor"
+  /** Main preview ⋮ on Image Editor: same as create-image without Edit Image / Upscale. */
+  | "image-editor-preview"
+  /** Main preview ⋮ on Create Video: no Edit Image / Upscale (same rows as image-editor-preview). */
+  | "create-video-preview";
 
 export type ShareMenuTarget =
   | "meta"
@@ -68,12 +74,23 @@ const IMAGE_EDITOR_MENU_ITEMS: PreviewMenuItem[] = [
   ...CREATE_IMAGE_MENU_ITEMS.slice(5),
 ];
 
+/** Image Editor preview frame ⋮ — create-image list minus Edit Image and Upscale (no Save row). */
+const IMAGE_EDITOR_PREVIEW_MENU_ITEMS: PreviewMenuItem[] = [
+  ...CREATE_IMAGE_MENU_ITEMS.slice(0, 3),
+  ...CREATE_IMAGE_MENU_ITEMS.slice(5),
+];
+
 export function getPreviewMenuItems(
   preset: PreviewMenuPreset,
 ): readonly PreviewMenuItem[] {
-  return preset === "image-editor"
-    ? IMAGE_EDITOR_MENU_ITEMS
-    : CREATE_IMAGE_MENU_ITEMS;
+  if (preset === "image-editor") return IMAGE_EDITOR_MENU_ITEMS;
+  if (
+    preset === "image-editor-preview" ||
+    preset === "create-video-preview"
+  ) {
+    return IMAGE_EDITOR_PREVIEW_MENU_ITEMS;
+  }
+  return CREATE_IMAGE_MENU_ITEMS;
 }
 
 /** Order: platforms first, Copy link last. */

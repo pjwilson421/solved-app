@@ -55,6 +55,13 @@ const RESOLUTIONS: NonNullable<ActivityHistoryEntry["resolution"]>[] = [
   "8K",
 ];
 
+const VIDEO_DURATIONS: NonNullable<ActivityHistoryEntry["videoDuration"]>[] = [
+  "5s",
+  "10s",
+  "15s",
+  "30s",
+];
+
 function parseOccurredAt(v: unknown): Date | null {
   if (typeof v === "string" || typeof v === "number") {
     const d = new Date(v);
@@ -177,6 +184,7 @@ export function sanitizeActivityEntryForStorage(
     ...(imageUrls ? { imageUrls } : {}),
     ...(entry.aspectRatio ? { aspectRatio: entry.aspectRatio } : {}),
     ...(entry.resolution ? { resolution: entry.resolution } : {}),
+    ...(entry.videoDuration ? { videoDuration: entry.videoDuration } : {}),
     ...(videoUrl ? { videoUrl } : {}),
     ...(entry.origin ? { origin: entry.origin } : {}),
     ...(sourceFileEntryId ? { sourceFileEntryId } : {}),
@@ -281,6 +289,16 @@ function normalizeStoredActivityEntry(
     resolution = undefined;
   }
 
+  let videoDuration: ActivityHistoryEntry["videoDuration"];
+  if (
+    typeof o.videoDuration === "string" &&
+    VIDEO_DURATIONS.includes(o.videoDuration as (typeof VIDEO_DURATIONS)[number])
+  ) {
+    videoDuration = o.videoDuration as ActivityHistoryEntry["videoDuration"];
+  } else {
+    videoDuration = undefined;
+  }
+
   let origin: ActivityHistoryEntry["origin"];
   if (o.origin === undefined || o.origin === null) {
     origin = undefined;
@@ -328,6 +346,7 @@ function normalizeStoredActivityEntry(
     ...(imageUrls ? { imageUrls } : {}),
     ...(aspectRatio ? { aspectRatio } : {}),
     ...(resolution ? { resolution } : {}),
+    ...(videoDuration ? { videoDuration } : {}),
     ...(videoUrl ? { videoUrl } : {}),
     ...(origin ? { origin } : {}),
     ...(sourceFileEntryId ? { sourceFileEntryId } : {}),

@@ -53,6 +53,10 @@ export type GenerationSettingsRowProps = {
    * (`SettingsDropdown` `imagePagesPillChrome`).
    */
   imagePagesPillStyle?: boolean;
+  /** Image Editor: hide aspect ratio control; state may still be used for generation. */
+  hideAspectRatio?: boolean;
+  /** Image Editor: hide variations control; state may still be used for generation. */
+  hideVariations?: boolean;
 };
 
 export function GenerationSettingsRow({
@@ -68,10 +72,20 @@ export function GenerationSettingsRow({
   variant = "desktop",
   className,
   imagePagesPillStyle = false,
+  hideAspectRatio = false,
+  hideVariations = false,
 }: GenerationSettingsRowProps) {
   const isDesktop = variant === "desktop";
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const variationDenominator = variationOptions[variationOptions.length - 1] ?? 4;
+  const showAspect = !hideAspectRatio;
+  const showVariations = !hideVariations;
+  const mobileGridColsClass =
+    showAspect && showVariations
+      ? "grid-cols-3"
+      : showAspect || showVariations
+        ? "grid-cols-2"
+        : "grid-cols-1";
 
   const close = useCallback(() => setOpenMenu(null), []);
   const chevronClassName = imagePagesPillStyle ? "text-white" : undefined;
@@ -179,17 +193,19 @@ export function GenerationSettingsRow({
     >
       {isDesktop ? (
         <div className="flex flex-nowrap items-center justify-start gap-x-3">
-          <SettingsDropdown
-            menuId="aspect"
-            openMenu={openMenu}
-            setOpenMenu={setOpenMenu}
-            widthClass={aspectWidth}
-            ariaLabel="Aspect ratio"
-            imagePagesPillChrome={imagePagesPillStyle}
-            triggerContent={aspectTrigger}
-          >
-            {aspectOptions}
-          </SettingsDropdown>
+          {showAspect ? (
+            <SettingsDropdown
+              menuId="aspect"
+              openMenu={openMenu}
+              setOpenMenu={setOpenMenu}
+              widthClass={aspectWidth}
+              ariaLabel="Aspect ratio"
+              imagePagesPillChrome={imagePagesPillStyle}
+              triggerContent={aspectTrigger}
+            >
+              {aspectOptions}
+            </SettingsDropdown>
+          ) : null}
 
           <SettingsDropdown
             menuId="quality"
@@ -203,31 +219,40 @@ export function GenerationSettingsRow({
             {qualityOptions}
           </SettingsDropdown>
 
-          <SettingsDropdown
-            menuId="variations"
-            openMenu={openMenu}
-            setOpenMenu={setOpenMenu}
-            widthClass={variationsWidth}
-            ariaLabel="Variations"
-            imagePagesPillChrome={imagePagesPillStyle}
-            triggerContent={variationsTrigger}
-          >
-            {variationsOptions}
-          </SettingsDropdown>
+          {showVariations ? (
+            <SettingsDropdown
+              menuId="variations"
+              openMenu={openMenu}
+              setOpenMenu={setOpenMenu}
+              widthClass={variationsWidth}
+              ariaLabel="Variations"
+              imagePagesPillChrome={imagePagesPillStyle}
+              triggerContent={variationsTrigger}
+            >
+              {variationsOptions}
+            </SettingsDropdown>
+          ) : null}
         </div>
       ) : (
-        <div className="inline-grid w-fit max-w-full grid-cols-3 justify-items-stretch gap-x-3 gap-y-1.5">
-          <SettingsDropdown
-            menuId="aspect"
-            openMenu={openMenu}
-            setOpenMenu={setOpenMenu}
-            widthClass={aspectWidth}
-            ariaLabel="Aspect ratio"
-            imagePagesPillChrome={imagePagesPillStyle}
-            triggerContent={aspectTrigger}
-          >
-            {aspectOptions}
-          </SettingsDropdown>
+        <div
+          className={cn(
+            "inline-grid w-fit max-w-full justify-items-stretch gap-x-3 gap-y-1.5",
+            mobileGridColsClass,
+          )}
+        >
+          {showAspect ? (
+            <SettingsDropdown
+              menuId="aspect"
+              openMenu={openMenu}
+              setOpenMenu={setOpenMenu}
+              widthClass={aspectWidth}
+              ariaLabel="Aspect ratio"
+              imagePagesPillChrome={imagePagesPillStyle}
+              triggerContent={aspectTrigger}
+            >
+              {aspectOptions}
+            </SettingsDropdown>
+          ) : null}
 
           <SettingsDropdown
             menuId="quality"
@@ -241,17 +266,19 @@ export function GenerationSettingsRow({
             {qualityOptions}
           </SettingsDropdown>
 
-          <SettingsDropdown
-            menuId="variations"
-            openMenu={openMenu}
-            setOpenMenu={setOpenMenu}
-            widthClass={variationsWidth}
-            ariaLabel="Variations"
-            imagePagesPillChrome={imagePagesPillStyle}
-            triggerContent={variationsTrigger}
-          >
-            {variationsOptions}
-          </SettingsDropdown>
+          {showVariations ? (
+            <SettingsDropdown
+              menuId="variations"
+              openMenu={openMenu}
+              setOpenMenu={setOpenMenu}
+              widthClass={variationsWidth}
+              ariaLabel="Variations"
+              imagePagesPillChrome={imagePagesPillStyle}
+              triggerContent={variationsTrigger}
+            >
+              {variationsOptions}
+            </SettingsDropdown>
+          ) : null}
         </div>
       )}
     </div>

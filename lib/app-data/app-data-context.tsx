@@ -37,6 +37,8 @@ export type DirectImagePreview = { imageSrc: string; title: string };
 export type AppDataContextValue = {
   /** Bumps when catalog data changes (for keyed subtrees / debugging). */
   revision: number;
+  /** True after activity entries have been read from storage (or confirmed empty). */
+  activityCatalogHydrated: boolean;
   fileEntries: FileEntry[];
   activityEntries: ActivityHistoryEntry[];
   chatThreads: ChatThreadRecord[];
@@ -161,6 +163,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       revision,
+      activityCatalogHydrated,
       fileEntries,
       activityEntries,
       chatThreads,
@@ -175,6 +178,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     }),
     [
       revision,
+      activityCatalogHydrated,
       fileEntries,
       activityEntries,
       chatThreads,

@@ -1,4 +1,5 @@
 import type { SocialTemplate1State } from "@/lib/create-image/composed-templates/social-template-1";
+import type { VideoDuration } from "@/components/create-image/types";
 
 export type HistoryActivityKind = "image" | "video" | "editor" | "chat";
 
@@ -39,6 +40,8 @@ export type ActivityHistoryEntry = {
   aspectRatio?: "16:9" | "1:1" | "4:5" | "9:16";
   /** Create Image generation quality snapshot. */
   resolution?: "1K" | "2K" | "4K" | "8K";
+  /** Create Video export length snapshot. */
+  videoDuration?: VideoDuration;
   /** Primary video URL for generated video (Create Video restore / playback). */
   videoUrl?: string;
   /** Rows from Create Image / Create Video / Image Editor (sidebar filtering). */

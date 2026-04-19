@@ -47,9 +47,22 @@ function normalizeAssetType(raw: string): string {
   return "Standard";
 }
 
+/** Reject trim if it would shrink the canvas too aggressively (avoid ruining valid dark-edge art). */
+function trimResultIsPlausible(
+  trimmedW: number,
+  trimmedH: number,
+  targetWidth: number,
+  targetHeight: number,
+): boolean {
+  const minSide = Math.min(targetWidth, targetHeight);
+  if (trimmedW < minSide * 0.35 || trimmedH < minSide * 0.35) return false;
+  return true;
+}
+
 /**
- * Gemini image models return a tiered raster that may not match our canonical pixel grid.
- * Resize with `cover` (center crop) so the final file is exactly WxH without non-uniform stretch.
+ * Gemini image models may return a tiered raster and sometimes bake letterboxing / black
+ * mattes into the bitmap even at the target size. We trim uniform edges, then resize with
+ * `cover` so the final file is exactly WxH with photographic content filling the frame.
  */
 async function ensureImagePixelDimensions(
   base64: string,
@@ -62,18 +75,40 @@ async function ensureImagePixelDimensions(
     if (inputBuffer.length === 0) {
       throw new Error("empty decoded image");
     }
-    const meta = await sharp(inputBuffer).metadata();
+    const rotated = await sharp(inputBuffer).rotate().toBuffer();
+
+    let working = rotated;
+    try {
+      const trimmedBuf = await sharp(rotated)
+        .trim({
+          threshold: 16,
+          lineArt: false,
+        })
+        .toBuffer();
+      const tMeta = await sharp(trimmedBuf).metadata();
+      const tw = tMeta.width ?? 0;
+      const th = tMeta.height ?? 0;
+      if (
+        tw > 0 &&
+        th > 0 &&
+        trimResultIsPlausible(tw, th, targetWidth, targetHeight)
+      ) {
+        working = trimmedBuf;
+      }
+    } catch {
+      /* trim not applicable — keep rotated buffer */
+    }
+
+    const meta = await sharp(working).metadata();
     const w = meta.width ?? 0;
     const h = meta.height ?? 0;
-    if (w === targetWidth && h === targetHeight) {
-      return { base64, mime };
+    if (w !== targetWidth || h !== targetHeight) {
+      console.warn("[api/ai/generate-image] Normalizing model output to canonical pixels", {
+        modelPixels: { width: w, height: h },
+        targetPixels: { width: targetWidth, height: targetHeight },
+      });
     }
-    console.warn("[api/ai/generate-image] Normalizing model output to canonical pixels", {
-      modelPixels: { width: w, height: h },
-      targetPixels: { width: targetWidth, height: targetHeight },
-    });
-    const outBuffer = await sharp(inputBuffer)
-      .rotate()
+    const outBuffer = await sharp(working)
       .resize(targetWidth, targetHeight, {
         fit: "cover",
         position: "centre",
@@ -117,15 +152,15 @@ function describeAssetTypeForPrompt(assetType: string): string {
 function describeAspectForPrompt(aspectRatio: string): string {
   switch (aspectRatio) {
     case "16:9":
-      return "wide cinematic 16:9 composition — horizontal, generous negative space, landscape storytelling";
+      return "wide landscape 16:9 — photograph fills the entire frame edge-to-edge; scene and subject use the full width and height (no empty bands)";
     case "1:1":
-      return "square 1:1 composition — centered subject, balanced for feeds and thumbnails";
+      return "square 1:1 — photograph fills the entire square edge-to-edge; balanced subject and environment using the full frame";
     case "4:5":
-      return "vertical portrait 4:5 composition — taller than wide, editorial / feed portrait framing";
+      return "vertical portrait 4:5 — photograph fills the entire frame edge-to-edge; editorial portrait using full height and width";
     case "9:16":
-      return "tall mobile-first 9:16 composition — full vertical story / reels / poster strip framing";
+      return "tall vertical 9:16 — photograph fills the entire frame edge-to-edge; full-height composition for mobile vertical formats";
     default:
-      return `composition matched to aspect ratio ${aspectRatio}`;
+      return `composition matched to aspect ratio ${aspectRatio} — fill the entire frame edge-to-edge`;
   }
 }
 
@@ -173,11 +208,12 @@ function buildGenerationPrompt({
 
   Generation requirements:
   - Asset type: ${assetType} — ${assetNarrative}
-  - Aspect ratio: ${aspectRatio} — ${aspectNarrative}. Frame for this ratio natively (do not show letterboxing or crop guides).
-  - Output dimensions (mandatory): the final image MUST be exactly ${targetWidth} pixels wide by ${targetHeight} pixels tall — no other width or height. Compose the full frame for this exact raster.
+  - Aspect ratio: ${aspectRatio} — ${aspectNarrative}
+  - Output dimensions (mandatory): the final image MUST be exactly ${targetWidth} pixels wide by ${targetHeight} pixels tall — no other width or height.
+  - Full-bleed photograph: the image must be a single continuous photograph that completely fills every pixel of the ${targetWidth}×${targetHeight} canvas. Subject, sky, ground, and environment extend to all four edges. There must be NO letterboxing, NO pillarboxing, NO black bars, NO gray mattes, NO cinematic “widescreen” bands, NO empty margins, NO frames-within-frames, and NO unused solid-color strips — unless the user's written prompt explicitly asks for bars, frames, or matte effects by name.
   - Resolution label: ${resolution} — match detail level appropriate for ${targetWidth}×${targetHeight}px.
   ${referenceBlock}
-  - Composition must be designed correctly for ${aspectRatio}; subject and environment should feel native to that frame, not cropped from another ratio.
+  - Composition must be native to ${aspectRatio}: design the shot as if shooting with a camera sensor in that exact aspect — not a smaller photo pasted onto a larger canvas.
 
   High-end, cinematic execution: ultra-detailed, sharp focus, perfect composition.
   Premium lighting, realistic materials, high dynamic range.

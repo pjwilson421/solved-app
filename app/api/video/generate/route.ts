@@ -1,12 +1,24 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { GoogleGenAI } from "@google/genai";
 
 export const runtime = "nodejs";
 
-const VEO_MODEL = "veo-2.0-generate-001";
+/** Override with GEMINI_VIDEO_MODEL — use `veo-3.1-generate-preview` for first+last frame interpolation when your key supports it. */
+const DEFAULT_VIDEO_MODEL = "veo-2.0-generate-001";
 const POLL_INTERVAL_MS = 10_000;
 const MAX_WAIT_MS = 10 * 60 * 1000;
+const MAX_FRAME_BASE64_CHARS = 18_000_000;
+
+const PROMPT_BOTH_FRAMES =
+  "Create a smooth, cinematic transition between the provided first and last keyframes. Preserve subjects and continuity; motion should feel intentional and natural.";
+const PROMPT_START_ONLY =
+  "Bring this opening frame to life with believable motion, depth, and continuity.";
+const PROMPT_END_ONLY =
+  "Generate a short clip that builds motion and resolves toward this final composition.";
 
 type VideoOperationLike = {
+  name?: string;
   done?: boolean;
   error?: unknown;
   response?: {
@@ -23,8 +35,130 @@ type VideoOperationLike = {
   };
 };
 
+type FramePayload = { mimeType: string; data: string };
+
+function readEnvLocalValue(cwd: string, keyName: string): string | undefined {
+  try {
+    const p = join(cwd, ".env.local");
+    if (!existsSync(p)) return undefined;
+    const raw = readFileSync(p, "utf8");
+    for (const line of raw.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const eq = trimmed.indexOf("=");
+      if (eq <= 0) continue;
+      const k = trimmed.slice(0, eq).trim();
+      if (k !== keyName) continue;
+      let v = trimmed.slice(eq + 1).trim();
+      if (
+        (v.startsWith('"') && v.endsWith('"')) ||
+        (v.startsWith("'") && v.endsWith("'"))
+      ) {
+        v = v.slice(1, -1);
+      }
+      const out = v.trim();
+      return out || undefined;
+    }
+  } catch {
+    /* ignore */
+  }
+  return undefined;
+}
+
+function resolveGeminiApiKey(cwd: string): string | undefined {
+  const fromProc = process.env.GEMINI_API_KEY?.trim();
+  if (fromProc) return fromProc;
+  return readEnvLocalValue(cwd, "GEMINI_API_KEY");
+}
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function parseFramePayload(raw: unknown): FramePayload | null {
+  if (!raw || typeof raw !== "object" || raw === null) return null;
+  const o = raw as Record<string, unknown>;
+  const mimeType =
+    typeof o.mimeType === "string" ? o.mimeType.trim().toLowerCase() : "";
+  const data =
+    typeof o.data === "string" ? o.data.trim().replace(/\s/g, "") : "";
+  if (!mimeType || !/^image\/(jpeg|png|webp)$/.test(mimeType)) return null;
+  if (!data || data.length > MAX_FRAME_BASE64_CHARS) return null;
+  return { mimeType, data };
+}
+
+function videoAspectFromUi(aspect: string): "16:9" | "9:16" {
+  const a = aspect.trim();
+  if (a === "9:16" || a === "4:5") return "9:16";
+  return "16:9";
+}
+
+function durationUiToSeconds(raw: unknown): number {
+  if (typeof raw === "number" && Number.isFinite(raw)) {
+    const n = Math.round(raw);
+    return Math.min(8, Math.max(5, n));
+  }
+  if (typeof raw === "string") {
+    const m = raw.trim().match(/^(\d+)/);
+    if (m) {
+      const n = parseInt(m[1], 10);
+      if (Number.isFinite(n)) {
+        if (n <= 5) return 5;
+        if (n <= 7) return 6;
+        return 8;
+      }
+    }
+  }
+  return 8;
+}
+
+function geminiImagePayload(frame: FramePayload) {
+  return {
+    bytesBase64Encoded: frame.data,
+    mimeType: frame.mimeType,
+  };
+}
+
+async function predictVideosLongRunning(args: {
+  apiKey: string;
+  model: string;
+  instance: Record<string, unknown>;
+  parameters: Record<string, unknown>;
+}): Promise<{ name: string }> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(args.model)}:predictLongRunning?key=${encodeURIComponent(args.apiKey)}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      instances: [args.instance],
+      parameters: args.parameters,
+    }),
+  });
+
+  const data = (await res.json().catch(() => null)) as Record<
+    string,
+    unknown
+  > | null;
+
+  if (!res.ok) {
+    const errObj = data?.error;
+    const msg =
+      errObj &&
+      typeof errObj === "object" &&
+      errObj !== null &&
+      "message" in errObj &&
+      typeof (errObj as { message: unknown }).message === "string"
+        ? (errObj as { message: string }).message
+        : `Video predictLongRunning failed (${res.status}).`;
+    throw new Error(msg);
+  }
+
+  const name = typeof data?.name === "string" ? data.name.trim() : "";
+  if (!name) {
+    throw new Error("Video generation did not return an operation name.");
+  }
+  return { name };
 }
 
 function extractVideoUrl(operation: VideoOperationLike): string | null {
@@ -108,10 +242,14 @@ async function fetchVideoAsDataUrl(videoUrl: string, apiKey: string): Promise<st
 
 export async function POST(request: Request) {
   try {
-    const apiKey = process.env.GEMINI_API_KEY?.trim();
+    const cwd = process.cwd();
+    const apiKey = resolveGeminiApiKey(cwd);
     if (!apiKey) {
       return Response.json(
-        { error: "GEMINI_API_KEY environment variable is not set" },
+        {
+          error:
+            "GEMINI_API_KEY is not set. Add it to .env.local (no spaces around =) and restart the dev server.",
+        },
         { status: 500 },
       );
     }
@@ -123,27 +261,95 @@ export async function POST(request: Request) {
       return Response.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
-    const prompt =
-      body &&
-      typeof body === "object" &&
-      typeof (body as { prompt?: unknown }).prompt === "string"
-        ? (body as { prompt: string }).prompt.trim()
-        : "";
+    if (!body || typeof body !== "object") {
+      return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
 
-    if (!prompt) {
+    const o = body as Record<string, unknown>;
+
+    const userPrompt = typeof o.prompt === "string" ? o.prompt.trim() : "";
+    const startFrame = parseFramePayload(o.startFrame);
+    const endFrame = parseFramePayload(o.endFrame);
+
+    if (!userPrompt && !startFrame && !endFrame) {
       return Response.json(
-        { error: "Invalid request body: 'prompt' string is required." },
+        {
+          error:
+            "Provide a text prompt and/or a start frame and/or an end frame image.",
+        },
         { status: 400 },
       );
     }
 
+    let effectivePrompt = userPrompt;
+    if (!effectivePrompt) {
+      if (startFrame && endFrame) effectivePrompt = PROMPT_BOTH_FRAMES;
+      else if (startFrame) effectivePrompt = PROMPT_START_ONLY;
+      else if (endFrame) effectivePrompt = PROMPT_END_ONLY;
+      else effectivePrompt = "A compelling cinematic video.";
+    }
+
+    const aspectRaw =
+      typeof o.aspectRatio === "string" ? o.aspectRatio : "16:9";
+    const videoAspect = videoAspectFromUi(aspectRaw);
+    const durationSeconds = durationUiToSeconds(o.duration);
+
+    const model =
+      process.env.GEMINI_VIDEO_MODEL?.trim() ||
+      readEnvLocalValue(cwd, "GEMINI_VIDEO_MODEL") ||
+      DEFAULT_VIDEO_MODEL;
+
+    const instance: Record<string, unknown> = {
+      prompt: effectivePrompt,
+    };
+
+    if (startFrame) {
+      instance.image = geminiImagePayload(startFrame);
+    }
+    let usedLastFrame = false;
+    if (endFrame && startFrame) {
+      instance.lastFrame = geminiImagePayload(endFrame);
+      usedLastFrame = true;
+    } else if (endFrame && !startFrame) {
+      instance.image = geminiImagePayload(endFrame);
+    }
+
+    const parameters: Record<string, unknown> = {
+      aspectRatio: videoAspect,
+      durationSeconds,
+    };
+
     const ai = new GoogleGenAI({ apiKey });
 
-    let operation: VideoOperationLike = await ai.models.generateVideos({
-      model: VEO_MODEL,
-      prompt,
-    });
+    let opName: string;
+    try {
+      const started = await predictVideosLongRunning({
+        apiKey,
+        model,
+        instance,
+        parameters,
+      });
+      opName = started.name;
+    } catch (firstErr) {
+      if (usedLastFrame && instance.lastFrame) {
+        console.warn(
+          "[api/video/generate] Retrying without lastFrame. For first+last keyframes use a model that supports both (e.g. set GEMINI_VIDEO_MODEL=veo-3.1-generate-preview). Original error:",
+          stringifyError(firstErr),
+        );
+        delete instance.lastFrame;
+        const retry = await predictVideosLongRunning({
+          apiKey,
+          model,
+          instance,
+          parameters,
+        });
+        opName = retry.name;
+      } else {
+        throw firstErr;
+      }
+    }
 
+    let operation: VideoOperationLike = { name: opName, done: false };
     const startedAt = Date.now();
 
     while (!operation.done) {
@@ -153,9 +359,9 @@ export async function POST(request: Request) {
 
       await sleep(POLL_INTERVAL_MS);
 
-      operation = await ai.operations.getVideosOperation({
-        operation: operation as any,
-      });
+      operation = (await ai.operations.getVideosOperation({
+        operation: operation as never,
+      })) as VideoOperationLike;
     }
 
     if (operation.error) {

@@ -73,10 +73,17 @@ import {
   pickShareableHttpUrl,
 } from "@/lib/create-image/media-actions";
 import {
+  clearLastEditorPreview,
+  isPersistableEditorPreviewUrl,
+  readLastEditorPreview,
+  writeLastEditorPreview,
+} from "@/lib/create-image/last-editor-preview-persistence";
+import {
   clearPendingEditorImage,
   readPendingEditorImage,
   writePendingEditorImage,
   type EditorHandoffMode,
+  type PendingEditorImagePayload,
 } from "@/lib/create-image/pending-editor-image";
 import { handleShareTarget } from "@/lib/share/web-share";
 import type { ActivityHistoryEntry } from "@/components/history/types";
@@ -101,6 +108,27 @@ import { PREVIEW_RASTER_OBJECT_FIT } from "./preview-raster-display";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+/** Prefer full-fidelity URL from Create Image handoff (session may store a smaller `imageUrl`). */
+function rasterUrlFromPendingHandoff(
+  pending: PendingEditorImagePayload | null,
+): string {
+  if (!pending) return "";
+  const full = pending.fullResolutionUrl?.trim() ?? "";
+  const base = pending.imageUrl?.trim() ?? "";
+  if (full.length > 0) return full;
+  return base;
+}
+
+/** Best raster for history-backed image rows (never prefers thumbnail when a full URL exists). */
+function editorBestRasterForImageActivityEntry(
+  entry: ActivityHistoryEntry,
+): string | undefined {
+  if (entry.kind !== "image") return undefined;
+  return (
+    bestFullscreenImageUrlForEntry(entry) ?? bestImageUrlForEntry(entry)
+  );
 }
 
 type ImageEditorClientProps = {
@@ -269,9 +297,8 @@ export function ImageEditorClient({
 
   const [slotImages, setSlotImages] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
-      const pending = readPendingEditorImage();
-      const handoff = pending?.imageUrl?.trim();
-      if (handoff) return [handoff];
+      const raster = rasterUrlFromPendingHandoff(readPendingEditorImage());
+      if (raster) return [raster];
     }
     return initialImageUrl ? [initialImageUrl] : [];
   });
@@ -291,33 +318,51 @@ export function ImageEditorClient({
 
   useLayoutEffect(() => {
     const pending = readPendingEditorImage();
-    const handoff = pending?.imageUrl?.trim();
-    if (handoff) {
-      setSlotImages([handoff]);
-      if (pending.activityId) setActiveHistoryId(pending.activityId);
+    const raster = rasterUrlFromPendingHandoff(pending);
+    if (raster) {
+      setSlotImages([raster]);
+      if (pending?.activityId) setActiveHistoryId(pending.activityId);
       else if (initialActivityId) setActiveHistoryId(initialActivityId);
-      if (pending.fileId) editorLineageParentRef.current = pending.fileId;
-      if (pending.mode) setEditorHandoffMode(pending.mode);
+      if (pending?.fileId) editorLineageParentRef.current = pending.fileId;
+      if (pending?.mode) setEditorHandoffMode(pending.mode);
       else if (initialHandoffMode) setEditorHandoffMode(initialHandoffMode);
-      if (pending.promptText) setPreviewPrompt(pending.promptText);
-      if (pending.createdAt) {
+      if (pending?.promptText) setPreviewPrompt(pending.promptText);
+      if (pending?.createdAt) {
         const d = new Date(pending.createdAt);
         if (!Number.isNaN(d.getTime())) setPreviewAt(d);
       }
       if (
-        pending.aspectRatio &&
+        pending?.aspectRatio &&
         ASPECT_RATIOS.includes(pending.aspectRatio as AspectRatio)
       ) {
         setAspectRatio(pending.aspectRatio as AspectRatio);
       }
-      if (pending.resolution) {
+      if (pending?.resolution) {
         setQuality(normalizeQuality(pending.resolution));
       }
       return;
     }
     if (initialActivityId) setActiveHistoryId(initialActivityId);
     if (initialHandoffMode) setEditorHandoffMode(initialHandoffMode);
-  }, [initialActivityId, initialHandoffMode]);
+
+    if (initialImageUrl || initialFileId || initialActivityId) return;
+
+    const last = readLastEditorPreview();
+    const lastRaster = rasterUrlFromPendingHandoff(last);
+    if (!lastRaster) return;
+
+    setSlotImages((prev) => {
+      if (prev.some((u) => typeof u === "string" && u.trim().length > 0)) {
+        return prev;
+      }
+      return [lastRaster];
+    });
+  }, [
+    initialActivityId,
+    initialFileId,
+    initialHandoffMode,
+    initialImageUrl,
+  ]);
 
   /**
    * New generations are often large `data:` URLs — they may not fit in sessionStorage, so
@@ -336,7 +381,7 @@ export function ImageEditorClient({
     }
     const entry = activityEntries.find((e) => e.id === id);
     if (!entry || entry.kind !== "image") return;
-    const url = bestImageUrlForEntry(entry);
+    const url = editorBestRasterForImageActivityEntry(entry);
     if (!url?.trim()) return;
     setSlotImages([url]);
   }, [
@@ -472,7 +517,16 @@ export function ImageEditorClient({
       activityEntries
         .filter((e) => e.kind === "image" && e.origin === "generated-image")
         .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime())
-        .map(activityEntryToHistoryItem),
+        .map((entry) => {
+          const item = activityEntryToHistoryItem(entry);
+          const parts = [entry.aspectRatio, entry.resolution].filter(
+            (value): value is string =>
+              typeof value === "string" && value.length > 0,
+          );
+          return parts.length > 0
+            ? { ...item, metadataLine: parts.join(" · ") }
+            : item;
+        }),
     [activityEntries],
   );
 
@@ -516,7 +570,7 @@ export function ImageEditorClient({
     (id: string) => {
       const item = activityEntries.find((e) => e.id === id);
       if (!item || item.kind !== "image") return;
-      const primary = bestImageUrlForEntry(item);
+      const primary = editorBestRasterForImageActivityEntry(item);
       const urls =
         primary != null
           ? [primary]
@@ -601,6 +655,7 @@ export function ImageEditorClient({
           if (activeHistoryId === itemId) {
             setActiveHistoryId(null);
             setSlotImages([]);
+            clearLastEditorPreview();
             setPreviewPrompt("");
             setPreviewAt(null);
             editorLineageParentRef.current = null;
@@ -724,7 +779,8 @@ export function ImageEditorClient({
       );
       const batchId = uid();
       const createdAt = new Date();
-      const promptText = trimmed || "(reference only)";
+      /** Same first line as sent to the model (before the editor appendix) — show under preview. */
+      const promptText = promptLine;
       const subtitle =
         promptText.length > 120 ? `${promptText.slice(0, 117)}…` : promptText;
 
@@ -805,10 +861,45 @@ export function ImageEditorClient({
 
   const editorBestUrl = useMemo(() => {
     const fromEntry = activeHistoryRecord
-      ? bestImageUrlForEntry(activeHistoryRecord)
+      ? editorBestRasterForImageActivityEntry(activeHistoryRecord)
       : undefined;
     return fromEntry ?? slotImages[0];
   }, [activeHistoryRecord, slotImages]);
+
+  useEffect(() => {
+    const slot = slotImages[0]?.trim() ?? "";
+    if (!slot || !isPersistableEditorPreviewUrl(slot)) return;
+    const best = editorBestUrl?.trim() ?? "";
+    const fullRes = best.length > 0 && best !== slot ? best : undefined;
+    writeLastEditorPreview({
+      imageUrl: slot,
+      ...(fullRes ? { fullResolutionUrl: fullRes } : {}),
+    });
+  }, [slotImages, editorBestUrl]);
+
+  /** If slots still hold a downscaled URL while the activity row has full resolution, upgrade once. */
+  useEffect(() => {
+    const entry = activeHistoryRecord;
+    if (!entry || entry.kind !== "image") return;
+    const best = editorBestRasterForImageActivityEntry(entry);
+    if (!best?.trim()) return;
+    setSlotImages((prev) => {
+      if (prev.length === 0) return prev;
+      if (prev.length === 1) {
+        const cur = prev[0]?.trim();
+        if (!cur || cur === best.trim()) return prev;
+        return [best];
+      }
+      const fromEntry = entry.imageUrls?.filter(
+        (u): u is string => typeof u === "string" && u.trim().length > 0,
+      );
+      if (fromEntry && fromEntry.length === prev.length) {
+        if (fromEntry.every((u, i) => u === prev[i])) return prev;
+        return fromEntry;
+      }
+      return prev;
+    });
+  }, [activeHistoryRecord]);
 
   const handleRegenerate = useCallback(async () => {
     const canvasUrl = slotImages[0]?.trim();
@@ -977,6 +1068,7 @@ export function ImageEditorClient({
           break;
         case "delete":
           setSlotImages([]);
+          clearLastEditorPreview();
           setPreviewPrompt("");
           setPreviewAt(null);
           editorLineageParentRef.current = null;
@@ -1567,13 +1659,13 @@ export function ImageEditorClient({
           }
           rail={
             <HistoryPanel
-              title="IMAGE HISTORY"
+              title="EDITED IMAGE HISTORY"
               items={createImageSidebarHistory}
               activeId={activeHistoryId}
               onSelect={loadHistory}
               onMenuEvent={handleHistoryMenu}
               previewMenuLikeActive={historyMenuLikeActive}
-              previewMenuPreset="create-image"
+              previewMenuPreset="image-editor-preview"
               thumbnailHoverOpacityOnItemHover
               className="min-h-0 w-full min-w-0 flex-1 flex-col"
             />
@@ -1605,7 +1697,7 @@ export function ImageEditorClient({
                       layoutFrame={layoutFrame}
                       showPreviewLabel={false}
                       promptDescriptionAnchoredToPreview
-                      previewMenuPreset="create-image"
+                      previewMenuPreset="image-editor-preview"
                       onPreviewClick={handlePreviewClick}
                       onMenuEvent={handlePreviewMenu}
                       previewMenuLikeActive={
@@ -1613,9 +1705,12 @@ export function ImageEditorClient({
                         isLiked(likedKey.activity(activeHistoryId))
                       }
                       imageObjectFit={PREVIEW_RASTER_OBJECT_FIT}
+                      rasterSourceUnoptimized
                       previewBodyOverlay={editorPreviewOverlayDesktop}
                       previewMediaFilter={previewEnhanceFilter}
                       previewMediaClickable={!paintToolBlocksPreviewClick}
+                      previewSpecsLine={`${aspectRatio} · ${quality}`}
+                      previewSpecsInlineWithDate
                     />
                     {renderEditorToolStripUnderMeta(
                       minWidth1280,
@@ -1669,7 +1764,7 @@ export function ImageEditorClient({
                       layoutFrame={layoutFrame}
                       showPreviewLabel={false}
                       promptDescriptionAnchoredToPreview
-                      previewMenuPreset="create-image"
+                      previewMenuPreset="image-editor-preview"
                       onPreviewClick={handlePreviewClick}
                       onMenuEvent={handlePreviewMenu}
                       previewMenuLikeActive={
@@ -1677,9 +1772,12 @@ export function ImageEditorClient({
                         isLiked(likedKey.activity(activeHistoryId))
                       }
                       imageObjectFit={PREVIEW_RASTER_OBJECT_FIT}
+                      rasterSourceUnoptimized
                       previewBodyOverlay={editorPreviewOverlayMobile}
                       previewMediaFilter={previewEnhanceFilter}
                       previewMediaClickable={!paintToolBlocksPreviewClick}
+                      previewSpecsLine={`${aspectRatio} · ${quality}`}
+                      previewSpecsInlineWithDate
                     />
                     {renderEditorToolStripUnderMeta(
                       !minWidth1280,
@@ -1721,6 +1819,8 @@ export function ImageEditorClient({
           onVariations={setVariations}
           variationOptions={CREATE_IMAGE_VARIATION_OPTIONS}
           variant={promptDockVariant}
+          hideAspectRatio
+          hideVariations
         />
       </FixedPromptBarDock>
 
@@ -1740,6 +1840,7 @@ export function ImageEditorClient({
               fill
               className="object-contain"
               sizes="100vw"
+              unoptimized
             />
           </div>
         </div>

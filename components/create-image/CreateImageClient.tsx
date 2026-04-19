@@ -231,6 +231,8 @@ export function CreateImageClient() {
     ? displayAspectRatio
     : aspectRatio;
 
+  const previewResolution = hasDisplayedGeneration ? displayQuality : quality;
+
   const createImageSidebarHistory = useMemo(
     () =>
       activityEntries
@@ -240,7 +242,15 @@ export function CreateImageClient() {
             (e.origin === "generated-image" || e.origin === "template-draft"),
         )
         .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime())
-        .map(activityEntryToHistoryItem),
+        .map((entry) => {
+          const item = activityEntryToHistoryItem(entry);
+          const parts = [entry.aspectRatio, entry.resolution].filter(
+            (value): value is string => typeof value === "string" && value.length > 0,
+          );
+          return parts.length > 0
+            ? { ...item, metadataLine: parts.join(" · ") }
+            : item;
+        }),
     [activityEntries],
   );
 
@@ -1003,6 +1013,9 @@ export function CreateImageClient() {
                       imageObjectFit={PREVIEW_RASTER_OBJECT_FIT}
                       composedPreview={composedPreview}
                       afterPreviewStack={templatesAfterPreviewStackDesktop}
+                      rasterSourceUnoptimized
+                      previewSpecsLine={`${previewAspectRatio} · ${previewResolution}`}
+                      previewSpecsInlineWithDate
                     />
                   </div>
                 </div>
@@ -1057,6 +1070,9 @@ export function CreateImageClient() {
                       imageObjectFit={PREVIEW_RASTER_OBJECT_FIT}
                       composedPreview={composedPreview}
                       afterPreviewStack={templatesAfterPreviewStackMobile}
+                      rasterSourceUnoptimized
+                      previewSpecsLine={`${previewAspectRatio} · ${previewResolution}`}
+                      previewSpecsInlineWithDate
                     />
                   </div>
                 </main>

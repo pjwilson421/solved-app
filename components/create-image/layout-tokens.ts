@@ -8,7 +8,7 @@ export const FRAME_SLOT_ROUNDED = "rounded-[11px]" as const;
 
 /**
  * Square tile in `DesktopTemplatesStrip` (xl+).
- * Also used for Start/End frame slots on Create Video (`VideoFrameReferences` default: fixed 115×115 below `xl`; `compact`: 184×184 at `xl+`).
+ * Also used for Start/End frame slots on Create Video (`VideoFrameReferences` default: 58×58 below `xl`; `compact`: 92×92 at `xl+`).
  */
 export const DESKTOP_TEMPLATE_TILE_PX = 120;
 

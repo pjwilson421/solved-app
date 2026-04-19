@@ -36,6 +36,8 @@ export type HistoryItem = {
   prompt: string;
   createdAt: Date;
   imageUrls: string[];
+  /** Optional extra metadata shown inline with the date/time in HistoryPanel rows. */
+  metadataLine?: string;
   /** Set for Create Video generations — poster stays in `imageUrls[0]`. */
   videoUrl?: string;
 };
