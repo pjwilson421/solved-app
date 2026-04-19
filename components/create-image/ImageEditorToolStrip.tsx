@@ -9,10 +9,7 @@ import {
 } from "react";
 import { ICONS, type IconPath } from "@/components/icons/icon-paths";
 import { cn } from "@/lib/utils";
-import {
-  IMAGE_EDITOR_TEXT_COLORS,
-  IMAGE_EDITOR_TEXT_FONT_OPTIONS,
-} from "@/components/create-image/ImageEditorTextOverlay";
+import { IMAGE_EDITOR_TEXT_COLORS } from "@/components/create-image/ImageEditorTextOverlay";
 
 function UndoIcon({ className }: { className?: string }) {
   return (
@@ -93,6 +90,10 @@ export type ImageEditorEnhanceToolMenuProps = {
   saturation: number;
   onBrightnessChange: (value: number) => void;
   onSaturationChange: (value: number) => void;
+  /** Reset brightness and saturation to defaults (100%). */
+  onUndoEnhance: () => void;
+  /** False when both sliders are already at default (100). */
+  canUndoEnhance: boolean;
   onHoverOpen?: () => void;
   onHoverClose?: () => void;
 };
@@ -152,12 +153,11 @@ const TOOL_IDS = [
   "add",
   "remove",
   "enhance",
-  "regenerate",
   "text",
   "draw",
 ] as const;
 
-export type ImageEditorToolId = (typeof TOOL_IDS)[number];
+export type ImageEditorToolId = (typeof TOOL_IDS)[number] | "regenerate";
 
 const LABELS: Record<ImageEditorToolId, string> = {
   add: "Add",
@@ -196,14 +196,16 @@ const toolBtnLayout = cn(
 export type ImageEditorTextToolMenuProps = {
   open: boolean;
   selectedColor: string;
+  textSize: number;
+  textSizeMin: number;
+  textSizeMax: number;
+  onTextSizeChange: (size: number) => void;
   onSelectColor: (hex: string) => void;
-  /** Which `fontFamily` value is active (focused text item or default for new text). */
-  selectedFontFamily: string;
-  onSelectFontFamily: (fontFamily: string) => void;
-  /** Bold on/off for focused text, or default for new text when none focused. */
-  boldActive: boolean;
-  onBoldToggle: () => void;
   onSwatchClick: (e: ReactMouseEvent) => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
   /** Desktop: open color menu while pointer is over the Text control (incl. popover bridge). */
   onHoverOpen?: () => void;
   /** Desktop: close after short delay so the pointer can cross the gap to the popover. */
@@ -275,6 +277,11 @@ export function ImageEditorToolStrip({
   const [hoveredToolId, setHoveredToolId] = useState<ImageEditorToolId | null>(
     null,
   );
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const addToolShellRef = useRef<HTMLDivElement | null>(null);
   const removeToolShellRef = useRef<HTMLDivElement | null>(null);
@@ -284,18 +291,17 @@ export function ImageEditorToolStrip({
 
   useEffect(() => {
     if (!outsideDismissEnabled || !onDismissActiveTool) return;
+    /** Add/Remove stay selected until toggled off or another tool is chosen — not dismissed by outside clicks. */
+    if (activeId === "add" || activeId === "remove") return;
+
     const menuOpenForActive =
-      activeId === "add"
-        ? Boolean(addToolMenu?.open)
-        : activeId === "remove"
-          ? Boolean(removeToolMenu?.open)
-          : activeId === "enhance"
-            ? Boolean(enhanceToolMenu?.open)
-            : activeId === "draw"
-              ? Boolean(drawToolMenu?.open)
-              : activeId === "text"
-                ? Boolean(textToolMenu?.open)
-                : false;
+      activeId === "enhance"
+          ? Boolean(enhanceToolMenu?.open)
+          : activeId === "draw"
+            ? Boolean(drawToolMenu?.open)
+            : activeId === "text"
+              ? Boolean(textToolMenu?.open)
+              : false;
     if (
       activeId == null ||
       activeId === "regenerate" ||
@@ -305,17 +311,13 @@ export function ImageEditorToolStrip({
     }
 
     const shellEl =
-      activeId === "add"
-        ? addToolShellRef.current
-        : activeId === "remove"
-          ? removeToolShellRef.current
-          : activeId === "enhance"
-            ? enhanceToolShellRef.current
-            : activeId === "draw"
-              ? drawToolShellRef.current
-              : activeId === "text"
-                ? textToolShellRef.current
-                : null;
+      activeId === "enhance"
+          ? enhanceToolShellRef.current
+          : activeId === "draw"
+            ? drawToolShellRef.current
+            : activeId === "text"
+              ? textToolShellRef.current
+              : null;
     if (!shellEl) return;
 
     const onPointerDown = (e: PointerEvent) => {
@@ -346,6 +348,18 @@ export function ImageEditorToolStrip({
     if (next instanceof Node && e.currentTarget.contains(next)) return;
     setHoveredToolId(null);
   };
+
+  if (!hydrated) {
+    return (
+      <div
+        className={cn(
+          "flex w-full min-w-0 flex-wrap items-center justify-start gap-2 xl:gap-2.5",
+          className,
+        )}
+        aria-label="Edit tools"
+      />
+    );
+  }
 
   return (
     <div
@@ -461,6 +475,39 @@ export function ImageEditorToolStrip({
                   className={addToolPopoverClass}
                 >
                   <div className="mb-2 text-[11px] font-medium text-tx-secondary">
+                    Text size
+                  </div>
+                  <input
+                    type="range"
+                    min={textToolMenu.textSizeMin}
+                    max={textToolMenu.textSizeMax}
+                    step={1}
+                    value={textToolMenu.textSize}
+                    onChange={(e) =>
+                      textToolMenu.onTextSizeChange(Number(e.target.value))
+                    }
+                    className={cn(
+                      "mb-2.5 box-border h-2 w-full cursor-pointer appearance-none bg-transparent p-0 leading-none outline-none",
+                      "focus:outline-none focus-visible:outline-none focus-visible:ring-0",
+                      "accent-primary",
+                      "[&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5",
+                      "[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full",
+                      "[&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:bg-[#FFFFFF]",
+                      "[&::-webkit-slider-thumb]:shadow-[0_0_0_1px_rgba(0,0,0,0.1)]",
+                      "[&::-webkit-slider-thumb]:mt-[calc((0.5rem-0.875rem)/2)]",
+                      "[&::-moz-range-thumb]:box-border [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5",
+                      "[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0",
+                      "[&::-moz-range-thumb]:bg-[#FFFFFF]",
+                      "[&::-moz-range-thumb]:shadow-[0_0_0_1px_rgba(0,0,0,0.1)]",
+                      "[&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-white/15",
+                      "[&::-moz-range-track]:h-2 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-white/15",
+                    )}
+                    aria-valuemin={textToolMenu.textSizeMin}
+                    aria-valuemax={textToolMenu.textSizeMax}
+                    aria-valuenow={textToolMenu.textSize}
+                    aria-label="Text size"
+                  />
+                  <div className="mb-2 text-[11px] font-medium text-tx-secondary">
                     Text color
                   </div>
                   <div className="grid grid-cols-4 gap-2">
@@ -494,58 +541,42 @@ export function ImageEditorToolStrip({
                       );
                     })}
                   </div>
-                  <div className="mb-2 mt-3 text-[11px] font-medium text-tx-secondary">
-                    Font
+                  <div className="mt-2 flex items-center justify-end gap-1 border-t border-white/10 pt-2">
+                    <button
+                      type="button"
+                      className={cn(
+                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-tx-secondary transition-colors",
+                        "hover:bg-[#0d1d45] hover:text-white",
+                        "disabled:cursor-not-allowed disabled:opacity-40",
+                      )}
+                      aria-label="Undo text action"
+                      disabled={!textToolMenu.canUndo}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        textToolMenu.onUndo();
+                      }}
+                    >
+                      <UndoIcon />
+                    </button>
+                    <button
+                      type="button"
+                      className={cn(
+                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-tx-secondary transition-colors",
+                        "hover:bg-[#0d1d45] hover:text-white",
+                        "disabled:cursor-not-allowed disabled:opacity-40",
+                      )}
+                      aria-label="Redo text action"
+                      disabled={!textToolMenu.canRedo}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        textToolMenu.onRedo();
+                      }}
+                    >
+                      <RedoIcon />
+                    </button>
                   </div>
-                  <div className="mb-3 flex max-h-[200px] flex-col gap-1 overflow-y-auto pr-0.5">
-                    {IMAGE_EDITOR_TEXT_FONT_OPTIONS.map((opt) => {
-                      const selected =
-                        textToolMenu.selectedFontFamily === opt.fontFamily;
-                      return (
-                        <button
-                          key={opt.label}
-                          type="button"
-                          className={cn(
-                            "w-full rounded-lg border-2 px-2 py-1.5 text-left text-[11px] transition-colors",
-                            selected
-                              ? "border-white bg-white/5"
-                              : "border-transparent hover:border-white/40",
-                          )}
-                          style={{ fontFamily: opt.fontFamily }}
-                          aria-pressed={selected}
-                          aria-label={`Font ${opt.label}`}
-                          onPointerDown={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            textToolMenu.onSelectFontFamily(opt.fontFamily);
-                          }}
-                        >
-                          {opt.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <div className="mb-2 text-[11px] font-medium text-tx-secondary">
-                    Style
-                  </div>
-                  <button
-                    type="button"
-                    className={cn(
-                      "w-full rounded-lg border-2 px-2 py-2 text-center text-[11px] font-semibold transition-colors",
-                      textToolMenu.boldActive
-                        ? "border-white bg-[#0d1d45] text-white"
-                        : "border-transparent hover:border-white/40 text-tx-secondary",
-                    )}
-                    aria-pressed={textToolMenu.boldActive}
-                    aria-label="Bold"
-                    onPointerDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      textToolMenu.onBoldToggle();
-                    }}
-                  >
-                    Bold
-                  </button>
                 </div>
               ) : null}
             </div>
@@ -763,6 +794,25 @@ export function ImageEditorToolStrip({
                     aria-valuenow={enhanceToolMenu.saturation}
                     aria-label="Saturation"
                   />
+                  <div className="mt-2 flex items-center justify-end border-t border-white/10 pt-2">
+                    <button
+                      type="button"
+                      className={cn(
+                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-tx-secondary transition-colors",
+                        "hover:bg-[#0d1d45] hover:text-white",
+                        "disabled:cursor-not-allowed disabled:opacity-40",
+                      )}
+                      aria-label="Undo brightness and saturation"
+                      disabled={!enhanceToolMenu.canUndoEnhance}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        enhanceToolMenu.onUndoEnhance();
+                      }}
+                    >
+                      <UndoIcon />
+                    </button>
+                  </div>
                 </div>
               ) : null}
             </div>

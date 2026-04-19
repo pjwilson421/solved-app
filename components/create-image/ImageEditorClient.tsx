@@ -9,6 +9,7 @@ import {
   useState,
   type MouseEvent as ReactMouseEvent,
   type RefObject,
+  type SetStateAction,
 } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -131,7 +132,7 @@ function editorBestRasterForImageActivityEntry(
   );
 }
 
-type ImageEditorClientProps = {
+export type ImageEditorClientProps = {
   initialImageUrl: string | null;
   /** Catalog file id — resolved against shared `fileEntries` (generated images in Files). */
   initialFileId?: string | null;
@@ -140,6 +141,30 @@ type ImageEditorClientProps = {
   /** URL `mode` query: `edit` vs `upscale` handoff (session payload may override). */
   initialHandoffMode?: EditorHandoffMode | null;
 };
+
+function cloneEditorTextItems(items: EditorTextItem[]): EditorTextItem[] {
+  return items.map((item) => ({ ...item }));
+}
+
+function areEditorTextItemsEqual(a: EditorTextItem[], b: EditorTextItem[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i += 1) {
+    const left = a[i];
+    const right = b[i];
+    if (
+      left.id !== right.id ||
+      left.xPct !== right.xPct ||
+      left.yPct !== right.yPct ||
+      left.text !== right.text ||
+      left.color !== right.color ||
+      left.fontFamily !== right.fontFamily ||
+      left.fontWeight !== right.fontWeight
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
 
 export function ImageEditorClient({
   initialImageUrl,
@@ -266,9 +291,13 @@ export function ImageEditorClient({
   );
 
   const focusedEditorTextIdRef = useRef<string | null>(null);
+  const lastEditorTextIdRef = useRef<string | null>(null);
 
   const [editorTextItems, setEditorTextItems] = useState<EditorTextItem[]>([]);
+  const [textUndoStack, setTextUndoStack] = useState<EditorTextItem[][]>([]);
+  const [textRedoStack, setTextRedoStack] = useState<EditorTextItem[][]>([]);
   const [activeTextColor, setActiveTextColor] = useState("#ffffff");
+  const [activeTextSize, setActiveTextSize] = useState(16);
   const [activeTextFont, setActiveTextFont] = useState(
     () => IMAGE_EDITOR_TEXT_FONT_OPTIONS[0].fontFamily,
   );
@@ -279,21 +308,86 @@ export function ImageEditorClient({
   );
   const [textColorMenuOpen, setTextColorMenuOpen] = useState(false);
 
+  const applyEditorTextItemsChange = useCallback(
+    (
+      updater: SetStateAction<EditorTextItem[]>,
+      options?: { trackHistory?: boolean },
+    ) => {
+      const trackHistory = options?.trackHistory ?? true;
+      setEditorTextItems((prev) => {
+        const nextRaw =
+          typeof updater === "function"
+            ? (updater as (items: EditorTextItem[]) => EditorTextItem[])(prev)
+            : updater;
+        const prevSnapshot = cloneEditorTextItems(prev);
+        const nextSnapshot = cloneEditorTextItems(nextRaw);
+        const changed = !areEditorTextItemsEqual(prevSnapshot, nextSnapshot);
+        if (trackHistory && changed) {
+          setTextUndoStack((stack) => [...stack, prevSnapshot]);
+          setTextRedoStack([]);
+        }
+        return nextSnapshot;
+      });
+    },
+    [],
+  );
+
+  const syncFocusedTextAfterSnapshot = useCallback((items: EditorTextItem[]) => {
+    const focusedId = focusedEditorTextIdRef.current;
+    if (!focusedId) return;
+    if (items.some((item) => item.id === focusedId)) return;
+    focusedEditorTextIdRef.current = null;
+    setFocusedEditorTextId(null);
+  }, []);
+
+  const resolveActiveTextTargetId = useCallback(
+    (items: EditorTextItem[]): string | null => {
+      const focusedId = focusedEditorTextIdRef.current;
+      if (focusedId && items.some((item) => item.id === focusedId)) return focusedId;
+      const lastId = lastEditorTextIdRef.current;
+      if (lastId && items.some((item) => item.id === lastId)) return lastId;
+      return null;
+    },
+    [],
+  );
+
+  const handleTextUndo = useCallback(() => {
+    setTextUndoStack((undoStack) => {
+      if (undoStack.length === 0) return undoStack;
+      const previousSnapshot = undoStack[undoStack.length - 1];
+      const nextItems = cloneEditorTextItems(previousSnapshot);
+      setTextRedoStack((redoStack) => [...redoStack, cloneEditorTextItems(editorTextItems)]);
+      setEditorTextItems(nextItems);
+      syncFocusedTextAfterSnapshot(nextItems);
+      return undoStack.slice(0, -1);
+    });
+  }, [editorTextItems, syncFocusedTextAfterSnapshot]);
+
+  const handleTextRedo = useCallback(() => {
+    setTextRedoStack((redoStack) => {
+      if (redoStack.length === 0) return redoStack;
+      const nextSnapshot = redoStack[redoStack.length - 1];
+      const nextItems = cloneEditorTextItems(nextSnapshot);
+      setTextUndoStack((undoStack) => [...undoStack, cloneEditorTextItems(editorTextItems)]);
+      setEditorTextItems(nextItems);
+      syncFocusedTextAfterSnapshot(nextItems);
+      return redoStack.slice(0, -1);
+    });
+  }, [editorTextItems, syncFocusedTextAfterSnapshot]);
+
   const [enhanceToolMenuOpen, setEnhanceToolMenuOpen] = useState(false);
   /** CSS filter percentages; 100 = unchanged (`brightness` / `saturate`). */
   const [enhanceBrightness, setEnhanceBrightness] = useState(100);
   const [enhanceSaturation, setEnhanceSaturation] = useState(100);
 
-  const addToolMenuOpenRef = useRef(addToolMenuOpen);
-  addToolMenuOpenRef.current = addToolMenuOpen;
-  const removeToolMenuOpenRef = useRef(removeToolMenuOpen);
-  removeToolMenuOpenRef.current = removeToolMenuOpen;
-  const textColorMenuOpenRef = useRef(textColorMenuOpen);
-  textColorMenuOpenRef.current = textColorMenuOpen;
-  const enhanceToolMenuOpenRef = useRef(enhanceToolMenuOpen);
-  enhanceToolMenuOpenRef.current = enhanceToolMenuOpen;
-  const drawToolMenuOpenRef = useRef(drawToolMenuOpen);
-  drawToolMenuOpenRef.current = drawToolMenuOpen;
+  const dismissActiveEditorTool = useCallback(() => {
+    setActiveTool(null);
+    setAddToolMenuOpen(false);
+    setRemoveToolMenuOpen(false);
+    setTextColorMenuOpen(false);
+    setEnhanceToolMenuOpen(false);
+    setDrawToolMenuOpen(false);
+  }, []);
 
   const [slotImages, setSlotImages] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
@@ -423,20 +517,25 @@ export function ImageEditorClient({
     setAddMaskDataUrl(null);
     setRemoveMaskDataUrl(null);
     setEditorTextItems([]);
+    setTextUndoStack([]);
+    setTextRedoStack([]);
     setFocusedEditorTextId(null);
     focusedEditorTextIdRef.current = null;
+    lastEditorTextIdRef.current = null;
   }, [slotImages]);
 
   useEffect(() => {
     if (activeTool !== "text") {
-      setEditorTextItems((prev) =>
+      applyEditorTextItemsChange(
+        (prev) =>
         prev.filter((t) => t.text.trim().length > 0),
+        { trackHistory: false },
       );
       setTextColorMenuOpen(false);
       setFocusedEditorTextId(null);
       focusedEditorTextIdRef.current = null;
     }
-  }, [activeTool]);
+  }, [activeTool, applyEditorTextItemsChange]);
 
   /** Resolve catalog file → canvas when there was no session handoff (or fileEntries loads later). */
   useEffect(() => {
@@ -465,6 +564,10 @@ export function ImageEditorClient({
   }, [initialFileId, fileEntries, slotImages]);
 
   const [isGenerating, setIsGenerating] = useState(false);
+  /** Inline message when Add-tool apply validation or API fails (matches Create Video error style). */
+  const [applyEditsError, setApplyEditsError] = useState<string | null>(null);
+  /** Bumps preview overlay keys after generate so paint layers remount even if slot URL is unchanged. */
+  const [editorOverlayNonce, setEditorOverlayNonce] = useState(0);
   const generateInFlightRef = useRef(false);
   const regenerateInFlightRef = useRef(false);
   const [fullScreenUrl, setFullScreenUrl] = useState<string | null>(null);
@@ -508,9 +611,11 @@ export function ImageEditorClient({
     ? createImageScrollContentBottomPaddingPxDesktopXl()
     : createImageScrollContentBottomPaddingPx("desktop");
 
-  const generateDisabled =
-    (!barPrompt.trim() && references.length === 0) ||
-    !slotImages[0]?.trim();
+  const generateDisabled = (() => {
+    if (!slotImages[0]?.trim()) return true;
+    if (activeTool === "add" || activeTool === "remove") return false;
+    return !barPrompt.trim() && references.length === 0;
+  })();
 
   const createImageSidebarHistory = useMemo(
     () =>
@@ -520,8 +625,7 @@ export function ImageEditorClient({
         .map((entry) => {
           const item = activityEntryToHistoryItem(entry);
           const parts = [entry.aspectRatio, entry.resolution].filter(
-            (value): value is string =>
-              typeof value === "string" && value.length > 0,
+            (value) => typeof value === "string" && value.length > 0,
           );
           return parts.length > 0
             ? { ...item, metadataLine: parts.join(" · ") }
@@ -693,21 +797,56 @@ export function ImageEditorClient({
     const canvasUrl = slotImages[0]?.trim();
     if (!canvasUrl) return;
 
+    const addMaskLive =
+      (minWidth1280
+        ? addPaintOverlayRefDesktop.current?.exportPngDataUrl()
+        : addPaintOverlayRefMobile.current?.exportPngDataUrl()) ?? null;
+    const addMaskForComposeEarly = addMaskLive ?? addMaskDataUrl;
+
+    if (activeTool === "add") {
+      if (!addMaskForComposeEarly?.trim()) {
+        setApplyEditsError(
+          "Paint the area in the preview where you want to add something.",
+        );
+        return;
+      }
+      if (!barPrompt.trim()) {
+        setApplyEditsError(
+          "Enter a prompt describing what you want to add.",
+        );
+        return;
+      }
+    }
+
+    const removeMaskLive =
+      (minWidth1280
+        ? removePaintOverlayRefDesktop.current?.exportPngDataUrl()
+        : removePaintOverlayRefMobile.current?.exportPngDataUrl()) ?? null;
+    const removeMaskForComposeEarly = removeMaskLive ?? removeMaskDataUrl;
+
+    if (activeTool === "remove") {
+      if (!removeMaskForComposeEarly?.trim()) {
+        setApplyEditsError(
+          "Paint the area in the preview where you want to remove something.",
+        );
+        return;
+      }
+    }
+
     generateInFlightRef.current = true;
     setIsGenerating(true);
+    setApplyEditsError(null);
+    dismissActiveEditorTool();
     try {
       const trimmed = barPrompt.trim();
       const promptLine =
-        trimmed ||
-        "Generate a compelling image based on the attached reference images.";
-      const addMaskLive =
-        (minWidth1280
-          ? addPaintOverlayRefDesktop.current?.exportPngDataUrl()
-          : addPaintOverlayRefMobile.current?.exportPngDataUrl()) ?? null;
-      const removeMaskLive =
-        (minWidth1280
-          ? removePaintOverlayRefDesktop.current?.exportPngDataUrl()
-          : removePaintOverlayRefMobile.current?.exportPngDataUrl()) ?? null;
+        activeTool === "add"
+          ? trimmed
+          : activeTool === "remove"
+            ? trimmed ||
+              "Use the red-highlighted region(s) as the edit area: remove existing content there and apply the prompt/reference guidance for what should appear in that painted area."
+            : trimmed ||
+              "Generate a compelling image based on the attached reference images.";
       const addMaskForCompose = addMaskLive ?? addMaskDataUrl;
       const removeMaskForCompose = removeMaskLive ?? removeMaskDataUrl;
 
@@ -729,7 +868,13 @@ export function ImageEditorClient({
         hasRemoveMask: Boolean(removeMaskForCompose),
         hasIsolatedMaskRefs: isolatedMaskRefParts.length > 0,
       });
-      const promptForApi = `${promptLine}\n\n${appendix}`;
+      let promptForApi = `${promptLine}\n\n${appendix}`;
+      if (activeTool === "add" && references.length > 0) {
+        promptForApi += `\n- Prompt-bar reference image(s) (${references.length}): use as guidance for what to add inside the blue-highlighted region (subject, style, materials).`;
+      }
+      if (activeTool === "remove" && references.length > 0) {
+        promptForApi += `\n- Prompt-bar reference image(s) (${references.length}): use as guidance for what should appear in the red-highlighted painted area after removing existing content there.`;
+      }
 
       let composed = await composeEditorImageForGeneration({
         baseImageUrl: canvasUrl,
@@ -818,19 +963,32 @@ export function ImageEditorClient({
       setPreviewPrompt(promptText);
       setPreviewAt(createdAt);
       setSlotImages(urls);
+      setEditorOverlayNonce((n) => n + 1);
       editorLineageParentRef.current = null;
+      /** Inpaint masks must not persist on the new raster (same-URL edge case skips the slotImages effect). */
+      addPaintOverlayRefDesktop.current?.clearMask();
+      addPaintOverlayRefMobile.current?.clearMask();
+      removePaintOverlayRefDesktop.current?.clearMask();
+      removePaintOverlayRefMobile.current?.clearMask();
+      setAddMaskDataUrl(null);
+      setRemoveMaskDataUrl(null);
     } catch (err) {
       console.error("[ImageEditorClient] Generate failed:", err);
+      setApplyEditsError(
+        err instanceof Error ? err.message : "Image edit failed.",
+      );
     } finally {
       generateInFlightRef.current = false;
       setIsGenerating(false);
     }
   }, [
+    activeTool,
     activityEntries,
     addMaskDataUrl,
     aspectRatio,
     assetContentType,
     barPrompt,
+    dismissActiveEditorTool,
     editorTextItems,
     enhanceBrightness,
     enhanceSaturation,
@@ -844,6 +1002,10 @@ export function ImageEditorClient({
     updateActivityEntries,
     variations,
   ]);
+
+  useEffect(() => {
+    setApplyEditsError(null);
+  }, [barPrompt]);
 
   const handlePreviewClick = useCallback(() => {
     const url = slotImages[0];
@@ -916,7 +1078,10 @@ export function ImageEditorClient({
 
   const handleRegenerate = useCallback(async () => {
     const canvasUrl = slotImages[0]?.trim();
-    if (!canvasUrl || isGenerating || regenerateInFlightRef.current) return;
+    if (!canvasUrl || isGenerating || regenerateInFlightRef.current) {
+      setActiveTool((t) => (t === "regenerate" ? null : t));
+      return;
+    }
     regenerateInFlightRef.current = true;
     setIsGenerating(true);
     try {
@@ -928,11 +1093,9 @@ export function ImageEditorClient({
       const original = originalFromPreview || originalFromHistory;
       const additions = barPrompt.trim();
       const promptForApi =
-        original && additions
-          ? `${original}\n\n${additions}`
-          : additions ||
-            original ||
-            "Regenerate this image with a fresh variation while preserving intent.";
+        additions ||
+        original ||
+        "Regenerate this image with a fresh variation while preserving intent.";
 
       const referenceImages = await encodeReferenceFilesForApi(references);
       const urls = await fetchGeneratedImages({
@@ -986,12 +1149,20 @@ export function ImageEditorClient({
       setPreviewPrompt(promptText);
       setPreviewAt(createdAt);
       setSlotImages(urls);
+      setEditorOverlayNonce((n) => n + 1);
       editorLineageParentRef.current = null;
+      addPaintOverlayRefDesktop.current?.clearMask();
+      addPaintOverlayRefMobile.current?.clearMask();
+      removePaintOverlayRefDesktop.current?.clearMask();
+      removePaintOverlayRefMobile.current?.clearMask();
+      setAddMaskDataUrl(null);
+      setRemoveMaskDataUrl(null);
     } catch (err) {
       console.error("[ImageEditorClient] Regenerate failed:", err);
     } finally {
       regenerateInFlightRef.current = false;
       setIsGenerating(false);
+      setActiveTool((t) => (t === "regenerate" ? null : t));
     }
   }, [
     activeHistoryRecord,
@@ -1112,30 +1283,25 @@ export function ImageEditorClient({
     ],
   );
 
-  const dismissActiveEditorTool = useCallback(() => {
-    setActiveTool(null);
-    setAddToolMenuOpen(false);
-    setRemoveToolMenuOpen(false);
-    setTextColorMenuOpen(false);
-    setEnhanceToolMenuOpen(false);
-    setDrawToolMenuOpen(false);
-  }, []);
-
   const onToolSelect = useCallback(
     (id: ImageEditorToolId) => {
-      if (id === "add") {
-        if (
-          activeToolRef.current === "add" &&
-          addToolMenuOpenRef.current
-        ) {
+      if (id === "regenerate") {
+        if (activeToolRef.current === "regenerate") {
           dismissActiveEditorTool();
           return;
         }
-        if (
-          activeToolRef.current === "add" &&
-          !addToolMenuOpenRef.current
-        ) {
-          setAddToolMenuOpen(true);
+        setAddToolMenuOpen(false);
+        setRemoveToolMenuOpen(false);
+        setTextColorMenuOpen(false);
+        setEnhanceToolMenuOpen(false);
+        setDrawToolMenuOpen(false);
+        setActiveTool("regenerate");
+        void handleRegenerate();
+        return;
+      }
+      if (id === "add") {
+        if (activeToolRef.current === "add") {
+          dismissActiveEditorTool();
           return;
         }
         setActiveTool("add");
@@ -1147,18 +1313,8 @@ export function ImageEditorClient({
         return;
       }
       if (id === "remove") {
-        if (
-          activeToolRef.current === "remove" &&
-          removeToolMenuOpenRef.current
-        ) {
+        if (activeToolRef.current === "remove") {
           dismissActiveEditorTool();
-          return;
-        }
-        if (
-          activeToolRef.current === "remove" &&
-          !removeToolMenuOpenRef.current
-        ) {
-          setRemoveToolMenuOpen(true);
           return;
         }
         setActiveTool("remove");
@@ -1170,18 +1326,8 @@ export function ImageEditorClient({
         return;
       }
       if (id === "enhance") {
-        if (
-          activeToolRef.current === "enhance" &&
-          enhanceToolMenuOpenRef.current
-        ) {
+        if (activeToolRef.current === "enhance") {
           dismissActiveEditorTool();
-          return;
-        }
-        if (
-          activeToolRef.current === "enhance" &&
-          !enhanceToolMenuOpenRef.current
-        ) {
-          setEnhanceToolMenuOpen(true);
           return;
         }
         setActiveTool("enhance");
@@ -1193,18 +1339,8 @@ export function ImageEditorClient({
         return;
       }
       if (id === "draw") {
-        if (
-          activeToolRef.current === "draw" &&
-          drawToolMenuOpenRef.current
-        ) {
+        if (activeToolRef.current === "draw") {
           dismissActiveEditorTool();
-          return;
-        }
-        if (
-          activeToolRef.current === "draw" &&
-          !drawToolMenuOpenRef.current
-        ) {
-          setDrawToolMenuOpen(true);
           return;
         }
         setActiveTool("draw");
@@ -1216,18 +1352,8 @@ export function ImageEditorClient({
         return;
       }
       if (id === "text") {
-        if (
-          activeToolRef.current === "text" &&
-          textColorMenuOpenRef.current
-        ) {
+        if (activeToolRef.current === "text") {
           dismissActiveEditorTool();
-          return;
-        }
-        if (
-          activeToolRef.current === "text" &&
-          !textColorMenuOpenRef.current
-        ) {
-          setTextColorMenuOpen(true);
           return;
         }
         setAddToolMenuOpen(false);
@@ -1238,10 +1364,6 @@ export function ImageEditorClient({
         setTextColorMenuOpen(true);
         return;
       }
-      dismissActiveEditorTool();
-      if (id === "regenerate") {
-        void handleRegenerate();
-      }
     },
     [dismissActiveEditorTool, handleRegenerate],
   );
@@ -1250,18 +1372,8 @@ export function ImageEditorClient({
     (e: ReactMouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      if (
-        activeToolRef.current === "text" &&
-        textColorMenuOpenRef.current
-      ) {
-        dismissActiveEditorTool();
-        return;
-      }
-      if (
-        activeToolRef.current === "text" &&
-        !textColorMenuOpenRef.current
-      ) {
-        setTextColorMenuOpen(true);
+      if (activeToolRef.current === "text") {
+        setTextColorMenuOpen((open) => !open);
         return;
       }
       setAddToolMenuOpen(false);
@@ -1271,62 +1383,55 @@ export function ImageEditorClient({
       setActiveTool("text");
       setTextColorMenuOpen(true);
     },
-    [dismissActiveEditorTool],
+    [],
   );
 
   const handleTextColorSelect = useCallback((hex: string) => {
     setActiveTextColor(hex);
-    const fid = focusedEditorTextIdRef.current;
-    if (fid) {
-      setEditorTextItems((prev) =>
-        prev.map((t) => (t.id === fid ? { ...t, color: hex } : t)),
+    const targetId = resolveActiveTextTargetId(editorTextItems);
+    if (targetId) {
+      applyEditorTextItemsChange((prev) =>
+        prev.map((t) => (t.id === targetId ? { ...t, color: hex } : t)),
       );
     }
-  }, []);
+  }, [applyEditorTextItemsChange, editorTextItems, resolveActiveTextTargetId]);
 
-  const handleTextFontSelect = useCallback((fontFamily: string) => {
-    const fid = focusedEditorTextIdRef.current;
-    if (fid) {
-      setEditorTextItems((prev) =>
-        prev.map((t) => (t.id === fid ? { ...t, fontFamily } : t)),
-      );
-    } else {
-      setActiveTextFont(fontFamily);
-    }
-  }, []);
-
-  const handleTextBoldToggle = useCallback(() => {
-    const fid = focusedEditorTextIdRef.current;
-    if (fid) {
-      setEditorTextItems((prev) =>
-        prev.map((t) =>
-          t.id === fid
-            ? {
-                ...t,
-                fontWeight: (t.fontWeight ?? 400) >= 700 ? 400 : 700,
-              }
-            : t,
+  const handleTextSizeChange = useCallback(
+    (size: number) => {
+      const clamped = Math.min(96, Math.max(10, Math.round(size)));
+      setActiveTextSize(clamped);
+      const targetId = resolveActiveTextTargetId(editorTextItems);
+      if (!targetId) return;
+      applyEditorTextItemsChange((prev) =>
+        prev.map((item) =>
+          item.id === targetId ? { ...item, fontSizePx: clamped } : item,
         ),
       );
-    } else {
-      setIsTextBold((b) => !b);
-    }
-  }, []);
-
-  const focusedTextItem = useMemo(
-    () =>
-      focusedEditorTextId
-        ? editorTextItems.find((t) => t.id === focusedEditorTextId)
-        : undefined,
-    [editorTextItems, focusedEditorTextId],
+    },
+    [applyEditorTextItemsChange, editorTextItems, resolveActiveTextTargetId],
   );
 
-  const textMenuSelectedFont =
-    focusedTextItem?.fontFamily ?? activeTextFont;
-  const textMenuBoldActive =
-    focusedTextItem != null
-      ? (focusedTextItem.fontWeight ?? 400) >= 700
-      : isTextBold;
+  const handleTextFocusChange = useCallback(
+    (id: string | null) => {
+      focusedEditorTextIdRef.current = id;
+      setFocusedEditorTextId(id);
+      if (!id) return;
+      if (activeToolRef.current !== "text") {
+        setAddToolMenuOpen(false);
+        setRemoveToolMenuOpen(false);
+        setEnhanceToolMenuOpen(false);
+        setDrawToolMenuOpen(false);
+        setTextColorMenuOpen(false);
+        setActiveTool("text");
+      }
+      lastEditorTextIdRef.current = id;
+      const target = editorTextItems.find((item) => item.id === id);
+      if (!target) return;
+      setActiveTextColor(target.color);
+      setActiveTextSize(target.fontSizePx ?? 16);
+    },
+    [editorTextItems],
+  );
 
   const addPaintInteractive =
     activeTool === "add" && Boolean(slotImages[0]?.trim()) && !isGenerating;
@@ -1367,7 +1472,7 @@ export function ImageEditorClient({
       slotImages[0]?.trim() ? (
         <>
           <ImageEditorAddPaintOverlay
-            key={`${slotImages[0]}-add`}
+            key={`${slotImages[0] ?? ""}-${editorOverlayNonce}-add`}
             ref={addPaintOverlayRefDesktop}
             interactive={addPaintInteractive}
             brushRadiusPx={addBrushRadius}
@@ -1378,7 +1483,7 @@ export function ImageEditorClient({
             }
           />
           <ImageEditorAddPaintOverlay
-            key={`${slotImages[0]}-remove`}
+            key={`${slotImages[0] ?? ""}-${editorOverlayNonce}-remove`}
             ref={removePaintOverlayRefDesktop}
             interactive={removePaintInteractive}
             brushRadiusPx={removeBrushRadius}
@@ -1394,16 +1499,14 @@ export function ImageEditorClient({
             interactive={textToolInteractive}
             items={editorTextItems}
             activeTextColor={activeTextColor}
+            activeTextSize={activeTextSize}
             activeTextFont={activeTextFont}
             activeTextBold={isTextBold}
-            onItemsChange={setEditorTextItems}
-            onFocusedIdChange={(id) => {
-              focusedEditorTextIdRef.current = id;
-              setFocusedEditorTextId(id);
-            }}
+            onItemsChange={applyEditorTextItemsChange}
+            onFocusedIdChange={handleTextFocusChange}
           />
           <ImageEditorDrawOverlay
-            key={`${slotImages[0]}-draw`}
+            key={`${slotImages[0] ?? ""}-${editorOverlayNonce}-draw`}
             ref={drawOverlayRefDesktop}
             interactive={drawInteractive}
             brushRadiusPx={drawBrushRadius}
@@ -1416,6 +1519,7 @@ export function ImageEditorClient({
       ) : null,
     [
       slotImages,
+      editorOverlayNonce,
       addPaintInteractive,
       addBrushRadius,
       removePaintInteractive,
@@ -1440,7 +1544,7 @@ export function ImageEditorClient({
       slotImages[0]?.trim() ? (
         <>
           <ImageEditorAddPaintOverlay
-            key={`${slotImages[0]}-add`}
+            key={`${slotImages[0] ?? ""}-${editorOverlayNonce}-add`}
             ref={addPaintOverlayRefMobile}
             interactive={addPaintInteractive}
             brushRadiusPx={addBrushRadius}
@@ -1451,7 +1555,7 @@ export function ImageEditorClient({
             }
           />
           <ImageEditorAddPaintOverlay
-            key={`${slotImages[0]}-remove`}
+            key={`${slotImages[0] ?? ""}-${editorOverlayNonce}-remove`}
             ref={removePaintOverlayRefMobile}
             interactive={removePaintInteractive}
             brushRadiusPx={removeBrushRadius}
@@ -1467,16 +1571,14 @@ export function ImageEditorClient({
             interactive={textToolInteractive}
             items={editorTextItems}
             activeTextColor={activeTextColor}
+            activeTextSize={activeTextSize}
             activeTextFont={activeTextFont}
             activeTextBold={isTextBold}
-            onItemsChange={setEditorTextItems}
-            onFocusedIdChange={(id) => {
-              focusedEditorTextIdRef.current = id;
-              setFocusedEditorTextId(id);
-            }}
+            onItemsChange={applyEditorTextItemsChange}
+            onFocusedIdChange={handleTextFocusChange}
           />
           <ImageEditorDrawOverlay
-            key={`${slotImages[0]}-draw`}
+            key={`${slotImages[0] ?? ""}-${editorOverlayNonce}-draw`}
             ref={drawOverlayRefMobile}
             interactive={drawInteractive}
             brushRadiusPx={drawBrushRadius}
@@ -1489,6 +1591,7 @@ export function ImageEditorClient({
       ) : null,
     [
       slotImages,
+      editorOverlayNonce,
       addPaintInteractive,
       addBrushRadius,
       removePaintInteractive,
@@ -1546,6 +1649,12 @@ export function ImageEditorClient({
     saturation: enhanceSaturation,
     onBrightnessChange: setEnhanceBrightness,
     onSaturationChange: setEnhanceSaturation,
+    onUndoEnhance: () => {
+      setEnhanceBrightness(100);
+      setEnhanceSaturation(100);
+    },
+    canUndoEnhance:
+      enhanceBrightness !== 100 || enhanceSaturation !== 100,
   };
 
   const drawToolMenu = {
@@ -1634,12 +1743,16 @@ export function ImageEditorClient({
           textToolMenu={{
             open: textColorMenuOpen,
             selectedColor: activeTextColor,
+            textSize: activeTextSize,
+            textSizeMin: 10,
+            textSizeMax: 96,
+            onTextSizeChange: handleTextSizeChange,
             onSelectColor: handleTextColorSelect,
-            selectedFontFamily: textMenuSelectedFont,
-            onSelectFontFamily: handleTextFontSelect,
-            boldActive: textMenuBoldActive,
-            onBoldToggle: handleTextBoldToggle,
             onSwatchClick: handleTextColorSwatchClick,
+            onUndo: handleTextUndo,
+            onRedo: handleTextRedo,
+            canUndo: textUndoStack.length > 0,
+            canRedo: textRedoStack.length > 0,
           }}
           className="w-full shrink-0"
         />
@@ -1700,6 +1813,14 @@ export function ImageEditorClient({
                     ref={desktopEditorWorkAreaRef}
                     className="min-w-0 xl:mb-8"
                   >
+                    {applyEditsError ? (
+                      <p
+                        className="mb-3 text-[11px] text-rose-300"
+                        role="alert"
+                      >
+                        {applyEditsError}
+                      </p>
+                    ) : null}
                     <PreviewPanel
                       aspectRatio={aspectRatio}
                       template={null}
@@ -1768,6 +1889,14 @@ export function ImageEditorClient({
                     ref={mobileEditorWorkAreaRef}
                     className="min-w-0 xl:mb-8"
                   >
+                    {applyEditsError ? (
+                      <p
+                        className="mb-3 text-[11px] text-rose-300"
+                        role="alert"
+                      >
+                        {applyEditsError}
+                      </p>
+                    ) : null}
                     <PreviewPanel
                       aspectRatio={aspectRatio}
                       template={null}

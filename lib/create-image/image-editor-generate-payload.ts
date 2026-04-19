@@ -57,7 +57,7 @@ export function buildImageEditorPromptAppendix(opts: {
   }
   if (opts.hasRemoveMask) {
     lines.push(
-      "- Semi-transparent red/warm highlights on the composite mark region(s) the user wants REMOVED or seamlessly inpainted away (per the user’s prompt).",
+      "- Semi-transparent red/warm highlights on the composite mark region(s) to edit: remove existing content there, then follow prompt/reference guidance for what should appear in that painted area.",
     );
   }
   if (opts.hasIsolatedMaskRefs) {

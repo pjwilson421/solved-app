@@ -212,18 +212,27 @@ export const ImageEditorAddPaintOverlay = forwardRef<
 
   const resetCanvasState = useCallback(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const wrap = wrapRef.current;
-    if (!canvas || !wrap) return;
-    const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
-    const w = Math.max(1, Math.floor(wrap.clientWidth * dpr));
-    const h = Math.max(1, Math.floor(wrap.clientHeight * dpr));
-    if (canvas.width !== w || canvas.height !== h) {
-      canvas.width = w;
-      canvas.height = h;
+    if (wrap) {
+      const dpr =
+        typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+      const w = Math.max(1, Math.floor(wrap.clientWidth * dpr));
+      const h = Math.max(1, Math.floor(wrap.clientHeight * dpr));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.clearRect(0, 0, w, h);
+    } else {
+      /** Parent may call `clearMask` before the overlay wrapper is measured (e.g. hidden column). */
+      const w = canvas.width;
+      const h = canvas.height;
+      const ctx = canvas.getContext("2d");
+      if (ctx && w > 0 && h > 0) ctx.clearRect(0, 0, w, h);
     }
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.clearRect(0, 0, w, h);
     activeStrokesRef.current = [];
     redoStrokesRef.current = [];
     currentStrokeOpsRef.current = [];
