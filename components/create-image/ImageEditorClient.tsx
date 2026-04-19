@@ -859,6 +859,19 @@ export function ImageEditorClient({
     [activeHistoryId, activityEntries],
   );
 
+  /** Under-preview: first line of the prompt used to create the current image (catalog row, else session). */
+  const previewDescriptionFirstLine = useMemo(() => {
+    const entry = activeHistoryRecord;
+    const fromEntry =
+      entry?.promptText?.trim() ||
+      entry?.editPrompt?.trim() ||
+      entry?.subtitle?.trim() ||
+      "";
+    const raw = fromEntry || previewPrompt.trim();
+    if (!raw) return "";
+    return (raw.split(/\r?\n/)[0] ?? "").trim();
+  }, [activeHistoryRecord, previewPrompt]);
+
   const editorBestUrl = useMemo(() => {
     const fromEntry = activeHistoryRecord
       ? editorBestRasterForImageActivityEntry(activeHistoryRecord)
@@ -1691,7 +1704,8 @@ export function ImageEditorClient({
                       aspectRatio={aspectRatio}
                       template={null}
                       slotImages={slotImages}
-                      promptText={previewPrompt}
+                      promptText={previewDescriptionFirstLine}
+                      previewPromptPlaceholder=""
                       createdAt={previewAt}
                       isLoading={isGenerating}
                       layoutFrame={layoutFrame}
@@ -1758,7 +1772,8 @@ export function ImageEditorClient({
                       aspectRatio={aspectRatio}
                       template={null}
                       slotImages={slotImages}
-                      promptText={previewPrompt}
+                      promptText={previewDescriptionFirstLine}
+                      previewPromptPlaceholder=""
                       createdAt={previewAt}
                       isLoading={isGenerating}
                       layoutFrame={layoutFrame}

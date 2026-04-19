@@ -155,6 +155,7 @@ function PreviewDescriptionText({
   anchoredToPreview?: boolean;
 }) {
   const display = text.trim() ? text : placeholder;
+  if (!display.trim()) return null;
   const isPlaceholder = !text.trim();
 
   const pRef = useRef<HTMLParagraphElement>(null);
@@ -938,13 +939,15 @@ export function PreviewPanel({
             </>
           )}
 
-          <div className="mt-1 w-full min-w-0 max-w-none xl:mt-0">
-            <PreviewDescriptionText
-              text={promptText}
-              placeholder={previewPromptPlaceholder}
-              anchoredToPreview={promptDescriptionAnchoredToPreview}
-            />
-          </div>
+          {promptText.trim() || previewPromptPlaceholder.trim() ? (
+            <div className="mt-1 w-full min-w-0 max-w-none xl:mt-0">
+              <PreviewDescriptionText
+                text={promptText}
+                placeholder={previewPromptPlaceholder}
+                anchoredToPreview={promptDescriptionAnchoredToPreview}
+              />
+            </div>
+          ) : null}
           {inlineAfterDescription}
         </div>
       ) : null}
