@@ -32,10 +32,14 @@ import { FilesDesktopHeaderActions, FilesToolbar } from "./FilesToolbar";
 import { FilesToolbarFilters } from "./FilesToolbarFilters";
 import { FileMoveDialog } from "./FileMoveDialog";
 import { createUploadedFileEntryAsync } from "./file-upload-entry";
-import { fileEntryHasCatalogPreview } from "./file-entry-image-src";
+import {
+  fileEntryHasCatalogPreview,
+  fileEntryVisualThumbSrc,
+} from "./file-entry-image-src";
 import type { FileEntry, FilesViewMode } from "./types";
 import type { FileRowMenuAction } from "./FileRowActionsMenu";
 import { type SortOption, genericSort } from "@/lib/app-data/sort-filter-utils";
+import { writePendingPromptAttachment } from "@/lib/prompt-attachment-handoff";
 
 const EMPTY_HISTORY: HistoryItem[] = [];
 
@@ -259,6 +263,32 @@ export function FilesClient() {
       const entry = fileEntries.find((e) => e.id === id);
       if (!entry) return;
 
+      if (action.startsWith("Use in prompt:")) {
+        if (entry.kind !== "file") return;
+        const url = fileEntryVisualThumbSrc(entry);
+        if (!url) return;
+        const destination = action.slice("Use in prompt:".length);
+        const target =
+          destination === "Chat"
+            ? "chat"
+            : destination === "Create Image"
+              ? "create-image"
+              : destination === "Image Editor"
+                ? "image-editor"
+                : destination === "Create Video"
+                  ? "create-video"
+                  : null;
+        if (!target) return;
+        writePendingPromptAttachment({
+          target,
+          fileId: entry.id,
+          name: entry.name,
+          url,
+        });
+        navigate(target);
+        return;
+      }
+
       switch (action) {
         case "Open":
           openItem(ref);
@@ -291,6 +321,7 @@ export function FilesClient() {
       deleteCatalogItem,
       downloadItem,
       openItem,
+      navigate,
     ],
   );
 

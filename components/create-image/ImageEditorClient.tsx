@@ -48,6 +48,7 @@ import {
   createImageScrollContentBottomPaddingPxDesktopXl,
 } from "./preview-frame-layout";
 import { useCreateImagePreviewPromptLayout } from "./use-create-image-preview-prompt-layout";
+import { consumePendingPromptAttachment } from "@/lib/prompt-attachment-handoff";
 import type {
   AspectRatio,
   AssetContentType,
@@ -73,6 +74,7 @@ import {
   downloadImageFromUrl,
   pickShareableHttpUrl,
 } from "@/lib/create-image/media-actions";
+import { isCandidateHigherFidelity } from "@/lib/create-image/image-source-fidelity";
 import {
   clearLastEditorPreview,
   isPersistableEditorPreviewUrl,
@@ -93,9 +95,10 @@ import {
   referenceImagePartFromDataUrl,
 } from "@/lib/create-image/encode-reference-images";
 import {
-  buildImageEditorPromptAppendix,
+  createEditorContextSettings,
   composeEditorImageForGeneration,
 } from "@/lib/create-image/image-editor-generate-payload";
+import { buildImagePrompt } from "@/lib/ai/build-image-prompt";
 import { fetchGeneratedImages } from "@/lib/create-image/fetch-generated-images";
 import { makePersistableThumbnail } from "@/lib/create-image/make-persistable-thumbnail";
 import {
@@ -574,6 +577,22 @@ export function ImageEditorClient({
   const [expandedImagePreview, setExpandedImagePreview] =
     useState<PreviewExpandOverlayPreview | null>(null);
 
+  useEffect(() => {
+    const pending = consumePendingPromptAttachment("image-editor");
+    if (!pending) return;
+    setReferences((prev) => {
+      if (prev.some((r) => r.url === pending.url)) return prev;
+      return [
+        ...prev,
+        {
+          id: uid(),
+          name: pending.name,
+          url: pending.url,
+        },
+      ];
+    });
+  }, []);
+
   const desktopScrollRef = useRef<HTMLDivElement>(null);
   const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
@@ -859,7 +878,7 @@ export function ImageEditorClient({
           : null,
       ].filter((p): p is NonNullable<typeof p> => p != null);
 
-      const appendix = buildImageEditorPromptAppendix({
+      const editorContext = createEditorContextSettings({
         enhanceBrightness,
         enhanceSaturation,
         textItems: editorTextItems,
@@ -868,7 +887,16 @@ export function ImageEditorClient({
         hasRemoveMask: Boolean(removeMaskForCompose),
         hasIsolatedMaskRefs: isolatedMaskRefParts.length > 0,
       });
-      let promptForApi = `${promptLine}\n\n${appendix}`;
+
+      let promptForApi = buildImagePrompt(promptLine, {
+        assetType: assetContentType,
+        aspectRatio,
+        resolution: quality,
+        numberOfVariations: 1,
+        referenceImageCount: references.length,
+        editorContext,
+      });
+
       if (activeTool === "add" && references.length > 0) {
         promptForApi += `\n- Prompt-bar reference image(s) (${references.length}): use as guidance for what to add inside the blue-highlighted region (subject, style, materials).`;
       }
@@ -950,6 +978,7 @@ export function ImageEditorClient({
           promptText,
           ...(thumbnailUrl ? { thumbnailUrl } : {}),
           imageUrl: url,
+          previewUrl: url,
           fullResolutionUrl: url,
           imageUrls: [url],
           aspectRatio,
@@ -1063,12 +1092,46 @@ export function ImageEditorClient({
       if (prev.length === 1) {
         const cur = prev[0]?.trim();
         if (!cur || cur === best.trim()) return prev;
+        if (
+          !isCandidateHigherFidelity({
+            currentUrl: cur,
+            candidateUrl: best,
+            context: {
+              fullResolutionUrl: entry.fullResolutionUrl,
+              imageUrls: entry.imageUrls,
+              imageUrl: entry.imageUrl,
+              previewUrl: entry.previewUrl,
+              thumbnailUrl: entry.thumbnailUrl,
+            },
+          })
+        ) {
+          return prev;
+        }
         return [best];
       }
       const fromEntry = entry.imageUrls?.filter(
         (u): u is string => typeof u === "string" && u.trim().length > 0,
       );
       if (fromEntry && fromEntry.length === prev.length) {
+        const cur = prev[0]?.trim() ?? "";
+        const next = fromEntry[0]?.trim() ?? "";
+        if (
+          cur &&
+          next &&
+          !isCandidateHigherFidelity({
+            currentUrl: cur,
+            candidateUrl: next,
+            context: {
+              fullResolutionUrl: entry.fullResolutionUrl,
+              imageUrls: entry.imageUrls,
+              imageUrl: entry.imageUrl,
+              previewUrl: entry.previewUrl,
+              thumbnailUrl: entry.thumbnailUrl,
+            },
+          })
+        ) {
+          return prev;
+        }
         if (fromEntry.every((u, i) => u === prev[i])) return prev;
         return fromEntry;
       }
@@ -1136,6 +1199,7 @@ export function ImageEditorClient({
           promptText,
           ...(thumbnailUrl ? { thumbnailUrl } : {}),
           imageUrl: url,
+          previewUrl: url,
           fullResolutionUrl: url,
           imageUrls: [url],
           aspectRatio,

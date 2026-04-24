@@ -1,3 +1,5 @@
+import { selectBestImageSource } from "@/lib/create-image/image-source-fidelity";
+
 /** Prefer a public `https` URL for share dialogs; otherwise `null` (caller uses `imageUrl`). */
 export function pickShareableHttpUrl(
   entry:
@@ -27,19 +29,10 @@ export function bestImageUrlForEntry(entry: {
   fullResolutionUrl?: string;
   imageUrls?: string[];
   imageUrl?: string;
+  previewUrl?: string;
   thumbnailUrl?: string;
 }): string | undefined {
-  const fromFull = entry.fullResolutionUrl;
-  if (typeof fromFull === "string" && fromFull.length > 0) return fromFull;
-  const u0 = entry.imageUrls?.[0];
-  if (typeof u0 === "string" && u0.length > 0) return u0;
-  if (typeof entry.imageUrl === "string" && entry.imageUrl.length > 0) {
-    return entry.imageUrl;
-  }
-  if (typeof entry.thumbnailUrl === "string" && entry.thumbnailUrl.length > 0) {
-    return entry.thumbnailUrl;
-  }
-  return undefined;
+  return selectBestImageSource(entry);
 }
 
 /**
@@ -50,27 +43,10 @@ export function bestFullscreenImageUrlForEntry(entry: {
   fullResolutionUrl?: string;
   imageUrls?: string[];
   imageUrl?: string;
+  previewUrl?: string;
   thumbnailUrl?: string;
 }): string | undefined {
-  const thumb =
-    typeof entry.thumbnailUrl === "string" ? entry.thumbnailUrl.trim() : "";
-  const full = entry.fullResolutionUrl?.trim();
-  if (full) return full;
-
-  const list = (entry.imageUrls ?? []).filter(
-    (u): u is string => typeof u === "string" && u.length > 0,
-  );
-  for (const u of list) {
-    if (!thumb || u !== thumb) return u;
-  }
-
-  const single = entry.imageUrl?.trim();
-  if (single && (!thumb || single !== thumb)) return single;
-
-  if (list[0]) return list[0];
-  if (single) return single;
-  if (thumb) return thumb;
-  return undefined;
+  return selectBestImageSource(entry);
 }
 
 function pad2(n: number): string {

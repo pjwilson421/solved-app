@@ -5,6 +5,7 @@ import {
   resolveGenerationDimensions,
   type GenerationResolutionKey,
 } from "@/lib/create-image/generation-dimensions";
+import { buildImagePrompt, type ImageSettings } from "@/lib/ai/build-image-prompt";
 
 const DEFAULT_IMAGE_MODEL = "gemini-2.5-flash-image";
 
@@ -31,7 +32,7 @@ function normalizeResolution(raw: string): ResolutionKey {
   if (u === "2K") return "2K";
   if (u === "4K") return "4K";
   if (u === "6K") return "4K";
-  if (u === "8K") return "8K";
+  if (u === "8K") return "4K";
   return "4K";
 }
 
@@ -136,96 +137,7 @@ function qualityToGeminiImageSize(resolution: ResolutionKey): "1K" | "2K" | "4K"
   return "4K";
 }
 
-function describeAssetTypeForPrompt(assetType: string): string {
-  switch (assetType) {
-    case "Social Media":
-      return "social media post creative: scroll-stopping, platform-ready composition and safe focal framing";
-    case "Email":
-      return "email header / newsletter hero: clear hierarchy, readable at typical email preview sizes";
-    case "Digital":
-      return "digital display or web ad creative: high-impact campaign visual for screens and banners";
-    default:
-      return "premium commercial photograph / hero visual: versatile, polished, brand-ready";
-  }
-}
 
-function describeAspectForPrompt(aspectRatio: string): string {
-  switch (aspectRatio) {
-    case "16:9":
-      return "wide landscape 16:9 — photograph fills the entire frame edge-to-edge; scene and subject use the full width and height (no empty bands)";
-    case "1:1":
-      return "square 1:1 — photograph fills the entire square edge-to-edge; balanced subject and environment using the full frame";
-    case "4:5":
-      return "vertical portrait 4:5 — photograph fills the entire frame edge-to-edge; editorial portrait using full height and width";
-    case "9:16":
-      return "tall vertical 9:16 — photograph fills the entire frame edge-to-edge; full-height composition for mobile vertical formats";
-    default:
-      return `composition matched to aspect ratio ${aspectRatio} — fill the entire frame edge-to-edge`;
-  }
-}
-
-function buildGenerationPrompt({
-  userPrompt,
-  assetType,
-  aspectRatio,
-  resolution,
-  targetWidth,
-  targetHeight,
-  variationIndex,
-  variationTotal,
-  referenceImageCount,
-}: {
-  userPrompt: string;
-  assetType: string;
-  aspectRatio: string;
-  resolution: string;
-  targetWidth: number;
-  targetHeight: number;
-  variationIndex: number;
-  variationTotal: number;
-  referenceImageCount: number;
-}) {
-  const assetNarrative = describeAssetTypeForPrompt(assetType);
-  const aspectNarrative = describeAspectForPrompt(aspectRatio);
-  const referenceBlock =
-    referenceImageCount > 0
-      ? `
-  - Reference images: The user attached ${referenceImageCount} image(s) in this request. Use them for subject matter, palette, composition, and style unless the written brief clearly conflicts — then prioritize the text.
-`
-      : "";
-  const variationBlock =
-    variationTotal > 1
-      ? `
- Variation ${variationIndex + 1} of ${variationTotal}: produce a distinct professional interpretation of the same brief (unique pose, lighting, or layout), not a near-duplicate of other variations.
-`
-      : "";
-
-  return `
-  Create a premium, professional ${assetNarrative}.
-
-  User request:
-  ${userPrompt}
-
-  Generation requirements:
-  - Asset type: ${assetType} — ${assetNarrative}
-  - Aspect ratio: ${aspectRatio} — ${aspectNarrative}
-  - Output dimensions (mandatory): the final image MUST be exactly ${targetWidth} pixels wide by ${targetHeight} pixels tall — no other width or height.
-  - Full-bleed photograph: the image must be a single continuous photograph that completely fills every pixel of the ${targetWidth}×${targetHeight} canvas. Subject, sky, ground, and environment extend to all four edges. There must be NO letterboxing, NO pillarboxing, NO black bars, NO gray mattes, NO cinematic “widescreen” bands, NO empty margins, NO frames-within-frames, and NO unused solid-color strips — unless the user's written prompt explicitly asks for bars, frames, or matte effects by name.
-  - Resolution label: ${resolution} — match detail level appropriate for ${targetWidth}×${targetHeight}px.
-  ${referenceBlock}
-  - Composition must be native to ${aspectRatio}: design the shot as if shooting with a camera sensor in that exact aspect — not a smaller photo pasted onto a larger canvas.
-
-  High-end, cinematic execution: ultra-detailed, sharp focus, perfect composition.
-  Premium lighting, realistic materials, high dynamic range.
-  Clean image: no random text, no watermarks, no logos, no UI chrome unless the user explicitly asked for text in the scene.
-  No distortion, no artifacts, no blur.
-
-  Style: modern commercial photography / luxury brand aesthetic.
-  Depth of field, cinematic lighting, studio quality where appropriate.
-  Balanced color grading, high contrast, visually striking — world-class advertisement quality.
-  ${variationBlock}
-  `.trim();
-}
 
 /**
  * Read a single KEY=value from `.env.local` on disk.
@@ -520,17 +432,18 @@ export async function POST(req: Request) {
     try {
       const images = await Promise.all(
         indices.map((variationIndex) => {
-          const fullPrompt = buildGenerationPrompt({
-            userPrompt: prompt,
+          const imageSettings: ImageSettings = {
             assetType,
             aspectRatio,
             resolution,
+            numberOfVariations,
             targetWidth: width,
             targetHeight: height,
             variationIndex,
             variationTotal: numberOfVariations,
             referenceImageCount: referenceImages.length,
-          });
+          };
+          const fullPrompt = buildImagePrompt(prompt, imageSettings);
           return generateOneImage({
             apiUrl,
             fullPrompt,

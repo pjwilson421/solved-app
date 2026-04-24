@@ -54,6 +54,7 @@ import { IconDots } from "@/components/create-image/icons";
 import { threeDotsMenuTriggerButtonClassName } from "@/components/ui/three-dots-menu-trigger";
 import { IconAsset } from "@/components/icons/IconAsset";
 import { ICONS } from "@/components/icons/icon-paths";
+import { consumePendingPromptAttachment } from "@/lib/prompt-attachment-handoff";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -118,6 +119,22 @@ export function ChatClient({
     useAppData();
   const { isLiked } = useLikedItems();
   const { toggleLike, deleteCatalogItem } = useAppItemActions();
+
+  useEffect(() => {
+    const pending = consumePendingPromptAttachment("chat");
+    if (!pending) return;
+    setReferences((prev) => {
+      if (prev.some((r) => r.url === pending.url)) return prev;
+      return [
+        ...prev,
+        {
+          id: uid(),
+          name: pending.name,
+          url: pending.url,
+        },
+      ];
+    });
+  }, []);
 
   const currentThread = useMemo(
     () => chatThreads.find((t) => t.id === chatSessionId),

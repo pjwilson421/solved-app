@@ -87,6 +87,7 @@ import {
   firstDisplaySlotFileId,
   firstFileIdForImageBatch,
 } from "@/components/files/image-editor-source";
+import { consumePendingPromptAttachment } from "@/lib/prompt-attachment-handoff";
 import type {
   ActivityHistoryEntry,
   TemplateDraftPayload,
@@ -172,6 +173,7 @@ async function buildTemplateDraftActivityEntry(args: {
     promptText: trimmed || "(template draft)",
     ...(thumbnailUrl ? { thumbnailUrl } : {}),
     ...(primaryVisual ? { imageUrl: primaryVisual } : {}),
+    ...(primaryVisual ? { previewUrl: primaryVisual } : {}),
     ...(primaryVisual ? { fullResolutionUrl: primaryVisual } : {}),
     ...(primaryVisual ? { imageUrls: [primaryVisual] } : {}),
     aspectRatio: previewAspectRatio,
@@ -245,7 +247,7 @@ export function CreateImageClient() {
         .map((entry) => {
           const item = activityEntryToHistoryItem(entry);
           const parts = [entry.aspectRatio, entry.resolution].filter(
-            (value): value is string => typeof value === "string" && value.length > 0,
+            (value) => typeof value === "string" && value.length > 0,
           );
           return parts.length > 0
             ? { ...item, metadataLine: parts.join(" · ") }
@@ -255,6 +257,7 @@ export function CreateImageClient() {
   );
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const generateInFlightRef = useRef(false);
   const [templatesMenuOpen, setTemplatesMenuOpen] = useState(false);
   const [copyLinkNotice, setCopyLinkNotice] = useState(false);
@@ -262,6 +265,22 @@ export function CreateImageClient() {
   const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const mobileColumnRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const pending = consumePendingPromptAttachment("create-image");
+    if (!pending) return;
+    setReferences((prev) => {
+      if (prev.some((r) => r.url === pending.url)) return prev;
+      return [
+        ...prev,
+        {
+          id: uid(),
+          name: pending.name,
+          url: pending.url,
+        },
+      ];
+    });
+  }, []);
 
   useLayoutEffect(() => {
     if (previewSessionRestoredRef.current) return;
@@ -511,6 +530,7 @@ export function CreateImageClient() {
 
     generateInFlightRef.current = true;
     setIsGenerating(true);
+    setGenerationError(null);
     try {
       const promptForApi =
         trimmed ||
@@ -551,6 +571,7 @@ export function CreateImageClient() {
           promptText,
           ...(thumbnailUrl ? { thumbnailUrl } : {}),
           imageUrl: url,
+          previewUrl: url,
           fullResolutionUrl: url,
           imageUrls: [url],
           aspectRatio,
@@ -570,6 +591,11 @@ export function CreateImageClient() {
       setDisplayVariations(variations);
     } catch (err) {
       console.error("[CreateImageClient] Image generation failed:", err);
+      const message =
+        err instanceof Error && err.message.trim().length > 0
+          ? err.message
+          : "Image generation failed. Please try again.";
+      setGenerationError(message);
     } finally {
       generateInFlightRef.current = false;
       setIsGenerating(false);
@@ -1016,6 +1042,13 @@ export function CreateImageClient() {
                       rasterSourceUnoptimized
                       previewSpecsLine={`${previewAspectRatio} · ${previewResolution}`}
                       previewSpecsInlineWithDate
+                      afterPreviewStack={
+                        generationError ? (
+                          <div className="mb-6 mt-[5px] w-full">
+                            <p className="text-[11px] text-rose-300">{generationError}</p>
+                          </div>
+                        ) : undefined
+                      }
                     />
                   </div>
                 </div>
@@ -1073,6 +1106,13 @@ export function CreateImageClient() {
                       rasterSourceUnoptimized
                       previewSpecsLine={`${previewAspectRatio} · ${previewResolution}`}
                       previewSpecsInlineWithDate
+                      afterPreviewStack={
+                        generationError ? (
+                          <div className="mb-3 w-full">
+                            <p className="text-[11px] text-rose-300">{generationError}</p>
+                          </div>
+                        ) : undefined
+                      }
                     />
                   </div>
                 </main>

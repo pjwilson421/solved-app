@@ -93,7 +93,12 @@ export function SettingsDropdown({
   const open = openMenu === menuId;
   const rootRef = useRef<HTMLDivElement>(null);
   const listId = useId();
+  const [hydrated, setHydrated] = useState(false);
   const [hoveredItemKey, setHoveredItemKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (!open) setHoveredItemKey(null);
@@ -190,11 +195,13 @@ export function SettingsDropdown({
           )}
           onMouseLeave={handleMenuMouseLeave}
         >
-          <SettingsMenuHoverContext.Provider
-            value={{ hoveredItemKey, setHoveredItemKey }}
-          >
-            {children}
-          </SettingsMenuHoverContext.Provider>
+          {hydrated ? (
+            <SettingsMenuHoverContext.Provider
+              value={{ hoveredItemKey, setHoveredItemKey }}
+            >
+              {children}
+            </SettingsMenuHoverContext.Provider>
+          ) : null}
         </ul>
       </div>
     </div>

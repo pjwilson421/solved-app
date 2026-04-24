@@ -10,12 +10,6 @@ const POLL_INTERVAL_MS = 10_000;
 const MAX_WAIT_MS = 10 * 60 * 1000;
 const MAX_FRAME_BASE64_CHARS = 18_000_000;
 
-const PROMPT_BOTH_FRAMES =
-  "Create a smooth, cinematic transition between the provided first and last keyframes. Preserve subjects and continuity; motion should feel intentional and natural.";
-const PROMPT_START_ONLY =
-  "Bring this opening frame to life with believable motion, depth, and continuity.";
-const PROMPT_END_ONLY =
-  "Generate a short clip that builds motion and resolves toward this final composition.";
 
 type VideoOperationLike = {
   name?: string;
@@ -281,13 +275,9 @@ export async function POST(request: Request) {
       );
     }
 
-    let effectivePrompt = userPrompt;
-    if (!effectivePrompt) {
-      if (startFrame && endFrame) effectivePrompt = PROMPT_BOTH_FRAMES;
-      else if (startFrame) effectivePrompt = PROMPT_START_ONLY;
-      else if (endFrame) effectivePrompt = PROMPT_END_ONLY;
-      else effectivePrompt = "A compelling cinematic video.";
-    }
+    // The centralized builder now handles prompt enhancement, so we use the user prompt directly
+    // If no prompt is provided, the client should have used the builder to create one
+    const effectivePrompt = userPrompt || "A compelling cinematic video.";
 
     const aspectRaw =
       typeof o.aspectRatio === "string" ? o.aspectRatio : "16:9";

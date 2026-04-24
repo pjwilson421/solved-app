@@ -10,6 +10,10 @@ export function fileEntryHasImagePreview(entry: FileEntry): boolean {
   return fileEntryDisplayImageSrc(entry) !== undefined;
 }
 
+export function fileEntrySupportsPromptAttachment(entry: FileEntry): boolean {
+  return fileEntryDisplayImageSrc(entry) !== undefined;
+}
+
 /** Poster / thumbnail for Files grid & list (images + video posters). */
 export function fileEntryVisualThumbSrc(entry: FileEntry): string | undefined {
   if (entry.kind !== "file") return undefined;

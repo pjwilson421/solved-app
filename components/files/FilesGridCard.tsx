@@ -6,6 +6,7 @@ import { LikeToggleButton } from "@/components/liked-items/LikeToggleButton";
 import type { FileEntry } from "./types";
 import {
   fileEntryHasCatalogPreview,
+  fileEntrySupportsPromptAttachment,
   fileEntryVisualThumbSrc,
 } from "./file-entry-image-src";
 import { FileRowIcon } from "./FileRowIcon";
@@ -89,6 +90,7 @@ export function FilesGridCard({
           />
           <FileRowActionsMenu
             align="right"
+            showUseInPrompt={fileEntrySupportsPromptAttachment(entry)}
             onSelect={(a) => onMenuAction?.(entry.id, a)}
           />
         </div>

@@ -29,6 +29,8 @@ export type ActivityHistoryEntry = {
   thumbnailUrl?: string;
   /** Primary image URL (typically mirrors `thumbnailUrl` for generated image rows). */
   imageUrl?: string;
+  /** Optional medium-fidelity preview source kept separate from canonical full-res data. */
+  previewUrl?: string;
   /**
    * Full-fidelity URL for preview/download when `thumbnailUrl` is downscaled (e.g. persisted JPEG).
    * Omitted from localStorage when it is a large `data:` URL (same rules as `imageUrl`).
@@ -38,8 +40,8 @@ export type ActivityHistoryEntry = {
   imageUrls?: string[];
   /** Create Image generation setting snapshot. */
   aspectRatio?: "16:9" | "1:1" | "4:5" | "9:16";
-  /** Create Image generation quality snapshot. */
-  resolution?: "1K" | "2K" | "4K" | "8K";
+  /** Create Image generation setting snapshot. */
+  resolution?: "1K" | "2K" | "4K";
   /** Create Video export length snapshot. */
   videoDuration?: VideoDuration;
   /** Primary video URL for generated video (Create Video restore / playback). */

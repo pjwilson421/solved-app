@@ -21,6 +21,10 @@ import {
   saveActivityEntriesToStorage,
 } from "./activity-entries-persistence";
 import {
+  hydrateActivityEntriesFromDurableSources,
+  persistDurableActivityImageSources,
+} from "./activity-image-source-store";
+import {
   loadFileEntriesFromStorage,
   saveFileEntriesToStorage,
 } from "./file-entries-persistence";
@@ -90,23 +94,55 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    const schedule = (apply: () => void) => {
+      queueMicrotask(() => {
+        if (cancelled) return;
+        apply();
+      });
+    };
+
     const storedFiles = loadFileEntriesFromStorage();
     if (storedFiles !== null) {
-      setFileEntries(storedFiles);
+      schedule(() => setFileEntries(storedFiles));
     }
-    setFileCatalogHydrated(true);
+    schedule(() => setFileCatalogHydrated(true));
 
     const storedActivity = loadActivityEntriesFromStorage();
     if (storedActivity !== null) {
-      setActivityEntries(storedActivity);
+      schedule(() => setActivityEntries(storedActivity));
+      void hydrateActivityEntriesFromDurableSources(storedActivity).then(
+        (hydrated) => {
+          if (cancelled) return;
+          setActivityEntries((current) => {
+            const byId = new Map(hydrated.map((entry) => [entry.id, entry]));
+            let changed = false;
+            const next = current.map((entry) => {
+              const replacement = byId.get(entry.id);
+              if (!replacement) return entry;
+              if (replacement === entry) return entry;
+              if (JSON.stringify(replacement) === JSON.stringify(entry)) {
+                return entry;
+              }
+              changed = true;
+              return replacement;
+            });
+            return changed ? next : current;
+          });
+        },
+      );
     }
-    setActivityCatalogHydrated(true);
+    schedule(() => setActivityCatalogHydrated(true));
 
     const storedChats = loadChatThreadsFromStorage();
     if (storedChats !== null) {
-      setChatThreads(storedChats);
+      schedule(() => setChatThreads(storedChats));
     }
-    setChatCatalogHydrated(true);
+    schedule(() => setChatCatalogHydrated(true));
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -117,6 +153,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!activityCatalogHydrated) return;
     saveActivityEntriesToStorage(activityEntries);
+    void persistDurableActivityImageSources(activityEntries);
   }, [activityEntries, activityCatalogHydrated]);
 
   useEffect(() => {

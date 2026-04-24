@@ -4,7 +4,10 @@ import { cn } from "@/lib/utils";
 import { likedKey } from "@/lib/liked-item-keys";
 import { LikeToggleButton } from "@/components/liked-items/LikeToggleButton";
 import type { FileEntry } from "./types";
-import { fileEntryHasCatalogPreview } from "./file-entry-image-src";
+import {
+  fileEntryHasCatalogPreview,
+  fileEntrySupportsPromptAttachment,
+} from "./file-entry-image-src";
 import { FileRowIcon } from "./FileRowIcon";
 import {
   FileRowActionsMenu,
@@ -171,6 +174,7 @@ export function FileListRow({
             />
             <FileRowActionsMenu
               align="right"
+              showUseInPrompt={fileEntrySupportsPromptAttachment(entry)}
               onSelect={(a) => onMenuAction?.(entry.id, a)}
             />
           </div>
@@ -260,6 +264,7 @@ export function FileListRow({
           />
           <FileRowActionsMenu
             align="right"
+            showUseInPrompt={fileEntrySupportsPromptAttachment(entry)}
             onSelect={(a) => onMenuAction?.(entry.id, a)}
           />
         </div>

@@ -52,7 +52,6 @@ const RESOLUTIONS: NonNullable<ActivityHistoryEntry["resolution"]>[] = [
   "1K",
   "2K",
   "4K",
-  "8K",
 ];
 
 const VIDEO_DURATIONS: NonNullable<ActivityHistoryEntry["videoDuration"]>[] = [
@@ -163,6 +162,7 @@ export function sanitizeActivityEntryForStorage(
   const promptText = sanitizePersistedText(entry.promptText, MAX_PERSISTED_PROMPT);
   const thumbnailUrl = sanitizePersistedThumbnailUrl(entry.thumbnailUrl);
   const imageUrl = sanitizePersistedUrl(entry.imageUrl);
+  const previewUrl = sanitizePersistedUrl(entry.previewUrl);
   const fullResolutionUrl = sanitizePersistedUrl(entry.fullResolutionUrl);
   const imageUrls = sanitizePersistedUrlList(entry.imageUrls);
   const videoUrl = sanitizePersistedUrl(entry.videoUrl);
@@ -180,6 +180,7 @@ export function sanitizeActivityEntryForStorage(
     ...(promptText ? { promptText } : {}),
     ...(thumbnailUrl ? { thumbnailUrl } : {}),
     ...(imageUrl ? { imageUrl } : {}),
+    ...(previewUrl ? { previewUrl } : {}),
     ...(fullResolutionUrl ? { fullResolutionUrl } : {}),
     ...(imageUrls ? { imageUrls } : {}),
     ...(entry.aspectRatio ? { aspectRatio: entry.aspectRatio } : {}),
@@ -247,6 +248,7 @@ function normalizeStoredActivityEntry(
   const promptText = optionalString(o.promptText, MAX_PROMPT);
   const thumbnailUrl = optionalUrl(o.thumbnailUrl);
   const imageUrl = optionalUrl(o.imageUrl);
+  const previewUrl = optionalUrl(o.previewUrl);
   const fullResolutionUrl = optionalUrl(o.fullResolutionUrl);
   const imageUrls = optionalImageUrls(o.imageUrls);
   const videoUrl = optionalUrl(o.videoUrl);
@@ -275,9 +277,9 @@ function normalizeStoredActivityEntry(
   if (typeof o.resolution === "string") {
     const u = o.resolution.trim().toUpperCase();
     const mapped: ActivityHistoryEntry["resolution"] | null =
-      u === "6K"
+      u === "6K" || u === "8K"
         ? "4K"
-        : u === "1K" || u === "2K" || u === "4K" || u === "8K"
+        : u === "1K" || u === "2K" || u === "4K"
           ? u
           : null;
     if (mapped && RESOLUTIONS.includes(mapped)) {
@@ -342,6 +344,7 @@ function normalizeStoredActivityEntry(
     ...(promptText ? { promptText } : {}),
     ...(thumbnailUrl ? { thumbnailUrl } : {}),
     ...(imageUrl ? { imageUrl } : {}),
+    ...(previewUrl ? { previewUrl } : {}),
     ...(fullResolutionUrl ? { fullResolutionUrl } : {}),
     ...(imageUrls ? { imageUrls } : {}),
     ...(aspectRatio ? { aspectRatio } : {}),

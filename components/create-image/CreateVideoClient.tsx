@@ -50,6 +50,9 @@ import {
   readCreateVideoPreviewMetaSync,
   writeCreateVideoPreviewPersistence,
 } from "@/lib/create-image/create-video-preview-persistence";
+import { consumePendingPromptAttachment } from "@/lib/prompt-attachment-handoff";
+import { buildVideoPrompt } from "@/lib/ai/build-video-prompt";
+import { extractVideoThumbnailWithFallback } from "@/lib/create-video/extract-video-thumbnail";
 
 function pickLatestGeneratedVideoEntry(
   entries: ActivityHistoryEntry[],
@@ -110,14 +113,11 @@ export function CreateVideoClient() {
         .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime())
         .map((entry) => {
           const item = activityEntryToHistoryItem(entry);
-          const parts = [
+          const parts = ([
             entry.aspectRatio,
             entry.resolution,
             entry.videoDuration,
-          ].filter(
-            (value): value is string =>
-              typeof value === "string" && value.length > 0,
-          );
+          ] as string[]).filter(Boolean);
           return parts.length > 0
             ? { ...item, metadataLine: parts.join(" · ") }
             : item;
@@ -133,6 +133,22 @@ export function CreateVideoClient() {
   const desktopMiddleColumnRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const mobileColumnRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const pending = consumePendingPromptAttachment("create-video");
+    if (!pending) return;
+    setReferences((prev) => {
+      if (prev.some((r) => r.url === pending.url)) return prev;
+      return [
+        ...prev,
+        {
+          id: uid(),
+          name: pending.name,
+          url: pending.url,
+        },
+      ];
+    });
+  }, []);
 
   const { layoutFrame, promptBar: promptBarGeom, minWidth1280 } =
     useCreateImagePreviewPromptLayout({
@@ -323,13 +339,23 @@ export function CreateVideoClient() {
         ? await encodeReferenceFilesForApi([endFrame])
         : [];
 
+      // Build enhanced prompt using centralized builder
+      const enhancedPrompt = buildVideoPrompt(barPrompt.trim(), {
+        aspectRatio,
+        resolution: quality,
+        duration,
+        hasStartFrame: !!startFrame,
+        hasEndFrame: !!endFrame,
+        startFrameEndFrame: !!startFrame && !!endFrame,
+      });
+
       const response = await fetch("/api/video/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          prompt: barPrompt.trim(),
+          prompt: enhancedPrompt,
           aspectRatio,
           resolution: quality,
           duration,
@@ -375,6 +401,16 @@ export function CreateVideoClient() {
       const sequenceNum = String(videoCount + 1).padStart(2, "0");
       const title = `video-${sequenceNum}.mp4`;
 
+      // Extract thumbnail from the generated video
+      let thumbnailUrl: string | undefined;
+      try {
+        const extractedThumbnail = await extractVideoThumbnailWithFallback(videoUrl);
+        thumbnailUrl = extractedThumbnail || undefined;
+      } catch (error) {
+        console.warn('Failed to extract video thumbnail:', error);
+        // Continue without thumbnail - video will still be saved to history
+      }
+
       const activity: ActivityHistoryEntry = {
         id: batchId,
         kind: "video",
@@ -382,7 +418,7 @@ export function CreateVideoClient() {
         subtitle,
         occurredAt: createdAt,
         promptText: promptText || undefined,
-        imageUrls: [],
+        imageUrls: thumbnailUrl ? [thumbnailUrl] : [],
         videoUrl,
         aspectRatio,
         resolution: quality,

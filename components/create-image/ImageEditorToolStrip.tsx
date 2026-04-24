@@ -461,10 +461,16 @@ export function ImageEditorToolStrip({
                   onClick={(e) => textToolMenu?.onSwatchClick(e)}
                 >
                   <span
-                    className="inline-flex shrink-0 fill-current text-inherit"
+                    className="inline-flex shrink-0 items-center justify-center"
                     aria-hidden
                   >
-                    <ImageEditorToolIcon src={ICONS.editorColorSwatch} />
+                    <span
+                      className="h-3 w-3 rounded-full border border-white/20 shadow-inner"
+                      style={{ 
+                        backgroundColor: textToolMenu?.selectedColor || "#ffffff",
+                        transition: "background-color 200ms ease-in-out"
+                      }}
+                    />
                   </span>
                 </button>
               </div>

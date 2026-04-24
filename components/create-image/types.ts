@@ -1,5 +1,5 @@
 export type AspectRatio = "16:9" | "1:1" | "4:5" | "9:16";
-export type Quality = "1K" | "2K" | "4K" | "8K";
+export type Quality = "1K" | "2K" | "4K";
 
 /** Channel / use-case for the generated asset (prompt bar). */
 export type AssetContentType =
@@ -55,7 +55,7 @@ export const ASSET_TYPE_DROPDOWN_OPTIONS = [
 export const ASSET_CONTENT_TYPES: AssetContentType[] = [
   ...ASSET_TYPE_DROPDOWN_OPTIONS,
 ];
-export const QUALITIES: Quality[] = ["1K", "2K", "4K", "8K"];
+export const QUALITIES: Quality[] = ["1K", "2K", "4K"];
 
 /** Map legacy or unknown values to a selectable {@link Quality} (6K → 4K). */
 export function normalizeQuality(raw: string | null | undefined): Quality {
@@ -65,7 +65,7 @@ export function normalizeQuality(raw: string | null | undefined): Quality {
   if (u === "1K") return "1K";
   if (u === "2K") return "2K";
   if (u === "4K") return "4K";
-  if (u === "8K") return "8K";
+  if (u === "8K") return "4K";
   if (u === "6K") return "4K";
   return "4K";
 }

@@ -29,10 +29,10 @@ async function loadOptionalDataUrl(
 }
 
 /**
- * Extra instructions appended to the user prompt so the model sees editor metadata
- * (template, enhance, text) even though the first reference is a flattened composite.
+ * Helper to create editor context settings for the centralized prompt builder.
+ * This replaces the old buildImageEditorPromptAppendix function.
  */
-export function buildImageEditorPromptAppendix(opts: {
+export function createEditorContextSettings(opts: {
   enhanceBrightness: number;
   enhanceSaturation: number;
   textItems: EditorTextItem[];
@@ -44,47 +44,16 @@ export function buildImageEditorPromptAppendix(opts: {
   hasRemoveMask?: boolean;
   /** Extra reference image(s) after the composite are mask-only layers (same alignment). */
   hasIsolatedMaskRefs?: boolean;
-}): string {
-  const lines: string[] = [];
-  lines.push("[Image editor context]");
-  if (opts.templateLabel) {
-    lines.push(`- Template: ${opts.templateLabel}`);
-  }
-  if (opts.hasAddMask) {
-    lines.push(
-      "- The first reference is a flattened composite of the current image. Semi-transparent blue/cool highlights mark the exact region(s) where the user wants NEW objects or content ADDED. Follow the user’s prompt and place additions naturally in those highlighted areas, blended with the scene.",
-    );
-  }
-  if (opts.hasRemoveMask) {
-    lines.push(
-      "- Semi-transparent red/warm highlights on the composite mark region(s) to edit: remove existing content there, then follow prompt/reference guidance for what should appear in that painted area.",
-    );
-  }
-  if (opts.hasIsolatedMaskRefs) {
-    lines.push(
-      "- After the composite, additional reference image(s) are the isolated painted mask layer(s) only (transparent where the user did not paint). Align them with the composite to localize add/remove edits.",
-    );
-  }
-  if (opts.enhanceBrightness !== 100 || opts.enhanceSaturation !== 100) {
-    lines.push(
-      `- Preview adjustments on base image: brightness ${opts.enhanceBrightness}%, saturation ${opts.enhanceSaturation}%.`,
-    );
-  }
-  const texts = opts.textItems.filter((t) => t.text.trim());
-  if (texts.length > 0) {
-    lines.push(
-      "- Text overlays on the preview (preserve content, fonts, and approximate placement):",
-    );
-    for (const t of texts) {
-      lines.push(
-        `  • "${t.text.trim()}" (font: ${t.fontFamily}; weight: ${t.fontWeight ?? 400}; color: ${t.color})`,
-      );
-    }
-  }
-  lines.push(
-    "- First reference image: flattened composite of the editor canvas (base + mask overlays + drawings + text) at generate time.",
-  );
-  return lines.join("\n");
+}) {
+  return {
+    enhanceBrightness: opts.enhanceBrightness,
+    enhanceSaturation: opts.enhanceSaturation,
+    textItems: opts.textItems,
+    templateLabel: opts.templateLabel,
+    hasAddMask: opts.hasAddMask,
+    hasRemoveMask: opts.hasRemoveMask,
+    hasIsolatedMaskRefs: opts.hasIsolatedMaskRefs,
+  };
 }
 
 /**
