@@ -60,9 +60,7 @@ function readEnvLocalValue(cwd: string, keyName: string): string | undefined {
 }
 
 function resolveGeminiApiKey(cwd: string): string | undefined {
-  const fromProc = process.env.GEMINI_API_KEY?.trim();
-  if (fromProc) return fromProc;
-  return readEnvLocalValue(cwd, "GEMINI_API_KEY");
+  return process.env.GEMINI_API_KEY?.trim();
 }
 
 function sleep(ms: number) {
@@ -242,7 +240,7 @@ export async function POST(request: Request) {
       return Response.json(
         {
           error:
-            "GEMINI_API_KEY is not set. Add it to .env.local (no spaces around =) and restart the dev server.",
+            "GEMINI_API_KEY environment variable is not set.",
         },
         { status: 500 },
       );
@@ -286,7 +284,6 @@ export async function POST(request: Request) {
 
     const model =
       process.env.GEMINI_VIDEO_MODEL?.trim() ||
-      readEnvLocalValue(cwd, "GEMINI_VIDEO_MODEL") ||
       DEFAULT_VIDEO_MODEL;
 
     const instance: Record<string, unknown> = {

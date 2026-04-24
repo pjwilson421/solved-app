@@ -6,7 +6,7 @@ const userPrompt = "car driving fast";
 const settings = {
   aspectRatio: "16:9",
   resolution: "4K",
-  duration: "10s",
+  duration: "5s",
   hasStartFrame: false,
   hasEndFrame: false,
   startFrameEndFrame: false,

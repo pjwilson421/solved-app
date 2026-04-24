@@ -128,10 +128,8 @@ function getDurationDescription(duration: string): string {
     case "6s":
       return "6-second brief video with focused motion and clear progression";
     case "8s":
-      return "8-second extended video with developed motion and narrative progression";
-    case "10s":
     default:
-      return "10-second full-duration video with complete motion arc and storytelling";
+      return "8-second extended video with developed motion and narrative progression";
   }
 }
 

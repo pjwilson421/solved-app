@@ -96,7 +96,7 @@ export function CreateVideoClient() {
   const [endFrame, setEndFrame] = useState<ReferenceFile | null>(null);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
   const [quality, setQuality] = useState<Quality>("4K");
-  const [duration, setDuration] = useState<VideoDuration>("10s");
+  const [duration, setDuration] = useState<VideoDuration>("5s");
 
   const [previewPrompt, setPreviewPrompt] = useState("");
   const [previewAt, setPreviewAt] = useState<Date | null>(null);

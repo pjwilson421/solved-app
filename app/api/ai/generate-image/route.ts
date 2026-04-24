@@ -172,13 +172,11 @@ function readEnvLocalValue(cwd: string, keyName: string): string | undefined {
   return undefined;
 }
 
-/** Google AI Studio / Gemini keys — process.env first, then fresh parse of `.env.local`. */
+/** Google AI Studio / Gemini keys — use process.env for production consistency. */
 function resolveGeminiApiKey(cwd: string): string | undefined {
   for (const name of GEMINI_KEY_NAMES) {
     const fromProc = process.env[name]?.trim();
     if (fromProc) return fromProc;
-    const fromFile = readEnvLocalValue(cwd, name);
-    if (fromFile) return fromFile;
   }
   return undefined;
 }
@@ -414,7 +412,7 @@ export async function POST(req: Request) {
       return Response.json(
         {
           error:
-            "Image generation is not configured. Put your key on one line: GEMINI_API_KEY=your_key (no spaces around =), save .env.local, then try again.",
+            "Image generation is not configured. Set GEMINI_API_KEY environment variable and try again.",
         },
         { status: 500 },
       );
@@ -422,7 +420,6 @@ export async function POST(req: Request) {
 
     const model =
       process.env.GEMINI_IMAGE_MODEL?.trim() ||
-      readEnvLocalValue(cwd, "GEMINI_IMAGE_MODEL") ||
       DEFAULT_IMAGE_MODEL;
 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;

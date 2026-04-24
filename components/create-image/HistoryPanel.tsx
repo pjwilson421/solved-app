@@ -161,17 +161,7 @@ export function HistoryPanel({
                 className="block w-full text-left"
               >
                 <div className="relative aspect-[200/112.5] w-full overflow-hidden rounded-[11px] bg-panel-bg">
-                  {videoSrc ? (
-                    <VideoHistoryFirstFrameThumb
-                      src={videoSrc}
-                      posterFallback={thumb}
-                      className={cn(
-                        "absolute inset-0 h-full w-full object-cover",
-                        thumbnailHoverOpacityOnItemHover &&
-                          "opacity-100 transition-opacity duration-200 ease-in-out hover:opacity-70",
-                      )}
-                    />
-                  ) : thumb ? (
+                  {thumb ? (
                     <Image
                       src={thumb}
                       alt=""
@@ -182,6 +172,16 @@ export function HistoryPanel({
                           "opacity-100 transition-opacity duration-200 ease-in-out hover:opacity-70",
                       )}
                       sizes="300px"
+                    />
+                  ) : videoSrc ? (
+                    <VideoHistoryFirstFrameThumb
+                      src={videoSrc}
+                      posterFallback={thumb}
+                      className={cn(
+                        "absolute inset-0 h-full w-full object-cover",
+                        thumbnailHoverOpacityOnItemHover &&
+                          "opacity-100 transition-opacity duration-200 ease-in-out hover:opacity-70",
+                      )}
                     />
                   ) : null}
                 </div>

@@ -299,11 +299,11 @@ export function ChatHistoryPanel({
                 }
               }}
               className={cn(
-                "flex w-full min-w-0 cursor-pointer items-start justify-between gap-0 rounded-full px-3 py-2 transition-colors duration-150",
+                "flex w-full min-w-0 cursor-pointer items-center justify-between gap-0 rounded-full px-3 py-3 transition-colors duration-150",
                 selected ? "bg-[#0C1E6A]" : "bg-transparent hover:bg-[#0C1E6A]",
               )}
             >
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 pl-12 py-1">
                 <p
                   className={cn(
                     titleTextClass,
@@ -343,7 +343,7 @@ export function ChatHistoryPanel({
                     <span className="min-w-0 truncate">{titlePreview}</span>
                   )}
                 </p>
-                <p className="mt-0.5 truncate text-[10px] leading-[14px] text-white/60">
+                <p className="mt-1 truncate text-[10px] leading-[14px] text-white/60">
                   {chatHistoryTimestampLabel(t.savedAt)}
                 </p>
               </div>

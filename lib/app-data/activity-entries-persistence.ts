@@ -56,9 +56,7 @@ const RESOLUTIONS: NonNullable<ActivityHistoryEntry["resolution"]>[] = [
 
 const VIDEO_DURATIONS: NonNullable<ActivityHistoryEntry["videoDuration"]>[] = [
   "5s",
-  "10s",
-  "15s",
-  "30s",
+  "8s",
 ];
 
 function parseOccurredAt(v: unknown): Date | null {

@@ -74,9 +74,9 @@ export const VARIATION_OPTIONS = [1, 2, 3, 4] as const;
 export const CREATE_IMAGE_VARIATION_OPTIONS = [1, 2] as const;
 
 /** Video export length (prompt bar / settings row on Create Video). */
-export type VideoDuration = "5s" | "10s" | "15s" | "30s";
+export type VideoDuration = "5s" | "8s";
 
-export const VIDEO_DURATIONS: VideoDuration[] = ["5s", "10s", "15s", "30s"];
+export const VIDEO_DURATIONS: VideoDuration[] = ["5s", "8s"];
 
 export const MOCK_TEMPLATES: TemplateDef[] = [
   {
