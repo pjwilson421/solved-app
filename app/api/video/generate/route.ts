@@ -282,6 +282,19 @@ export async function POST(request: Request) {
     const videoAspect = videoAspectFromUi(aspectRaw);
     const durationSeconds = durationUiToSeconds(o.duration);
 
+    // Dev logging for aspect ratio tracking
+    if (process.env.NODE_ENV === "development") {
+      console.log("[api/video/generate] Video generation settings:", {
+        receivedAspectRatio: o.aspectRatio,
+        normalizedAspectRatio: aspectRaw,
+        videoAspectForApi: videoAspect,
+        duration: o.duration,
+        durationSeconds,
+        hasStartFrame: !!startFrame,
+        hasEndFrame: !!endFrame
+      });
+    }
+
     const model =
       process.env.GEMINI_VIDEO_MODEL?.trim() ||
       DEFAULT_VIDEO_MODEL;

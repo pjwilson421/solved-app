@@ -485,6 +485,15 @@ export function CreateVideoClient() {
         entry.aspectRatio &&
         ASPECT_RATIOS.includes(entry.aspectRatio as AspectRatio)
       ) {
+        // Dev logging for history reload aspect ratio tracking
+        if (process.env.NODE_ENV === "development") {
+          console.log("[CreateVideoClient] History reload - restoring aspect ratio:", {
+            historyId: id,
+            storedAspectRatio: entry.aspectRatio,
+            currentAspectRatio: aspectRatio,
+            videoUrl: resolvedVideo ? resolvedVideo.substring(0, 50) + '...' : 'No video'
+          });
+        }
         setAspectRatio(entry.aspectRatio as AspectRatio);
       }
       setQuality(normalizeQuality(entry.resolution ?? quality));

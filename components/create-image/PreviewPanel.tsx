@@ -719,6 +719,19 @@ export function PreviewPanel({
   const dateLine = createdAt ? formatCreatedAt(createdAt) : "";
   const specsTrim = previewSpecsLine?.trim() ?? "";
 
+  // Dev logging for aspect ratio tracking
+  if (process.env.NODE_ENV === "development" && hasVideo) {
+    console.log("[PreviewPanel] Video display settings:", {
+      aspectRatio,
+      hasVideo,
+      previewVideoUrl: previewVideoUrl ? previewVideoUrl.substring(0, 50) + '...' : 'No video',
+      objectFit: "object-cover",
+      containerClass: mobileFrame ? mobileFrameClass(aspectRatio) : 
+                   aspectRatio === "16:9" ? desktop169Frame : 
+                   desktopOtherAspectInnerClass(aspectRatio)
+    });
+  }
+
   /**
    * Mobile card (`mobileFrame`) uses fixed CSS aspect/max-width tokens only.
    * Inline `layoutFrame` from the desktop scroll column can be wrong (e.g. zero-size or
@@ -797,7 +810,7 @@ export function PreviewPanel({
             }
           >
             <video
-              className="h-full w-full object-contain"
+              className="h-full w-full object-cover"
               controls
               playsInline
             >
