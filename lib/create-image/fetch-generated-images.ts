@@ -3,7 +3,6 @@ import type {
   AssetContentType,
   Quality,
 } from "@/components/create-image/types";
-import { buildImagePrompt } from "@/lib/ai/build-image-prompt";
 
 export type FetchGeneratedImagesOptions = {
   prompt: string;
@@ -91,12 +90,7 @@ export async function fetchGeneratedImages(
     numberOfVariations,
     referenceImages = [],
   } = opts;
-  const enhancedPrompt = buildImagePrompt(prompt, {
-    assetType,
-    aspectRatio,
-    resolution,
-    numberOfVariations,
-  });
+  // Send raw prompt to API - enhancement happens server-side
 
   let lastStatus = 0;
   let lastServerMessage: string | null = null;
@@ -106,7 +100,7 @@ export async function fetchGeneratedImages(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        prompt: enhancedPrompt,
+        prompt,
         assetType,
         aspectRatio,
         resolution,
