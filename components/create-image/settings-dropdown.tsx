@@ -123,8 +123,23 @@ export function SettingsDropdown({
     [menuId, setOpenMenu],
   );
 
+  // Mobile touch support - toggle menu on tap
+  const handleRootTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    e.preventDefault(); // Prevent hover simulation on mobile
+    setOpenMenu((cur) => (cur === menuId ? null : menuId));
+  }, [menuId, setOpenMenu]);
+
   const handleTriggerClick = useCallback(
     (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setOpenMenu((cur) => (cur === menuId ? null : menuId));
+    },
+    [menuId, setOpenMenu],
+  );
+
+  const handleTriggerTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      e.preventDefault();
       e.stopPropagation();
       setOpenMenu((cur) => (cur === menuId ? null : menuId));
     },
@@ -156,6 +171,7 @@ export function SettingsDropdown({
       className={cn("relative z-30 min-w-0 shrink-0", widthClass)}
       onPointerEnter={handleRootPointerEnter}
       onPointerLeave={handleRootPointerLeave}
+      onTouchStart={handleRootTouchStart}
     >
       <button
         type="button"
@@ -174,6 +190,7 @@ export function SettingsDropdown({
         aria-expanded={open}
         aria-controls={listId}
         onClick={handleTriggerClick}
+        onTouchEnd={handleTriggerTouchEnd}
       >
         {triggerContent}
       </button>
@@ -247,6 +264,10 @@ export function SettingsMenuOptionButton({
         )}
         onMouseEnter={() => setHoveredItemKey?.(itemKey)}
         onClick={() => {
+          onPick();
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
           onPick();
         }}
       >
