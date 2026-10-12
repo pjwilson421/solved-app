@@ -9,7 +9,7 @@
     "test:seedance": "node index.ts"
   },
   "dependencies": {
-    "@higgsfield/client": "latest",
+    "@higgsfield/client": "0.2.6",
     "dotenv": "^16.6.1"
   }
 }

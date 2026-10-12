@@ -10,7 +10,15 @@ export default async function handler(req, res) {
   try {
     const url = await generateSeedance(seedanceExample);
     return res.status(200).json({ status: 'completed', url });
-  } catch {
-    return res.status(502).json({ error: 'Seedance generation failed, was canceled or moderated, or returned no video. No success verified.' });
+  } catch (error) {
+    const categories = {
+      AuthenticationError: 'Higgsfield rejected the API credentials.',
+      NotEnoughCreditsError: 'Higgsfield API credits are insufficient.',
+      ValidationError: 'Higgsfield rejected the generation parameters.',
+      BadInputError: 'Higgsfield rejected the request input.',
+      CredentialsMissedError: 'Higgsfield credentials are not configured.',
+      TimeoutError: 'Higgsfield did not finish within the polling limit.'
+    };
+    return res.status(502).json({ error: categories[error?.name] || 'Seedance generation failed, was canceled or moderated, or returned no video. No success verified.' });
   }
 }
