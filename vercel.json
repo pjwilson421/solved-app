@@ -1,0 +1,8 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/studio/api/:fn", "destination": "/api/:fn" },
+    { "source": "/studio", "destination": "/studio/index.html" },
+    { "source": "/", "destination": "/studio/index.html" }
+  ]
+}
