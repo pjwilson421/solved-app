@@ -6,6 +6,7 @@ import crypto from 'node:crypto';
 //   HF_REF_FIELD        body field for reference URLs on that model, e.g. image_urls or image_url (optional)
 //   HF_RESOLUTION       resolution value for the model  (default 1080p)
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   if (!checkPass(req, res)) return;
   try {

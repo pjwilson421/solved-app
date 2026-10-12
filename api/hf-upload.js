@@ -2,6 +2,7 @@ import { checkPass, hfAuth, HF } from '../lib/auth.js';
 export const config = { api: { bodyParser: { sizeLimit: '4mb' } } };
 // Accepts { dataUrl } from the browser, uploads it to Higgsfield storage server-side, returns its public URL.
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   if (!checkPass(req, res)) return;
   try {

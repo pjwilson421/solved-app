@@ -1,5 +1,6 @@
 import { checkPass, hfAuth, HF } from '../lib/auth.js';
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
   if (!checkPass(req, res)) return;
   const id = String(req.query.id || '');
   if (!/^[A-Za-z0-9-]{8,80}$/.test(id)) return res.status(400).json({ error: 'bad id' });

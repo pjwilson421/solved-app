@@ -1,5 +1,9 @@
 {
   "cleanUrls": true,
+  "headers": [
+    { "source": "/api/(.*)", "headers": [ { "key": "Cache-Control", "value": "no-store, max-age=0" } ] },
+    { "source": "/studio/api/(.*)", "headers": [ { "key": "Cache-Control", "value": "no-store, max-age=0" } ] }
+  ],
   "rewrites": [
     { "source": "/studio/api/:fn", "destination": "/api/:fn" },
     { "source": "/studio", "destination": "/studio/index.html" },
