@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Seedance verification</title></head><body>
+<h1>Seedance 2.5 verification</h1><p>A cinematic scene at sunset · 5 seconds · 720p · 16:9</p>
+<label>Studio password <input id="pass" type="password" autocomplete="off"></label>
+<button id="run">Run one paid test</button><p id="status">Ready</p><div id="result"></div>
+<script>
+document.getElementById('run').onclick=async()=>{
+ const button=document.getElementById('run'); button.disabled=true;
+ document.getElementById('status').textContent='Generating — wait for completion.';
+ try{
+ const r=await fetch('/studio/api/hf-video',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','x-studio-pass':document.getElementById('pass').value},body:'{}'});
+ const data=await r.json();
+ if(!r.ok||data.status!=='completed'||!data.url)throw new Error(data.error||'No verified video URL');
+ document.getElementById('status').textContent='Completed';
+ const link=document.createElement('a');link.href=data.url;link.textContent=data.url;document.getElementById('result').append(link);
+ const video=document.createElement('video');video.src=data.url;video.controls=true;video.style.width='600px';document.getElementById('result').append(video);
+ }catch(e){document.getElementById('status').textContent=e.message;}
+};
+</script></body></html>
