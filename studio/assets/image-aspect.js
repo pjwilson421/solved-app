@@ -11,6 +11,23 @@
     }));
     return dimensions.get(src);
   }
+  // Initialize every gallery frame, including empty projects and pending images.
+  function layoutFrame(frame) {
+    if (!frame.style.aspectRatio) return;
+    let card = frame.parentElement;
+    let gallery = card?.parentElement;
+    while (gallery && /^(SC-|TEMPLATE)/.test(gallery.tagName)) gallery = gallery.parentElement;
+    if (!gallery || !(gallery.classList.contains('character-sheet-grid') ||
+        gallery.style.gridTemplateColumns.includes('repeat('))) return;
+    gallery.classList.add('equal-height-gallery');
+    card.classList.add('equal-height-card');
+    frame.classList.add('equal-height-image');
+    if (!card.style.getPropertyValue('--image-ratio')) {
+      const parts = frame.style.aspectRatio.split('/').map(Number);
+      const ratio = parts[0] / (parts[1] || 1);
+      if (ratio > 0) card.style.setProperty('--image-ratio', String(ratio));
+    }
+  }
   function inspect(element) {
     const background = element.style.backgroundImage;
     const match = /^url\(["']?(.*?)["']?\)$/.exec(background || '');
@@ -49,6 +66,8 @@
   }
   function scan(root) {
     if (root.nodeType !== 1) return;
+    layoutFrame(root);
+    root.querySelectorAll('[style*="aspect-ratio"]').forEach(layoutFrame);
     inspect(root);
     root.querySelectorAll('[style*="background-image"]').forEach(inspect);
   }
@@ -57,7 +76,7 @@
     new MutationObserver(records => {
       for (const record of records) {
         if (record.type === 'childList') record.addedNodes.forEach(scan);
-        else { inspect(record.target); record.target.querySelectorAll('[style*="background-image"]').forEach(inspect); }
+        else { layoutFrame(record.target); inspect(record.target); record.target.querySelectorAll('[style*="background-image"]').forEach(inspect); }
       }
     }).observe(document.body, {subtree:true,childList:true,attributes:true,attributeFilter:['style']});
   }
