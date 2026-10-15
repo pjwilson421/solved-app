@@ -28,7 +28,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="/studio/assets/a8fad9be-676a-442d-92f9-356dcc0e99ed.js"></script>
-<script defer src="/studio/assets/image-aspect.js"></script>
+<script defer src="/studio/assets/image-aspect.js?v=equal-height-1"></script>
 </head>
 <body>
 <x-dc>
@@ -50,6 +50,10 @@
 /* Keep the shared Generate action centered across all prompt bars. */
 [data-sv="bar"]{padding-right:134px!important}
 [data-sv="bar"]>[data-sv="gobtn"], [data-sv="bar"] [data-sv="gobtn"]{position:absolute;right:14px;top:50%;margin:0!important;transform:translateY(-50%)!important}
+
+.equal-height-gallery{--gallery-image-height:clamp(160px,28vw,320px);display:flex!important;flex-wrap:wrap;align-items:flex-start!important;gap:20px!important;overflow-x:auto}
+.equal-height-gallery>.equal-height-card{flex:0 0 auto!important;width:calc(var(--gallery-image-height) * var(--image-ratio,.75))!important;min-width:0}
+.equal-height-image{height:var(--gallery-image-height)!important;width:100%!important;flex:none!important}
 </style></helmet>
 <div data-sv="app" style="display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px;min-height:100vh">
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">

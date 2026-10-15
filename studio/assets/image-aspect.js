@@ -28,6 +28,19 @@
     measure(src).then(size => {
       if (!size || !element.isConnected || element.style.backgroundImage !== background) return;
       const ratio = size[0] + ' / ' + size[1];
+      const card = frame.parentElement, gallery = card?.parentElement;
+      if (gallery && (gallery.classList.contains('character-sheet-grid') || gallery.style.gridTemplateColumns.includes('repeat('))) {
+        gallery.classList.add('equal-height-gallery');
+        card.classList.add('equal-height-card');
+        frame.classList.add('equal-height-image');
+        card.style.setProperty('--image-ratio', String(size[0] / size[1]));
+        // Match empty/add cards to the same image height.
+        for (const sibling of gallery.children) {
+          sibling.classList.add('equal-height-card');
+          const empty = sibling.querySelector('[data-sv="newbox"]');
+          if (empty) empty.classList.add('equal-height-image');
+        }
+      }
       if (frame.style.aspectRatio !== ratio || frame.style.getPropertyPriority('aspect-ratio') !== 'important') frame.style.setProperty('aspect-ratio', ratio, 'important');
       if (element.style.backgroundSize !== 'contain') element.style.backgroundSize = 'contain';
       element.style.backgroundRepeat = 'no-repeat';
