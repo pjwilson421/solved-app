@@ -902,7 +902,7 @@
 <script type="text/x-dc" data-dc-script="">
 const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
 const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
-const PAGE_LABEL = p => p === 'BRIEF' ? 'Overview' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Storyboards' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Set design' : p === 'TALENT' ? 'Characters' : p.charAt(0) + p.slice(1).toLowerCase();
+const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Storyboards' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Set design' : p === 'TALENT' ? 'Characters' : p.charAt(0) + p.slice(1).toLowerCase();
 const CFG = {
   TALENT: { one: 'Character', prefix: 'CHR', ph: 'Describe a new character — age, look, expression, wardrobe…', search: 'Search characters by name, ID or appearance…' },
   PRODUCT: { one: 'Product', prefix: 'PRD', heroH: 418, ph: 'Describe a product image to generate…', search: 'Search existing product photography…',
@@ -2124,7 +2124,7 @@ class Component extends DCLogic {
       })(),
       projName: proj || 'Untitled project', projColor: proj ? '#111111' : '#9A968F', clientName: client || 'No client',
       goOverview: () => { this.initial = values; this.setState({ page: 'BRIEF', view: 'all', attachOpen: false }); },
-      nav: NAV_ORDER.map((p, i) => ({ label: p === 'BRIEF' ? 'OVERVIEW' : p === 'OVERVIEW' ? 'DASHBOARD' : p === 'KEYFRAMES' ? 'STORYBOARDS' : p === 'PRODUCT' ? 'PRODUCTS' : p === 'LOCATION' ? 'LOCATIONS' : p === 'SETDESIGN' ? 'SET DESIGN' : p === 'TALENT' ? 'CHARACTERS' : p, mb: (p === 'BRIEF' || p === 'SETDESIGN') ? '20px' : '0px', color: p === page ? '#1985FF' : '#B5B1AB',
+      nav: NAV_ORDER.map((p, i) => ({ label: p === 'BRIEF' ? 'BRIEF' : p === 'OVERVIEW' ? 'DASHBOARD' : p === 'KEYFRAMES' ? 'STORYBOARDS' : p === 'PRODUCT' ? 'PRODUCTS' : p === 'LOCATION' ? 'LOCATIONS' : p === 'SETDESIGN' ? 'SET DESIGN' : p === 'TALENT' ? 'CHARACTERS' : p, mb: (p === 'OVERVIEW' || p === 'SETDESIGN') ? '20px' : '0px', color: p === page ? '#1985FF' : '#B5B1AB',
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
 
       crumbRoot: (isOverview || isBlank) ? 'PROJECT' : page === 'KEYFRAMES' ? 'STORYBOARDS' : page === 'PRODUCT' ? 'PRODUCTS' : page === 'LOCATION' ? 'LOCATIONS' : page === 'SETDESIGN' ? 'SET DESIGN' : page === 'TALENT' ? 'CHARACTERS' : page, crumbSep: '/',
