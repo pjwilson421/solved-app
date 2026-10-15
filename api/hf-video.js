@@ -1,24 +1,2 @@
 import { checkPass } from '../lib/auth.js';
-import { generateSeedance, seedanceExample } from '../lib/seedance.js';
-export const config = { maxDuration: 300 };
-export default async function handler(req, res) {
-  res.setHeader('Cache-Control', 'no-store, max-age=0');
-  res.setHeader('CDN-Cache-Control', 'no-store');
-  res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
-  if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
-  if (!checkPass(req, res)) return;
-  try {
-    const url = await generateSeedance(seedanceExample);
-    return res.status(200).json({ status: 'completed', url });
-  } catch (error) {
-    const categories = {
-      AuthenticationError: 'Higgsfield rejected the API credentials.',
-      NotEnoughCreditsError: 'Higgsfield API credits are insufficient.',
-      ValidationError: 'Higgsfield rejected the generation parameters.',
-      BadInputError: 'Higgsfield rejected the request input.',
-      CredentialsMissedError: 'Higgsfield credentials are not configured.',
-      TimeoutError: 'Higgsfield did not finish within the polling limit.'
-    };
-    return res.status(502).json({ error: categories[error?.name] || 'Seedance generation failed, was canceled or moderated, or returned no video. No success verified.' });
-  }
-}
+export default function handler(req,res){if(!checkPass(req,res))return;res.status(503).json({error:'Image and video generation are temporarily unavailable on the live app.'});}
