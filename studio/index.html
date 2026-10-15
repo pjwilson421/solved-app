@@ -54,6 +54,11 @@
 .equal-height-gallery{--gallery-image-height:clamp(160px,28vw,320px);display:flex!important;flex-wrap:wrap;align-items:flex-start!important;gap:20px!important;overflow-x:auto}
 .equal-height-gallery>.equal-height-card{flex:0 0 auto!important;width:calc(var(--gallery-image-height) * var(--image-ratio,.75))!important;min-width:0;grid-column:auto!important;grid-row:auto!important}
 .equal-height-image{height:var(--gallery-image-height)!important;width:100%!important;flex:none!important}
+
+/* Shared gallery frame height, including project cards without an image. */
+div[style*="grid-template-columns:repeat("] > div > div[style*="aspect-ratio"],
+div[style*="grid-template-columns: repeat("] > div > div[style*="aspect-ratio"],
+.character-sheet-preview{height:clamp(160px,28vw,320px)!important;flex:none!important}
 </style></helmet>
 <div data-sv="app" style="display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px;min-height:100vh">
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
@@ -189,7 +194,7 @@
     <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
       <div data-screen-label="01 Brief" class="brief-layout">
 <input type="file" accept=".txt,.md,.markdown,.csv,.json,.html,.htm,.docx,.pdf" multiple="{{ true }}" ref="{{ docRef }}" sc-camel-on-change="{{ onDocs }}" style="display:none">
-<div class="brief-bar"><span>Overview · {{ brief.progress }}</span><small>Project details and creative direction</small></div>
+<div class="brief-bar"><span>Brief · {{ brief.progress }}</span><small>Project details and creative direction</small></div>
 <div class="brief-upload" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ dropDocs }}"><div class="brief-upload-line"><button class="brief-plus" sc-camel-on-click="{{ attachDocs }}" aria-label="Upload project documents"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="display:block"><path d="M9 2v14M2 9h14" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"></path></svg></button><div><h2>Add project docs</h2><p>Upload docs, briefs, scope of work, treatments, notes &amp; more.<br>PDF, DOCX or text.</p></div></div>          <sc-if value="{{ brief.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:700 11px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#66625E;animation:{{ docNoteAnim }}">{{ brief.note }}</div></sc-if>
           <sc-if value="{{ hasDocs }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ docs }}" as="d" hint-placeholder-count="0"><div style="display:flex;align-items:center;gap:8px;height:32px;padding:0 8px 0 12px;border-radius:6px;background:#FFFFFF;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif"><span style="font-weight:700">{{ d.name }}</span><span style="color:#66625E">{{ d.status }}</span><span sc-camel-on-click="{{ d.remove }}" title="Remove file" style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#66625E">×</span></div></sc-for></div></sc-if></div>
 <div class="brief-names"><sc-for list="{{ brief.names }}" as="nm"><label>{{ nm.title }}<input value="{{ nm.value }}" sc-camel-on-change="{{ nm.onChange }}" sc-camel-on-blur="{{ nm.onBlur }}" placeholder="{{ nm.ph }}"></label></sc-for></div>
