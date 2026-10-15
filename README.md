@@ -1,5 +1,34 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+Hosted app: https://solved-app.vercel.app
+
+## Access control
+
+Every page and `/api` route requires a signed-in session. The gate is `proxy.ts` (Next.js 16 renamed Middleware to Proxy). It allows only:
+
+- `/login`
+- `POST /api/auth/login` and `POST /api/auth/logout`
+- static assets (`/_next/static`, `/_next/image`, `favicon.ico`, and public images)
+
+Unauthenticated API calls return **401**. Paid routes (Claude chat, Gemini image, Veo video) also check the session inside the handler. If the password or session secret is missing, the app fails closed with **503** and does not serve those routes.
+
+Sign-in uses one shared password. Ten failed attempts from the same IP lock that address out for 15 minutes. A successful sign-in sets an HttpOnly, SameSite=Lax cookie named `solved_session` for 12 hours (`Secure` on HTTPS). This follows the SOLVED Studio login (`solved-studio` branch: `middleware.js`, `lib/session.js`).
+
+### Required environment variables
+
+Set these in the **Vercel project before merging**. Do not commit real values. Copy `.env.example` to `.env.local` for local development.
+
+| Name | Purpose |
+| --- | --- |
+| `STUDIO_PASSWORD` | Shared password. Same name as SOLVED Studio. |
+| `STUDIO_SESSION_SECRET` | HMAC secret for the session cookie. Use a long random value. |
+
+`ANTHROPIC_API_KEY` and `GEMINI_API_KEY` are still required for chat, image, and video. Rotating `STUDIO_SESSION_SECRET` signs everyone out.
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
+```
+
 ## Getting Started
 
 First, run the development server:
