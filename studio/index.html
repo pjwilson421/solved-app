@@ -830,13 +830,13 @@
               <div data-sv="optwrap" sc-camel-on-mouse-enter="{{ o.open }}" sc-camel-on-mouse-leave="{{ o.close }}" style="flex:none">
                 <div data-sv="chip" title="{{ o.title }}" style="height:32px;padding:0 12px;border-radius:16px;background:#2A2A2E;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap">
                   <span style="font:700 10px/1 'Helvetica Neue',Helvetica,sans-serif;color:#8A8681">{{ o.label }}</span>
-                  <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#FFFFFF">{{ o.value }}</span>
+                  <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#00BE50">{{ o.value }}</span>
                 </div>
                 <div data-sv="optmenu" style="display:{{ o.menu }}">
                   <div data-sv="optinner">
                   <sc-for list="{{ o.options }}" as="x" hint-placeholder-count="4">
                     <div data-sv="optitem" sc-camel-on-click="{{ x.pick }}" style="height:32px;padding:0 10px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;background:{{ x.bg }}">
-                      <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:{{ x.fg }};white-space:nowrap">{{ x.label }}</span>
+                      <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#00BE50;white-space:nowrap">{{ x.label }}</span>
                       <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#00BE50">{{ x.tick }}</span>
                     </div>
                   </sc-for>
