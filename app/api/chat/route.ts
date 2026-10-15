@@ -1,7 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { requireApiSession } from "@/lib/auth/request";
 import { SOLVED_CHAT_SYSTEM_PROMPT } from "@/lib/ai/system-prompt";
 
 export async function POST(request: Request) {
+  const denied = await requireApiSession();
+  if (denied) return denied;
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
   if (!apiKey) {

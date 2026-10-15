@@ -6,6 +6,7 @@ import {
   type GenerationResolutionKey,
 } from "@/lib/create-image/generation-dimensions";
 import { buildImagePrompt, type ImageSettings } from "@/lib/ai/build-image-prompt";
+import { requireApiSession } from "@/lib/auth/request";
 
 const DEFAULT_IMAGE_MODEL = "gemini-2.5-flash-image";
 
@@ -363,6 +364,9 @@ async function generateOneImage(params: {
 }
 
 export async function POST(req: Request) {
+  const denied = await requireApiSession();
+  if (denied) return denied;
+
   try {
     const cwd = process.cwd();
 

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { GoogleGenAI } from "@google/genai";
+import { requireApiSession } from "@/lib/auth/request";
 
 export const runtime = "nodejs";
 
@@ -233,6 +234,9 @@ async function fetchVideoAsDataUrl(videoUrl: string, apiKey: string): Promise<st
 }
 
 export async function POST(request: Request) {
+  const denied = await requireApiSession();
+  if (denied) return denied;
+
   try {
     const cwd = process.cwd();
     const apiKey = resolveGeminiApiKey(cwd);
