@@ -1195,7 +1195,7 @@ class Component extends DCLogic {
   state = {
     bopen: {}, bedit: {}, bdraft: {}, bdocs: load('solved-brief-docs', []), bNote: '', bBusy: false,
     home: (() => { try { const f = sessionStorage.getItem('solved-open'); sessionStorage.removeItem('solved-open'); return !f; } catch (e) { return true; } })(), covers: null, homeEdit: null, homeConfirm: null,
-    page: 'BRIEF', view: 'all', item: null, values: this.initial, items: (() => { const it = load('solved-items', defaultItems()); return { ...it, KEYFRAMES: Array.isArray(it.KEYFRAMES) ? it.KEYFRAMES : defaultItems().KEYFRAMES }; })(),
+    page: 'OVERVIEW', view: 'all', item: null, values: this.initial, items: (() => { const it = load('solved-items', defaultItems()); return { ...it, KEYFRAMES: Array.isArray(it.KEYFRAMES) ? it.KEYFRAMES : defaultItems().KEYFRAMES }; })(),
     store: load('solved-assets', { seq: {}, TALENT: [] }),
     prompt: '', mode: 'generate', attach: [], attachOpen: false,
     create: freshCreate(), tab: 'identity', varCat: 'ANGLES', confirmDelete: false,
@@ -2103,7 +2103,7 @@ class Component extends DCLogic {
             dates: dates ? 'Project dates · ' + dates : 'No project dates', created: 'Created ' + fmt(p.created || Date.now()),
             hasImg: !!img, noImg: !img, bg: bgOf(img), isCurrent: p.id === cur,
             idle: !conf && !ed, reading: !ed, editing: !!ed, confirming: conf, stop,
-            open: () => { if (conf || ed) return; if (p.id === cur) { this.setState({ home: false }); window.scrollTo(0, 0); return; } SV.set('solved-current', p.id); reload(true); },
+            open: () => { if (conf || ed) return; if (p.id === cur) { this.setState({ home: false, page: 'OVERVIEW', view: 'all', item: null, attachOpen: false }); window.scrollTo(0, 0); return; } SV.set('solved-current', p.id); reload(true); },
             edit: e => { stop(e); this.setState({ homeConfirm: null, homeEdit: { id: p.id, client: (o['CLIENT NAME'] || ''), name: (o['PROJECT NAME'] || ''), start: p.start || '', end: p.end || '' } }); },
             fields: ed ? [['client', 'Client name', 'Client'], ['name', 'Project name', 'Project'], ['start', 'Start date', 'e.g. Nov 3, 2026'], ['end', 'End date', 'e.g. Dec 12, 2026']].map(([k, label, ph]) => ({ label, ph, value: ed[k] || '', set: setF(k) })) : [],
             cancelEdit: () => this.setState({ homeEdit: null }),
