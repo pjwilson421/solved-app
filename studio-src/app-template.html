@@ -62,7 +62,7 @@ div[style*="grid-template-columns: repeat("] > div > div[style*="aspect-ratio"],
 
 html{color-scheme:dark}
 [data-sv="side"]{background:#101010!important;border-right:1px solid #252525}
-img[alt="SOLVED"]{filter:invert(1)}
+img[alt="SOLVED"]{filter:none}
 [data-sv="bar"],.character-generate-panel{background:#191919!important;color:#f5f5f5}
 [data-sv="bar"] textarea,[data-sv="bartext"],.character-generate-settings select,.character-quality select{color:#f5f5f5!important}
 [data-sv="bar"] [data-sv="chip"],[data-sv="optitem"]{color:#00be50!important}
@@ -79,7 +79,7 @@ img[alt="SOLVED"]{filter:invert(1)}
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="00 Projects" style="position:fixed;inset:0;z-index:60;overflow:auto;background:#080808;display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px">
   <aside style="width:300px;box-sizing:border-box;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
-    <div style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em"><img src="/studio/assets/solved-logo.svg?v=8946d4a9c9" alt="SOLVED" style="display:block;width:146px;height:22px;object-fit:contain;object-position:left center"></div>
+    <div style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em"><img src="/studio/assets/solved-logo.svg?v=c8c15deb9e" alt="SOLVED" style="display:block;width:146px;height:22px;object-fit:contain;object-position:left center"></div>
     <div style="display:flex;flex-direction:column;gap:40px">
       <div style="display:flex;flex-direction:column;gap:4px;height:38px">
         <div style="height:18px;font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5">{{ home.countLabel }}</div>
@@ -151,7 +151,7 @@ img[alt="SOLVED"]{filter:invert(1)}
 </div>
 </sc-if>
   <aside data-sv="side" style="width:300px;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
-    <div sc-camel-on-click="{{ goHome }}" title="All projects" style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;cursor:pointer"><img src="/studio/assets/solved-logo.svg?v=8946d4a9c9" alt="SOLVED" style="display:block;width:146px;height:22px;object-fit:contain;object-position:left center"></div>
+    <div sc-camel-on-click="{{ goHome }}" title="All projects" style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;cursor:pointer"><img src="/studio/assets/solved-logo.svg?v=c8c15deb9e" alt="SOLVED" style="display:block;width:146px;height:22px;object-fit:contain;object-position:left center"></div>
     <div data-sv="sidebody" style="display:flex;flex-direction:column;gap:40px">
       <div sc-camel-on-click="{{ goHome }}" title="All projects" style-hover="color:#00BE50" style="margin-bottom:-24px;height:16px;display:flex;align-items:center;gap:6px;font:700 11px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;cursor:pointer;transition:color .12s"><span>←</span><span>All projects</span></div>
       <div data-sv="proj" sc-camel-on-click="{{ goOverview }}" style="display:flex;flex-direction:column;gap:4px;height:38px;cursor:pointer">
