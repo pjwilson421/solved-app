@@ -2144,7 +2144,7 @@ class Component extends DCLogic {
       })(),
       projName: proj || 'Untitled project', projColor: proj ? '#f5f5f5' : '#929292', clientName: client || 'No client',
       goOverview: () => { this.initial = values; this.setState({ page: 'BRIEF', view: 'all', attachOpen: false }); },
-      nav: NAV_ORDER.map((p, i) => ({ label: p === 'BRIEF' ? 'BRIEF' : p === 'OVERVIEW' ? 'DASHBOARD' : p === 'KEYFRAMES' ? 'STORYBOARDS' : p === 'PRODUCT' ? 'PRODUCTS' : p === 'LOCATION' ? 'LOCATIONS' : p === 'SETDESIGN' ? 'SET DESIGN' : p === 'TALENT' ? 'CHARACTERS' : p, mb: (p === 'OVERVIEW' || p === 'SETDESIGN') ? '20px' : '0px', color: p === page ? '#00BE50' : '#929292',
+      nav: NAV_ORDER.map((p, i) => ({ label: p === 'BRIEF' ? 'BRIEF' : p === 'OVERVIEW' ? 'DASHBOARD' : p === 'KEYFRAMES' ? 'STORYBOARDS' : p === 'PRODUCT' ? 'PRODUCTS' : p === 'LOCATION' ? 'LOCATIONS' : p === 'SETDESIGN' ? 'SET DESIGN' : p === 'TALENT' ? 'Image' : p, mb: (p === 'OVERVIEW' || p === 'SETDESIGN') ? '20px' : '0px', color: p === page ? '#00BE50' : '#929292',
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
 
       crumbRoot: (isOverview || isBlank) ? 'PROJECT' : page === 'KEYFRAMES' ? 'STORYBOARDS' : page === 'PRODUCT' ? 'PRODUCTS' : page === 'LOCATION' ? 'LOCATIONS' : page === 'SETDESIGN' ? 'SET DESIGN' : page === 'TALENT' ? 'CHARACTERS' : page, crumbSep: '/',
