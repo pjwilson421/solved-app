@@ -20,7 +20,7 @@ ${pw ? `<details><summary>Use the studio password instead</summary><form method=
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 (function(){
- var sb=supabase.createClient(${JSON.stringify(SUPABASE_URL)},${JSON.stringify(SUPABASE_KEY)});
+ var sb=supabase.createClient(${JSON.stringify(SUPABASE_URL)},${JSON.stringify(SUPABASE_KEY)},{auth:{persistSession:true,storageKey:"sb-solved-auth"}});
  var q=new URLSearchParams(location.search), next=q.get('next'); if(!next||next.charAt(0)!=='/'||next.indexOf('//')===0)next='/studio';
  var f=document.getElementById('f'),msg=document.getElementById('msg'),go=document.getElementById('go'),modeBtn=document.getElementById('mode'),sub=document.getElementById('sub'),create=false;
  function say(t,ok){msg.textContent=t;msg.className='msg '+(ok?'ok':'err');}
