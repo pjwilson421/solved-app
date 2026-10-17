@@ -3,7 +3,7 @@ export const config = { api: { bodyParser: { sizeLimit: '4mb' } } };
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
-  if (!checkPass(req, res)) return;
+  if (!(await checkPass(req, res))) return;
   if (!process.env.ANTHROPIC_API_KEY) return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not set on the server' });
   const { messages, max_tokens } = req.body || {};
   if (!Array.isArray(messages)) return res.status(400).json({ error: 'messages required' });
