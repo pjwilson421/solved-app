@@ -399,8 +399,8 @@ img[alt="SOLVED"]{filter:none}
 
     <sc-if value="{{ g.isDetail }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Section Detail" style="width:100%;max-width:1100px;display:flex;flex-direction:column;gap:48px">
-        <div data-sv="ident" style="display:grid;grid-template-columns:{{ g.d.photoW }} minmax(0,1fr);grid-template-rows:auto auto;column-gap:48px;row-gap:12px">
-          <div style="position:relative;height:100%;min-height:{{ g.d.photoMinH }};border-radius:6px;overflow:hidden;background:{{ g.d.photoBg }}">
+        <div data-sv="ident" style="display:grid;grid-template-columns:{{ g.d.photoW }} minmax(0,1fr);grid-template-rows:auto;column-gap:48px;row-gap:12px">
+          <div style="position:relative;height:{{ g.d.photoH }};min-height:{{ g.d.photoMinH }};align-self:{{ g.d.photoAlign }};aspect-ratio:{{ g.d.photoAR }};border-radius:6px;overflow:hidden;background:{{ g.d.photoBg }}">
             <sc-if value="{{ g.d.hasSrc }}" hint-placeholder-val="{{ false }}"><div style="{{ g.d.srcBg }}"></div></sc-if>
             <sc-if value="{{ g.d.noSrc }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><sc-if value="{{ g.ic.product }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2l7 4v8l-7 4-7-4V6z"></path><path d="M2 6l7 4 7-4"></path><path d="M9 10v8"></path></svg></sc-if><sc-if value="{{ g.ic.wardrobe }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L2 5l2 4 2-1v10h8V8l2 1 2-4-4-3c-.5 1.7-2 3-4 3S6.5 3.7 6 2z"></path></svg></sc-if><sc-if value="{{ g.ic.location }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"></path><path d="M7 8a2 2 0 1 0 4 0a2 2 0 1 0-4 0"></path></svg></sc-if><sc-if value="{{ g.ic.set }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h14v11H2z"></path><path d="M2 12l4-4 3 3 2-2 5 5"></path></svg></sc-if><sc-if value="{{ g.ic.style }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2s6 6.5 6 10.5a6 6 0 0 1-12 0C3 8.5 9 2 9 2z"></path></svg></sc-if><sc-if value="{{ g.ic.shot }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h15v11H2z"></path><path d="M6 4v11"></path><path d="M13 4v11"></path></svg></sc-if></div></sc-if>
             <sc-if value="{{ g.d.busy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:#242424;animation:solvedPulse 1.2s ease-in-out infinite"></div></sc-if>
@@ -422,13 +422,20 @@ img[alt="SOLVED"]{filter:none}
             </div>
           </div>
 
-          <div style="display:flex;justify-content:center">
+          <div style="display:flex;visibility:{{ g.d.linkShow }};justify-content:center">
             <div sc-camel-on-click="{{ g.d.photoAction }}" style="height:32px;display:flex;align-items:center;color:#00BE50;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer">{{ g.d.photoActionLabel }}</div>
           </div>
           <div style="padding-top:8px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;text-align:center">{{ g.d.help }}</div>
+          <sc-if value="{{ g.d.panel }}" hint-placeholder-val="{{ false }}">
+            <div class="character-generate-panel">
+<sc-if value="{{ g.d.showRes }}" hint-placeholder-val="{{ true }}"><div class="character-generate-settings"><label>Model<select aria-label="Sheet model" value="{{ g.d.model }}" disabled="{{ g.d.busy2 }}" sc-camel-on-change="{{ g.d.setModel }}"><option value="gpt_image_2_5">GPT Image 2.5</option></select></label><label>Ratio<select aria-label="Sheet aspect ratio" value="{{ g.d.ratio }}" disabled="{{ g.d.busy2 }}" sc-camel-on-change="{{ g.d.setRatio }}"><option>1:1</option><option>3:4</option><option>4:3</option><option>9:16</option><option>16:9</option></select></label><label>Resolution<select aria-label="Sheet resolution" value="{{ g.d.resolution }}" disabled="{{ g.d.busy2 }}" sc-camel-on-change="{{ g.d.setResolution }}"><option value="1k">1K</option><option value="2k">2K</option><option value="4k">4K</option></select></label></div></sc-if>
+<button data-sv="sheetgo" class="character-generate-button" disabled="{{ g.d.busy2 }}" sc-camel-on-click="{{ g.d.generate }}"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2L12 8L18 10L12 12L10 18L8 12L2 10L8 8Z" fill="currentColor"></path></svg>{{ g.d.goLabel }}</button>
+<sc-if value="{{ g.d.showRes }}" hint-placeholder-val="{{ true }}"><div class="character-generate-foot"><span>Views saved automatically</span><details class="character-quality"><summary>Quality: {{ g.d.qualityLabel }}</summary><select aria-label="Sheet quality" value="{{ g.d.quality }}" disabled="{{ g.d.busy2 }}" sc-camel-on-change="{{ g.d.setQuality }}"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="xhigh">Extra high</option><option value="max">Max</option></select></details></div></sc-if></div>
+<label class="character-sheet-notes"><textarea aria-label="Sheet notes" placeholder="Notes" value="{{ g.d.notes }}" sc-camel-on-change="{{ g.d.setNotes }}"></textarea></label>
+          </sc-if>
         </div>
 
-        <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:{{ g.d.oldBar }};flex-direction:column;gap:14px">
           <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
             <div data-sv="sheetgo" sc-camel-on-click="{{ g.d.generate }}" style="height:44px;padding:0 24px;border-radius:6px;background:{{ g.d.goBg }};color:{{ g.d.goFg }};display:flex;align-items:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:{{ g.d.goCursor }}">{{ g.d.goLabel }}</div>
             <sc-if value="{{ g.d.showRes }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:10px">
@@ -1956,7 +1963,7 @@ class Component extends DCLogic {
   //      all read and write through here, so they look and work like Characters ----
   secKind(page) { return { PRODUCT: 'product', WARDROBE: 'product', LOCATION: 'location', SETDESIGN: 'location', STYLE: 'style', KEYFRAMES: 'shot' }[page] || null; }
   secOpts(page, which) { const c = this.tcfg(page + ':' + which);
-    return which === 'main' ? { model: c.model, quality: c.quality, resolution: c.resolution, aspect: c.ratio } : { model: c.model, quality: c.quality, resolution: c.resolution }; }
+    return which === 'main' ? { model: c.model, quality: c.quality, resolution: c.resolution, aspect: c.ratio } : { model: c.model, quality: c.quality, resolution: c.resolution, ...(c.ratio && c.ratio !== '1:1' ? { aspect: c.ratio } : {}) }; }
   secUpd(kind, id, fn) {
     if (kind === 'product') return this.updProduct(id, fn);
     if (kind === 'location') return this.updLoc(id, x => fn({ ...x, fields: { ...(x.fields || {}) } }));
@@ -2192,8 +2199,8 @@ class Component extends DCLogic {
       pageHint: (isSoon ? SOON_PAGES[page][0] : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Choose an image category', KEYFRAMES: inDetail ? 'Create your storyboard frame' : 'Create your storyboard frames' })[page]
         || (isStyleEdit ? 'Create your style' : isStyleAll ? 'Choose a style for your storyboard'
         : isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
-        : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Upload photos of each wardrobe item from every angle you need' : 'Upload your product photos. The more angles the better')
-        : isLocation ? (isLocSheet ? (loc.kind === 'ai' ? (lsect === 'set' ? 'Create your set sheet' : 'Create your location sheet') : (lsect === 'set' ? 'Add photos of your set' : 'Add photos of your location')) : lsect === 'set' ? 'Upload photos of the set or generate one for the project' : 'Upload photos of the location or generate one for the project') : ''),
+        : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Create your wardrobe images' : 'Create your product images')
+        : isLocation ? (isLocSheet ? (loc.kind === 'ai' ? (lsect === 'set' ? 'Create your set sheet' : 'Create your location sheet') : (lsect === 'set' ? 'Add photos of your set' : 'Add photos of your location')) : lsect === 'set' ? 'Create your set images' : 'Create your location images') : ''),
       isStyleAll: false, isStyleEdit: false, sLoading: isStyleAll && !this.state.sLoaded,
       newStyle: () => this.newStyle(),
       dropNewStyle: e => { e.preventDefault(); const fl = [...e.dataTransfer.files]; this.newStyle({ source: 'image' }); setTimeout(() => this.handleFiles('styleref', fl), 0); },
@@ -2686,11 +2693,17 @@ class Component extends DCLogic {
             photoAction = () => this.pick('kf:' + id); photoActionLabel = src ? 'Replace frame' : 'Add a frame';
           }
           const busy = !!run || (kind === 'style' && !!S.sBusy) || (kind === 'shot' && !!S.kfBusy[id + '-main']);
-          const sres = this.tcfg(page + ':sheet').resolution;
+          const sres = this.tcfg(page + ':sheet').resolution, cfgS = this.tcfg(page + ':sheet'), panel = kind === 'product' || kind === 'location';
           d = { name: cur.name || '', sub: subOf(cur), subPh: T[4], fields,
             rename: e => rename(id, e.target.value), setSub: e => setSub(id, e.target.value),
             hasSrc: !!src, noSrc: !src, srcBg: bgFit(src), photoBg: tileBg, busy: busy && !src,
-            photoW: kind === 'shot' ? '476px' : '321px', photoMinH: kind === 'shot' ? '268px' : '428px',
+            photoW: kind === 'shot' ? '476px' : panel ? '360px' : '321px', photoMinH: kind === 'shot' ? '268px' : panel ? '0px' : '428px',
+            photoH: panel ? 'auto' : '100%', photoAlign: panel ? 'start' : 'stretch', photoAR: panel ? '1 / 1' : 'auto',
+            panel, oldBar: panel ? 'none' : 'flex', linkShow: panel && !showRes ? 'hidden' : 'visible', busy2: busy, model: cfgS.model, ratio: cfgS.ratio, resolution: cfgS.resolution, quality: cfgS.quality,
+            qualityLabel: ({ low: 'Low', medium: 'Medium', high: 'High', xhigh: 'Extra high', max: 'Max' })[cfgS.quality] || 'High',
+            setModel: e => this.tset(page + ':sheet', { model: e.target.value }), setRatio: e => this.tset(page + ':sheet', { ratio: e.target.value }),
+            setResolution: e => this.tset(page + ':sheet', { resolution: e.target.value }), setQuality: e => this.tset(page + ':sheet', { quality: e.target.value }),
+            notes: cur.sheetNotes || '', setNotes: e => { const v = e.target.value; this.secUpd(kind, id, x => { x.sheetNotes = v; return x; }); },
             photoAction, photoActionLabel, help, showRes,
             goLabel: run && run.total > 1 ? 'Generating ' + Math.min(run.done + 1, run.total) + ' of ' + run.total : busy ? 'Generating…' : goLabel,
             goBg: busy ? '#292929' : '#00BE50', goFg: busy ? '#f5f5f5' : '#0A0A0A', goCursor: busy ? 'progress' : 'pointer',
