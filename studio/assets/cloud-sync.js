@@ -7,7 +7,7 @@
   'use strict';
   var URL_ = 'https://wetzjfsdumraslfojcva.supabase.co', KEY = 'sb_publishable_bw0_xjD26NDCDCUAYKM0TA_NS9DE_D1';
   var BUCKET = 'project-files', META = 'solved-sync-meta', PULLED = 'solved-sync-pulled';
-  var SKIP_LS = { 'solved-current': 1, 'solved-hf': 1, 'solved-sync-meta': 1 };
+  var QKEY = 'solved-sync-queue', SKIP_LS = { 'solved-current': 1, 'solved-hf': 1, 'solved-sync-meta': 1, 'solved-sync-queue': 1 };
   var S = window.__solved, LS = window.localStorage;
   if (!window.supabase || !S) return;
   var sb = window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'sb-solved-auth' } });
@@ -87,6 +87,11 @@
       t.oncomplete = function () { res(out); }; t.onerror = function () { rej(t.error); };
     }); });
   }
+  function idbGet(k) {
+    return db().then(function (d) { return new Promise(function (res, rej) {
+      var q = d.transaction('kv', 'readonly').objectStore('kv').get(k); q.onsuccess = function () { res(q.result); }; q.onerror = function () { rej(q.error); };
+    }); });
+  }
   function idbWrite(k, v, del) {
     return db().then(function (d) { return new Promise(function (res, rej) {
       suppress++; var t = d.transaction('kv', 'readwrite'), st = t.objectStore('kv');
@@ -99,8 +104,12 @@
   function enqueue(src, k, op, value) {
     if (src === 'ls' && !syncLs(k)) return;
     queue.set(src + '\u0000' + k, { src: src, k: k, op: op, value: value, at: new Date().toISOString() });
+    saveQ();
     if (ready) schedule();
   }
+  // The pending list is kept in localStorage so changes made right before a reload (e.g. creating a project) still upload.
+  function saveQ() { try { S.set(QKEY, JSON.stringify(Array.from(queue.values()).map(function (it) { return { src: it.src, k: it.k, op: it.op, at: it.at }; }))); } catch (e) {} }
+  try { (JSON.parse(S.get(QKEY) || '[]') || []).forEach(function (it) { if (it && it.k) queue.set(it.src + '\u0000' + it.k, it); }); } catch (e) {}
   var P = Storage.prototype, setI = P.setItem, delI = P.removeItem;
   P.setItem = function (k, v) { var r = setI.apply(this, arguments); if (this === LS && !suppress) enqueue('ls', S.lsKey(S.current, String(k)), 'set'); return r; };
   P.removeItem = function (k) { var r = delI.apply(this, arguments); if (this === LS && !suppress) enqueue('ls', S.lsKey(S.current, String(k)), 'del'); return r; };
@@ -126,7 +135,7 @@
           if (d.error) throw d.error;
           delete m[id];
         } else {
-          var raw = it.src === 'ls' ? S.get(it.k) : it.value;
+          var raw = it.src === 'ls' ? S.get(it.k) : (it.value !== undefined ? it.value : await idbGet(it.k));
           if (raw === null || raw === undefined) { queue.delete(id); continue; }
           var val;
           if (it.src === 'ls') { var parsed; try { parsed = { t: 'json', d: JSON.parse(raw) }; } catch (e) { parsed = { t: 'str', d: raw }; } val = await pack(parsed); }
@@ -144,7 +153,7 @@
       console.warn('[cloud-sync]', e);
       status('Couldn’t save to cloud — retrying', 'err');
       schedule(Math.min(60000, 3000 * fails));
-    } finally { busy = false; if (queue.size && !fails) schedule(300); }
+    } finally { busy = false; saveQ(); if (queue.size && !fails) schedule(300); }
   }
   window.addEventListener('beforeunload', function () { if (queue.size) flush(); });
 
@@ -156,9 +165,10 @@
       if (r.error) throw r.error;
       rows = rows.concat(r.data); if (r.data.length < 500) break; from += 500;
     }
-    var m = meta(), changed = false, cloud = {};
+    var m = meta(), changed = false, cloud = {}, cloudReg = null;
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i], id = row.src + '\u0000' + row.k; cloud[id] = 1;
+      if (row.src === 'ls' && row.k === 'solved-projects') cloudReg = JSON.stringify(row.v.d);
       var ts = Date.parse(row.updated_at);
       if (m[id] && m[id] >= ts) continue;
       var v = await unpack(row.v.d);
@@ -170,6 +180,8 @@
       m[id] = ts; queue.delete(id); changed = true;
     }
     setMeta(m);
+    // project list: if this browser's list differs from the cloud's and wasn't just replaced by it, upload it
+    if (cloudReg !== null) { try { if (JSON.stringify(JSON.parse(S.get('solved-projects'))) !== cloudReg) enqueue('ls', 'solved-projects', 'set'); } catch (e) {} }
     // anything local the cloud doesn't have yet gets uploaded
     S.keys().forEach(function (k) { if (syncLs(k) && !cloud['ls\u0000' + k] && !m['ls\u0000' + k]) enqueue('ls', k, 'set'); });
     (await idbAll()).forEach(function (e) { if (!cloud['idb\u0000' + e[0]] && !m['idb\u0000' + e[0]]) enqueue('idb', e[0], 'set', e[1]); });
@@ -191,7 +203,7 @@
       try {
         var changed = await pull();
         sessionStorage.setItem(PULLED, tabKey);
-        if (changed) { queue.clear(); location.reload(); return; }
+        saveQ(); if (changed) { location.reload(); return; }
       } catch (e) { console.warn('[cloud-sync] pull failed', e); status('Couldn’t load from cloud — working offline', 'err'); }
       document.documentElement.style.visibility = '';
     }
