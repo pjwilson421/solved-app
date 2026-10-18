@@ -328,6 +328,39 @@ img[alt="SOLVED"]{filter:none}
 <button data-sv="sheetgo" class="character-generate-button" disabled="{{ tal.s.running }}" sc-camel-on-click="{{ tal.s.generate }}"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2L12 8L18 10L12 12L10 18L8 12L2 10L8 8Z" fill="currentColor"></path></svg>{{ tal.s.goLabel }}</button>
 <div class="character-generate-foot"><span>Views saved automatically</span><details class="character-quality"><summary>Quality: {{ tal.s.qualityLabel }}</summary><select aria-label="Character sheet quality" value="{{ tal.s.quality }}" disabled="{{ tal.s.running }}" sc-camel-on-change="{{ tal.s.setQuality }}"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="xhigh">Extra high</option><option value="max">Max</option></select></details></div></div>
 <label class="character-sheet-notes"><textarea aria-label="Character sheet notes" placeholder="Notes" value="{{ tal.s.notes }}" sc-camel-on-change="{{ tal.s.setNotes }}"></textarea></label>
+<div data-sv="charwr" style="grid-column:1 / -1;display:flex;flex-direction:column;gap:14px;margin-top:24px;padding-top:20px;border-top:1px solid #303030">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+    <div style="font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">Wardrobe <span style="font-weight:400;color:#a3a3a3">· {{ tal.s.wrCount }}</span></div>
+    <div style="display:flex;gap:8px">
+      <sc-if value="{{ tal.s.wrHasAny }}" hint-placeholder-val="{{ false }}"><div sc-camel-on-click="{{ tal.s.wrTogglePick }}" style="height:32px;padding:0 14px;border-radius:6px;background:#202020;display:flex;align-items:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer">Pick existing</div></sc-if>
+      <div sc-camel-on-click="{{ tal.s.wrUpload }}" style="height:32px;padding:0 14px;border-radius:6px;background:#00BE50;color:#0A0A0A;display:flex;align-items:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer">+ Add wardrobe</div>
+    </div>
+  </div>
+  <sc-if value="{{ tal.s.wrEmpty }}" hint-placeholder-val="{{ true }}"><div style="font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">No wardrobe yet. Upload outfit photos or pick items from the Wardrobe page.</div></sc-if>
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <sc-for list="{{ tal.s.wrItems }}" as="w" hint-placeholder-count="0">
+      <div sc-camel-on-click="{{ w.open }}" title="Open wardrobe sheet" style="width:96px;display:flex;flex-direction:column;gap:6px;cursor:pointer">
+        <div style="position:relative;width:96px;height:96px;border-radius:6px;overflow:hidden;background:#202020"><sc-if value="{{ w.has }}" hint-placeholder-val="{{ false }}"><div style="{{ w.bg }}"></div></sc-if>
+          <div sc-camel-on-click="{{ w.remove }}" title="Remove from this character" style="position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:4px;background:#191919;color:#f5f5f5;display:flex;align-items:center;justify-content:center;font:700 12px/1 'Helvetica Neue',Helvetica,sans-serif">×</div></div>
+        <div style="font:700 11px/14px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ w.name }}</div>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ tal.s.wrPickOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:8px;background:#141414">
+      <div style="font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">Click items to assign or remove them.</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <sc-for list="{{ tal.s.wrAll }}" as="w" hint-placeholder-count="0">
+          <div sc-camel-on-click="{{ w.pick }}" style="width:80px;display:flex;flex-direction:column;gap:6px;cursor:pointer">
+            <div style="position:relative;width:80px;height:80px;border-radius:6px;overflow:hidden;background:#202020;box-shadow:0 0 0 2px {{ w.line }}"><sc-if value="{{ w.has }}" hint-placeholder-val="{{ false }}"><div style="{{ w.bg }}"></div></sc-if><div style="position:absolute;top:4px;right:6px;color:#00BE50;font:700 14px/1 'Helvetica Neue',Helvetica,sans-serif">{{ w.mark }}</div></div>
+            <div style="font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ w.name }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;justify-content:flex-end"><div sc-camel-on-click="{{ tal.s.wrTogglePick }}" style="height:32px;padding:0 16px;border-radius:6px;background:#202020;display:flex;align-items:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer">Done</div></div>
+    </div>
+  </sc-if>
+</div>
         </div>
 
         <sc-if value="{{ hasError }}"><div role="alert" style="font-size:13px;color:#ef6b61">{{ errorText }}</div></sc-if>
@@ -946,7 +979,7 @@ img[alt="SOLVED"]{filter:none}
 <script type="text/x-dc" data-dc-script="">
 const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
 // Workflow order (Back / Next arrows). Style lives inside Storyboards.
-const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
+const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
 // Sidebar: main sections only. Brief opens from the Dashboard.
 const SIDE_NAV = [['OVERVIEW', 'DASHBOARD'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY'], ['LIBRARY', 'LIBRARY']];
 const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
@@ -1411,8 +1444,8 @@ class Component extends DCLogic {
     return ids;
   }
   placeInEmpty(views, ids) { ids.forEach(id => { const i = views.findIndex(v => !v); if (i >= 0) views[i] = { img: id, source: 'uploaded', at: Date.now() }; }); return views; }
-  async addProductFromFiles(files) {
-    const kind = this.state.page === 'WARDROBE' ? 'wardrobe' : 'product';
+  async addProductFromFiles(files, kindOverride) {
+    const kind = kindOverride || (this.state.page === 'WARDROBE' ? 'wardrobe' : 'product');
     let srcs; try { srcs = await Promise.all(files.map(readFile)); } catch (e) { return this.setErr('Upload failed — ' + e.message + '.'); }
     this.setErr('');
     const ids = await this.storeImgs(srcs);
@@ -1736,6 +1769,7 @@ class Component extends DCLogic {
   async handleFiles(target, fileList) {
     const files = [...(fileList || [])].filter(f => f.type.startsWith('image/'));
     if (!files.length) return;
+    if (target.startsWith('charwr:')) { const cid = target.slice(7); return this.addProductFromFiles(files, 'wardrobe').then(id => { if (id) this.updateAsset('TALENT', cid, x => { x.wardrobe = [...new Set([...(x.wardrobe || []), id])]; return x; }); }); }
     if (target === 'newprod') return this.addProductFromFiles(files).then(id => { if (id) this.openSheet(id); });
     if (target === 'locreal') return this.popFiles(files, 'real');
     if (target === 'locref') return this.popFiles(files, 'ref');
@@ -2259,7 +2293,7 @@ class Component extends DCLogic {
           ['STYLE', 'STYLE', this.state.styles.length ? n(this.state.styles.length, 'style') : 'No styles yet', first(this.state.styles, s => (s.frames[s.hero] || s.frames[0] || {}).src), ''],
           ['KEYFRAMES', 'STORYBOARDS', (this.state.items.KEYFRAMES || []).length + ' shots · ' + (this.state.items.KEYFRAMES || []).filter(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).length + ' generated', ((this.state.items.KEYFRAMES || []).map(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).find(Boolean)) || '', ''],
         ];
-        const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE'); imgRows.unshift(imgRows.splice(1, 1)[0]); // Products first
+        const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE'); const ORD = ['PRODUCT', 'TALENT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'KEYFRAMES']; imgRows.sort((a, b) => ORD.indexOf(a[0]) - ORD.indexOf(b[0])); // Products, Characters, Wardrobe first
         const imgCount = T.length + PR.length + LC.length + WR.length + SE.length;
         const dash = [rows[0],
           ['IMAGES', 'IMAGES', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
@@ -2495,7 +2529,17 @@ class Component extends DCLogic {
           const sres = this.tcfg('sheet').resolution;
           const FIELDS = [['Age', 'Age', 'e.g. 30s'], ['Body Type', 'Build', 'e.g. athletic'], ['Height', 'Height', 'e.g. 6′0″'], ['Weight', 'Weight', 'e.g. 170 lbs'],
             ['Hair Color', 'Hair', 'e.g. black, short fade'], ['Eye Color', 'Eyes', 'e.g. dark brown'], ['Skin Color', 'Skin', 'e.g. deep warm'], ['Personality', 'Personality', 'e.g. calm, focused']];
-          s = { notes:char.sheetNotes||'', setNotes:e=>{const value=e.target.value;updChar(x=>({...x,sheetNotes:value}));}, qualityLabel:({low:'Low',medium:'Medium',high:'High',xhigh:'Extra high',max:'Max'})[this.tcfg('sheet').quality], model:this.tcfg('sheet').model, ratio:this.tcfg('sheet').ratio, resolution:sres, quality:this.tcfg('sheet').quality, running:!!run, setModel:e=>this.tset('sheet',{model:e.target.value}), setRatio:e=>this.tset('sheet',{ratio:e.target.value}), setResolution:e=>this.tset('sheet',{resolution:e.target.value}), setQuality:e=>this.tset('sheet',{quality:e.target.value}), hasSrc: !!src, srcBg: bgOf(src), replace: () => this.pick('slot:front'), sheetEmpty: missing, sheetReady: !missing,
+          const WR = this.state.products.filter(x => x.kind === 'wardrobe'), mine = char.wardrobe || [];
+          const wImg = p => { const v = (p.views || []).find(y => y && y.source === 'uploaded') || (p.views || []).find(Boolean); return v ? this.state.imgs[v.img] || '' : ''; };
+          const setWr = fn => updChar(x => { x.wardrobe = fn(x.wardrobe || []); return x; });
+          s = { wrItems: WR.filter(w => mine.includes(w.uid)).map(w => ({ name: w.name, bg: bgOf(wImg(w)), has: !!wImg(w),
+                open: () => { this.initial = this.state.values; this.setState({ page: 'WARDROBE', view: 'item', item: w.uid, prompt: '', slot: 0 }); window.scrollTo(0, 0); },
+                remove: e => { e.stopPropagation(); setWr(a => a.filter(u => u !== w.uid)); } })),
+            wrCount: String(mine.filter(u => WR.some(w => w.uid === u)).length), wrEmpty: !WR.some(w => mine.includes(w.uid)),
+            wrUpload: () => this.pick('charwr:' + char.uid), wrPickOpen: !!this.state.wrPick, wrHasAny: WR.length > 0, wrNone: !WR.length,
+            wrTogglePick: () => this.setState(st => ({ wrPick: !st.wrPick })),
+            wrAll: WR.map(w => { const on = mine.includes(w.uid); return { name: w.name, bg: bgOf(wImg(w)), has: !!wImg(w), line: on ? '#00BE50' : 'transparent', mark: on ? '✓' : '', pick: () => setWr(a => on ? a.filter(u => u !== w.uid) : [...a, w.uid]) }; }),
+            notes:char.sheetNotes||'', setNotes:e=>{const value=e.target.value;updChar(x=>({...x,sheetNotes:value}));}, qualityLabel:({low:'Low',medium:'Medium',high:'High',xhigh:'Extra high',max:'Max'})[this.tcfg('sheet').quality], model:this.tcfg('sheet').model, ratio:this.tcfg('sheet').ratio, resolution:sres, quality:this.tcfg('sheet').quality, running:!!run, setModel:e=>this.tset('sheet',{model:e.target.value}), setRatio:e=>this.tset('sheet',{ratio:e.target.value}), setResolution:e=>this.tset('sheet',{resolution:e.target.value}), setQuality:e=>this.tset('sheet',{quality:e.target.value}), hasSrc: !!src, srcBg: bgOf(src), replace: () => this.pick('slot:front'), sheetEmpty: missing, sheetReady: !missing,
             name: (prof.Name || char.name || ''), roleVal: prof.Role || '',
             rename: e => { const v = e.target.value.trim(); if (!v) return; updChar(x => { x.profile = { ...(x.profile || {}), Name: v }; x.name = v; return x; }); },
             setRole: setP('Role'),
@@ -2626,7 +2670,8 @@ class Component extends DCLogic {
         const busyOf = r => kind === 'product' ? S.pSlot[r.uid + ':0'] === 'busy' || (r.analysis === 'running' && !imgOf(r))
           : kind === 'location' ? S.pSlot[r.uid + ':0'] === 'busy'
           : kind === 'style' ? !!(S.sBusy && S.sd && S.sd.uid === r.uid) : !!S.kfBusy[r.n + '-main'];
-        const subOf = r => kind === 'product' ? (r.fields.Description && r.fields.Description !== 'Unknown' ? r.fields.Description : '') : kind === 'location' ? (r.prompt || '') : (r.desc || '');
+        const wearers = r => (store.TALENT || []).filter(c => (c.wardrobe || []).includes(r.uid)).map(c => c.name).join(', ');
+        const subOf = r => kind === 'product' ? ((r.kind === 'wardrobe' && wearers(r)) ? 'Worn by ' + wearers(r) : r.fields.Description && r.fields.Description !== 'Unknown' ? r.fields.Description : '') : kind === 'location' ? (r.prompt || '') : (r.desc || '');
         const setSub = (id, v) => this.secUpd(kind, id, x => {
           if (kind === 'product') x.fields = { ...x.fields, Description: v || 'Unknown' };
           else if (kind === 'location') x.prompt = v;
