@@ -946,7 +946,7 @@ img[alt="SOLVED"]{filter:none}
 <script type="text/x-dc" data-dc-script="">
 const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
 // Workflow order (Back / Next arrows). Style lives inside Storyboards.
-const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
+const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
 // Sidebar: main sections only. Brief opens from the Dashboard.
 const SIDE_NAV = [['OVERVIEW', 'DASHBOARD'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY'], ['LIBRARY', 'LIBRARY']];
 const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
@@ -2259,7 +2259,7 @@ class Component extends DCLogic {
           ['STYLE', 'STYLE', this.state.styles.length ? n(this.state.styles.length, 'style') : 'No styles yet', first(this.state.styles, s => (s.frames[s.hero] || s.frames[0] || {}).src), ''],
           ['KEYFRAMES', 'STORYBOARDS', (this.state.items.KEYFRAMES || []).length + ' shots · ' + (this.state.items.KEYFRAMES || []).filter(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).length + ' generated', ((this.state.items.KEYFRAMES || []).map(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).find(Boolean)) || '', ''],
         ];
-        const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE');
+        const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE'); imgRows.unshift(imgRows.splice(1, 1)[0]); // Products first
         const imgCount = T.length + PR.length + LC.length + WR.length + SE.length;
         const dash = [rows[0],
           ['IMAGES', 'IMAGES', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
