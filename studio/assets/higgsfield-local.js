@@ -35,7 +35,21 @@
   }
   throw new Error('Generation is still pending. Check Higgsfield history before retrying.');
  }
- window.SOLVED_HF={get:()=>({...cfg,ready,live,available:live,lastError}),set:v=>{cfg={...cfg,...v};save();},connected:()=>live&&cfg.enabled!==false,generate,test,disconnect:()=>{cfg.enabled=false;save();}};
+ async function video({image,lastImage,prompt,duration=5,sound='off',onStatus}={}){
+  if(!live||cfg.enabled===false)throw new Error(lastError||'Connect Higgsfield in the sidebar first.');
+  onStatus?.('Uploading frames');const image_url=await reference(image);const last_image_url=lastImage?await reference(lastImage):undefined;
+  const j=await api('/hf-video',{image_url,last_image_url,prompt,duration,sound});
+  const deadline=Date.now()+30*60*1000;let failures=0;
+  while(Date.now()<deadline){
+   await new Promise(r=>setTimeout(r,failures?10000:5000));let s;
+   try{s=await api('/hf-status?id='+encodeURIComponent(j.request_id));failures=0;}catch(e){if(e.status===401)throw e;if(++failures>10)throw new Error('Status checks failed. Check Higgsfield history before retrying.');continue;}
+   onStatus?.(s.status||'Working');
+   if(s.status==='completed'){if(!s.url)throw new Error('Higgsfield returned no video.');return s.url;}
+   if(['failed','nsfw','canceled','cancelled'].includes(s.status))throw new Error(s.status==='nsfw'?'Higgsfield blocked this video.':'Higgsfield video '+s.status+'.');
+  }
+  throw new Error('The video is still rendering. Check Higgsfield history before retrying.');
+ }
+ window.SOLVED_HF={video,get:()=>({...cfg,ready,live,available:live,lastError}),set:v=>{cfg={...cfg,...v};save();},connected:()=>live&&cfg.enabled!==false,generate,test,disconnect:()=>{cfg.enabled=false;save();}};
  window.SOLVED_IMAGE_GEN=generate;
  window.claude={complete:async({messages,max_tokens})=>(await api('/claude',{messages,max_tokens})).text};
  test().catch(()=>{});

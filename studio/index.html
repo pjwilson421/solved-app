@@ -34,7 +34,7 @@
 <style id="ds-css">
 .ds{width:100%;max-width:1100px;display:flex;flex-direction:column;gap:20px}
 .ds-sub{padding-bottom:14px;border-bottom:1px solid #303030;font:700 14px/20px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5}
-.ds-sub span{font-weight:400;color:#a3a3a3}
+.ds-sub .ds-dim{font-weight:400;color:#a3a3a3}
 .ds-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:24px;align-items:start}
 .ds-left{display:flex;flex-direction:column;gap:20px;min-width:0}
 .ds-photo{position:relative;width:320px;aspect-ratio:1 / 1;border-radius:6px;overflow:hidden;background:#202020}
@@ -53,7 +53,7 @@
 .ds-fields .ds-wide{grid-column:1 / -1}
 .ds-box{display:flex;flex-direction:column;gap:12px;padding-top:20px;border-top:1px solid #303030}
 .ds-box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;font:700 14px/20px 'Helvetica Neue',Helvetica,sans-serif}
-.ds-box-head span{font-weight:400;color:#a3a3a3}
+.ds-box-head .ds-dim{font-weight:400;color:#a3a3a3}
 .ds-link{font:700 11px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#00BE50;cursor:pointer}
 .ds-tiles{display:grid;grid-template-columns:repeat(3,96px);gap:16px 16px}
 .ds-tile{display:flex;flex-direction:column;gap:6px;cursor:pointer;min-width:0}
@@ -87,10 +87,56 @@
 .ds-view-label{font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:900px){.ds-grid{grid-template-columns:1fr}.ds-right{position:static}.ds-views{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
+<style id="x-css">
+.x-page{width:100%;max-width:1100px;display:flex;flex-direction:column;gap:20px}
+.x-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:1px solid #303030}.x-head .ds-sub{border:0;padding-bottom:12px}.x-head .x-bar-btns{padding-bottom:10px}
+.x-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 14px;border-radius:8px;background:#141414;margin-top:-8px}
+.x-bar-info,.x-muted{font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
+.x-bar-btns,.x-wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cursor:progress}
+.x-vgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.x-vcard{display:flex;flex-direction:column;gap:10px;min-width:0}
+.x-vbox{position:relative;aspect-ratio:16 / 9;border-radius:6px;overflow:hidden;background:#202020}
+.x-vbox video,.x-player video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.x-vstart{position:absolute;inset:0;cursor:pointer}.x-vhint{position:absolute;left:8px;bottom:8px;padding:4px 8px;border-radius:4px;background:rgba(17,17,17,.75);font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#d0d0d0}
+.x-vrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.x-vname{flex:1;min-width:0;height:28px;border:0;background:transparent;color:#f5f5f5;font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif;outline:none}
+.x-vprompt{width:100%;box-sizing:border-box;min-height:64px;padding:10px;border:1px solid #303030;border-radius:6px;background:#191919;color:#f5f5f5;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;resize:vertical;outline:none}.x-vprompt:focus{border-color:#00BE50}
+.x-vrow select{height:28px;margin-left:6px;border:1px solid #303030;border-radius:5px;background:#191919;color:#f5f5f5;color-scheme:dark}
+.x-vnote{font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif}
+.x-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.x-tool{min-height:150px;padding:20px;border-radius:8px;background:#191919;display:flex;flex-direction:column;gap:8px;cursor:pointer;border:1px solid #191919}.x-tool:hover{border-color:#00BE50}
+.x-tool .x-name{font:700 18px/22px 'Helvetica Neue',Helvetica,sans-serif}.x-tool .x-desc{font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
+.x-tool.x-soon{opacity:.45;cursor:default}.x-tool.x-soon:hover{border-color:#191919}
+.x-ed{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+.x-ed-canvas{position:relative;min-height:460px;border-radius:6px;background:#141414;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.x-ed-canvas img{max-width:100%;max-height:620px;display:block}
+.x-ed-busy{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(17,17,17,.7);font:700 13px 'Helvetica Neue',Helvetica,sans-serif;animation:solvedPulse 1.2s ease-in-out infinite}
+.x-ed-tools{display:flex;flex-direction:column;gap:18px}.x-ed-sec{display:flex;flex-direction:column;gap:10px;padding-bottom:16px;border-bottom:1px solid #303030}
+.x-ed-sec h3{margin:0;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
+.x-slider{display:grid;grid-template-columns:80px 1fr;align-items:center;font:400 12px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}.x-slider input{accent-color:#00BE50}
+.x-strip{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px}
+.x-thumb{position:relative;flex:none;width:96px;height:96px;border-radius:6px;overflow:hidden;background:#202020;cursor:pointer}
+.x-player{position:relative;aspect-ratio:16 / 9;max-height:520px;border-radius:6px;background:#141414;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.x-tl{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px}
+.x-clip{flex:none;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:6px;background:#1d3b2a;border:1px solid #00BE50}
+.x-clip-top{font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap}
+.x-clip-trim{display:flex;gap:8px;font:400 11px 'Helvetica Neue',Helvetica,sans-serif;color:#cfe9da}.x-clip-trim input{width:56px;height:26px;margin-left:4px;border:0;border-radius:4px;background:#0f2017;color:#f5f5f5}
+.x-dests{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.x-dest{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:8px;background:#191919}.x-dest .x-name{font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif}.x-dest .x-desc{flex:1;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}.x-dest .ds-btn{justify-content:center}
+.x-hist{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #222;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif}
+.x-files{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:12px}.x-files-lg{grid-template-columns:repeat(5,minmax(0,1fr))}
+.x-file{display:flex;flex-direction:column;gap:6px;cursor:pointer;min-width:0}
+.x-file-img{position:relative;aspect-ratio:1 / 1;border-radius:6px;overflow:hidden;background:#202020}.x-file-img video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.x-check{position:absolute;top:4px;right:6px;color:#00BE50;font:700 14px/1 'Helvetica Neue',Helvetica,sans-serif}
+.x-doc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 12px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
+@media(max-width:900px){.x-vgrid,.x-ed{grid-template-columns:1fr}.x-tools{grid-template-columns:1fr 1fr}.x-dests{grid-template-columns:1fr 1fr}.x-files{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
 </head>
+
 <body>
 <x-dc>
-<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><script src="/studio/assets/08a13a39-08bc-4e94-96b0-e6b0add4e600.js"></script><script src="/studio/assets/higgsfield-local.js?v=cloud-1"></script><style>html,body{margin:0;background:#080808;color:#f5f5f5;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}a{color:#f5f5f5;text-decoration:underline}a:hover{color:#555}*{box-sizing:border-box}input::placeholder,textarea::placeholder{color:#929292}@keyframes solvedPulse{0%,100%{opacity:.55}50%{opacity:1}}[data-sv=newbox],[data-sv=newplus],[data-sv=newlabel],[data-sv=pimg],[data-sv=pname]{transition:border-color .15s ease,background-color .15s ease,color .15s ease,transform .2s ease,box-shadow .2s ease} [data-sv=newp]:hover [data-sv=newbox]{border-color:#00BE50!important;background-color:rgba(32,32,32,.45)!important} [data-sv=newp]:hover [data-sv=newplus]{transform:scale(1.08)} [data-sv=newp]:hover [data-sv=newlabel]{color:#00BE50} [data-sv=pcard]:hover [data-sv=pimg]{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.12)} [data-sv=pcard]:hover [data-sv=pname]{color:#00BE50} [data-sv=bar] textarea::placeholder{color:#8A8681} [data-sv=optwrap]{position:relative} [data-sv=optmenu]{position:absolute;left:0;bottom:100%;padding-bottom:8px;min-width:150px;flex-direction:column;gap:2px;z-index:30} [data-sv=optmenu]>*{background:#242427} [data-sv=optmenu]{filter:drop-shadow(0 10px 28px rgba(0,0,0,.35))} [data-sv=optinner]{border-radius:10px;background:#242427;padding:6px;display:flex;flex-direction:column;gap:2px} [data-sv=optitem]:hover{background:#333337!important} [data-sv=field]::placeholder,[data-sv=editname]::placeholder,[data-sv=editrole]::placeholder{color:#929292} [data-sv=field]:hover{border-color:#363636!important} [data-sv=field]:focus{border-color:#00BE50!important} [data-sv=editname]:hover,[data-sv=editrole]:hover{background:#191919!important} [data-sv=editname]:focus,[data-sv=editrole]:focus{background:#191919!important;box-shadow:inset 0 0 0 1px #00BE50} [data-sv=sheetgo]{transition:filter .12s ease,transform .08s ease} [data-sv=sheetgo]:hover{filter:brightness(1.08)} [data-sv=sheetgo]:active{transform:translateY(1px)} [data-sv=seg]{transition:background-color .12s ease} [data-sv=seg]:hover{filter:brightness(.97)} @media (max-width:900px){[data-sv=ident]{grid-template-columns:1fr!important}} [data-sv=chip],[data-sv=addbtn],[data-sv=gobtn],[data-sv=optitem]{transition:background-color .12s ease,transform .08s ease,filter .12s ease} [data-sv=chip]:hover,[data-sv=optwrap]:hover>[data-sv=chip]{background-color:#35353A!important} [data-sv=chip]:active{background-color:#45454B!important;transform:translateY(1px)} [data-sv=addbtn]:hover{background-color:#35353A!important} [data-sv=addbtn]:active{background-color:#45454B!important;transform:translateY(1px)} [data-sv=gobtn]:hover{filter:brightness(1.12)} [data-sv=gobtn]:active{filter:brightness(.9);transform:translateY(1px)} [data-sv=optitem]:active{background:#45454B!important} [data-sv=bar] textarea:focus{caret-color:#191919} [data-sv=pgback],[data-sv=pgfwd]{transition:background-color .12s ease} [data-sv=pgback]:hover,[data-sv=pgfwd]:hover{background-color:rgba(17,17,17,.06)} [data-sv=main]{padding-bottom:max(24px,env(safe-area-inset-bottom))!important} [data-sv=title]{font-size:clamp(34px,5.4vw,72px)!important} [data-sv=head]{flex-wrap:wrap} [data-sv=g2]{align-items:start} @media (min-width:1700px){[data-sv=g4]{grid-template-columns:repeat(5,minmax(0,1fr))!important}[data-sv=g4]>*{grid-column:auto!important;grid-row:auto!important}} @media (max-width:1200px){ [data-sv=app]{grid-template-columns:232px minmax(0,1fr)!important;column-gap:40px!important} [data-sv=side]{width:232px!important;padding:36px 28px!important;gap:64px!important} [data-sv=navi]{font-size:20px!important;line-height:24px!important;height:24px!important} [data-sv=main]{padding:72px 40px 24px 0!important} [data-sv=g4]{grid-template-columns:repeat(3,minmax(0,1fr))!important} [data-sv=g4]>*{grid-column:auto!important;grid-row:auto!important} } @media (max-width:860px){ [data-sv=app]{display:block!important} [data-sv=side]{position:sticky!important;top:0;z-index:40;width:100%!important;height:auto!important;padding:calc(12px + env(safe-area-inset-top)) 16px 10px!important;gap:8px!important;box-shadow:0 1px 0 rgba(0,0,0,.06)} [data-sv=side]>div:first-child{display:none} [data-sv=sidebody]{flex-direction:row!important;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 12px!important} [data-sv=proj]{height:auto!important;min-width:0;flex:1 1 auto} [data-sv=hf]{margin-top:0!important;flex:none;max-width:50%} [data-sv=nav]{order:3;flex-basis:100%;flex-direction:row!important;gap:18px!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:4px 0 2px} [data-sv=nav]::-webkit-scrollbar{display:none} [data-sv=navi]{font-size:13px!important;line-height:20px!important;height:20px!important;margin:0!important;letter-spacing:.04em!important;flex:none} [data-sv=main]{padding:20px 16px 16px!important;gap:24px!important;min-height:auto!important} [data-sv=crumbs]{height:auto!important;flex-wrap:wrap;gap:6px 16px!important} [data-sv=crumbs]>div:first-child{white-space:normal!important} [data-sv=g4],[data-sv=g3]{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important} [data-sv=g2]{grid-template-columns:minmax(0,1fr)!important} [data-sv=head]>div{width:100%!important;flex-basis:100%} [data-sv=head]>div:last-child{text-align:left!important;align-items:flex-start!important;margin-top:0!important} [data-sv=bar]{flex-wrap:wrap!important;bottom:max(8px,env(safe-area-inset-bottom))!important;padding:8px!important;gap:8px 12px!important} [data-sv=bar] [data-sv=bartext]{order:-1;flex:1 1 100%!important;width:100%;padding-left:6px!important} [data-sv=bar]>div:last-child{margin-left:auto} [data-sv=pop]{left:0!important;right:0!important;width:auto!important;bottom:calc(100% + 8px)!important} } @media (max-width:420px){ [data-sv=g4]{gap:10px!important} [data-sv=g3]{grid-template-columns:minmax(0,1fr)!important} }
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><script src="/studio/assets/08a13a39-08bc-4e94-96b0-e6b0add4e600.js"></script><script src="/studio/assets/higgsfield-local.js?v=cloud-2"></script><style>html,body{margin:0;background:#080808;color:#f5f5f5;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}a{color:#f5f5f5;text-decoration:underline}a:hover{color:#555}*{box-sizing:border-box}input::placeholder,textarea::placeholder{color:#929292}@keyframes solvedPulse{0%,100%{opacity:.55}50%{opacity:1}}[data-sv=newbox],[data-sv=newplus],[data-sv=newlabel],[data-sv=pimg],[data-sv=pname]{transition:border-color .15s ease,background-color .15s ease,color .15s ease,transform .2s ease,box-shadow .2s ease} [data-sv=newp]:hover [data-sv=newbox]{border-color:#00BE50!important;background-color:rgba(32,32,32,.45)!important} [data-sv=newp]:hover [data-sv=newplus]{transform:scale(1.08)} [data-sv=newp]:hover [data-sv=newlabel]{color:#00BE50} [data-sv=pcard]:hover [data-sv=pimg]{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.12)} [data-sv=pcard]:hover [data-sv=pname]{color:#00BE50} [data-sv=bar] textarea::placeholder{color:#8A8681} [data-sv=optwrap]{position:relative} [data-sv=optmenu]{position:absolute;left:0;bottom:100%;padding-bottom:8px;min-width:150px;flex-direction:column;gap:2px;z-index:30} [data-sv=optmenu]>*{background:#242427} [data-sv=optmenu]{filter:drop-shadow(0 10px 28px rgba(0,0,0,.35))} [data-sv=optinner]{border-radius:10px;background:#242427;padding:6px;display:flex;flex-direction:column;gap:2px} [data-sv=optitem]:hover{background:#333337!important} [data-sv=field]::placeholder,[data-sv=editname]::placeholder,[data-sv=editrole]::placeholder{color:#929292} [data-sv=field]:hover{border-color:#363636!important} [data-sv=field]:focus{border-color:#00BE50!important} [data-sv=editname]:hover,[data-sv=editrole]:hover{background:#191919!important} [data-sv=editname]:focus,[data-sv=editrole]:focus{background:#191919!important;box-shadow:inset 0 0 0 1px #00BE50} [data-sv=sheetgo]{transition:filter .12s ease,transform .08s ease} [data-sv=sheetgo]:hover{filter:brightness(1.08)} [data-sv=sheetgo]:active{transform:translateY(1px)} [data-sv=seg]{transition:background-color .12s ease} [data-sv=seg]:hover{filter:brightness(.97)} @media (max-width:900px){[data-sv=ident]{grid-template-columns:1fr!important}} [data-sv=chip],[data-sv=addbtn],[data-sv=gobtn],[data-sv=optitem]{transition:background-color .12s ease,transform .08s ease,filter .12s ease} [data-sv=chip]:hover,[data-sv=optwrap]:hover>[data-sv=chip]{background-color:#35353A!important} [data-sv=chip]:active{background-color:#45454B!important;transform:translateY(1px)} [data-sv=addbtn]:hover{background-color:#35353A!important} [data-sv=addbtn]:active{background-color:#45454B!important;transform:translateY(1px)} [data-sv=gobtn]:hover{filter:brightness(1.12)} [data-sv=gobtn]:active{filter:brightness(.9);transform:translateY(1px)} [data-sv=optitem]:active{background:#45454B!important} [data-sv=bar] textarea:focus{caret-color:#191919} [data-sv=pgback],[data-sv=pgfwd]{transition:background-color .12s ease} [data-sv=pgback]:hover,[data-sv=pgfwd]:hover{background-color:rgba(17,17,17,.06)} [data-sv=main]{padding-bottom:max(24px,env(safe-area-inset-bottom))!important} [data-sv=title]{font-size:clamp(34px,5.4vw,72px)!important} [data-sv=head]{flex-wrap:wrap} [data-sv=g2]{align-items:start} @media (min-width:1700px){[data-sv=g4]{grid-template-columns:repeat(5,minmax(0,1fr))!important}[data-sv=g4]>*{grid-column:auto!important;grid-row:auto!important}} @media (max-width:1200px){ [data-sv=app]{grid-template-columns:232px minmax(0,1fr)!important;column-gap:40px!important} [data-sv=side]{width:232px!important;padding:36px 28px!important;gap:64px!important} [data-sv=navi]{font-size:20px!important;line-height:24px!important;height:24px!important} [data-sv=main]{padding:72px 40px 24px 0!important} [data-sv=g4]{grid-template-columns:repeat(3,minmax(0,1fr))!important} [data-sv=g4]>*{grid-column:auto!important;grid-row:auto!important} } @media (max-width:860px){ [data-sv=app]{display:block!important} [data-sv=side]{position:sticky!important;top:0;z-index:40;width:100%!important;height:auto!important;padding:calc(12px + env(safe-area-inset-top)) 16px 10px!important;gap:8px!important;box-shadow:0 1px 0 rgba(0,0,0,.06)} [data-sv=side]>div:first-child{display:none} [data-sv=sidebody]{flex-direction:row!important;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 12px!important} [data-sv=proj]{height:auto!important;min-width:0;flex:1 1 auto} [data-sv=hf]{margin-top:0!important;flex:none;max-width:50%} [data-sv=nav]{order:3;flex-basis:100%;flex-direction:row!important;gap:18px!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:4px 0 2px} [data-sv=nav]::-webkit-scrollbar{display:none} [data-sv=navi]{font-size:13px!important;line-height:20px!important;height:20px!important;margin:0!important;letter-spacing:.04em!important;flex:none} [data-sv=main]{padding:20px 16px 16px!important;gap:24px!important;min-height:auto!important} [data-sv=crumbs]{height:auto!important;flex-wrap:wrap;gap:6px 16px!important} [data-sv=crumbs]>div:first-child{white-space:normal!important} [data-sv=g4],[data-sv=g3]{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important} [data-sv=g2]{grid-template-columns:minmax(0,1fr)!important} [data-sv=head]>div{width:100%!important;flex-basis:100%} [data-sv=head]>div:last-child{text-align:left!important;align-items:flex-start!important;margin-top:0!important} [data-sv=bar]{flex-wrap:wrap!important;bottom:max(8px,env(safe-area-inset-bottom))!important;padding:8px!important;gap:8px 12px!important} [data-sv=bar] [data-sv=bartext]{order:-1;flex:1 1 100%!important;width:100%;padding-left:6px!important} [data-sv=bar]>div:last-child{margin-left:auto} [data-sv=pop]{left:0!important;right:0!important;width:auto!important;bottom:calc(100% + 8px)!important} } @media (max-width:420px){ [data-sv=g4]{gap:10px!important} [data-sv=g3]{grid-template-columns:minmax(0,1fr)!important} }
 .brief-layout{width:100%;max-width:916px;display:flex;flex-direction:column;gap:32px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#f5f5f5}.brief-layout h2{font-size:12px;font-weight:700;margin:0}.brief-bar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #414141;padding-bottom:14px;margin-bottom:24px;font-size:12px}.brief-layout>.brief-bar{margin-bottom:-8px;color:#a3a3a3}.brief-layout small{font-size:10px;color:#929292}.brief-upload{border:1px dashed #414141;border-radius:6px;padding:26px;display:flex;flex-direction:column;gap:12px}.brief-upload-line{display:flex;align-items:center;gap:24px}.brief-upload h2{font-size:14px;margin-bottom:7px}.brief-upload p{font-size:12px;line-height:18px;color:#a3a3a3;margin:0}.brief-layout button{border:0;border-radius:6px;height:44px;padding:0 22px;background:#191919;font:700 11px 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer}.brief-layout .brief-plus{width:44px;flex:0 0 44px;padding:0;border-radius:50%;background:#00be50;color:#f5f5f5;font:400 30px/44px Helvetica,sans-serif}.brief-layout label{display:flex;flex-direction:column;gap:8px;font-size:11px;font-weight:700;color:#a3a3a3}.brief-layout input,.brief-layout textarea,.brief-layout select{box-sizing:border-box;width:100%;min-width:0;border:1px solid #303030;border-radius:6px;background:#191919;color:#f5f5f5;padding:12px;font:400 14px/20px 'Helvetica Neue',Helvetica,sans-serif;outline:none}.brief-layout input,.brief-layout select{height:44px}.brief-layout textarea{min-height:88px;resize:vertical}.brief-layout input:focus,.brief-layout textarea:focus,.brief-layout select:focus{border-color:#00BE50}.brief-names{display:grid;grid-template-columns:1fr 1fr;gap:20px}.brief-names label{font-size:12px;color:#f5f5f5}.brief-names input{font-weight:700;font-size:18px;height:52px}.brief-texts{display:grid;grid-template-columns:1fr 1fr;gap:24px 20px}.brief-summary{grid-column:1/-1}.brief-head{display:flex;justify-content:space-between;margin-bottom:8px}.brief-audience{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}.brief-audience select{height:36px;font-size:12px;padding:0 10px}.brief-del{display:grid;grid-template-columns:125px minmax(120px,1fr) 90px 90px 54px 24px;gap:12px;align-items:end;margin-bottom:12px}.brief-del input,.brief-del select{font-size:12px;padding:0 10px}.brief-layout .brief-remove{padding:0;background:transparent;font-size:20px;color:#a3a3a3}.brief-layout .brief-add{background:transparent;color:#00BE50;padding:0;height:36px}.brief-milestones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}.brief-milestones>label{background:#191919;padding:16px;border-radius:6px}.brief-milestones input{font-size:12px;height:32px;padding:8px 0 0}.brief-rounds{grid-column:1/-1;background:#191919;border-radius:6px;padding:4px 16px}.brief-round{display:grid;grid-template-columns:70px 1fr 1fr;gap:16px;align-items:center;padding:12px 0}.brief-round+.brief-round{border-top:1px solid #080808}.brief-round b{font-size:12px}.brief-round label{font-size:10px;gap:4px}.brief-layout .brief-outline{background:transparent;border:1px dashed #414141;height:84px;color:#00BE50}.brief-footer{display:flex;justify-content:space-between;gap:16px;align-items:center;padding-top:24px}.brief-layout .brief-next{background:#00be50;color:#f5f5f5}.brief-layout button:disabled{cursor:default}.brief-del select:disabled{color:#929292;background:rgba(32,32,32,.4)}@media(max-width:1050px){.brief-del{grid-template-columns:110px minmax(100px,1fr) 80px 80px 50px 24px;gap:8px}}@media(max-width:760px){.brief-names,.brief-texts{grid-template-columns:1fr}.brief-del{grid-template-columns:1fr 1fr 80px}.brief-milestones{grid-template-columns:1fr 1fr}.brief-round{grid-template-columns:55px 1fr 1fr;gap:8px}.brief-footer{flex-wrap:wrap}}
 .estimate-heading,.estimate-row{display:grid;grid-template-columns:minmax(200px,1fr) minmax(80px,.45fr) minmax(140px,.7fr) 24px;gap:12px}.estimate-heading{font-size:11px;font-weight:700;margin-bottom:8px}.estimate-row{align-items:start;margin-bottom:12px}.estimate-row>div{display:flex;flex-direction:column;gap:6px}.estimate-row select{font-size:12px}.estimate-row small{color:#a3a3a3}.brief-layout .estimate-add{width:32%;height:64px}.estimate-bottom{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}.estimate-total{background:#191919;border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:12px;font-size:12px}.estimate-total>div{display:flex;justify-content:space-between;gap:12px}.estimate-total input{background:#202020}.estimate-grand{border-top:1px solid #363636;padding-top:12px;font-weight:700;font-size:16px}@media(max-width:760px){.estimate-heading,.estimate-row{grid-template-columns:minmax(120px,1fr) 60px 100px 20px;gap:6px}.estimate-bottom{grid-template-columns:1fr}.brief-layout .estimate-add{width:100%}}
 .estimate-heading,.estimate-row{grid-template-columns:minmax(160px,2fr) minmax(65px,.65fr) minmax(85px,1fr) minmax(85px,1fr) minmax(95px,1fr) 24px}.estimate-subtotal{background:#191919;border-radius:6px;padding:12px;font-size:14px;min-height:44px;box-sizing:border-box}.estimate-total{align-self:end}.estimate-grand{border-top:0;padding-top:0}.estimate-row select{height:36px}.estimate-row input{font-size:12px}.estimate-bottom{margin-top:32px}@media(max-width:900px){.estimate-heading,.estimate-row{grid-template-columns:minmax(130px,1.6fr) 60px 75px 80px 95px 24px;gap:6px}.brief-layout:has(.estimate-row){overflow-x:auto}}
@@ -228,6 +274,20 @@ img[alt="SOLVED"]{filter:none}
       <span style="font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#929292;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ hfStatus }}</span>
     </div>
   </aside>
+  <sc-if value="{{ castUpOpen }}" hint-placeholder-val="{{ false }}">
+    <div data-sv="castup" sc-camel-on-click="{{ castUpClose }}" style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center">
+      <div sc-camel-on-click="{{ stop }}" style="width:520px;max-width:calc(100vw - 48px);background:#191919;border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:18px">
+        <div style="font:700 26px/29px 'Helvetica Neue',Helvetica,sans-serif">Upload a photo of the person</div>
+        <div style="font:400 13px/19px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">A clear, front-facing photo works best. We create a studio headshot on a gray background from it.</div>
+        <div sc-camel-on-click="{{ castUpPick }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ castUpDrop }}" style="height:220px;border:1px dashed #555;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;color:#a3a3a3;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif">
+          <div style="height:44px;padding:0 20px;border-radius:6px;background:#00BE50;color:#0A0A0A;display:flex;align-items:center;font:700 12px/1 'Helvetica Neue',Helvetica,sans-serif">Choose photo</div>
+          <div>or drag a photo here</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3"><span>No photo? Describe the character in the prompt bar instead.</span>
+          <div sc-camel-on-click="{{ castUpClose }}" style="height:36px;padding:0 16px;border-radius:6px;background:#202020;color:#f5f5f5;display:flex;align-items:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer">Cancel</div></div>
+      </div>
+    </div>
+  </sc-if>
   <sc-if value="{{ hfShow }}" hint-placeholder-val="{{ false }}">
     <div sc-camel-on-click="{{ hfClose }}" style="position:fixed;inset:0;z-index:50;background:rgba(17,17,17,.35);display:flex;align-items:center;justify-content:center">
       <div sc-camel-on-click="{{ stop }}" style="width:480px;max-width:calc(100vw - 48px);background:#191919;border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:18px;box-shadow:0 8px 40px rgba(0,0,0,.15)">
@@ -270,6 +330,11 @@ img[alt="SOLVED"]{filter:none}
           <div sc-camel-on-click="{{ st.pick }}" style="height:28px;font:700 12px/28px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:{{ st.color }};border-bottom:2px solid {{ st.line }}">{{ st.label }}</div>
         </sc-for>
       </div>
+    </sc-if>
+
+    <sc-if value="{{ x.sbOn }}" hint-placeholder-val="{{ false }}">
+      <div data-sv="sbbar" class="x-bar"><div class="x-bar-info">{{ x.sbInfo }}</div>
+        <div class="x-bar-btns"><button class="ds-btn" disabled="{{ x.sbBusy }}" sc-camel-on-click="{{ x.sbWrite }}">{{ x.sbWriteLabel }}</button><button class="ds-btn" disabled="{{ x.sbBusy }}" sc-camel-on-click="{{ x.sbGen }}">{{ x.sbGenLabel }}</button><button class="ds-btn ds-on" sc-camel-on-click="{{ x.sbVideos }}">Make videos →</button></div></div>
     </sc-if>
 
     <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
@@ -354,7 +419,7 @@ img[alt="SOLVED"]{filter:none}
 
     <sc-if value="{{ ds.on }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Detail Sheet" class="ds">
-        <div class="ds-sub">{{ ds.title }} <span>{{ ds.subtitle }}</span></div>
+        <div class="ds-sub">{{ ds.title }} <i class="ds-dim" style="font-style:normal">{{ ds.subtitle }}</i></div>
         <div class="ds-grid">
           <div class="ds-left">
             <div class="ds-photo" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ ds.dropPhoto }}">
@@ -380,7 +445,7 @@ img[alt="SOLVED"]{filter:none}
 
             <sc-if value="{{ ds.hasBox }}" hint-placeholder-val="{{ false }}">
               <div class="ds-box" data-sv="dsbox">
-                <div class="ds-box-head"><div>{{ ds.boxTitle }} <span>· {{ ds.boxCount }}</span></div><sc-if value="{{ ds.canPick }}" hint-placeholder-val="{{ false }}"><div class="ds-link" sc-camel-on-click="{{ ds.togglePick }}">{{ ds.pickLabel }}</div></sc-if></div>
+                <div class="ds-box-head"><div>{{ ds.boxTitle }} <i class="ds-dim" style="font-style:normal">· {{ ds.boxCount }}</i></div><sc-if value="{{ ds.canPick }}" hint-placeholder-val="{{ false }}"><div class="ds-link" sc-camel-on-click="{{ ds.togglePick }}">{{ ds.pickLabel }}</div></sc-if></div>
                 <div class="ds-tiles">
                   <div class="ds-tile" sc-camel-on-click="{{ ds.boxAdd }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ ds.boxDrop }}"><div class="ds-tile-add"><span style="font-size:20px;line-height:1">+</span>{{ ds.addLabel }}</div></div>
                   <sc-for list="{{ ds.boxItems }}" as="w" hint-placeholder-count="0">
@@ -546,6 +611,7 @@ img[alt="SOLVED"]{filter:none}
                   </div>
                   <div style="font:700 11px/15px 'Helvetica Neue',Helvetica,sans-serif;color:{{ c.sheetColor }}">{{ c.sheetState }}</div>
                   <sc-if value="{{ c.hasClientLine }}" hint-placeholder-val="{{ false }}"><div style="font:400 10px/14px 'Helvetica Neue',Helvetica,sans-serif;color:{{ c.clientLineColor }}">{{ c.clientLine }}</div></sc-if>
+                  <sc-if value="{{ c.hasVideo }}" hint-placeholder-val="{{ false }}"><button class="ds-btn ds-on" style="align-self:flex-start;margin:4px 0" sc-camel-on-click="{{ c.makeVideo }}">Make video</button></sc-if>
                   <div sc-camel-on-click="{{ c.toggleClient }}" title="Temporary: stands in for the client view until it exists" style="font:400 10px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#929292;text-decoration:underline;text-underline-offset:2px;cursor:pointer;width:fit-content">{{ c.clientLabel }}</div>
                 </div>
               </div>
@@ -685,6 +751,96 @@ img[alt="SOLVED"]{filter:none}
           </sc-for>
         </div>
         <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div style="font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#ef6b61">{{ errorText }}</div></sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ x.vidOn }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Videos" class="x-page">
+        <div class="x-head"><div class="ds-sub">Videos <i class="ds-dim" style="font-style:normal">· {{ x.vCount }}</i></div>
+          <div class="x-bar-btns"><span class="x-muted">{{ x.vFrameCount }}</span><button class="ds-btn ds-on" sc-camel-on-click="{{ x.vFromSb }}">From storyboard</button><button class="ds-btn" sc-camel-on-click="{{ x.vManual }}">+ Manual video</button></div></div>
+        <sc-if value="{{ x.vEmpty }}" hint-placeholder-val="{{ true }}"><div class="ds-empty"><div><b>No videos yet</b>Click From storyboard to turn every storyboard frame into a video, or + Manual video to start from your own image.</div></div></sc-if>
+        <div class="x-vgrid">
+          <sc-for list="{{ x.vids }}" as="v" hint-placeholder-count="0">
+            <div class="x-vcard">
+              <div class="x-vbox" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ v.dropStart }}">
+                <sc-if value="{{ v.done }}" hint-placeholder-val="{{ false }}"><video src="{{ v.url }}" controls playsinline preload="metadata"></video></sc-if>
+                <sc-if value="{{ v.notDone }}" hint-placeholder-val="{{ true }}"><div class="x-vstart" sc-camel-on-click="{{ v.pickStart }}"><sc-if value="{{ v.hasStart }}" hint-placeholder-val="{{ false }}"><div style="{{ v.startBg }}"></div></sc-if><sc-if value="{{ v.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if><span class="x-vhint">Start frame · click to change</span></div></sc-if>
+              </div>
+              <div class="x-vrow"><input class="x-vname" value="{{ v.name }}" sc-camel-on-change="{{ v.rename }}" spellcheck="false"><div class="{{ v.approveCls }}" sc-camel-on-click="{{ v.toggleApprove }}">{{ v.approveLabel }}</div></div>
+              <textarea class="x-vprompt" value="{{ v.prompt }}" sc-camel-on-change="{{ v.setPrompt }}" placeholder="Describe the motion: camera move, action, mood…"></textarea>
+              <div class="x-vrow"><label class="x-muted">Length <select value="{{ v.duration }}" sc-camel-on-change="{{ v.setDuration }}"><option value="5">5 s</option><option value="10">10 s</option><option value="15">15 s</option></select></label>
+                <div class="x-bar-btns"><sc-if value="{{ v.canEdit }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.toTimeline }}">Edit</button></sc-if><button class="ds-btn" sc-camel-on-click="{{ v.del }}">Delete</button><button class="ds-btn ds-on" disabled="{{ v.running }}" sc-camel-on-click="{{ v.go }}">{{ v.goLabel }}</button></div></div>
+              <div class="x-vnote" style="color:{{ v.noteColor }}">{{ v.note }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div class="ds-err" role="alert">{{ errorText }}</div></sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ x.edHub }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Editing" class="x-page"><div class="ds-sub">Editing tools <i class="ds-dim" style="font-style:normal">· 6</i></div>
+        <div class="x-tools"><sc-for list="{{ x.tools }}" as="t"><div class="{{ t.cls }}" sc-camel-on-click="{{ t.open }}"><div class="x-name">{{ t.name }}</div><div class="x-desc">{{ t.desc }}</div></div></sc-for></div></div>
+    </sc-if>
+
+    <sc-if value="{{ x.edImg }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Image Editor" class="x-page">
+        <div class="x-head"><div class="ds-sub">Image Editor <i class="ds-dim" style="font-style:normal">· {{ x.edName }}</i></div><div class="x-bar-btns"><button class="ds-btn" sc-camel-on-click="{{ x.edBack }}">← All tools</button><sc-if value="{{ x.edHas }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ x.edDownload }}">Download</button></sc-if></div></div>
+        <div class="x-ed">
+          <div class="x-ed-canvas"><sc-if value="{{ x.edHas }}" hint-placeholder-val="{{ false }}"><img src="{{ x.edSrc }}" alt="" style="filter:{{ x.edFilter }}"></sc-if>
+            <sc-if value="{{ x.edEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-muted">Pick an image below to start editing.</div></sc-if>
+            <sc-if value="{{ x.edBusy }}" hint-placeholder-val="{{ false }}"><div class="x-ed-busy">{{ x.edBusyLabel }}</div></sc-if></div>
+          <div class="x-ed-tools">
+            <div class="x-ed-sec"><h3>AI tools (Higgsfield)</h3><textarea class="x-vprompt" value="{{ x.edText }}" sc-camel-on-change="{{ x.setEdText }}" placeholder="Describe the change, e.g. make the sky golden hour"></textarea>
+              <div class="x-wrap"><sc-for list="{{ x.ai }}" as="a"><button class="{{ a.cls }}" disabled="{{ x.edBusy }}" sc-camel-on-click="{{ a.run }}">{{ a.label }}</button></sc-for></div></div>
+            <div class="x-ed-sec"><h3>Adjust</h3><sc-for list="{{ x.sliders }}" as="s"><label class="x-slider">{{ s.label }}<input type="range" min="50" max="150" value="{{ s.value }}" sc-camel-on-input="{{ s.set }}" sc-camel-on-change="{{ s.set }}"></label></sc-for>
+              <div class="x-wrap"><sc-for list="{{ x.local }}" as="a"><button class="ds-btn" sc-camel-on-click="{{ a.run }}">{{ a.label }}</button></sc-for></div></div>
+            <div class="x-muted">Every edit is saved as a new file in Editing and the Library. Originals are never changed.</div>
+          </div>
+        </div>
+        <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div class="ds-err" role="alert">{{ errorText }}</div></sc-if>
+        <div class="ds-sub">Project images</div>
+        <sc-if value="{{ x.edNone }}" hint-placeholder-val="{{ false }}"><div class="x-muted">No images in this project yet.</div></sc-if>
+        <div class="x-strip"><sc-for list="{{ x.edPicks }}" as="p"><div class="x-thumb" title="{{ p.name }}" sc-camel-on-click="{{ p.pick }}" style="box-shadow:0 0 0 2px {{ p.line }}"><div style="{{ p.bg }}"></div></div></sc-for></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ x.edVid }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Video Editor" class="x-page">
+        <div class="x-head"><div class="ds-sub">Video Editor <i class="ds-dim" style="font-style:normal">· {{ x.tlTotal }}</i></div><div class="x-bar-btns"><button class="ds-btn" sc-camel-on-click="{{ x.vxBack }}">← All tools</button><button class="ds-btn ds-on" disabled="{{ x.vxBusy }}" sc-camel-on-click="{{ x.vxExport }}">{{ x.vxLabel }}</button></div></div>
+        <div class="x-player"><sc-if value="{{ x.vxHasPlay }}" hint-placeholder-val="{{ false }}"><video src="{{ x.vxPlay }}" controls autoplay playsinline></video></sc-if><sc-if value="{{ x.tlEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-muted">Add finished videos below to build your edit.</div></sc-if></div>
+        <div class="ds-sub">Timeline</div>
+        <div class="x-tl"><sc-for list="{{ x.clips }}" as="c"><div class="x-clip" style="min-width:{{ c.w }}"><div class="x-clip-top"><b>{{ c.n }}</b> {{ c.name }}</div>
+          <div class="x-clip-trim"><label>In <input type="number" step="0.1" min="0" value="{{ c.inV }}" sc-camel-on-change="{{ c.setIn }}"></label><label>Out <input type="number" step="0.1" min="0.5" value="{{ c.outV }}" sc-camel-on-change="{{ c.setOut }}"></label></div>
+          <div class="x-wrap"><button class="ds-btn" sc-camel-on-click="{{ c.left }}">←</button><button class="ds-btn" sc-camel-on-click="{{ c.play }}">Play</button><button class="ds-btn" sc-camel-on-click="{{ c.right }}">→</button><button class="ds-btn" sc-camel-on-click="{{ c.remove }}">×</button></div></div></sc-for></div>
+        <div class="ds-sub">Finished videos</div>
+        <sc-if value="{{ x.vxNone }}" hint-placeholder-val="{{ false }}"><div class="x-muted">No finished videos yet. Make them on the Videos page.</div></sc-if>
+        <div class="x-wrap"><sc-for list="{{ x.vxAvail }}" as="a"><button class="ds-btn" sc-camel-on-click="{{ a.add }}">+ {{ a.name }}</button></sc-for></div>
+        <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div class="ds-err" role="alert">{{ errorText }}</div></sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ x.dlOn }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Delivery" class="x-page">
+        <div class="ds-sub">Destinations</div>
+        <div class="x-dests"><sc-for list="{{ x.dests }}" as="d"><div class="x-dest"><div class="x-name">{{ d.name }}</div><div class="x-desc">{{ d.desc }}</div><button class="{{ d.cls }}" disabled="{{ x.dlBusy }}" sc-camel-on-click="{{ d.run }}">{{ d.btn }}</button></div></sc-for></div>
+        <sc-if value="{{ x.dlBusy }}" hint-placeholder-val="{{ false }}"><div class="x-muted">{{ x.dlBusyLabel }}…</div></sc-if>
+        <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div class="ds-err" role="alert">{{ errorText }}</div></sc-if>
+        <sc-if value="{{ x.hasHistory }}" hint-placeholder-val="{{ false }}"><div class="ds-sub">Sent</div><sc-for list="{{ x.history }}" as="h"><div class="x-hist"><span>{{ h.line }}</span><sc-if value="{{ h.hasUrl }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ h.copy }}">Copy link</button></sc-if></div></sc-for></sc-if>
+        <div class="x-head"><div class="ds-sub">Files <i class="ds-dim" style="font-style:normal">· {{ x.nSel }}</i></div><div class="x-bar-btns"><button class="ds-btn" sc-camel-on-click="{{ x.selAll }}">Select all</button><button class="ds-btn" sc-camel-on-click="{{ x.selNone }}">Select none</button></div></div>
+        <sc-if value="{{ x.fNone }}" hint-placeholder-val="{{ false }}"><div class="x-muted">No files yet. Images, videos and edits appear here as you make them.</div></sc-if>
+        <sc-for list="{{ x.fgroups }}" as="g"><div class="ds-group"><h3>{{ g.title }} · {{ g.count }}</h3><div class="x-files"><sc-for list="{{ g.files }}" as="f"><div class="x-file" title="{{ f.name }}" sc-camel-on-click="{{ f.toggle }}"><div class="x-file-img" style="box-shadow:0 0 0 2px {{ f.line }}"><sc-if value="{{ f.isImg }}" hint-placeholder-val="{{ false }}"><div style="{{ f.bg }}"></div></sc-if><sc-if value="{{ f.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ f.src }}" muted preload="metadata"></video></sc-if><sc-if value="{{ f.isDoc }}" hint-placeholder-val="{{ false }}"><div class="x-doc">DOC</div></sc-if><div class="x-check">{{ f.mark }}</div></div><div class="ds-tile-name">{{ f.name }}</div></div></sc-for></div></div></sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ x.libOn }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Library" class="x-page">
+        <div class="x-head"><div class="ds-sub">All files <i class="ds-dim" style="font-style:normal">· {{ x.fTotal }}</i></div><div class="x-bar-btns"><button class="{{ x.gridCls }}" sc-camel-on-click="{{ x.setGrid }}">Grid</button><button class="{{ x.listCls }}" sc-camel-on-click="{{ x.setList }}">List</button></div></div>
+        <sc-if value="{{ x.fNone }}" hint-placeholder-val="{{ false }}"><div class="ds-empty"><div><b>No files yet</b>Everything you make in this project appears here, organized by section.</div></div></sc-if>
+        <sc-for list="{{ x.fgroups }}" as="g"><div class="ds-group"><h3>{{ g.title }} · {{ g.count }}</h3>
+          <sc-if value="{{ x.libGrid }}" hint-placeholder-val="{{ true }}"><div class="x-files x-files-lg"><sc-for list="{{ g.files }}" as="f"><div class="x-file" title="{{ f.name }}" sc-camel-on-click="{{ f.download }}"><div class="x-file-img"><sc-if value="{{ f.isImg }}" hint-placeholder-val="{{ false }}"><div style="{{ f.bg }}"></div></sc-if><sc-if value="{{ f.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ f.src }}" muted preload="metadata"></video></sc-if><sc-if value="{{ f.isDoc }}" hint-placeholder-val="{{ false }}"><div class="x-doc">DOC</div></sc-if></div><div class="ds-tile-name">{{ f.name }}</div></div></sc-for></div></sc-if>
+          <sc-if value="{{ x.libList }}" hint-placeholder-val="{{ false }}"><div class="x-list"><sc-for list="{{ g.files }}" as="f"><div class="x-hist"><span>{{ f.name }}</span><button class="ds-btn" sc-camel-on-click="{{ f.download }}">Download</button></div></sc-for></div></sc-if>
+        </div></sc-for>
       </div>
     </sc-if>
 
@@ -1110,7 +1266,7 @@ const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION
 // Sidebar: main sections only. Brief opens from the Dashboard.
 const SIDE_NAV = [['OVERVIEW', 'DASHBOARD'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY'], ['LIBRARY', 'LIBRARY']];
 const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
-const SOON_PAGES = { VIDEOS: ['Create your video shots', 'Videos are made from your storyboard frames. This section is built in step 5.'], EDITING: ['Edit your content', 'Image Editor and Video Editor are built in step 5.'], DELIVERY: ['Choose your file destination', 'ZIP, Google Drive, Dropbox, Frame.io and share links are built in step 6.'], LIBRARY: ['All files in this project', 'Brief, Images, Videos, Editing and Delivery files. Built in step 6.'] };
+const SOON_PAGES = { VIDEOS: ['Make your videos', 'Videos are made from your storyboard frames. This section is built in step 5.'], EDITING: ['Edit your content', 'Image Editor and Video Editor are built in step 5.'], DELIVERY: ['Choose your file destination', 'ZIP, Google Drive, Dropbox, Frame.io and share links are built in step 6.'], LIBRARY: ['All files in this project', 'Brief, Images, Videos, Editing and Delivery files. Built in step 6.'] };
 const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Storyboards' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Set design' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Images' : p.charAt(0) + p.slice(1).toLowerCase();
 const CFG = {
   TALENT: { one: 'Character', prefix: 'CHR', ph: 'Describe a new character — age, look, expression, wardrobe…', search: 'Search characters by name, ID or appearance…' },
@@ -1188,7 +1344,7 @@ async function readDocx(file) {
 }
 const uid = () => Math.random().toString(36).slice(2, 10);
 const when = t => new Date(t).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-const defaultItems = () => Object.fromEntries(PAGES.slice(3).map(p => [p, Array.from({ length: p === 'KEYFRAMES' ? 9 : 6 }, (_, i) => ({ n: i + 1, name: `${CFG[p].one} ${i + 1}` }))]));
+const defaultItems = () => Object.fromEntries(PAGES.slice(3).map(p => [p, Array.from({ length: p === 'KEYFRAMES' ? 6 : 6 }, (_, i) => ({ n: i + 1, name: `${CFG[p].one} ${i + 1}` }))]));
 const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('image could not be read')); i.src = src; });
 const readFile = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(new Error('file could not be read')); r.readAsDataURL(f); });
 async function downscale(file, max = 720) {
@@ -1425,7 +1581,7 @@ class Component extends DCLogic {
       const vals = await idb.getMany(ids.map(i => 'img:' + i)), imgs = {};
       ids.forEach((i, k) => { if (vals[k]) imgs[i] = vals[k]; });
       list.forEach(p => { if (p.analysis === 'running') { p.analysis = 'failed'; p.analysisError = 'interrupted'; } });
-      this.setState({ products: list, locations: locs, imgs, pLoaded: true }, () => this.syncAutoStyles());
+      this.setState({ products: list, locations: locs, imgs, pLoaded: true }, () => this.syncAutoStyles()); this.loadX();
     }).catch(() => this.setState({ pLoaded: true, pLoadError: 'Saved products couldn’t be loaded — browser storage is unavailable.' }));
   }
   componentDidUpdate(pp, ps) { if (ps && ps.page !== this.state.page && this.state.page === 'STYLE') this.syncAutoStyles(); const el = this.selRef.current, p = this.state.page === 'PRODUCT' && this.prodGet(this.state.item); if (el && p && el.value !== p.type) el.value = p.type; }
@@ -1710,10 +1866,10 @@ class Component extends DCLogic {
     this.setState(s => ({ pSlot: { ...s.pSlot, [key]: 'busy' } })); this.setErr('');
     try {
       if (typeof window.SOLVED_IMAGE_GEN !== 'function') { await new Promise(res => setTimeout(res, 500)); throw new Error('no image generation service is connected'); }
-      const main = l.views[0] && idx !== 0 ? [this.state.imgs[l.views[0].img]] : [], refs = [...main, ...l.refs.map(i => this.state.imgs[i])].filter(Boolean);
+      const main = l.views[0] && idx !== 0 ? [this.state.imgs[l.views[0].img]] : [], sets = this.setRefs(l), refs = [...main, ...l.refs.map(i => this.state.imgs[i]), ...sets].filter(Boolean).slice(0, 8);
       const view = LAI[idx];
       const det = LFIELDS.concat([['era', 'Era / style']]).map(([k, lab]) => (l.fields || {})[k] ? lab + ': ' + l.fields[k] : '').filter(Boolean);
-      const src = await window.SOLVED_IMAGE_GEN({ prompt: ['Location: ' + (l.prompt || l.name) + '.', ...det, idx === 0 ? 'Create the main reference image of this location.' : 'View: ' + view + ' of the SAME location as the main reference.', 'Keep architecture, layout, materials, colors, lighting, time of day and mood identical across views. Do not add people unless requested.', extra ? 'Direction: ' + extra : ''].filter(Boolean).join('\n'), references: refs, view, location: { name: l.name, prompt: l.prompt }, ...(opts || {}) });
+      const src = await window.SOLVED_IMAGE_GEN({ prompt: ['Location: ' + (l.prompt || l.name) + '.', ...det, ...(sets.length ? ['Set design: dress the location with the set pieces, props and furniture shown in the set reference images.'] : []), idx === 0 ? 'Create the main reference image of this location.' : 'View: ' + view + ' of the SAME location as the main reference.', 'Keep architecture, layout, materials, colors, lighting, time of day and mood identical across views. Do not add people unless requested.', extra ? 'Direction: ' + extra : ''].filter(Boolean).join('\n'), references: refs, view, location: { name: l.name, prompt: l.prompt }, ...(opts || {}) });
       const ids = await this.storeImgs([src]);
       this.updLoc(id, x => { x.views[idx] = { img: ids[0], source: 'generated', at: Date.now() }; return x; });
       this.setState(s => { const pSlot = { ...s.pSlot }; delete pSlot[key]; return { pSlot }; });
@@ -1764,6 +1920,11 @@ class Component extends DCLogic {
   openSheet(id) { setTimeout(() => { const a = this.getAsset('TALENT', id); if (a && !(a.notes && a.notes.LOCK) && Object.values(a.sheet || {}).some(Boolean)) this.analyzeChar(id); }, 0);
    this.setState({ view: 'item', item: id, slot: this.state.page === 'PRODUCT' || this.state.page === 'LOCATION' ? 0 : 'front', prompt: '', gen: { running: false, status: '', count: 0, error: '' } }); }
   // ---- automatic character sheet ----
+  // wardrobe images assigned to a character / set images attached to a location
+  wardrobeRefs(a) { const I = this.state.imgs; return this.state.products.filter(p => p.kind === 'wardrobe' && (a.wardrobe || []).includes(p.uid))
+      .map(p => { const v = (p.views || []).find(y => y && y.source === 'uploaded') || (p.views || []).find(Boolean); return v ? I[v.img] : ''; }).filter(Boolean); }
+  setRefs(l) { const I = this.state.imgs; return this.state.locations.filter(x => x.sect === 'set' && (l.sets || []).includes(x.uid))
+      .map(x => { const v = (x.views || []).find(Boolean); return v ? I[v.img] : ''; }).filter(Boolean); }
   sheetSource(a) { return (a && ((a.sheet && a.sheet.front) || a.original || a.main)) || null; }
   sheetPrompt(a, key, extra) {
     const ru = this.charRules(a), label = SHEET.find(s => s[0] === key)[1];
@@ -1791,7 +1952,8 @@ class Component extends DCLogic {
     if (!hf) { this.setErr('Connect Higgsfield (HIGGSFIELD in the sidebar) to generate the character sheet.'); return; }
     this.setSlotState(id + ':' + key, 'busy');
     try {
-      const url = await hf.generate({ prompt: this.sheetPrompt(this.getAsset('TALENT', id) || a, key, extra), references: [src], aspect: VIEW_ASPECT[key] || '1:1', ...this.sheetOpts() });
+      const wr = this.wardrobeRefs(a).slice(0, 6), wrNote = wr.length ? ' Wardrobe: the person wears exactly the clothing, shoes and accessories shown in reference images 2–' + (wr.length + 1) + ' (ignore any default white t-shirt, jeans or shoes). Match colors, fabric and fit.' : '';
+      const url = await hf.generate({ prompt: this.sheetPrompt(this.getAsset('TALENT', id) || a, key, extra) + wrNote, references: [src, ...wr], aspect: VIEW_ASPECT[key] || '1:1', ...this.sheetOpts() });
       this.setSlotState(id + ':' + key, 'checking');
       const ok = await this.checkAngle(url, key);
       const at = Date.now();
@@ -1896,6 +2058,7 @@ class Component extends DCLogic {
   async handleFiles(target, fileList) {
     const files = [...(fileList || [])].filter(f => f.type.startsWith('image/'));
     if (!files.length) return;
+    if (target.startsWith('vstart:')) { const vid = target.slice(7); const src = await readFile(files[0]); return this.updVideo(vid, x => { x.start = src; x.error = ''; return x; }); }
     if (target.startsWith('locset:')) { const lid = target.slice(7); const ids = await this.storeImgs(await Promise.all(files.map(readFile))); const views = Array(7).fill(null); ids.slice(0, 7).forEach((id, i) => { views[i] = { img: id, source: 'uploaded', at: Date.now() }; });
       const set = { uid: uid(), sect: 'set', kind: 'real', name: cleanName(files[0].name || '') || 'Set ' + (this.state.locations.filter(x => x.sect === 'set').length + 1), url: '', prompt: '', refs: [], views, fields: {}, at: Date.now() };
       await new Promise(res => this.setState(s => ({ locations: [...s.locations.map(x => x.uid === lid ? { ...x, sets: [...(x.sets || []), set.uid] } : x), set] }), res)); this.saveLocations(); return; }
@@ -2112,8 +2275,10 @@ class Component extends DCLogic {
   async genKf(key, p, opts) {
     const n = key.split('-')[0], shot = (this.state.items.KEYFRAMES || []).find(x => String(x.n) === n);
     if (!window.SOLVED_HF || !window.SOLVED_HF.connected()) return this.setErr('Connect Higgsfield (bottom of the sidebar) to generate storyboard frames.');
-    const refs = this.attachSrcs();
-    const prompt = [p, 'Cinematic storyboard frame, 16:9.' + (shot ? ' ' + shot.name + '.' : '')].join(' ');
+    const refs = [...this.attachSrcs(), ...this.storyboardRefs()].filter((x, i, a) => x && a.indexOf(x) === i);
+    const st = this.storyStyle(), concept = ((this.state.values || {})['CONCEPT'] || '').trim();
+    const prompt = [p, 'Cinematic storyboard frame, 16:9.' + (shot ? ' ' + shot.name + '.' : ''), concept ? 'Concept: ' + concept.slice(0, 400) : '',
+      st ? 'Visual style: ' + (st.desc || st.name) + '.' : '', refs.length ? 'Use the reference images for the exact products, people (faces, wardrobe), locations and look. Keep every product and person identical to the references.' : ''].filter(Boolean).join(' ');
     this.setState(s => ({ kfBusy: { ...s.kfBusy, [key]: true }, gen: { ...s.gen, error: '' } }));
     try {
       const src = await window.SOLVED_IMAGE_GEN({ prompt, references: refs.slice(0, 8), ...(opts || {}), aspect: '16:9' });
@@ -2199,9 +2364,297 @@ class Component extends DCLogic {
     return name || `${CFG[page].one} ${n}`;
   }
 
+  // ================= Storyboards · Videos · Editing · Delivery · Library =================
+  saveX(k) { idb.set(k, this.state[k]).catch(() => this.setErr('Couldn’t save — browser storage is unavailable.')); }
+  setX(k, fn) { this.setState(s => ({ [k]: fn(s[k] || []) }), () => this.saveX(k)); }
+  loadX() {
+    idb.getMany(['videos', 'edits', 'deliveries', 'timeline']).then(([v, e, d, t]) => this.setState({ videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], xLoaded: true }))
+      .catch(() => this.setState({ xLoaded: true }));
+  }
+  briefText() { const V = this.state.values || {}; return OV.map(([k]) => (V[k] || '').trim() ? k.charAt(0) + k.slice(1).toLowerCase() + ': ' + V[k].trim().slice(0, 600) : '').filter(Boolean).join('\n'); }
+  storyStyle() { const L = (this.state.styles || []); return L.find(s => s.status === 'approved') || L.find(s => !s.auto) || L[0] || null; }
+  imgOfView(x) { const v = x && (x.views || []).find(y => y && y.source === 'uploaded') || x && (x.views || []).find(Boolean); return v ? this.state.imgs[v.img] || '' : ''; }
+  storyboardRefs() {
+    const S = this.state, st = this.storyStyle(), out = [];
+    const styleSrc = st ? ((st.frames || [])[st.hero] || (st.frames || [])[0] || {}).src : '';
+    (S.products || []).filter(p => (p.kind || 'product') === 'product').slice(0, 2).forEach(p => out.push(this.imgOfView(p)));
+    (S.store.TALENT || []).slice(0, 2).forEach(c => { out.push(c.main || (c.sheet || {}).front || ''); this.wardrobeRefs(c).slice(0, 1).forEach(w => out.push(w)); });
+    (S.locations || []).filter(l => (l.sect || 'location') === 'location').slice(0, 1).forEach(l => { out.push(this.imgOfView(l)); this.setRefs(l).slice(0, 1).forEach(x => out.push(x)); });
+    if (styleSrc) out.push(styleSrc);
+    return [...new Set(out.filter(Boolean))].slice(0, 8);
+  }
+  storyContext() {
+    const S = this.state, st = this.storyStyle();
+    const names = (arr, f) => arr.map(f).filter(Boolean).join(', ');
+    return [this.briefText() ? 'Project brief:\n' + this.briefText() : '',
+      'Products: ' + (names((S.products || []).filter(p => (p.kind || 'product') === 'product'), p => p.name) || 'none'),
+      'Characters: ' + (names(S.store.TALENT || [], c => [c.name, (c.profile || {}).Role].filter(Boolean).join(' (') + ((c.profile || {}).Role ? ')' : '')) || 'none'),
+      'Locations: ' + (names((S.locations || []).filter(l => (l.sect || 'location') === 'location'), l => l.name) || 'none'),
+      st ? 'Visual style: ' + (st.desc || st.name) : ''].filter(Boolean).join('\n');
+  }
+  async writeFrames() {
+    if (this.state.sbBusy) return;
+    if (!window.claude || typeof window.claude.complete !== 'function') return this.setErr('The writing assistant isn’t available.');
+    this.setState({ sbBusy: 'writing', sbConfirm: false }); this.setErr('');
+    try {
+      const txt = await window.claude.complete({ max_tokens: 1800, messages: [{ role: 'user', content: 'You are a commercial director writing a 6-frame storyboard.\n' + this.storyContext() +
+        '\n\nWrite exactly 6 frames that tell the spot from opening to product hero/end card. Feature the products and characters by name. Return ONLY JSON: [{"name": 2-4 word frame title, "desc": one sentence describing the image, "size": shot size, "angle": camera angle, "move": camera move, "action": what happens}] with 6 items.' }] });
+      const m = String(txt).match(/\[[\s\S]*\]/); const arr = m ? JSON.parse(m[0]) : null;
+      if (!Array.isArray(arr) || !arr.length) throw new Error('no frames came back');
+      const list = arr.slice(0, 6).map((f, i) => ({ n: i + 1, name: String(f.name || 'Frame ' + (i + 1)).slice(0, 40), desc: String(f.desc || ''), fields: { size: f.size || '', angle: f.angle || '', move: f.move || '', action: f.action || '' } }));
+      const kfImg = {}; this.setItems('KEYFRAMES', list); this.setState({ kfImg }); try { localStorage.setItem('solved-kf', '{}'); } catch (e) {}
+    } catch (e) { this.setErr('Frames weren’t written — ' + (e && e.message ? e.message : 'unknown error') + '.'); }
+    finally { this.setState({ sbBusy: null }); }
+  }
+  async genAllFrames() {
+    if (this.state.sbBusy) return;
+    const list = (this.state.items.KEYFRAMES || []).filter(t => !(this.state.kfImg[t.n + '-main']));
+    if (!list.length) return this.setErr('Every frame already has an image. Open a frame to regenerate it.');
+    this.setState({ sbBusy: 'generating' });
+    const q = list.slice(), opts = this.secOpts('KEYFRAMES', 'sheet');
+    const worker = async () => { while (q.length) { const t = q.shift(); await this.genKf(t.n + '-main', this.shotPrompt(t), opts); } };
+    await Promise.all([worker(), worker()]);
+    this.setState({ sbBusy: null });
+  }
+  // ---- videos
+  frameSrc(n) { return this.state.kfImg[n + '-main'] || this.state.kfImg[n + '-start'] || ''; }
+  newVideo(patch) { return { uid: uid(), name: 'Video', frameN: null, start: '', end: '', prompt: '', duration: 5, status: 'idle', url: '', error: '', approved: false, at: Date.now(), ...patch }; }
+  videoFromFrame(n, run) {
+    const t = (this.state.items.KEYFRAMES || []).find(x => x.n === n); if (!t) return;
+    const src = this.frameSrc(n); if (!src) return this.setErr('Generate the frame image first, then make its video.');
+    const ex = (this.state.videos || []).find(v => v.frameN === n);
+    const v = ex || this.newVideo({ name: t.name, frameN: n, start: src, prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') });
+    if (!ex) this.setX('videos', a => [...a, v]);
+    this.setState({ page: 'VIDEOS', view: 'all', item: null });
+    if (run) setTimeout(() => this.runVideo(v.uid), 50);
+  }
+  videosFromStoryboard() {
+    const frames = (this.state.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n));
+    if (!frames.length) return this.setErr('Generate storyboard frames first (Images → Storyboards).');
+    const have = new Set((this.state.videos || []).map(v => v.frameN));
+    const add = frames.filter(t => !have.has(t.n)).map(t => this.newVideo({ name: t.name, frameN: t.n, start: this.frameSrc(t.n), prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') }));
+    this.setX('videos', a => [...a, ...add]); this.setErr(add.length ? '' : 'Every storyboard frame already has a video.');
+  }
+  updVideo(id, fn) { this.setX('videos', a => a.map(v => (v.uid === id ? fn({ ...v }) : v))); }
+  async runVideo(id) {
+    const v = (this.state.videos || []).find(x => x.uid === id); if (!v || v.status === 'running') return;
+    const HF = window.SOLVED_HF; if (!HF || !HF.connected() || !HF.video) return this.updVideo(id, x => { x.error = 'Connect Higgsfield (bottom of the sidebar) to make videos.'; return x; });
+    if (!v.start) return this.updVideo(id, x => { x.error = 'Add a start frame first.'; return x; });
+    if (!(v.prompt || '').trim()) return this.updVideo(id, x => { x.error = 'Describe the shot first.'; return x; });
+    this.updVideo(id, x => { x.status = 'running'; x.error = ''; x.note = 'Starting'; return x; });
+    try {
+      const url = await HF.video({ image: v.start, lastImage: v.end || undefined, prompt: v.prompt, duration: v.duration, onStatus: s => this.updVideo(id, x => { x.note = s; return x; }) });
+      let keep = url; try { const r = await fetch(url); if (r.ok) { const b = await r.blob(); keep = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); } } catch (e) {}
+      this.updVideo(id, x => { x.status = 'done'; x.url = keep; x.note = ''; x.at = Date.now(); return x; });
+      this.recordUsage('VIDEOS', 'Videos · ' + v.name);
+    } catch (e) { this.updVideo(id, x => { x.status = 'failed'; x.error = e && e.message ? e.message : 'Video failed.'; x.note = ''; return x; }); }
+  }
+  // ---- editing
+  allImages() { return this.projectFiles().filter(f => f.kind === 'image'); }
+  async bake(src, { filter, rotate, flip, ratio } = {}) {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => res(i); i.onerror = () => rej(new Error('image could not be loaded')); i.src = src; });
+    let w = img.naturalWidth, h = img.naturalHeight, sx = 0, sy = 0, sw = w, sh = h;
+    if (ratio) { const [a, b] = ratio.split(':').map(Number), r = a / b; if (w / h > r) { sw = Math.round(h * r); sx = Math.round((w - sw) / 2); } else { sh = Math.round(w / r); sy = Math.round((h - sh) / 2); } }
+    const rot = ((rotate || 0) % 360 + 360) % 360, c = document.createElement('canvas');
+    c.width = rot % 180 ? sh : sw; c.height = rot % 180 ? sw : sh;
+    const x = c.getContext('2d'); x.translate(c.width / 2, c.height / 2); x.rotate(rot * Math.PI / 180); if (flip) x.scale(-1, 1);
+    if (filter) x.filter = filter; x.drawImage(img, sx, sy, sw, sh, -sw / 2, -sh / 2, sw, sh);
+    return c.toDataURL('image/jpeg', 0.92);
+  }
+  addEdit(e) { this.setX('edits', a => [{ uid: uid(), at: Date.now(), ...e }, ...a]); }
+  async edLocal(op) {
+    const E = this.state.ed || {}; if (!E.src) return;
+    const adj = E.adj || { b: 100, c: 100, s: 100 };
+    try {
+      const out = await this.bake(E.src, op === 'adjust' ? { filter: 'brightness(' + adj.b + '%) contrast(' + adj.c + '%) saturate(' + adj.s + '%)' } : op === 'rotate' ? { rotate: 90 } : op === 'flip' ? { flip: true } : { ratio: op });
+      this.addEdit({ kind: 'image', name: (E.name || 'Image') + ' · ' + ({ adjust: 'adjusted', rotate: 'rotated', flip: 'flipped' }[op] || 'crop ' + op), src: out, from: E.name || '' });
+      this.setState({ ed: { ...E, src: out, name: (E.name || 'Image') + ' (edited)', adj: { b: 100, c: 100, s: 100 } } });
+    } catch (e) { this.setErr('Edit failed — ' + e.message + '.'); }
+  }
+  async edAI(tool) {
+    const E = this.state.ed || {}; if (!E.src || this.state.edBusy) return;
+    const HF = window.SOLVED_HF; if (!HF || !HF.connected()) return this.setErr('Connect Higgsfield (bottom of the sidebar) to use AI tools.');
+    const P = {
+      prompt: [(E.text || '').trim(), 'Edit the reference image as described. Keep everything else identical: subject identity, product details, composition, lighting and colors.'],
+      removebg: ['Remove the background completely. Keep the subject exactly as it is, cleanly cut out, on a pure white seamless background (#ffffff).'],
+      upscale: ['Recreate this exact image at the highest resolution with crisp fine detail. Change nothing about content, composition, colors or framing.'],
+      relight: ['Relight this exact image with ' + ((E.text || '').trim() || 'soft, flattering cinematic key light and gentle rim light') + '. Keep subject, composition and details identical.'],
+      expand169: ['Extend this image outward to a wider 16:9 frame. Keep the original image content identical and continue the scene naturally on the sides.'],
+      expand916: ['Extend this image to a tall 9:16 frame. Keep the original content identical and continue the scene naturally above and below.'],
+    }[tool];
+    if (!P || (tool === 'prompt' && !(E.text || '').trim())) return this.setErr('Describe the change first.');
+    this.setState({ edBusy: tool }); this.setErr('');
+    try {
+      const url = await HF.generate({ prompt: P.filter(Boolean).join(' '), references: [E.src], aspect: tool === 'expand169' ? '16:9' : tool === 'expand916' ? '9:16' : 'auto', resolution: tool === 'upscale' ? '4k' : undefined });
+      const label = { prompt: 'edited', removebg: 'no background', upscale: '4K upscale', relight: 'relit', expand169: '16:9 expand', expand916: '9:16 expand' }[tool];
+      this.addEdit({ kind: 'image', name: (E.name || 'Image') + ' · ' + label, src: url, from: E.name || '' });
+      this.setState({ ed: { ...E, src: url, name: (E.name || 'Image') + ' (' + label + ')' } });
+      this.recordUsage('EDITING', 'Image Editor · ' + label);
+    } catch (e) { this.setErr('AI edit failed — ' + (e && e.message ? e.message : 'unknown error') + '.'); }
+    finally { this.setState({ edBusy: null }); }
+  }
+  async exportTimeline() {
+    const S = this.state, clips = (S.timeline || []).map(t => ({ t, v: (S.videos || []).find(v => v.uid === t.vid) })).filter(x => x.v && x.v.url);
+    if (!clips.length) return this.setErr('Add finished videos to the timeline first.');
+    if (typeof MediaRecorder === 'undefined') return this.setErr('This browser can’t export video. Try Chrome.');
+    this.setState({ vxBusy: 'Exporting 0%' }); this.setErr('');
+    try {
+      const vid = document.createElement('video'); vid.muted = true; vid.playsInline = true; vid.crossOrigin = 'anonymous';
+      const c = document.createElement('canvas'); c.width = 1280; c.height = 720; const x = c.getContext('2d');
+      const rec = new MediaRecorder(c.captureStream(30), { mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm' }), chunks = [];
+      rec.ondataavailable = e => e.data.size && chunks.push(e.data); rec.start();
+      const total = clips.reduce((n, { t, v }) => n + Math.max(0.5, (t.out || 99) - (t.in || 0)), 0); let done = 0;
+      for (const { t, v } of clips) {
+        vid.src = v.url; await new Promise((res, rej) => { vid.onloadedmetadata = res; vid.onerror = () => rej(new Error('a clip could not be loaded')); });
+        const a = Math.max(0, t.in || 0), b = Math.min(vid.duration || 99, t.out || vid.duration || 99);
+        vid.currentTime = a; await new Promise(r => { vid.onseeked = r; }); await vid.play();
+        await new Promise(r => { const tick = () => { const k = Math.min(c.width / vid.videoWidth, c.height / vid.videoHeight) || 1, w = vid.videoWidth * k, h = vid.videoHeight * k;
+          x.fillStyle = '#000'; x.fillRect(0, 0, c.width, c.height); x.drawImage(vid, (c.width - w) / 2, (c.height - h) / 2, w, h);
+          this.setState({ vxBusy: 'Exporting ' + Math.min(99, Math.round((done + vid.currentTime - a) / total * 100)) + '%' });
+          if (vid.currentTime >= b || vid.ended) { vid.pause(); r(); } else requestAnimationFrame(tick); }; tick(); });
+        done += b - a;
+      }
+      rec.stop(); await new Promise(r => { rec.onstop = r; });
+      const blob = new Blob(chunks, { type: 'video/webm' }), src = await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(blob); });
+      this.addEdit({ kind: 'video', name: 'Edit ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' + clips.length + ' clips', src });
+      this.setState({ vxBusy: null });
+    } catch (e) { this.setState({ vxBusy: null }); this.setErr('Export failed — ' + (e && e.message ? e.message : 'unknown error') + '. Clips from Higgsfield may need to finish saving first.'); }
+  }
+  // ---- every file in this project, in nav order
+  projectFiles() {
+    const S = this.state, I = S.imgs || {}, out = [], add = (section, name, src, kind, extra) => src && out.push({ id: section + ':' + out.length, section, name, src, kind: kind || 'image', ...(extra || {}) });
+    (S.bdocs || []).forEach(d => { if (d && (d.data || d.url)) add('Brief', d.name || 'Document', d.data || d.url, 'doc'); });
+    (S.products || []).filter(p => (p.kind || 'product') === 'product').forEach(p => (p.views || []).forEach((v, i) => v && add('Products', p.name + ' · ' + vlabel(p.type, i), I[v.img])));
+    (S.store.TALENT || []).forEach(c => { const sh = c.sheet || {}; Object.keys(sh).forEach(k => add('Characters', c.name + ' · ' + ((SHEET.find(x => x[0] === k) || [k, k])[1]), sh[k])); });
+    (S.products || []).filter(p => p.kind === 'wardrobe').forEach(p => (p.views || []).forEach((v, i) => v && add('Wardrobe', p.name + ' · ' + vlabel(p.type, i), I[v.img])));
+    (S.locations || []).filter(l => (l.sect || 'location') === 'location').forEach(l => (l.views || []).forEach((v, i) => v && add('Locations', l.name + ' · ' + (LAI[i] || 'View'), I[v.img])));
+    (S.locations || []).filter(l => l.sect === 'set').forEach(l => (l.views || []).forEach((v, i) => v && add('Set design', l.name + ' · ' + (LAI[i] || 'View'), I[v.img])));
+    (S.items.KEYFRAMES || []).forEach(t => add('Storyboards', t.name, this.frameSrc(t.n)));
+    (S.videos || []).forEach(v => v.status === 'done' && add('Videos', v.name, v.url, 'video'));
+    (S.edits || []).forEach(e => add('Editing', e.name, e.src, e.kind));
+    return out;
+  }
+  async loadZip() {
+    if (window.JSZip) return window.JSZip;
+    await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'; s.onload = res; s.onerror = () => rej(new Error('ZIP tool could not load')); document.head.appendChild(s); });
+    return window.JSZip;
+  }
+  async buildZip(files) {
+    const JSZip = await this.loadZip(), zip = new JSZip(), used = {};
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i]; this.setState({ dlBusy: 'Packing ' + (i + 1) + ' of ' + files.length });
+      try { const b = await (await fetch(f.src)).blob(); const ext = (b.type.split('/')[1] || 'bin').replace('jpeg', 'jpg').replace(/;.*/, '').replace('quicktime', 'mov');
+        let nm = (f.section + '/' + f.name).replace(/[\\:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim(); const key = nm.toLowerCase(); used[key] = (used[key] || 0) + 1; if (used[key] > 1) nm += ' ' + used[key];
+        zip.file(nm + '.' + ext, b); } catch (e) {}
+    }
+    return zip.generateAsync({ type: 'blob' });
+  }
+  projName() { return ((this.state.values || {})['PROJECT NAME'] || 'SOLVED project').trim() || 'SOLVED project'; }
+  async deliverZip() {
+    const files = this.dlFiles(); if (!files.length) return this.setErr('Select at least one file.');
+    this.setErr('');
+    try { const blob = await this.buildZip(files), name = this.projName().replace(/[^\w -]+/g, '').replace(/\s+/g, '-') + '-delivery.zip';
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+      this.setX('deliveries', d => [{ uid: uid(), at: Date.now(), dest: 'ZIP download', name, count: files.length }, ...d]);
+    } catch (e) { this.setErr('ZIP failed — ' + e.message + '.'); }
+    finally { this.setState({ dlBusy: null }); }
+  }
+  async deliverLink() {
+    const files = this.dlFiles(); if (!files.length) return this.setErr('Select at least one file.');
+    const sync = window.__solvedSync, sb = sync && sync.client; if (!sb) return this.setErr('Sign in to create share links.');
+    this.setErr('');
+    try { const { data } = await sb.auth.getUser(); const u = data && data.user; if (!u) throw new Error('sign in first');
+      const blob = await this.buildZip(files); this.setState({ dlBusy: 'Uploading' });
+      const name = this.projName().replace(/[^\w -]+/g, '').replace(/\s+/g, '-') + '-' + Date.now() + '.zip', path = u.id + '/deliveries/' + name;
+      const up = await sb.storage.from('project-files').upload(path, blob, { contentType: 'application/zip' }); if (up.error) throw up.error;
+      const sg = await sb.storage.from('project-files').createSignedUrl(path, 7 * 24 * 3600); if (sg.error) throw sg.error;
+      try { await navigator.clipboard.writeText(sg.data.signedUrl); } catch (e) {}
+      this.setX('deliveries', d => [{ uid: uid(), at: Date.now(), dest: 'Share link', name, count: files.length, url: sg.data.signedUrl, expires: Date.now() + 7 * 864e5 }, ...d]);
+    } catch (e) { this.setErr('Share link failed — ' + (e && e.message ? e.message : 'unknown error') + '.'); }
+    finally { this.setState({ dlBusy: null }); }
+  }
+  dlFiles() { const sel = this.state.dlSel; const all = this.projectFiles(); return sel ? all.filter(f => sel[f.section + '|' + f.name + '|' + f.src.length]) : all; }
+  buildX(v) {
+    const S = this.state, page = S.page, stop = e => { if (e && e.stopPropagation) e.stopPropagation(); };
+    const fit = src => Object.assign(bgOf(src), { backgroundSize: 'contain', backgroundRepeat: 'no-repeat' });
+    const X = { sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
+    if (X.sbOn) {
+      const n = (S.items.KEYFRAMES || []).length, made = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n)).length, st = this.storyStyle();
+      Object.assign(X, { sbInfo: made + ' of ' + n + ' frames generated · Style: ' + (st ? st.name : 'none'), sbBusy: !!S.sbBusy,
+        sbWriteLabel: S.sbBusy === 'writing' ? 'Writing frames…' : S.sbConfirm ? 'Click again to replace all frames' : 'Write frames from the brief',
+        sbWrite: () => { if (n && !S.sbConfirm && (S.items.KEYFRAMES || []).some(t => this.frameSrc(t.n) || t.desc)) return this.setState({ sbConfirm: true }); this.writeFrames(); },
+        sbGenLabel: S.sbBusy === 'generating' ? 'Generating frames…' : 'Generate all frames', sbGen: () => this.genAllFrames(),
+        sbVideos: () => { this.videosFromStoryboard(); this.setState({ page: 'VIDEOS', view: 'all', item: null }); } });
+    }
+    if (X.vidOn) {
+      const V = S.videos || [], FR = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n));
+      Object.assign(X, { vCount: String(V.length), vEmpty: !V.length,
+        vFromSb: () => this.videosFromStoryboard(), vManual: () => this.setX('videos', a => [...a, this.newVideo({ name: 'Video ' + (a.length + 1) })]),
+        vFrameCount: FR.length + ' storyboard frame' + (FR.length === 1 ? '' : 's') + ' ready',
+        vids: V.map(x => { const set = k => e => { const val = e.target.value; this.updVideo(x.uid, y => { y[k] = k === 'duration' ? +val : val; return y; }); };
+          return { name: x.name, done: x.status === 'done' && !!x.url, url: x.url, notDone: !(x.status === 'done' && x.url), hasStart: !!x.start, startBg: fit(x.start || ''),
+            running: x.status === 'running', note: x.status === 'running' ? (x.note || 'Rendering') + '…' : x.error || (x.status === 'done' ? 'Ready' : x.frameN ? 'From storyboard frame ' + x.frameN : 'Manual video'),
+            noteColor: x.error ? '#ef6b61' : x.status === 'done' ? '#00BE50' : '#a3a3a3', prompt: x.prompt, setPrompt: set('prompt'), rename: set('name'), duration: String(x.duration || 5), setDuration: set('duration'),
+            goLabel: x.status === 'running' ? 'Rendering…' : x.status === 'done' ? 'Regenerate video' : 'Make video', go: () => this.runVideo(x.uid),
+            pickStart: () => this.pick('vstart:' + x.uid), dropStart: this.dropTo('vstart:' + x.uid),
+            approveLabel: x.approved ? 'Approved' : 'Not approved', approveCls: x.approved ? 'ds-btn ds-on' : 'ds-btn', toggleApprove: () => this.updVideo(x.uid, y => { y.approved = !y.approved; return y; }),
+            del: () => this.setX('videos', a => a.filter(y => y.uid !== x.uid)), toTimeline: () => { this.setX('timeline', a => [...a, { id: uid(), vid: x.uid, in: 0, out: x.duration || 5 }]); this.setState({ page: 'EDITING', edTool: 'video' }); },
+            canEdit: x.status === 'done' && !!x.url }; }) });
+    }
+    if (X.edHub) X.tools = [['image', 'Image Editor', 'Edit images with AI: change by prompt, remove background, upscale, relight, expand. Crop, rotate and adjust.'], ['video', 'Video Editor', 'Put your videos in order, trim them and export one edit.'],
+      ['', 'Motion Designer', 'Coming soon'], ['', '3D Animator', 'Coming soon'], ['', 'Sound Designer', 'Coming soon'], ['', 'Colorist', 'Coming soon']]
+      .map(([k, name, desc]) => ({ name, desc, live: !!k, soon: !k, cls: k ? 'x-tool' : 'x-tool x-soon', open: () => k && this.setState({ edTool: k }) }));
+    if (X.edImg) {
+      const imgs = this.allImages(), E = S.ed || {}, adj = E.adj || { b: 100, c: 100, s: 100 };
+      Object.assign(X, { edPicks: imgs.map(f => ({ name: f.section + ' · ' + f.name, bg: bgOf(f.src), line: E.src === f.src ? '#00BE50' : 'transparent', pick: () => this.setState({ ed: { src: f.src, name: f.name, adj: { b: 100, c: 100, s: 100 } } }) })),
+        edNone: !imgs.length, edHas: !!E.src, edEmpty: !E.src, edSrc: E.src || '', edName: E.name || '', edBusy: !!S.edBusy, edBusyLabel: S.edBusy ? 'Working… this takes about a minute' : '',
+        edFilter: 'brightness(' + adj.b + '%) contrast(' + adj.c + '%) saturate(' + adj.s + '%)',
+        edText: E.text || '', setEdText: e => { const val = e.target.value; this.setState(s => ({ ed: { ...(s.ed || {}), text: val } })); },
+        sliders: [['b', 'Brightness'], ['c', 'Contrast'], ['s', 'Saturation']].map(([k, label]) => ({ label, value: String(adj[k]), set: e => { const val = +e.target.value; this.setState(s => ({ ed: { ...(s.ed || {}), adj: { ...((s.ed || {}).adj || { b: 100, c: 100, s: 100 }), [k]: val } } })); } })),
+        ai: [['prompt', 'Apply prompt edit'], ['removebg', 'Remove background'], ['upscale', 'Upscale to 4K'], ['relight', 'Relight'], ['expand169', 'Expand to 16:9'], ['expand916', 'Expand to 9:16']].map(([k, label]) => ({ label, run: () => this.edAI(k), cls: S.edBusy === k ? 'ds-btn ds-on' : 'ds-btn' })),
+        local: [['adjust', 'Apply adjustments'], ['rotate', 'Rotate 90°'], ['flip', 'Flip'], ['1:1', 'Crop 1:1'], ['16:9', 'Crop 16:9'], ['9:16', 'Crop 9:16'], ['4:5', 'Crop 4:5']].map(([k, label]) => ({ label, run: () => this.edLocal(k) })),
+        edDownload: () => { const a = document.createElement('a'); a.href = E.src; a.download = (E.name || 'image').replace(/\W+/g, '-') + '.jpg'; document.body.appendChild(a); a.click(); a.remove(); },
+        edBack: () => this.setState({ edTool: null }) });
+    }
+    if (X.edVid) {
+      const V = (S.videos || []).filter(x => x.status === 'done' && x.url), T = S.timeline || [];
+      const upd = (id, fn) => this.setX('timeline', a => a.map(t => (t.id === id ? fn({ ...t }) : t)));
+      Object.assign(X, { vxBack: () => this.setState({ edTool: null }), vxAvail: V.map(x => ({ name: x.name, url: x.url, add: () => this.setX('timeline', a => [...a, { id: uid(), vid: x.uid, in: 0, out: x.duration || 5 }]) })), vxNone: !V.length,
+        clips: T.map((t, i) => { const x = (S.videos || []).find(y => y.uid === t.vid) || {}; return { n: String(i + 1), name: x.name || 'Missing clip', url: x.url || '', inV: String(t.in || 0), outV: String(t.out || x.duration || 5), w: Math.max(80, ((t.out || 5) - (t.in || 0)) * 40) + 'px',
+          setIn: e => { const val = Math.max(0, +e.target.value || 0); upd(t.id, y => { y.in = val; return y; }); }, setOut: e => { const val = Math.max(0.5, +e.target.value || 0); upd(t.id, y => { y.out = val; return y; }); },
+          left: () => i > 0 && this.setX('timeline', a => { const b = a.slice(); [b[i - 1], b[i]] = [b[i], b[i - 1]]; return b; }), right: () => i < T.length - 1 && this.setX('timeline', a => { const b = a.slice(); [b[i + 1], b[i]] = [b[i], b[i + 1]]; return b; }),
+          remove: () => this.setX('timeline', a => a.filter(y => y.id !== t.id)), play: () => this.setState({ vxPlay: x.url, vxIn: t.in || 0 }) }; }),
+        tlEmpty: !T.length, tlTotal: T.reduce((n, t) => n + Math.max(0, (t.out || 5) - (t.in || 0)), 0).toFixed(1) + ' s', vxPlay: S.vxPlay || '', vxHasPlay: !!S.vxPlay,
+        vxExport: () => this.exportTimeline(), vxBusy: !!S.vxBusy, vxLabel: S.vxBusy || 'Export edit (WebM)' });
+    }
+    if (X.dlOn || X.libOn) {
+      const all = this.projectFiles(), key = f => f.section + '|' + f.name + '|' + f.src.length, sel = S.dlSel;
+      const sections = ['Brief', 'Products', 'Characters', 'Wardrobe', 'Locations', 'Set design', 'Storyboards', 'Videos', 'Editing'];
+      const groups = sections.map(sec => { const fs = all.filter(f => f.section === sec); return { title: sec, count: String(fs.length), has: fs.length > 0,
+        files: fs.map(f => { const on = !sel || !!sel[key(f)]; return { name: f.name, isImg: f.kind === 'image', isVid: f.kind === 'video', isDoc: f.kind === 'doc', src: f.src, bg: fit(f.src), mark: on ? '✓' : '', line: on ? '#00BE50' : '#303030',
+          toggle: () => this.setState(s => { const cur = s.dlSel || Object.fromEntries(all.map(g => [key(g), true])); const n = { ...cur }; if (n[key(f)]) delete n[key(f)]; else n[key(f)] = true; return { dlSel: n }; }),
+          download: e => { stop(e); const a = document.createElement('a'); a.href = f.src; a.download = (f.name || 'file').replace(/[^\w .-]+/g, ''); a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); } }; }) }; }).filter(g => g.has);
+      const nSel = sel ? all.filter(f => sel[key(f)]).length : all.length;
+      Object.assign(X, { fgroups: groups, fNone: !all.length, fTotal: String(all.length), nSel: nSel + ' of ' + all.length + ' files selected',
+        selAll: () => this.setState({ dlSel: null }), selNone: () => this.setState({ dlSel: {} }), dlBusy: !!S.dlBusy, dlBusyLabel: S.dlBusy || '',
+        dests: [['zip', 'ZIP download', 'Download the selected files as one ZIP, organized by section.', 'Download ZIP', () => this.deliverZip(), true],
+          ['link', 'Client share link', 'Upload a ZIP and copy a private link that works for 7 days.', 'Create link', () => this.deliverLink(), true],
+          ['gdrive', 'Google Drive', 'Send files to a Drive folder.', 'Needs connection', () => this.setErr('Google Drive needs an account connection. It’s next on the build list.'), false],
+          ['dropbox', 'Dropbox', 'Send files to a Dropbox folder.', 'Needs connection', () => this.setErr('Dropbox needs an account connection. It’s next on the build list.'), false],
+          ['frameio', 'Frame.io', 'Send files to a Frame.io project for review.', 'Needs connection', () => this.setErr('Frame.io needs an account connection. It’s next on the build list.'), false]]
+          .map(([k, name, desc, btn, run, live]) => ({ name, desc, btn, run, cls: live ? 'ds-btn ds-on' : 'ds-btn' })),
+        history: (S.deliveries || []).map(d => ({ line: new Date(d.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' · ' + d.dest + ' · ' + d.count + ' files', url: d.url || '', hasUrl: !!d.url && (!d.expires || d.expires > Date.now()),
+          copy: () => { try { navigator.clipboard.writeText(d.url); } catch (e) {} } })), hasHistory: (S.deliveries || []).length > 0,
+        libGrid: (S.libView || 'grid') === 'grid', libList: S.libView === 'list', setGrid: () => this.setState({ libView: 'grid' }), setList: () => this.setState({ libView: 'list' }),
+        gridCls: (S.libView || 'grid') === 'grid' ? 'ds-btn ds-on' : 'ds-btn', listCls: S.libView === 'list' ? 'ds-btn ds-on' : 'ds-btn' });
+    }
+    return X;
+  }
   renderVals() {
     const v = this.renderVals0();
     const ds = this.buildDs(v);
+    v.x = this.buildX(v);
+    if (v.g && v.g.cards && this.state.page === 'KEYFRAMES') { const L = this.state.items.KEYFRAMES || []; v.g = { ...v.g, cards: v.g.cards.map((c, i) => { const t = L[i]; return { ...c, hasVideo: !!(t && this.frameSrc(t.n)), makeVideo: e => { if (e && e.stopPropagation) e.stopPropagation(); if (t) this.videoFromFrame(t.n, false); } }; }) }; }
     v.ds = ds; v.oldCharSheet = v.isSheet && !ds.on;
     if (v.g) v.g = { ...v.g, isDetailOld: v.g.isDetail && !ds.on };
     if (ds.on && ds.nav) Object.assign(v, ds.nav);
@@ -2310,7 +2763,7 @@ class Component extends DCLogic {
   renderVals0() {
     const { page, view, item, values, items, prompt, mode, store, create, gen, attach, tab, varCat, sheetRun } = this.state;
     const cfg = CFG[page] || {}, pg = page.toLowerCase();
-    const isHub = page === 'IMAGES', isSoon = !!SOON_PAGES[page];
+    const isHub = page === 'IMAGES', isSoon = false, isXPage = !!SOON_PAGES[page];
     const isOverview = page === 'BRIEF', isBlank = page === 'OVERVIEW', isTalent = page === 'TALENT', isShotsPage = page === 'KEYFRAMES';
     const pkind = page === 'WARDROBE' ? 'wardrobe' : 'product';
     const isProduct = page === 'PRODUCT' || page === 'WARDROBE', isLocation = page === 'LOCATION' || page === 'SETDESIGN';
@@ -2449,8 +2902,8 @@ class Component extends DCLogic {
       nav: SIDE_NAV.map(([p, label]) => ({ label, mb: (p === 'OVERVIEW' || p === 'DELIVERY') ? '20px' : '0px', color: (p === page || (p === 'IMAGES' && IMAGE_PAGES.includes(page))) ? '#00BE50' : '#929292',
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
 
-      crumbRoot: (isOverview || isBlank || isSoon) ? 'PROJECT' : isHub ? 'IMAGES' : page === 'STYLE' ? 'STORYBOARDS' : page === 'KEYFRAMES' ? 'STORYBOARDS' : page === 'PRODUCT' ? 'PRODUCTS' : page === 'LOCATION' ? 'LOCATIONS' : page === 'SETDESIGN' ? 'SET DESIGN' : page === 'TALENT' ? 'CHARACTERS' : page, crumbSep: '/',
-      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? 'ALL' : isSoon ? page : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : inDetail ? curItem.name : 'ALL',
+      crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : isHub ? 'IMAGES' : page === 'STYLE' ? 'STORYBOARDS' : page === 'KEYFRAMES' ? 'STORYBOARDS' : page === 'PRODUCT' ? 'PRODUCTS' : page === 'LOCATION' ? 'LOCATIONS' : page === 'SETDESIGN' ? 'SET DESIGN' : page === 'TALENT' ? 'CHARACTERS' : page, crumbSep: '/',
+      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? 'ALL' : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : inDetail ? curItem.name : 'ALL',
       leafColor: (isTalent || isProduct || isLocation || isStyle) ? '#00BE50' : '#f5f5f5',
       rootCursor: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'pointer' : 'default',
       rootUnderline: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'underline' : 'none',
@@ -2468,7 +2921,7 @@ class Component extends DCLogic {
           hfFields: [['account', 'ACCOUNT LABEL', 'text', ''], ['model', 'IMAGE MODEL', 'text', 'gpt_image_2_5'], ['quality', 'QUALITY (low · medium · high · xhigh · max)', 'text', 'high'], ['resolution', 'RESOLUTION (1k · 2k · 4k)', 'text', '1k']]
             .map(([k, label, type, ph]) => ({ label, type, ph, value: (d && d[k]) || '', set: setD(k) })) }; })(),
       barW: '100%',
-      pageHint: (isSoon ? SOON_PAGES[page][0] : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Choose an image category', KEYFRAMES: inDetail ? 'Create your storyboard frame' : 'Create your storyboard frames' })[page]
+      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SOON_PAGES[page][0]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Choose an image category', KEYFRAMES: inDetail ? 'Create your storyboard frame' : 'Create your storyboard frames' })[page]
         || (isStyleEdit ? 'Create your style' : isStyleAll ? 'Choose a style for your storyboard'
         : isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
         : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Create your wardrobe images' : 'Create your product images')
@@ -2535,7 +2988,9 @@ class Component extends DCLogic {
         const imgCount = T.length + PR.length + LC.length + WR.length + SE.length;
         const dash = [rows[0],
           ['IMAGES', 'IMAGES', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
-          ['VIDEOS', 'VIDEOS', 'Coming soon', '', ''], ['EDITING', 'EDITING', 'Coming soon', '', ''], ['DELIVERY', 'DELIVERY', 'Coming soon', '', '']];
+          ['VIDEOS', 'VIDEOS', (this.state.videos || []).length ? (this.state.videos || []).filter(x => x.status === 'done').length + ' of ' + (this.state.videos || []).length + ' videos made' : 'No videos yet', ((this.state.items.KEYFRAMES || []).map(t => this.frameSrc(t.n)).find(Boolean)) || '', ''],
+          ['EDITING', 'EDITING', (this.state.edits || []).length ? n((this.state.edits || []).length, 'edit') : 'Image and video editors', ((this.state.edits || []).find(e => e.kind === 'image') || {}).src || '', ''],
+          ['DELIVERY', 'DELIVERY', (this.state.deliveries || []).length ? n((this.state.deliveries || []).length, 'delivery') : 'Nothing sent yet', '', '']];
         return (isHub ? imgRows : dash).map(([pg, label, desc, img, ex]) => ({ label, desc, hasImg: !!img, bg: bgOf(img), hasExcerpt: !!ex, excerpt: ex, open: go(pg) }));
       })(),
       brief: (() => {
@@ -2615,7 +3070,10 @@ class Component extends DCLogic {
           askDelete: e => { stop(e); this.setState({ castConfirm: a.uid }); },
           cancelDelete: e => { stop(e); this.setState({ castConfirm: null }); },
           doDelete: e => { stop(e); this.deleteAsset('TALENT', a.uid); this.setState({ castConfirm: null }); } }; }),
-      uploadNew: () => this.pick('newchar'),
+      uploadNew: () => this.setState({ castUp: true }),
+      castUpOpen: !!this.state.castUp, castUpClose: () => this.setState({ castUp: false }),
+      castUpPick: () => { this.setState({ castUp: false }); this.pick('newchar'); },
+      castUpDrop: e => { e.preventDefault(); e.stopPropagation(); this.setState({ castUp: false }); this.handleFiles('newchar', e.dataTransfer.files); },
       selRef: this.selRef, isLocAll: false, isLocSheet: false,
       stop: e => e.stopPropagation(),
       openLocPopup: () => this.setState({ locPopup: { step: 'type', files: [], url: '', prompt: '', ref: null } }),
@@ -3117,7 +3575,7 @@ class Component extends DCLogic {
         bg: varCat === c ? '#f5f5f5' : '#191919', color: varCat === c ? '#191919' : '#f5f5f5', pick: () => this.setState({ varCat: c }) })),
 
       // other sections (unchanged)
-      isLibrary: !isHub && !isSoon && !isOverview && !isBlank && !isTalent && !isProduct && !isLocation && !isStyle && !isShotsPage && !inDetail,
+      isLibrary: !isHub && !isXPage && !isOverview && !isBlank && !isTalent && !isProduct && !isLocation && !isStyle && !isShotsPage && !inDetail,
       isShots: false,
       isDetail: inDetail && !isShotsPage,
       isShotDetail: false,
@@ -3131,7 +3589,7 @@ class Component extends DCLogic {
       shotStart: curItem ? `${pg}-${curItem.n}-start` : '', shotEnd: curItem ? `${pg}-${curItem.n}-end` : '',
 
       // generation bar
-      showPrompt: !isHub && !isSoon && !isOverview && !isBlank && !isTalent && !isProduct && !isLocation && !isStyle && !isShotsPage,
+      showPrompt: !isHub && !isXPage && !isOverview && !isBlank && !isTalent && !isProduct && !isLocation && !isStyle && !isShotsPage,
       modes: ['generate', 'search'].map(md => ({ label: md.toUpperCase(), color: md === mode ? '#f5f5f5' : '#929292', pick: () => this.setState({ mode: md }) })),
       modeAction: gen.running ? (gen.status || 'GENERATING') : mode === 'generate' ? 'GENERATE' : 'SEARCH',
       ...(() => { const busy = gen.running || !!sheetRun || ((isProduct || isLocation) && pBusy) || (isCast && this.state.castBusy);
