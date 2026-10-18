@@ -31,6 +31,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="/studio/assets/a8fad9be-676a-442d-92f9-356dcc0e99ed.js"></script>
 <script defer src="/studio/assets/image-aspect.js?v=equal-height-2"></script>
+<style id="ds-css">
+.ds{width:100%;max-width:1100px;display:flex;flex-direction:column;gap:20px}
+.ds-sub{padding-bottom:14px;border-bottom:1px solid #303030;font:700 14px/20px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5}
+.ds-sub span{font-weight:400;color:#a3a3a3}
+.ds-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:24px;align-items:start}
+.ds-left{display:flex;flex-direction:column;gap:20px;min-width:0}
+.ds-photo{position:relative;width:320px;aspect-ratio:1 / 1;border-radius:6px;overflow:hidden;background:#202020}
+.ds-photo-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:#a3a3a3;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer}
+.ds-photo-busy{position:absolute;inset:0;background:#242424;animation:solvedPulse 1.2s ease-in-out infinite}
+.ds-icons{position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:6px}
+.ds-icon{width:32px;height:32px;border-radius:6px;background:rgba(25,25,25,.85);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#f5f5f5}
+.ds-icon:hover{background:#2a2a2a}
+.ds-icon.ds-danger{color:#ef6b61}
+.ds-confirm{position:absolute;left:8px;right:8px;bottom:8px;padding:10px;border-radius:6px;background:#191919;display:flex;align-items:center;justify-content:space-between;gap:8px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif}
+.ds-confirm b{cursor:pointer;color:#ef6b61}.ds-confirm i{font-style:normal;cursor:pointer;color:#a3a3a3}
+.ds-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ds-fields label{display:flex;flex-direction:column;gap:6px;min-width:0;font:700 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
+.ds-fields input,.ds-fields select{box-sizing:border-box;width:100%;height:40px;padding:0 10px;border:1px solid #202020;border-radius:6px;background:#202020;color:#f5f5f5;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;outline:none;color-scheme:dark}
+.ds-fields input:focus,.ds-fields select:focus{border-color:#00BE50}
+.ds-fields .ds-wide{grid-column:1 / -1}
+.ds-box{display:flex;flex-direction:column;gap:12px;padding-top:20px;border-top:1px solid #303030}
+.ds-box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;font:700 14px/20px 'Helvetica Neue',Helvetica,sans-serif}
+.ds-box-head span{font-weight:400;color:#a3a3a3}
+.ds-link{font:700 11px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#00BE50;cursor:pointer}
+.ds-tiles{display:grid;grid-template-columns:repeat(3,96px);gap:16px 16px}
+.ds-tile{display:flex;flex-direction:column;gap:6px;cursor:pointer;min-width:0}
+.ds-tile-img{position:relative;width:96px;height:96px;border-radius:6px;overflow:hidden;background:#202020}
+.ds-tile-add{width:96px;height:96px;box-sizing:border-box;border:1px dashed #555;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#00BE50;font:700 11px/14px 'Helvetica Neue',Helvetica,sans-serif;text-align:center}
+.ds-tile-add:hover{border-color:#00BE50}
+.ds-x{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:4px;background:#191919;color:#f5f5f5;display:flex;align-items:center;justify-content:center;font:700 12px/1 'Helvetica Neue',Helvetica,sans-serif}
+.ds-tile-name{font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-pick{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:8px;background:#141414}
+.ds-pick-hint{font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
+.ds-go{width:100%;height:48px;border:0;border-radius:6px;background:#00BE50;color:#0A0A0A;font:700 13px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer}
+.ds-go:hover:not(:disabled){background:#16d26a}.ds-go:disabled{background:#292929;color:#f5f5f5;cursor:progress}
+.ds-settings{display:flex;gap:8px;align-items:center;margin-top:-10px;font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
+.ds-settings select{height:28px;padding:0 6px;border:1px solid #303030;border-radius:5px;background:#191919;color:#f5f5f5;font:400 11px 'Helvetica Neue',Helvetica,sans-serif;color-scheme:dark}
+.ds-err{font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#ef6b61}
+.ds-right{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.ds-right-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px}
+.ds-right-head h2{margin:0;font:700 14px/20px 'Helvetica Neue',Helvetica,sans-serif}
+.ds-right-head small{font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;margin-left:8px}
+.ds-actions{display:flex;align-items:center;gap:8px}
+.ds-btn{height:32px;padding:0 14px;border-radius:6px;background:#202020;color:#f5f5f5;display:flex;align-items:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer}
+.ds-btn.ds-on{background:#00BE50;color:#0A0A0A}
+.ds-empty{min-height:520px;border-radius:6px;background:#202020;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px;color:#a3a3a3;font:400 14px/22px 'Helvetica Neue',Helvetica,sans-serif}
+.ds-empty b{display:block;color:#f5f5f5;font-weight:700;margin-bottom:6px}
+.ds-group{display:flex;flex-direction:column;gap:8px}
+.ds-group h3{margin:0;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
+.ds-views{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ds-view{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ds-view-img{position:relative;width:100%;border-radius:4px;overflow:hidden;background:#202020}
+.ds-view-busy{position:absolute;inset:0;background:#242424;animation:solvedPulse 1.2s ease-in-out infinite}
+.ds-view-label{font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){.ds-grid{grid-template-columns:1fr}.ds-right{position:static}.ds-views{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head>
 <body>
 <x-dc>
@@ -296,7 +352,78 @@ img[alt="SOLVED"]{filter:none}
       </div>
     </sc-if>
 
-    <sc-if value="{{ isSheet }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ ds.on }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Detail Sheet" class="ds">
+        <div class="ds-sub">{{ ds.title }} <span>{{ ds.subtitle }}</span></div>
+        <div class="ds-grid">
+          <div class="ds-left">
+            <div class="ds-photo" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ ds.dropPhoto }}">
+              <sc-if value="{{ ds.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="{{ ds.photoBg }}"></div></sc-if>
+              <sc-if value="{{ ds.noPhoto }}" hint-placeholder-val="{{ true }}"><div class="ds-photo-empty" sc-camel-on-click="{{ ds.replacePhoto }}">{{ ds.photoEmpty }}</div></sc-if>
+              <sc-if value="{{ ds.photoBusy }}" hint-placeholder-val="{{ false }}"><div class="ds-photo-busy"></div></sc-if>
+              <div class="ds-icons">
+                <div class="ds-icon" title="{{ ds.replaceLabel }}" aria-label="{{ ds.replaceLabel }}" sc-camel-on-click="{{ ds.replacePhoto }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v12"></path></svg></div>
+                <sc-if value="{{ ds.canRegen }}" hint-placeholder-val="{{ false }}"><div class="ds-icon" title="Regenerate headshot" aria-label="Regenerate headshot" sc-camel-on-click="{{ ds.regenPhoto }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg></div></sc-if>
+                <div class="ds-icon ds-danger" title="{{ ds.deleteLabel }}" aria-label="{{ ds.deleteLabel }}" sc-camel-on-click="{{ ds.askDelete }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path></svg></div>
+              </div>
+              <sc-if value="{{ ds.confirming }}" hint-placeholder-val="{{ false }}"><div class="ds-confirm"><span>{{ ds.deleteLabel }}?</span><span><i sc-camel-on-click="{{ ds.cancelDelete }}">Cancel</i> &nbsp; <b sc-camel-on-click="{{ ds.doDelete }}">Delete</b></span></div></sc-if>
+            </div>
+
+            <div class="ds-fields">
+              <sc-for list="{{ ds.fields }}" as="f" hint-placeholder-count="8">
+                <label class="{{ f.cls }}">{{ f.label }}
+                  <sc-if value="{{ f.isInput }}" hint-placeholder-val="{{ true }}"><input value="{{ f.value }}" placeholder="{{ f.ph }}" sc-camel-on-change="{{ f.set }}" spellcheck="false" autocomplete="off"></sc-if>
+                  <sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}"><select value="{{ f.value }}" sc-camel-on-change="{{ f.set }}"><sc-for list="{{ f.options }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if>
+                </label>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ ds.hasBox }}" hint-placeholder-val="{{ false }}">
+              <div class="ds-box" data-sv="dsbox">
+                <div class="ds-box-head"><div>{{ ds.boxTitle }} <span>· {{ ds.boxCount }}</span></div><sc-if value="{{ ds.canPick }}" hint-placeholder-val="{{ false }}"><div class="ds-link" sc-camel-on-click="{{ ds.togglePick }}">{{ ds.pickLabel }}</div></sc-if></div>
+                <div class="ds-tiles">
+                  <div class="ds-tile" sc-camel-on-click="{{ ds.boxAdd }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ ds.boxDrop }}"><div class="ds-tile-add"><span style="font-size:20px;line-height:1">+</span>{{ ds.addLabel }}</div></div>
+                  <sc-for list="{{ ds.boxItems }}" as="w" hint-placeholder-count="0">
+                    <div class="ds-tile" sc-camel-on-click="{{ w.open }}" title="{{ w.name }}"><div class="ds-tile-img"><sc-if value="{{ w.has }}" hint-placeholder-val="{{ false }}"><div style="{{ w.bg }}"></div></sc-if><div class="ds-x" title="Remove" sc-camel-on-click="{{ w.remove }}">×</div></div><div class="ds-tile-name">{{ w.name }}</div></div>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ ds.pickOpen }}" hint-placeholder-val="{{ false }}">
+                  <div class="ds-pick">
+                    <div class="ds-pick-hint">Click items to add or remove them.</div>
+                    <div class="ds-tiles">
+                      <sc-for list="{{ ds.pickAll }}" as="w" hint-placeholder-count="0">
+                        <div class="ds-tile" sc-camel-on-click="{{ w.pick }}"><div class="ds-tile-img" style="box-shadow:0 0 0 2px {{ w.line }}"><sc-if value="{{ w.has }}" hint-placeholder-val="{{ false }}"><div style="{{ w.bg }}"></div></sc-if><div style="position:absolute;top:4px;right:6px;color:#00BE50;font:700 14px/1 'Helvetica Neue',Helvetica,sans-serif">{{ w.mark }}</div></div><div class="ds-tile-name">{{ w.name }}</div></div>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;justify-content:flex-end"><div class="ds-btn" sc-camel-on-click="{{ ds.togglePick }}">Done</div></div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <button class="ds-go" data-sv="sheetgo" disabled="{{ ds.busy }}" sc-camel-on-click="{{ ds.generate }}">{{ ds.goLabel }}</button>
+            <sc-if value="{{ ds.showSettings }}" hint-placeholder-val="{{ true }}"><div class="ds-settings"><span>GPT Image 2.5</span>
+              <select aria-label="Resolution" value="{{ ds.resolution }}" sc-camel-on-change="{{ ds.setResolution }}"><option value="1k">1K</option><option value="2k">2K</option><option value="4k">4K</option></select>
+              <select aria-label="Quality" value="{{ ds.quality }}" sc-camel-on-change="{{ ds.setQuality }}"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="xhigh">Extra high</option><option value="max">Max</option></select></div></sc-if>
+            <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div class="ds-err" role="alert">{{ errorText }}</div></sc-if>
+          </div>
+
+          <div class="ds-right">
+            <div class="ds-right-head"><h2>{{ ds.sheetTitle }}<small>{{ ds.sheetNote }}</small></h2>
+              <div class="ds-actions"><sc-if value="{{ ds.hasViews }}" hint-placeholder-val="{{ false }}"><div class="ds-btn" sc-camel-on-click="{{ ds.download }}">Download</div></sc-if>
+                <div class="{{ ds.approveCls }}" sc-camel-on-click="{{ ds.toggleApprove }}">{{ ds.approveLabel }}</div></div></div>
+            <sc-if value="{{ ds.isEmpty }}" hint-placeholder-val="{{ true }}"><div class="ds-empty"><div><b>{{ ds.emptyTitle }}</b>{{ ds.emptyText }}</div></div></sc-if>
+            <sc-for list="{{ ds.groups }}" as="gr" hint-placeholder-count="0">
+              <div class="ds-group"><h3>{{ gr.title }}</h3><div class="ds-views">
+                <sc-for list="{{ gr.views }}" as="v"><div class="ds-view"><div class="ds-view-img" style="aspect-ratio:{{ gr.ratio }}"><sc-if value="{{ v.has }}" hint-placeholder-val="{{ false }}"><div style="{{ v.bg }}"></div></sc-if><sc-if value="{{ v.busy }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if></div><div class="ds-view-label">{{ v.label }}</div></div></sc-for>
+              </div></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ oldCharSheet }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="03 Character Sheet" style="width:100%;max-width:1100px;display:flex;flex-direction:column;gap:48px">
         <div data-sv="ident" style="display:grid;grid-template-columns:321px minmax(0,1fr);gap:48px;align-items:start">
           <div style="display:flex;flex-direction:column;gap:12px">
@@ -430,7 +557,7 @@ img[alt="SOLVED"]{filter:none}
       </div>
     </sc-if>
 
-    <sc-if value="{{ g.isDetail }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ g.isDetailOld }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Section Detail" style="width:100%;max-width:1100px;display:flex;flex-direction:column;gap:48px">
         <div data-sv="ident" style="display:grid;grid-template-columns:{{ g.d.photoW }} minmax(0,1fr);grid-template-rows:auto;column-gap:48px;row-gap:12px">
           <div style="position:relative;height:{{ g.d.photoH }};min-height:{{ g.d.photoMinH }};align-self:{{ g.d.photoAlign }};aspect-ratio:{{ g.d.photoAR }};border-radius:6px;overflow:hidden;background:{{ g.d.photoBg }}">
@@ -979,7 +1106,7 @@ img[alt="SOLVED"]{filter:none}
 <script type="text/x-dc" data-dc-script="">
 const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
 // Workflow order (Back / Next arrows). Style lives inside Storyboards.
-const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
+const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
 // Sidebar: main sections only. Brief opens from the Dashboard.
 const SIDE_NAV = [['OVERVIEW', 'DASHBOARD'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY'], ['LIBRARY', 'LIBRARY']];
 const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
@@ -1769,6 +1896,9 @@ class Component extends DCLogic {
   async handleFiles(target, fileList) {
     const files = [...(fileList || [])].filter(f => f.type.startsWith('image/'));
     if (!files.length) return;
+    if (target.startsWith('locset:')) { const lid = target.slice(7); const ids = await this.storeImgs(await Promise.all(files.map(readFile))); const views = Array(7).fill(null); ids.slice(0, 7).forEach((id, i) => { views[i] = { img: id, source: 'uploaded', at: Date.now() }; });
+      const set = { uid: uid(), sect: 'set', kind: 'real', name: cleanName(files[0].name || '') || 'Set ' + (this.state.locations.filter(x => x.sect === 'set').length + 1), url: '', prompt: '', refs: [], views, fields: {}, at: Date.now() };
+      await new Promise(res => this.setState(s => ({ locations: [...s.locations.map(x => x.uid === lid ? { ...x, sets: [...(x.sets || []), set.uid] } : x), set] }), res)); this.saveLocations(); return; }
     if (target.startsWith('charwr:')) { const cid = target.slice(7); return this.addProductFromFiles(files, 'wardrobe').then(id => { if (id) this.updateAsset('TALENT', cid, x => { x.wardrobe = [...new Set([...(x.wardrobe || []), id])]; return x; }); }); }
     if (target === 'newprod') return this.addProductFromFiles(files).then(id => { if (id) this.openSheet(id); });
     if (target === 'locreal') return this.popFiles(files, 'real');
@@ -2070,6 +2200,114 @@ class Component extends DCLogic {
   }
 
   renderVals() {
+    const v = this.renderVals0();
+    const ds = this.buildDs(v);
+    v.ds = ds; v.oldCharSheet = v.isSheet && !ds.on;
+    if (v.g) v.g = { ...v.g, isDetailOld: v.g.isDetail && !ds.on };
+    if (ds.on && ds.nav) Object.assign(v, ds.nav);
+    return v;
+  }
+  buildDs(v) {
+    const S = this.state, page = S.page, off = { on: false };
+    if (S.view !== 'item' || !S.item) return off;
+    const stop = e => { if (e && e.stopPropagation) e.stopPropagation(); };
+    const fit = src => Object.assign(bgOf(src), { backgroundSize: 'contain', backgroundRepeat: 'no-repeat' });
+    const cfgKey = page === 'TALENT' ? 'sheet' : page + ':sheet', cfg = this.tcfg(cfgKey);
+    const settings = { showSettings: true, resolution: cfg.resolution, quality: cfg.quality,
+      setResolution: e => this.tset(cfgKey, { resolution: e.target.value }), setQuality: e => this.tset(cfgKey, { quality: e.target.value }) };
+    const inp = (label, value, ph, save, wide) => ({ label, value: value || '', ph: ph || '', isInput: true, isSelect: false, options: [], cls: wide ? 'ds-wide' : '', set: e => save(e.target.value) });
+    const conf = S.dsDel === S.item;
+    const delBits = (label, fn) => ({ deleteLabel: label, confirming: conf, askDelete: () => this.setState({ dsDel: S.item }), cancelDelete: () => this.setState({ dsDel: null }),
+      doDelete: () => { fn(); this.setState({ dsDel: null, view: 'all', item: null }); } });
+    const nextOf = (list, label, pg) => { const i = list.findIndex(x => x.uid === S.item), nx = i >= 0 && i < list.length - 1 ? list[i + 1] : null;
+      return { pageNext: () => nx && this.setState({ page: pg, view: 'item', item: nx.uid, dsDel: null, wrPick: false, dsPick: false }), pageNextTitle: nx ? 'Next ' + label + ': ' + nx.name : 'Last ' + label,
+        pageNextCursor: nx ? 'pointer' : 'default', pageNextOpacity: nx ? '1' : '0.3' }; };
+    const approve = (on, set) => ({ approveLabel: on ? 'Approved' : 'Not approved', approveCls: on ? 'ds-btn ds-on' : 'ds-btn', toggleApprove: () => set(!on) });
+    const dl = (srcs, base) => () => srcs.forEach((src, i) => setTimeout(() => { const a = document.createElement('a'); a.href = src; a.download = base + '-' + (i + 1) + '.' + ((/^data:image\/(\w+)/.exec(src) || [0, 'png'])[1].replace('jpeg', 'jpg')); document.body.appendChild(a); a.click(); a.remove(); }, i * 250));
+
+    // ---------- character
+    if (page === 'TALENT' && v.isSheet && v.tal && v.tal.s && v.tal.s.fields) {
+      const c = (S.store.TALENT || []).find(a => a.uid === S.item); if (!c) return off;
+      const t = v.tal.s, sh = c.sheet || {}, src = c.main || sh.front || '', prof = c.profile || {};
+      const front = (S.sSlot[c.uid + ':front'] || ''), photoBusy = !src && (/busy|queued|checking/.test(front) || (this.frontPending || {})[c.uid]);
+      const setP = k => val => { this.updateAsset('TALENT', c.uid, x => { x.profile = { ...(x.profile || {}), [k]: val }; if (k === 'Name' && val.trim()) x.name = val.trim(); return x; }); };
+      const byLabel = Object.fromEntries(t.fields.map(f => [f.label, f]));
+      const F = (label, key, ph) => inp(label, prof[key] || '', ph, setP(key));
+      const groups = (t.groups || []).map(gp => ({ title: gp.title, ratio: gp.ratio, views: gp.views.map(x => ({ label: x.label, has: x.has, bg: x.has ? Object.assign({}, x.bg, { backgroundSize: 'contain', backgroundRepeat: 'no-repeat' }) : {}, busy: x.busy })) }));
+      const srcs = Object.entries(sh).filter(([k, s2]) => s2).map(([, s2]) => s2), on = c.status === 'approved' || c.status === 'locked';
+      return { on: true, title: c.name || 'Character', subtitle: (prof.Role || '').trim() ? '· ' + prof.Role : '· No role yet',
+        hasPhoto: !!src, noPhoto: !src && !photoBusy, photoBusy, photoBg: bgOf(src), photoEmpty: 'Upload a photo of the person',
+        replaceLabel: 'Replace photo', replacePhoto: () => this.pick('main'), dropPhoto: this.dropTo('main'),
+        canRegen: !!src, regenPhoto: () => { this.frontPending = this.frontPending || {}; this.frontPending[c.uid] = true; this.genSlot(c, 'front', HEADSHOT); },
+        ...delBits('Delete character', () => this.deleteAsset('TALENT', c.uid)),
+        fields: [inp('Name', prof.Name || c.name, 'Character name', setP('Name')), F('Role', 'Role', 'Lead, supporting, extra'), F('Age', 'Age', 'e.g. 30s'), F('Height', 'Height', 'e.g. 6′0″'),
+          F('Weight', 'Weight', 'e.g. 170 lbs'), F('Build', 'Body Type', 'e.g. athletic'), F('Hair', 'Hair Color', 'e.g. black, short fade'), F('Eyes', 'Eye Color', 'e.g. dark brown'),
+          F('Skin', 'Skin Color', 'e.g. deep warm'), F('Personality', 'Personality', 'e.g. calm, focused')],
+        hasBox: true, boxTitle: 'Wardrobe', boxCount: t.wrCount, canPick: t.wrHasAny, pickLabel: t.wrPickOpen ? 'Close' : 'Pick from Wardrobe', togglePick: t.wrTogglePick,
+        addLabel: 'Add wardrobe', boxAdd: t.wrUpload, boxDrop: this.dropTo('charwr:' + c.uid), pickOpen: t.wrPickOpen, pickAll: t.wrAll,
+        boxItems: t.wrItems,
+        busy: !!(S.sheetRun && S.sheetRun.id === c.uid), goLabel: t.goLabel, generate: t.generate, ...settings,
+        sheetTitle: 'Character sheet', sheetNote: t.ready || '', hasViews: groups.some(gp => gp.views.some(x => x.has)),
+        isEmpty: !groups.length, emptyTitle: 'Your character sheet appears here', emptyText: 'Close-ups and full-body shots: front, side, back and more. Add details and wardrobe on the left, then click Generate character sheet.',
+        groups, download: dl(srcs, (c.name || 'character').replace(/\W+/g, '-')),
+        ...approve(on, val => this.updateAsset('TALENT', c.uid, x => { x.status = val ? 'approved' : 'draft'; return x; })),
+        nav: nextOf(S.store.TALENT || [], 'character', 'TALENT') };
+    }
+
+    // ---------- product / location
+    const isProd = page === 'PRODUCT' || page === 'WARDROBE', isLoc = page === 'LOCATION' || page === 'SETDESIGN';
+    if (!(isProd || isLoc) || !v.g || !v.g.d || !v.g.d.panel) return off;
+    const d = v.g.d;
+    if (isProd) {
+      const p = S.products.find(x => x.uid === S.item); if (!p) return off;
+      const wr = p.kind === 'wardrobe', imgs = S.imgs, n = (p.views || []).filter(Boolean).length;
+      const views = (p.views || []).map((x, i) => ({ label: vlabel(p.type, i), has: !!(x && imgs[x.img]), bg: x && imgs[x.img] ? fit(imgs[x.img]) : {}, busy: (S.pSlot || {})[p.uid + ':' + i] === 'busy' }));
+      const sel = d.fields.find(f => f.isSelect);
+      const fields = [inp('Name', p.name, 'Product name', val => this.updProduct(p.uid, y => { y.name = val; y.nameAuto = false; return y; })),
+        ...(sel ? [{ ...sel, cls: '', options: sel.options }] : []),
+        inp('Description', d.sub, 'Short description', val => d.setSub({ target: { value: val } }), true),
+        ...d.fields.filter(f => !f.isSelect).map(f => ({ ...f, cls: '' }))];
+      const refs = (p.refs || []).filter(id => imgs[id]);
+      const on = p.status === 'approved';
+      return { on: true, title: p.name || (wr ? 'Wardrobe item' : 'Product'), subtitle: '· ' + ((PTYPES[p.type] || PTYPES.other).label),
+        hasPhoto: d.hasSrc, noPhoto: !d.hasSrc && !d.busy, photoBusy: d.busy, photoBg: d.srcBg, photoEmpty: 'Upload photos of the ' + (wr ? 'item' : 'product'),
+        replaceLabel: 'Add photos', replacePhoto: () => this.pick('pref'), dropPhoto: this.dropTo('pref'), canRegen: false, regenPhoto: () => {},
+        ...delBits(wr ? 'Delete item' : 'Delete product', () => this.secDel('product', p.uid)),
+        fields, hasBox: true, boxTitle: wr ? 'Item photos' : 'Product photos', boxCount: String(refs.length), canPick: false, pickLabel: '', togglePick: () => {},
+        addLabel: 'Add photos', boxAdd: () => this.pick('pref'), boxDrop: this.dropTo('pref'), pickOpen: false, pickAll: [],
+        boxItems: refs.map((id, i) => ({ name: 'Photo ' + (i + 1), has: true, bg: bgOf(imgs[id]), open: () => {}, remove: e => { stop(e); this.updProduct(p.uid, y => { y.refs = y.refs.filter(r => r !== id); return y; }); } })),
+        busy: !!d.busy2, goLabel: d.goLabel, generate: d.generate, ...settings,
+        sheetTitle: wr ? 'Wardrobe sheet' : 'Product sheet', sheetNote: n + ' of ' + views.length + ' views', hasViews: n > 0,
+        isEmpty: n === 0, emptyTitle: 'Your ' + (wr ? 'wardrobe' : 'product') + ' sheet appears here', emptyText: 'Every angle of the ' + (wr ? 'item' : 'product') + ' on a clean background. Add photos and details on the left, then click Generate.',
+        groups: n ? [{ title: 'Views', ratio: '1 / 1', views }] : [], download: dl((p.views || []).filter(x => x && imgs[x.img]).map(x => imgs[x.img]), (p.name || 'product').replace(/\W+/g, '-')),
+        ...approve(on, val => this.secUpd('product', p.uid, x => { x.status = val ? 'approved' : 'draft'; return x; })),
+        nav: nextOf(S.products.filter(x => (x.kind || 'product') === (wr ? 'wardrobe' : 'product')), wr ? 'item' : 'product', page) };
+    }
+    const l = S.locations.find(x => x.uid === S.item); if (!l) return off;
+    const isSet = (l.sect || 'location') === 'set', imgs = S.imgs, n = (l.views || []).filter(Boolean).length;
+    const views = (l.views || []).map((x, i) => ({ label: LAI[i] || 'View ' + (i + 1), has: !!(x && imgs[x.img]), bg: x && imgs[x.img] ? fit(imgs[x.img]) : {}, busy: false }));
+    const SETS = S.locations.filter(x => x.sect === 'set'), mine = l.sets || [];
+    const firstImg = x => { const w = (x.views || []).find(y => y && imgs[y.img]); return w ? imgs[w.img] : ''; };
+    const setSets = fn => this.updLoc(l.uid, x => { x.sets = fn(x.sets || []); return x; });
+    const on = l.status === 'approved';
+    return { on: true, title: l.name || 'Location', subtitle: '· ' + (isSet ? (l.kind === 'ai' ? 'AI set' : 'Built set') : (l.kind === 'ai' ? 'AI location' : 'Real location')),
+      hasPhoto: d.hasSrc, noPhoto: !d.hasSrc && !d.busy, photoBusy: d.busy, photoBg: d.srcBg, photoEmpty: 'Upload photos of the ' + (isSet ? 'set' : 'location'),
+      replaceLabel: d.photoActionLabel || 'Add photos', replacePhoto: d.photoAction, dropPhoto: this.dropTo('lslot:0'), canRegen: false, regenPhoto: () => {},
+      ...delBits(isSet ? 'Delete set' : 'Delete location', () => this.secDel('location', l.uid)),
+      fields: [inp('Name', l.name, 'Location name', val => this.updLoc(l.uid, x => { x.name = val; return x; }), true), inp('Description', d.sub, 'Describe the location', val => d.setSub({ target: { value: val } }), true),
+        ...d.fields.map(f => ({ ...f, cls: '' }))],
+      hasBox: !isSet, boxTitle: 'Set design', boxCount: String(mine.filter(u => SETS.some(x => x.uid === u)).length), canPick: SETS.length > 0, pickLabel: S.dsPick ? 'Close' : 'Pick existing sets',
+      togglePick: () => this.setState(st => ({ dsPick: !st.dsPick })), addLabel: 'Add set photos', boxAdd: () => this.pick('locset:' + l.uid), boxDrop: this.dropTo('locset:' + l.uid), pickOpen: !!S.dsPick,
+      pickAll: SETS.map(x => { const has = mine.includes(x.uid), im = firstImg(x); return { name: x.name, has: !!im, bg: bgOf(im), line: has ? '#00BE50' : 'transparent', mark: has ? '✓' : '', pick: () => setSets(a => has ? a.filter(u => u !== x.uid) : [...a, x.uid]) }; }),
+      boxItems: SETS.filter(x => mine.includes(x.uid)).map(x => { const im = firstImg(x); return { name: x.name, has: !!im, bg: bgOf(im), open: () => this.setState({ page: 'SETDESIGN', view: 'item', item: x.uid }), remove: e => { stop(e); setSets(a => a.filter(u => u !== x.uid)); } }; }),
+      busy: !!d.busy2, goLabel: d.goLabel, generate: d.generate, ...settings, showSettings: !!d.showRes,
+      sheetTitle: isSet ? 'Set sheet' : 'Location sheet', sheetNote: n + ' of ' + views.length + ' views', hasViews: n > 0,
+      isEmpty: n === 0, emptyTitle: 'Your ' + (isSet ? 'set' : 'location') + ' sheet appears here', emptyText: l.kind === 'ai' ? 'Wide, reverse, side, detail and overhead views. Add details and set design on the left, then click Generate.' : 'Add photos from every angle you need. They appear here as the location sheet.',
+      groups: n ? [{ title: 'Views', ratio: '16 / 9', views }] : [], download: dl((l.views || []).filter(x => x && imgs[x.img]).map(x => imgs[x.img]), (l.name || 'location').replace(/\W+/g, '-')),
+      ...approve(on, val => this.secUpd('location', l.uid, x => { x.status = val ? 'approved' : 'draft'; return x; })),
+      nav: nextOf(S.locations.filter(x => (x.sect || 'location') === (isSet ? 'set' : 'location')), isSet ? 'set' : 'location', page) };
+  }
+  renderVals0() {
     const { page, view, item, values, items, prompt, mode, store, create, gen, attach, tab, varCat, sheetRun } = this.state;
     const cfg = CFG[page] || {}, pg = page.toLowerCase();
     const isHub = page === 'IMAGES', isSoon = !!SOON_PAGES[page];
@@ -2293,7 +2531,7 @@ class Component extends DCLogic {
           ['STYLE', 'STYLE', this.state.styles.length ? n(this.state.styles.length, 'style') : 'No styles yet', first(this.state.styles, s => (s.frames[s.hero] || s.frames[0] || {}).src), ''],
           ['KEYFRAMES', 'STORYBOARDS', (this.state.items.KEYFRAMES || []).length + ' shots · ' + (this.state.items.KEYFRAMES || []).filter(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).length + ' generated', ((this.state.items.KEYFRAMES || []).map(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).find(Boolean)) || '', ''],
         ];
-        const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE'); const ORD = ['PRODUCT', 'TALENT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'KEYFRAMES']; imgRows.sort((a, b) => ORD.indexOf(a[0]) - ORD.indexOf(b[0])); // Products, Characters, Wardrobe first
+        const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE'); const ORD = ['PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES']; imgRows.splice(0, imgRows.length, ...imgRows.filter(r => ORD.includes(r[0]))); imgRows.sort((a, b) => ORD.indexOf(a[0]) - ORD.indexOf(b[0])); // Products, Characters, Wardrobe first
         const imgCount = T.length + PR.length + LC.length + WR.length + SE.length;
         const dash = [rows[0],
           ['IMAGES', 'IMAGES', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
