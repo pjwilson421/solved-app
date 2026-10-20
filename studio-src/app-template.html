@@ -131,6 +131,14 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-check{position:absolute;top:4px;right:6px;color:#00BE50;font:700 14px/1 'Helvetica Neue',Helvetica,sans-serif}
 .x-doc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 12px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
 @media(max-width:900px){.x-vgrid,.x-ed{grid-template-columns:1fr}.x-tools{grid-template-columns:1fr 1fr}.x-dests{grid-template-columns:1fr 1fr}.x-files{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.x-cats{display:flex;gap:16px;margin-top:-20px}.x-cat{font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;cursor:pointer}.x-cat:hover{color:#00BE50}
+.x-gal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
+.x-gcard{display:flex;flex-direction:column;gap:6px;min-width:0}.x-gimg{position:relative;border-radius:6px;overflow:hidden;background:#202020}
+.x-gacts{position:absolute;left:0;right:0;bottom:0;display:none;gap:10px;flex-wrap:wrap;padding:8px;background:linear-gradient(transparent,rgba(0,0,0,.8));font:700 11px/14px 'Helvetica Neue',Helvetica,sans-serif}
+.x-gacts span{cursor:pointer}.x-gacts span:hover{color:#00BE50}.x-gimg:hover .x-gacts{display:flex}
+.x-gerr{position:absolute;inset:0;padding:12px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#ef6b61}
+.x-gp{font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media(max-width:900px){.x-gal{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 
@@ -751,6 +759,20 @@ img[alt="SOLVED"]{filter:none}
           </sc-for>
         </div>
         <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div style="font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#ef6b61">{{ errorText }}</div></sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ x.hubOn }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Images" class="x-page" style="flex:1">
+        <div class="x-cats"><sc-for list="{{ x.cats }}" as="c"><span class="x-cat" sc-camel-on-click="{{ c.go }}">{{ c.label }}</span></sc-for></div>
+        <div class="x-gal"><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0">
+          <div class="x-gcard" title="{{ g.prompt }}"><div class="x-gimg" style="aspect-ratio:{{ g.ar }}">
+            <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><div style="{{ g.bg }}"></div></sc-if>
+            <sc-if value="{{ g.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if>
+            <sc-if value="{{ g.failed }}" hint-placeholder-val="{{ false }}"><div class="x-gerr">{{ g.err }}</div></sc-if>
+            <div class="x-gacts"><sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ g.download }}">Download</span><span sc-camel-on-click="{{ g.edit }}">Edit</span></sc-if><span sc-camel-on-click="{{ g.reuse }}">Reuse prompt</span><span sc-camel-on-click="{{ g.del }}">Delete</span></div>
+          </div><div class="x-gp">{{ g.prompt }}</div></div>
+        </sc-for></div>
       </div>
     </sc-if>
 
@@ -2058,6 +2080,7 @@ class Component extends DCLogic {
   async handleFiles(target, fileList) {
     const files = [...(fileList || [])].filter(f => f.type.startsWith('image/'));
     if (!files.length) return;
+    if (target === 'hubatt') { const srcs = await Promise.all(files.map(readFile)); return this.setState(s => ({ castAtt: [...s.castAtt, ...srcs].slice(0, 8) })); }
     if (target.startsWith('vstart:')) { const vid = target.slice(7); const src = await readFile(files[0]); return this.updVideo(vid, x => { x.start = src; x.error = ''; return x; }); }
     if (target.startsWith('locset:')) { const lid = target.slice(7); const ids = await this.storeImgs(await Promise.all(files.map(readFile))); const views = Array(7).fill(null); ids.slice(0, 7).forEach((id, i) => { views[i] = { img: id, source: 'uploaded', at: Date.now() }; });
       const set = { uid: uid(), sect: 'set', kind: 'real', name: cleanName(files[0].name || '') || 'Set ' + (this.state.locations.filter(x => x.sect === 'set').length + 1), url: '', prompt: '', refs: [], views, fields: {}, at: Date.now() };
@@ -2368,7 +2391,7 @@ class Component extends DCLogic {
   saveX(k) { idb.set(k, this.state[k]).catch(() => this.setErr('Couldn’t save — browser storage is unavailable.')); }
   setX(k, fn) { this.setState(s => ({ [k]: fn(s[k] || []) }), () => this.saveX(k)); }
   loadX() {
-    idb.getMany(['videos', 'edits', 'deliveries', 'timeline']).then(([v, e, d, t]) => this.setState({ videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], xLoaded: true }))
+    idb.getMany(['videos', 'edits', 'deliveries', 'timeline', 'gallery']).then(([v, e, d, t, g]) => this.setState({ gallery: Array.isArray(g) ? g : [], videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], xLoaded: true }))
       .catch(() => this.setState({ xLoaded: true }));
   }
   briefText() { const V = this.state.values || {}; return OV.map(([k]) => (V[k] || '').trim() ? k.charAt(0) + k.slice(1).toLowerCase() + ': ' + V[k].trim().slice(0, 600) : '').filter(Boolean).join('\n'); }
@@ -2415,6 +2438,20 @@ class Component extends DCLogic {
     const worker = async () => { while (q.length) { const t = q.shift(); await this.genKf(t.n + '-main', this.shotPrompt(t), opts); } };
     await Promise.all([worker(), worker()]);
     this.setState({ sbBusy: null });
+  }
+  // ---- free image generation (Images page)
+  async freeGen(p) {
+    const HF = window.SOLVED_HF;
+    if (!HF || !HF.connected()) return this.setErr('Connect Higgsfield (bottom of the sidebar) to generate images.');
+    const o = this.tcfg('IMAGES:main'), refs = this.state.castAtt.slice(0, 8), id = uid();
+    this.setErr(''); this.setState({ prompt: '', castAtt: [] });
+    this.setX('gallery', a => [{ uid: id, prompt: p, src: '', status: 'running', aspect: o.ratio || '1:1', refs: refs.length, at: Date.now() }, ...a]);
+    try {
+      const url = await HF.generate({ prompt: p, references: refs, aspect: o.ratio || '1:1', model: o.model, quality: o.quality, resolution: o.resolution });
+      let keep = url; try { const r = await fetch(url); if (r.ok) { const b = await r.blob(); keep = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); } } catch (e) {}
+      this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, src: keep, status: 'done' } : g)));
+      this.recordUsage('IMAGES', 'Images · ' + p.slice(0, 40));
+    } catch (e) { this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, status: 'failed', error: e && e.message ? e.message : 'Generation failed' } : g))); }
   }
   // ---- videos
   frameSrc(n) { return this.state.kfImg[n + '-main'] || this.state.kfImg[n + '-start'] || ''; }
@@ -2524,6 +2561,7 @@ class Component extends DCLogic {
   projectFiles() {
     const S = this.state, I = S.imgs || {}, out = [], add = (section, name, src, kind, extra) => src && out.push({ id: section + ':' + out.length, section, name, src, kind: kind || 'image', ...(extra || {}) });
     (S.bdocs || []).forEach(d => { if (d && (d.data || d.url)) add('Brief', d.name || 'Document', d.data || d.url, 'doc'); });
+    (S.gallery || []).forEach(g => g.status === 'done' && add('Images', g.prompt.slice(0, 60), g.src));
     (S.products || []).filter(p => (p.kind || 'product') === 'product').forEach(p => (p.views || []).forEach((v, i) => v && add('Products', p.name + ' · ' + vlabel(p.type, i), I[v.img])));
     (S.store.TALENT || []).forEach(c => { const sh = c.sheet || {}; Object.keys(sh).forEach(k => add('Characters', c.name + ' · ' + ((SHEET.find(x => x[0] === k) || [k, k])[1]), sh[k])); });
     (S.products || []).filter(p => p.kind === 'wardrobe').forEach(p => (p.views || []).forEach((v, i) => v && add('Wardrobe', p.name + ' · ' + vlabel(p.type, i), I[v.img])));
@@ -2577,7 +2615,14 @@ class Component extends DCLogic {
   buildX(v) {
     const S = this.state, page = S.page, stop = e => { if (e && e.stopPropagation) e.stopPropagation(); };
     const fit = src => Object.assign(bgOf(src), { backgroundSize: 'contain', backgroundRepeat: 'no-repeat' });
-    const X = { sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
+    const GAL = S.gallery || [];
+    const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map(g => ({ has: g.status === 'done' && !!g.src, bg: fit(g.src || ''), running: g.status === 'running', failed: g.status === 'failed', err: g.error || '', prompt: g.prompt, ar: (g.aspect || '1:1').replace(':', ' / '),
+      download: e => { stop(e); const a = document.createElement('a'); a.href = g.src; a.download = g.prompt.slice(0, 40).replace(/\W+/g, '-') + '.jpg'; a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); },
+      edit: e => { stop(e); this.setState({ page: 'EDITING', edTool: 'image', ed: { src: g.src, name: g.prompt.slice(0, 40), adj: { b: 100, c: 100, s: 100 } } }); },
+      reuse: e => { stop(e); this.setState({ prompt: g.prompt }); },
+      del: e => { stop(e); this.setX('gallery', a => a.filter(y => y.uid !== g.uid)); } })),
+      cats: [['PRODUCT', 'Products'], ['TALENT', 'Characters'], ['LOCATION', 'Locations'], ['KEYFRAMES', 'Storyboards']].map(([pg, label]) => ({ label, go: () => this.setState({ page: pg, view: 'all', item: null, prompt: '' }) })) } : {};
+    const X = { ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
     if (X.sbOn) {
       const n = (S.items.KEYFRAMES || []).length, made = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n)).length, st = this.storyStyle();
       Object.assign(X, { sbInfo: made + ' of ' + n + ' frames generated · Style: ' + (st ? st.name : 'none'), sbBusy: !!S.sbBusy,
@@ -2629,7 +2674,7 @@ class Component extends DCLogic {
     }
     if (X.dlOn || X.libOn) {
       const all = this.projectFiles(), key = f => f.section + '|' + f.name + '|' + f.src.length, sel = S.dlSel;
-      const sections = ['Brief', 'Products', 'Characters', 'Wardrobe', 'Locations', 'Set design', 'Storyboards', 'Videos', 'Editing'];
+      const sections = ['Brief', 'Images', 'Products', 'Characters', 'Wardrobe', 'Locations', 'Set design', 'Storyboards', 'Videos', 'Editing'];
       const groups = sections.map(sec => { const fs = all.filter(f => f.section === sec); return { title: sec, count: String(fs.length), has: fs.length > 0,
         files: fs.map(f => { const on = !sel || !!sel[key(f)]; return { name: f.name, isImg: f.kind === 'image', isVid: f.kind === 'video', isDoc: f.kind === 'doc', src: f.src, bg: fit(f.src), mark: on ? '✓' : '', line: on ? '#00BE50' : '#303030',
           toggle: () => this.setState(s => { const cur = s.dlSel || Object.fromEntries(all.map(g => [key(g), true])); const n = { ...cur }; if (n[key(f)]) delete n[key(f)]; else n[key(f)] = true; return { dlSel: n }; }),
@@ -2798,6 +2843,7 @@ class Component extends DCLogic {
       if (gen.running || this.state.sheetRun) return;
       const p = prompt.trim();
       if (mode === 'search') { if (isTalent) this.setState({ view: 'all', item: null }); return; }
+      if (isHub) { if (!p) return this.setErr('Describe the image to create.'); return this.freeGen(p); }
       if (isStyleAll) {
         if (!p) return this.setErr('Describe a style to create, or press + to start from an image.');
         const o = this.secOpts(page, 'main'); this.clearPrompt();
@@ -2921,7 +2967,7 @@ class Component extends DCLogic {
           hfFields: [['account', 'ACCOUNT LABEL', 'text', ''], ['model', 'IMAGE MODEL', 'text', 'gpt_image_2_5'], ['quality', 'QUALITY (low · medium · high · xhigh · max)', 'text', 'high'], ['resolution', 'RESOLUTION (1k · 2k · 4k)', 'text', '1k']]
             .map(([k, label, type, ph]) => ({ label, type, ph, value: (d && d[k]) || '', set: setD(k) })) }; })(),
       barW: '100%',
-      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SOON_PAGES[page][0]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Choose an image category', KEYFRAMES: inDetail ? 'Create your storyboard frame' : 'Create your storyboard frames' })[page]
+      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SOON_PAGES[page][0]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Describe an image to create', KEYFRAMES: inDetail ? 'Create your storyboard frame' : 'Create your storyboard frames' })[page]
         || (isStyleEdit ? 'Create your style' : isStyleAll ? 'Choose a style for your storyboard'
         : isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
         : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Create your wardrobe images' : 'Create your product images')
@@ -2963,7 +3009,7 @@ class Component extends DCLogic {
       isStoryTabs: (page === 'KEYFRAMES' || page === 'STYLE') && !gDetail && !isStyleEdit,
       storyTabs: [['KEYFRAMES', 'FRAMES'], ['STYLE', 'STYLE']].map(([pg, label]) => ({ label, color: page === pg ? '#f5f5f5' : '#929292', line: page === pg ? '#f5f5f5' : 'transparent',
         pick: () => this.setState({ page: pg, view: 'all', item: null, sd: null, prompt: '', attachOpen: false }) })),
-      isOverview, isBlank, isTiles: isBlank || isHub, isSoon, soonText: isSoon ? SOON_PAGES[page][1] : '',
+      isOverview, isBlank, isTiles: isBlank, isHub, isSoon, soonText: isSoon ? SOON_PAGES[page][1] : '',
       dashTiles: (() => {
         const T = (store.TALENT || []), P = this.state.products, L = this.state.locations, n = (c, w) => c + ' ' + w + (c === 1 ? '' : 's');
         const PR = P.filter(x => (x.kind || 'product') === 'product'), WR = P.filter(x => x.kind === 'wardrobe');
@@ -3122,7 +3168,7 @@ class Component extends DCLogic {
             { label: 'REMOVE', color: '#ef6b61', click: () => { close(); this.updLoc(pl.uid, x => { x.views[pv.idx] = null; return x; }); } },
             { label: 'CLOSE', color: '#929292', click: close }] : [] }; })(),
       isProdAll: false, isProdSheet: false, pLoading: (isProdAll || isLocAll) && !this.state.pLoaded,
-      barPh: isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Built sets use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a set to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
+      barPh: isHub ? (this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe an image to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Built sets use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a set to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
       uploadNewProd: () => this.pick('newprod'),
       dropNewProd: e => { e.preventDefault(); this.handleFiles('newprod', e.dataTransfer.files); },
       pNewLabel: pkind === 'wardrobe' ? 'Upload new item' : 'Upload new product',
@@ -3158,7 +3204,7 @@ class Component extends DCLogic {
           tagBg: ai ? '#f5f5f5' : '#191919', tagColor: ai ? '#191919' : '#f5f5f5', line: slot === i ? '#f5f5f5' : 'transparent',
           pick: () => this.setState({ slot: i }), drop: this.dropTo('pslot:' + i) };
       }) : [],
-      talentPlus: () => isShotsPage ? this.pick('kfnew') : isCast ? this.pick('castatt') : isStyleAll ? (this.newStyle({ source: 'image' }), setTimeout(() => this.pick('styleref'), 0)) : isLocation ? (isLocSheet ? this.pick('lslot:' + (typeof slot === 'number' ? slot : 0)) : this.setState({ locPopup: { step: 'type', files: [], url: '', prompt: '', ref: null } })) : isProduct ? (isProdSheet ? this.pick(typeof slot === 'number' && !prod.views[slot] ? 'pslot:' + slot : 'pref') : this.pick('newprod')) : isSheet ? this.pick(`slot:${slot}`) : this.pick('newchar'),
+      talentPlus: () => isHub ? this.pick('hubatt') : isShotsPage ? this.pick('kfnew') : isCast ? this.pick('castatt') : isStyleAll ? (this.newStyle({ source: 'image' }), setTimeout(() => this.pick('styleref'), 0)) : isLocation ? (isLocSheet ? this.pick('lslot:' + (typeof slot === 'number' ? slot : 0)) : this.setState({ locPopup: { step: 'type', files: [], url: '', prompt: '', ref: null } })) : isProduct ? (isProdSheet ? this.pick(typeof slot === 'number' && !prod.views[slot] ? 'pslot:' + slot : 'pref') : this.pick('newprod')) : isSheet ? this.pick(`slot:${slot}`) : this.pick('newchar'),
       tal: (() => {
         const S = this.state, BUSY = ['queued', 'busy', 'checking'];
         const filledOf = a => SHEET.filter(([k]) => a.sheet && a.sheet[k]).length;
@@ -3291,9 +3337,9 @@ class Component extends DCLogic {
         : (isProduct || isLocation) ? (pBusy ? 'GENERATING' : 'GENERATE')
         : (isSheet && sheetRun) ? 'GENERATING ' + Math.min(sheetRun.done + 1, sheetRun.total) + ' OF ' + sheetRun.total
         : gen.running ? (gen.status || 'GENERATING') : 'GENERATE',
-      hasCastAtt: isCast && this.state.castAtt.length > 0,
+      hasCastAtt: (isCast || isHub) && this.state.castAtt.length > 0,
       castAttThumbs: this.state.castAtt.map((src, i) => ({ bg: bgOf(src), remove: e => { e.stopPropagation(); this.setState(st => ({ castAtt: st.castAtt.filter((_, j) => j !== i) })); } })),
-      dropCastAtt: e => { if (!isCast) return; e.preventDefault(); e.stopPropagation(); this.handleFiles('castatt', e.dataTransfer.files); },
+      dropCastAtt: e => { if (isHub) { e.preventDefault(); e.stopPropagation(); return this.handleFiles('hubatt', e.dataTransfer.files); } if (!isCast) return; e.preventDefault(); e.stopPropagation(); this.handleFiles('castatt', e.dataTransfer.files); },
       showOvr: !!this.state.ovrAsk || !!this.state.ovrAsk2,
       ...(() => { const id = this.state.ovrAsk, a = id && (store.TALENT || []).find(x => x.uid === id);
         const when = a && a.clientApprovedAt ? new Date(a.clientApprovedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
@@ -3466,12 +3512,12 @@ class Component extends DCLogic {
             return this.handleFiles('kfnew', fl); },
           d };
       })(),
-      showGenOpts: isCast || (!!gk && !gDetail),
+      showGenOpts: isCast || isHub || (!!gk && !gDetail),
       genOpts: (() => {
         const HF = window.SOLVED_HF;
         // Characters keeps its own settings per page: the main page drives the headshot,
         // the sheet page drives the sheet. Every other page still uses the shared defaults.
-        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
+        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : isHub ? 'IMAGES:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
         const c = tctx ? this.tcfg(tctx) : (HF ? HF.get() : {});
         const put = v => { if (tctx) this.tset(tctx, v); else if (HF) { HF.set(v); this.setState(s2 => ({ hfTick: s2.hfTick + 1 })); } };
         const model = c.model || 'gpt_image_2_5', ratio = c.ratio || '1:1', res = c.resolution || '1k',
@@ -3497,7 +3543,7 @@ class Component extends DCLogic {
           ctl('quality', { label: 'Quality', value: q.charAt(0).toUpperCase() + q.slice(1), title: 'Render quality', options: opts('quality', QUAL, q, v => v.charAt(0).toUpperCase() + v.slice(1)) }),
         ];
       })(),
-      showTalentBar: isCast || (!!gk && !gDetail),
+      showTalentBar: isCast || isHub || (!!gk && !gDetail),
       sl: Object.fromEntries(SHEET.map(([k]) => { const src = (char && char.sheet && char.sheet[k]) || ''; return [k, { has: !!src, src, bg: bgOf(src),
         busy: (gen.running && this.state.genSlot === k) || ['queued', 'busy', 'checking'].includes(this.state.sSlot[(char ? char.uid : '') + ':' + k]),
         tag: this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'wrong' ? 'WRONG ANGLE — REGENERATE' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'failed' ? 'FAILED · RETRY' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'checking' ? 'CHECKING ANGLE…' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'queued' ? 'QUEUED' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'busy' ? 'GENERATING…' : slot === k ? 'SELECTED' : 'DRAFT',
