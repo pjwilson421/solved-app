@@ -178,21 +178,75 @@ img[alt="SOLVED"]{filter:none}
 .brief-layout .brief-add{background:transparent;color:#1985FF}
 .brief-milestones>label,.brief-rounds,.estimate-total,.estimate-subtotal{background:#191919;color:#f5f5f5}
 .character-sheet-notes textarea{border:1px solid #303030}
+/* Shell restyle: gray page, rounded dark panels, pill navigation (ref. 10/20 layouts) */
+html,body{background:#B5B5B5!important}
+[data-sv="app"],[data-sv="home"]{grid-template-columns:340px minmax(0,1fr)!important;column-gap:28px!important;padding:24px;box-sizing:border-box;min-height:100vh;background:#B5B5B5!important}
+[data-sv="side"],[data-sv="homeside"]{background:transparent!important;border:0!important;width:auto!important;padding:0!important;gap:28px!important;top:24px!important;height:calc(100vh - 48px)!important;overflow:auto;scrollbar-width:none}
+[data-sv="side"]>div:first-child,[data-sv="homeside"]>div:first-child{height:auto!important;padding:12px 0 4px 8px}
+[data-sv="side"]>div:first-child span,[data-sv="homeside"]>div:first-child span{color:#191919!important}
+[data-sv="sidebody"],[data-sv="homebody"]{background:#282828;border-radius:40px;padding:40px 36px!important;gap:28px!important}
+[data-sv="sidebody"]>div:first-child{margin-bottom:-16px!important}
+[data-sv="nav"]{gap:14px!important}
+[data-sv="navi"],[data-sv="homeact"]{display:flex;align-items:center;gap:14px;height:60px!important;padding:0 22px;border-radius:30px;background:#424242;color:#f5f5f5!important;font:500 17px/1 'Helvetica Neue',Helvetica,Arial,sans-serif!important;letter-spacing:.01em!important;margin:0!important;box-sizing:border-box}
+[data-sv="navi"]:hover{background:#4d4d4d}
+[data-sv="navi"][data-on="1"],[data-sv="homeact"]{background:#1985FF!important;color:#fff!important}
+[data-sv="navic"]{width:22px;height:22px;flex:none}
+[data-sv="navl"]{overflow:hidden;text-overflow:ellipsis;line-height:22px}
+[data-sv="navi"]:focus-visible{outline:2px solid #fff;outline-offset:2px}
+[data-sv="setp"]{margin-top:auto;background:#8C8C8C;border-radius:40px;padding:28px 36px}
+[data-sv="hf"]{margin:0!important;height:60px!important;padding:0 22px;border-radius:30px;background:#424242;color:#f5f5f5}
+[data-sv="hf"] span:last-child{color:#c9c9c9!important}
+[data-sv="main"],[data-sv="homemain"]{background:#282828;border-radius:40px;padding:48px 48px 24px!important;min-height:calc(100vh - 48px)!important;box-sizing:border-box}
+[data-sv="homemain"]{padding-bottom:48px!important}
+[data-sv="bar"]{border-radius:28px!important}
+[data-sv="gobtn"],.character-generate-button,.brief-next{border-radius:24px!important}
+@media (max-width:1200px){
+ [data-sv="app"],[data-sv="home"]{grid-template-columns:270px minmax(0,1fr)!important;column-gap:20px!important;padding:20px}
+ [data-sv="side"],[data-sv="homeside"]{width:auto!important;padding:0!important;gap:20px!important;top:20px!important;height:calc(100vh - 40px)!important}
+ [data-sv="sidebody"],[data-sv="homebody"]{padding:28px 22px!important;border-radius:32px}
+ [data-sv="navi"],[data-sv="homeact"]{height:52px!important;font-size:16px!important}
+ [data-sv="setp"]{padding:20px 22px;border-radius:32px}
+ [data-sv="hf"]{height:52px!important}
+ [data-sv="main"],[data-sv="homemain"]{padding:36px 32px 20px!important;border-radius:32px;min-height:calc(100vh - 40px)!important}
+ [data-sv="homegrid"]{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media (max-width:860px){
+ [data-sv="app"],[data-sv="home"]{display:flex!important;flex-direction:column;gap:16px;padding:16px}
+ [data-sv="side"],[data-sv="homeside"]{position:static!important;height:auto!important;padding:0!important;gap:16px!important;box-shadow:none!important;overflow:visible}
+ [data-sv="side"]>div:first-child,[data-sv="homeside"]>div:first-child{display:block!important;padding:8px 0 0 4px}
+ [data-sv="sidebody"],[data-sv="homebody"]{border-radius:28px;padding:16px 18px!important;gap:12px!important}
+ [data-sv="sidebody"]>div:first-child{margin-bottom:0!important}
+ [data-sv="nav"]{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px!important;overflow:visible!important;padding:0!important}
+ [data-sv="navi"]{height:48px!important;padding:0!important;justify-content:center;border-radius:24px;flex:auto}
+ [data-sv="navl"]{display:none}
+ [data-sv="homeact"]{height:48px!important;border-radius:24px}
+ [data-sv="setp"]{border-radius:28px;padding:12px 14px;flex:1 1 100%;order:4}
+ [data-sv="hf"]{height:48px!important;max-width:none!important}
+ [data-sv="main"],[data-sv="homemain"]{padding:20px 16px 16px!important;border-radius:28px;min-height:auto!important}
+ [data-sv="homemain"]>div:first-child{flex-wrap:wrap}
+ [data-sv="home-headline"]{white-space:normal!important}
+ [data-sv="homegrid"]{gap:24px 14px!important}
+ [data-sv="crumbs"]{flex-wrap:wrap!important;row-gap:10px!important}
+ [data-sv="crumbs"]>div:nth-child(2){white-space:normal!important;font-size:22px!important;line-height:28px!important;flex:1 1 calc(100% - 44px)!important}
+ [data-sv="bar"]{padding:12px!important;border-radius:24px!important}
+ [data-sv="bar"]>[data-sv="gobtn"],[data-sv="bar"] [data-sv="gobtn"]{position:static!important;transform:none!important;margin-left:auto!important}
+}
+@media (max-width:560px){[data-sv="homegrid"]{grid-template-columns:minmax(0,1fr)!important}}
 </style></helmet>
 <div data-sv="app" style="display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px;min-height:100vh">
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="00 Projects" style="position:fixed;inset:0;z-index:60;overflow:auto;background:#080808;display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px">
-  <aside style="width:300px;box-sizing:border-box;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
+<div data-sv="home" data-screen-label="00 Projects" style="position:fixed;inset:0;z-index:60;overflow:auto;background:#080808;display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px">
+  <aside data-sv="homeside" style="width:300px;box-sizing:border-box;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
     <div style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em"><span aria-label="SOLVED" style="display:block;color:#FFFFFF;font-family:&#39;SF Mono&#39;,SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:22px;line-height:1;letter-spacing:.06em">SOLVED</span></div>
-    <div style="display:flex;flex-direction:column;gap:40px">
+    <div data-sv="homebody" style="display:flex;flex-direction:column;gap:40px">
       <div style="display:flex;flex-direction:column;gap:4px;height:38px">
         <div style="height:18px;font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5">{{ home.countLabel }}</div>
         <div style="height:16px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#929292">SOLVED Studio</div>
       </div>
-      <div style="height:29px;font:700 26px/29px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.01em;color:#1985FF">Projects</div>
+      <div data-sv="homeact" style="height:29px;font:700 26px/29px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.01em;color:#1985FF">Projects</div>
     </div>
   </aside>
-  <main style="min-width:0;padding:101px 64px 64px 0;display:flex;flex-direction:column;gap:40px">
+  <main data-sv="homemain" style="min-width:0;padding:101px 64px 64px 0;display:flex;flex-direction:column;gap:40px">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:32px">
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
       <div data-sv="home-headline" style="flex:1;min-width:0;font:700 28px/36px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.36px;color:#f5f5f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Create or open a project</div>
@@ -200,7 +254,7 @@ img[alt="SOLVED"]{filter:none}
       </div>
       <div style="font:400 12px/14px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.03em">Projects  /  <b>All</b></div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 20px">
+    <div data-sv="homegrid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 20px">
       <div data-sv="newp" sc-camel-on-click="{{ home.create }}" style="display:flex;flex-direction:column;gap:14px;cursor:pointer">
         <div data-sv="newbox" style="aspect-ratio:16 / 9;box-sizing:border-box;border:1px dashed #414141;border-radius:6px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px">
           <div data-sv="newplus" style="position:relative;width:52px;height:52px;border-radius:50%;background:#1985FF"><span style="position:absolute;left:16px;top:24px;width:20px;height:4px;border-radius:2px;background:#191919"></span><span style="position:absolute;left:24px;top:16px;width:4px;height:20px;border-radius:2px;background:#191919"></span></div>
@@ -264,15 +318,15 @@ img[alt="SOLVED"]{filter:none}
       </div>
       <nav data-sv="nav" style="display:flex;flex-direction:column;gap:4px">
         <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
-          <div data-sv="navi" sc-camel-on-click="{{ n.pick }}" style-hover="color:#1985FF" style="transition:color .12s;height:29px;margin-bottom:{{ n.mb }};font:700 26px/29px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.01em;white-space:nowrap;cursor:pointer;color:{{ n.color }}">{{ n.label }}</div>
+          <div data-sv="navi" data-on="{{ n.on }}" title="{{ n.label }}" aria-label="{{ n.label }}" sc-camel-on-click="{{ n.pick }}" style="transition:background-color .12s;height:29px;margin-bottom:{{ n.mb }};font:700 26px/29px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.01em;white-space:nowrap;cursor:pointer;color:{{ n.color }}"><svg data-sv="navic" width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ n.icon }}"></path></svg><span data-sv="navl">{{ n.label }}</span></div>
         </sc-for>
       </nav>
     </div>
-    <div data-sv="hf" sc-camel-on-click="{{ hfOpen }}" style="margin-top:auto;display:flex;align-items:center;gap:8px;height:28px;cursor:pointer">
+    <div data-sv="setp"><div data-sv="hf" sc-camel-on-click="{{ hfOpen }}" style="margin-top:auto;display:flex;align-items:center;gap:8px;height:28px;cursor:pointer">
       <span style="width:8px;height:8px;border-radius:50%;flex:none;background:{{ hfDot }}"></span>
       <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;white-space:nowrap">HIGGSFIELD</span>
       <span style="font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#929292;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ hfStatus }}</span>
-    </div>
+    </div></div>
   </aside>
   <sc-if value="{{ castUpOpen }}" hint-placeholder-val="{{ false }}">
     <div data-sv="castup" sc-camel-on-click="{{ castUpClose }}" style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center">
@@ -1264,6 +1318,7 @@ const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION',
 // Workflow order (Back / Next arrows). Style lives inside Storyboards.
 const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
 // Sidebar: main sections only. Brief opens from the Dashboard.
+const NAV_ICON = { OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
 const SIDE_NAV = [['OVERVIEW', 'DASHBOARD'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY'], ['LIBRARY', 'LIBRARY']];
 const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
 const SOON_PAGES = { VIDEOS: ['Make your videos', 'Videos are made from your storyboard frames. This section is built in step 5.'], EDITING: ['Edit your content', 'Image Editor and Video Editor are built in step 5.'], DELIVERY: ['Choose your file destination', 'ZIP, Google Drive, Dropbox, Frame.io and share links are built in step 6.'], LIBRARY: ['All files in this project', 'Brief, Images, Videos, Editing and Delivery files. Built in step 6.'] };
@@ -2899,7 +2954,7 @@ class Component extends DCLogic {
       })(),
       projName: proj || 'Untitled project', projColor: proj ? '#f5f5f5' : '#929292', clientName: client || 'No client',
       goOverview: () => { this.initial = values; this.setState({ page: 'BRIEF', view: 'all', attachOpen: false }); },
-      nav: SIDE_NAV.map(([p, label]) => ({ label, mb: (p === 'OVERVIEW' || p === 'DELIVERY') ? '20px' : '0px', color: (p === page || (p === 'IMAGES' && IMAGE_PAGES.includes(page))) ? '#1985FF' : '#929292',
+      nav: SIDE_NAV.map(([p, label]) => ({ label, mb: (p === 'OVERVIEW' || p === 'DELIVERY') ? '20px' : '0px', color: '#f5f5f5', on: (p === page || (p === 'IMAGES' && IMAGE_PAGES.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
 
       crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : isHub ? 'IMAGES' : page === 'STYLE' ? 'STORYBOARDS' : page === 'KEYFRAMES' ? 'STORYBOARDS' : page === 'PRODUCT' ? 'PRODUCTS' : page === 'LOCATION' ? 'LOCATIONS' : page === 'SETDESIGN' ? 'SET DESIGN' : page === 'TALENT' ? 'CHARACTERS' : page, crumbSep: '/',
