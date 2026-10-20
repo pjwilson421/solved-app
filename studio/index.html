@@ -201,12 +201,20 @@ html,body{background:#B5B5B5!important}
 [data-sv="bar"]{border-radius:10px!important}
 [data-sv="gobtn"],.character-generate-button,.brief-next{border-radius:8px!important}
 [data-sv="chip"],[data-sv="addbtn"],[data-sv="optinner"]{border-radius:6px!important}
+@media (min-width:861px){
+ [data-sv="side"],[data-sv="homeside"]{background:#282828!important;border-radius:12px;padding:40px 36px 36px!important;box-sizing:border-box;gap:32px!important}
+ [data-sv="side"]>div:first-child,[data-sv="homeside"]>div:first-child{padding:0 0 0 2px}
+ [data-sv="side"]>div:first-child span,[data-sv="homeside"]>div:first-child span{color:#f5f5f5!important}
+ [data-sv="sidebody"],[data-sv="homebody"]{background:transparent;border-radius:0;padding:0!important}
+ [data-sv="setp"]{border-radius:10px;padding:20px}
+}
 @media (max-width:1200px){
  [data-sv="app"],[data-sv="home"]{grid-template-columns:270px minmax(0,1fr)!important;column-gap:20px!important;padding:20px}
  [data-sv="side"],[data-sv="homeside"]{width:auto!important;padding:0!important;gap:20px!important;top:20px!important;height:calc(100vh - 40px)!important}
- [data-sv="sidebody"],[data-sv="homebody"]{padding:28px 22px!important;border-radius:12px}
+ [data-sv="side"],[data-sv="homeside"]{padding:28px 22px 22px!important}
+ [data-sv="sidebody"],[data-sv="homebody"]{padding:0!important}
  [data-sv="navi"],[data-sv="homeact"]{height:52px!important;font-size:16px!important}
- [data-sv="setp"]{padding:20px 22px;border-radius:12px}
+ [data-sv="setp"]{padding:16px;border-radius:10px}
  [data-sv="hf"]{height:52px!important}
  [data-sv="main"],[data-sv="homemain"]{padding:36px 32px 20px!important;border-radius:12px;min-height:calc(100vh - 40px)!important}
  [data-sv="homegrid"]{grid-template-columns:repeat(2,minmax(0,1fr))!important}
