@@ -29,6 +29,7 @@
 <script src="/studio/assets/cloud-sync.js?v=2"></script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="/studio/assets/solved-puzzle.svg">
 <script src="/studio/assets/a8fad9be-676a-442d-92f9-356dcc0e99ed.js"></script>
 <script defer src="/studio/assets/image-aspect.js?v=equal-height-2"></script>
 <style id="ds-css">
@@ -246,7 +247,7 @@ html,body{background:#B5B5B5!important}
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
 <div data-sv="home" data-screen-label="00 Projects" style="position:fixed;inset:0;z-index:60;overflow:auto;background:#080808;display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px">
   <aside data-sv="homeside" style="width:300px;box-sizing:border-box;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
-    <div style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em"><span aria-label="SOLVED" style="display:block;color:#FFFFFF;font-family:&#39;SF Mono&#39;,SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:22px;line-height:1;letter-spacing:.06em">SOLVED</span></div>
+    <div style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em"><img src="/studio/assets/solved-puzzle.svg" alt="SOLVED" width="46" height="44" style="display:block;width:46px;height:44px"></div>
     <div data-sv="homebody" style="display:flex;flex-direction:column;gap:40px">
       <div style="display:flex;flex-direction:column;gap:4px;height:38px">
         <div style="height:18px;font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5">{{ home.countLabel }}</div>
@@ -318,7 +319,7 @@ html,body{background:#B5B5B5!important}
 </div>
 </sc-if>
   <aside data-sv="side" style="width:300px;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
-    <div sc-camel-on-click="{{ goHome }}" title="All projects" style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;cursor:pointer"><span aria-label="SOLVED" style="display:block;color:#FFFFFF;font-family:&#39;SF Mono&#39;,SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:22px;line-height:1;letter-spacing:.06em">SOLVED</span></div>
+    <div sc-camel-on-click="{{ goHome }}" title="All projects" style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;cursor:pointer"><img src="/studio/assets/solved-puzzle.svg" alt="SOLVED" width="46" height="44" style="display:block;width:46px;height:44px"></div>
     <div data-sv="sidebody" style="display:flex;flex-direction:column;gap:40px">
       <div sc-camel-on-click="{{ goHome }}" title="All projects" style-hover="color:#1985FF" style="margin-bottom:-24px;height:16px;display:flex;align-items:center;gap:6px;font:700 11px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;cursor:pointer;transition:color .12s"><span>←</span><span>All projects</span></div>
       <div data-sv="proj" sc-camel-on-click="{{ goOverview }}" style="display:flex;flex-direction:column;gap:4px;height:38px;cursor:pointer">
