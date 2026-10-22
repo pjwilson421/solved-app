@@ -19,12 +19,12 @@
   const put=await fetch(u.upload_url,{method:'PUT',headers:{'Content-Type':blob.type,...u.upload_headers},body:blob,credentials:'omit'});
   if(!put.ok)throw new Error('Reference upload failed. No generation was submitted.');return u.public_url;
  }
- async function generate({prompt,references=[],aspect='1:1',model,quality,resolution,onStatus}={}){
+ async function generate({prompt,references=[],aspect='1:1',model,quality,resolution,enhancePrompt,presetId,refsMax=8,onStatus}={}){
   if(!live||cfg.enabled===false)throw new Error(lastError||'Connect Higgsfield in the sidebar first.');
-  if(references.filter(Boolean).length>8)throw new Error('Use up to eight references.');
+  if(references.filter(Boolean).length>refsMax)throw new Error('Use up to '+refsMax+' references.');
   onStatus?.('Uploading references');const refs=await Promise.all(references.filter(Boolean).map(reference));
   // Submit once only. An uncertain response must never trigger an automatic duplicate.
-  const j=await api('/hf-generate',{prompt,references:refs,aspect,model:model||cfg.model,quality:quality||cfg.quality,resolution:resolution||cfg.resolution});
+  const j=await api('/hf-generate',{prompt,references:refs,aspect,model:model||cfg.model,quality:quality||cfg.quality,resolution:resolution||cfg.resolution,enhancePrompt,presetId});
   const deadline=Date.now()+22*60*1000;let failures=0;
   while(Date.now()<deadline){
    await new Promise(r=>setTimeout(r,failures?8000:3000));let s;
@@ -50,7 +50,15 @@
   }
   throw new Error('The video is still rendering. Check Higgsfield history before retrying.');
  }
- window.SOLVED_HF={video,get:()=>({...cfg,ready,live,available:live,lastError}),set:v=>{cfg={...cfg,...v};save();},connected:()=>live&&cfg.enabled!==false,generate,test,disconnect:()=>{cfg.enabled=false;save();}};
+ let presetCache=null;
+ async function presets(){
+  if(!live||cfg.enabled===false)throw new Error(lastError||'Connect Higgsfield in the sidebar first.');
+  if(presetCache)return presetCache;
+  const j=await api('/hf-presets');
+  const list=Array.isArray(j)?j:Array.isArray(j.presets)?j.presets:Array.isArray(j.data)?j.data:[];
+  return(presetCache=list.map(p=>({id:p.id||p.preset_id,name:p.name||p.label||p.id||p.preset_id})).filter(p=>p.id));
+ }
+ window.SOLVED_HF={video,get:()=>({...cfg,ready,live,available:live,lastError}),set:v=>{cfg={...cfg,...v};save();},connected:()=>live&&cfg.enabled!==false,generate,presets,test,disconnect:()=>{cfg.enabled=false;save();}};
  window.SOLVED_IMAGE_GEN=generate;
  window.claude={complete:async({messages,max_tokens})=>(await api('/claude',{messages,max_tokens})).text};
  test().catch(()=>{});
