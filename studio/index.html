@@ -1700,13 +1700,14 @@ const SFACT = [
   ['comp', 'Composition', ['Rule of Thirds', 'Centered', 'Negative Space', 'Tight Crop']],
 ];
 const SDEF = { medium: 'Photograph', light: 'Natural Daylight', palette: 'Natural', lens: '35mm', texture: 'Fine Grain', comp: 'Rule of Thirds' };
-const SPRESETS = [{ ...SDEF },
-  { ...SDEF, light: 'Golden Hour', palette: 'Warm', lens: '50mm', texture: '35mm Film Grain' },
-  { ...SDEF, light: 'Soft Studio', palette: 'Muted', lens: '85mm Portrait', texture: 'Clean Digital', comp: 'Centered' },
-  { ...SDEF, medium: 'Film Still', light: 'Low-Key / Moody', palette: 'Cool', texture: '35mm Film Grain', comp: 'Negative Space' },
-  { ...SDEF, light: 'Hard Flash', palette: 'Vivid', lens: '24mm Wide', texture: 'Clean Digital', comp: 'Centered' },
-  { ...SDEF, light: 'Low-Key / Moody', palette: 'Monochrome', texture: '35mm Film Grain', comp: 'Tight Crop' },
-  { ...SDEF, medium: 'Film Still', light: 'Neon / Practical', palette: 'Vivid', texture: 'Soft Bloom' }];
+const SPRESETS = [
+  { name: 'Studio Pop', desc: 'Glossy studio photograph against a saturated, color-blocked geometric backdrop. Soft high-key beauty lighting, vivid color, 50mm lens, clean digital finish, centered composition.', f: { ...SDEF, light: 'Soft Studio', palette: 'Vivid', lens: '50mm', texture: 'Clean Digital', comp: 'Centered' } },
+  { name: 'Clean Catalog', desc: 'Bright, flat, evenly lit commercial photograph — classic catalog and lifestyle ad look. Natural color, 35mm lens, clean digital finish, rule-of-thirds composition.', f: { ...SDEF, light: 'Soft Studio', palette: 'Natural', lens: '35mm', texture: 'Clean Digital', comp: 'Rule of Thirds' } },
+  { name: 'Cinematic Teal', desc: 'Moody cinematic film still with a desaturated teal-orange grade and anamorphic-style flares. Low-key lighting, cool color, 85mm lens with shallow depth of field, 35mm film grain, negative-space composition.', f: { ...SDEF, medium: 'Film Still', light: 'Low-Key / Moody', palette: 'Cool', lens: '85mm Portrait', texture: '35mm Film Grain', comp: 'Negative Space' } },
+  { name: 'Golden Hour', desc: 'Sun-drenched outdoor photograph in warm, golden-hour light against gritty, textured surfaces. Warm color, 50mm lens, 35mm film grain, rule-of-thirds composition.', f: { ...SDEF, light: 'Golden Hour', palette: 'Warm', lens: '50mm', texture: '35mm Film Grain', comp: 'Rule of Thirds' } },
+  { name: 'Pop Flash', desc: 'Bold, saturated photograph lit with hard direct flash — punchy, retro pop-art energy. Vivid color, 24mm wide lens, clean digital finish, centered composition.', f: { ...SDEF, light: 'Hard Flash', palette: 'Vivid', lens: '24mm Wide', texture: 'Clean Digital', comp: 'Centered' } },
+  { name: 'Shot on iPhone', desc: 'Natural, handheld mobile-camera photograph. Soft natural daylight, true-to-life color, wide 24mm-equivalent lens, clean digital finish with no film grain, rule-of-thirds composition.', f: { ...SDEF, light: 'Natural Daylight', palette: 'Natural', lens: '24mm Wide', texture: 'Clean Digital', comp: 'Rule of Thirds' } },
+];
 const SFRAMES = ['Hero', 'Talent', 'Product', 'Location', 'Detail'];
 const SPAL = { Natural: '', Warm: 'sepia(.35) saturate(1.15) hue-rotate(-8deg)', Cool: 'hue-rotate(14deg) saturate(.85) brightness(1.03)', Muted: 'saturate(.5) contrast(.9) brightness(1.04)', Monochrome: 'grayscale(1) contrast(1.12)', Vivid: 'saturate(1.65) contrast(1.08)' };
 const STINT = { Warm: 'rgba(255,170,90,.35)', Cool: 'rgba(70,130,255,.35)', Muted: 'rgba(200,190,175,.3)' };
@@ -2365,8 +2366,8 @@ class Component extends DCLogic {
   async loadStyles() {
     let list = await idb.get('styles').catch(() => null);
     if (!Array.isArray(list)) {
-      list = await Promise.all(SPRESETS.map(async (f, i) => ({ ...freshStyle(), uid: uid(), name: 'Style ' + (i + 1), f, desc: sDescOf(f), at: Date.now(),
-        auto: true, frames: [{ label: 'Hero', subject: '', base: null, seed: i * 7 + 3, src: await styleRender(null, f, 70, i * 7 + 3, 'Hero') }] })));
+      list = await Promise.all(SPRESETS.map(async (p, i) => ({ ...freshStyle(), uid: uid(), name: p.name, f: p.f, desc: p.desc, at: Date.now(),
+        auto: true, frames: [{ label: 'Hero', subject: '', base: null, seed: i * 7 + 3, src: await styleRender(null, p.f, 70, i * 7 + 3, 'Hero') }] })));
       idb.set('styles', list).catch(() => {});
     }
     list = list.map(s => ('auto' in s ? s : { ...s, auto: /^Style [1-7]$/.test(s.name) && (s.frames || []).length === 1 }));
