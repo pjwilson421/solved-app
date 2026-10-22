@@ -1717,6 +1717,11 @@ const SLENS = { '24mm Wide': .92, '35mm': 1.05, '50mm': 1.18, '85mm Portrait': 1
 const SCOMP = { 'Rule of Thirds': 1.12, Centered: 1, 'Negative Space': 1, 'Tight Crop': 1.45 };
 const SBASE = { Natural: [32, 14], Warm: [28, 40], Cool: [212, 26], Muted: [40, 8], Monochrome: [0, 0], Vivid: [340, 55] };
 const sDescOf = f => f.medium + ' · ' + f.light + ' · ' + f.palette + ' color · ' + f.lens + ' lens · ' + f.texture + ' · ' + f.comp + ' composition';
+// Preset looks shipped with the app (shown first under Images › Choose a style). `img` paths live in /studio/assets/styles/.
+const PRESET_STYLES = [
+  { key: 'iphone', name: 'Shot on iPhone', desc: 'Shot on iPhone: smartphone main camera, wide 26mm field of view, deep focus with everything sharp, computational HDR with lifted shadows and protected highlights, crisp digital detail with light sharpening, natural mixed available light, true-to-life slightly cool and vivid color, no film grain, casual handheld eye-level framing, authentic candid feel.', imgs: [] },
+];
+const presetStyles = () => PRESET_STYLES.map(p => ({ uid: 'preset-' + p.key, preset: true, name: p.name, desc: p.desc, hero: 0, frames: p.imgs.map(f => ({ src: (location.protocol === 'https:' ? location.origin : 'https://solvedmedia.xyz') + '/studio/assets/styles/' + f })) }));
 const freshStyle = () => ({ uid: null, name: '', source: 'text', text: '', url: '', refs: [], f: { ...SDEF }, strength: 70, use: { brief: true, talent: true, product: true, wardrobe: true, location: true, set: true }, frames: [], hero: 0, desc: '', fTouched: false, descTouched: false });
 async function composeScene(locSrc, talSrc) {
   const W = 560, H = 560, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
@@ -2593,7 +2598,7 @@ class Component extends DCLogic {
       .catch(() => this.setState({ xLoaded: true }));
   }
   briefText() { const V = this.state.values || {}; return OV.map(([k]) => (V[k] || '').trim() ? k.charAt(0) + k.slice(1).toLowerCase() + ': ' + V[k].trim().slice(0, 600) : '').filter(Boolean).join('\n'); }
-  storyStyle() { const L = (this.state.styles || []); return L.find(s => s.uid === this.state.activeStyle) || L.find(s => s.status === 'approved') || L.find(s => !s.auto) || L[0] || null; }
+  storyStyle() { const A = this.activeStyle(); if (A) return A; const L = (this.state.styles || []); return L.find(s => s.status === 'approved') || L.find(s => !s.auto) || L[0] || null; }
   imgOfView(x) { const v = x && (x.views || []).find(y => y && y.source === 'uploaded') || x && (x.views || []).find(Boolean); return v ? this.state.imgs[v.img] || '' : ''; }
   storyboardRefs() {
     const S = this.state, st = this.storyStyle(), out = [];
@@ -2639,7 +2644,7 @@ class Component extends DCLogic {
   }
   // ---- free image generation (Images page)
   imgMode() { return this.state.imgMode || 'gen'; }
-  activeStyle() { const L = this.state.styles || []; return L.find(s => s.uid === this.state.activeStyle) || null; }
+  activeStyle() { const L = [...presetStyles(), ...(this.state.styles || [])]; return L.find(s => s.uid === this.state.activeStyle) || null; }
   styleRef() { const st = this.activeStyle(); return st ? ((st.frames || [])[st.hero] || (st.frames || [])[0] || {}).src || '' : ''; }
   kfAssetsAll() {
     const S = this.state, I = S.imgs || {}, sheetOf = arr => arr.filter(Boolean);
@@ -2670,9 +2675,9 @@ class Component extends DCLogic {
       modeHint: mode === 'gen' ? 'Describe any image in the prompt bar. Style in use: ' + styleName + '.' : mode === 'style' ? 'Pick a look. It is applied to every image and key frame you generate.' : 'Add a character, product and location (photo, sheet or both), then describe the frame. Style in use: ' + styleName + '.',
       galEmptyText: mode === 'kf' ? 'Your key frames appear here.' : 'Your images appear here.' };
     if (mode === 'style') {
-      const L = (S.styles || []);
+      const L = [...presetStyles(), ...(S.styles || [])];
       out.styleCards = L.map(x => { const src = ((x.frames || [])[x.hero] || (x.frames || [])[0] || {}).src || '', on = !!st && st.uid === x.uid;
-        return { name: x.name || 'Style', sub: x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }), on: on ? '1' : '0', isOn: on,
+        return { name: x.name || 'Style', sub: x.preset ? 'Preset' + (x.frames.length ? ' · ' + x.frames.length + ' references' : '') : x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }), on: on ? '1' : '0', isOn: on,
           pick: () => { const v = on ? null : x.uid; this.setState({ activeStyle: v }); try { localStorage.setItem('solved-active-style', JSON.stringify(v)); } catch (e) {} } }; });
       out.newStyle = () => { this.setState({ page: 'STYLE', view: 'all', item: null, prompt: '' }); setTimeout(() => this.newStyle(), 0); };
     }
