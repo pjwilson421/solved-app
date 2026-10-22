@@ -200,6 +200,18 @@ html,body{background:#282828!important}
 [data-sv="main"],[data-sv="homemain"]{background:#282828;border-radius:12px;padding:48px 48px 24px!important;min-height:calc(100vh - 48px)!important;box-sizing:border-box}
 [data-sv="homemain"]{padding-bottom:48px!important}
 [data-sv="bar"]{border-radius:10px!important}
+[data-sv="libwrap"]{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+[data-sv="libbtn"]{display:flex;align-items:center;gap:12px;height:40px;padding:0 4px;color:#f5f5f5;font:500 17px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;border-radius:8px;outline:none;transition:color .12s}
+[data-sv="libbtn"]:hover,[data-sv="libbtn"][data-on="1"]{color:#1985FF}
+[data-sv="libbtn"]:focus-visible{box-shadow:0 0 0 2px #1985FF}
+[data-sv="libbtn"] svg{flex:none;width:22px;height:22px}
+[data-sv="libsearch"]{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border-radius:8px;background:#1f1f1f;border:1px solid #3a3a3a;color:#929292;cursor:text;transition:border-color .12s}
+[data-sv="libsearch"]:focus-within{border-color:#1985FF;color:#f5f5f5}
+[data-sv="libsearch"] svg{flex:none}
+[data-sv="libsearch"] input{flex:1;min-width:0;width:100%;height:100%;border:0;outline:none;background:transparent;color:#f5f5f5;font:400 14px/20px 'Helvetica Neue',Helvetica,Arial,sans-serif}
+[data-sv="libsearch"] input::placeholder{color:#929292}
+@media (max-width:1200px){[data-sv="libbtn"]{font-size:16px}}
+@media (max-width:860px){[data-sv="libwrap"]{order:4;flex-basis:100%;min-width:0;max-width:100%;box-sizing:border-box;flex-direction:row;align-items:center;gap:12px;margin-top:0}[data-sv="libbtn"]{flex:none;height:44px;font-size:15px}[data-sv="libsearch"]{flex:1;min-width:0}[data-sv="nav"]{grid-template-columns:repeat(5,minmax(0,1fr))!important}}
 [data-sv="dash"]{display:grid;grid-template-columns:repeat(3,minmax(0,250px));gap:44px 14px;align-items:start}
 [data-sv="dtile"]{display:flex;flex-direction:column;gap:10px;cursor:pointer;min-width:0;outline:none}
 [data-sv="dbox"]{width:100%;aspect-ratio:1/1;border-radius:10px;background:#1f1f1f;display:flex;align-items:center;justify-content:center;color:#1985FF;transition:background-color .15s ease,box-shadow .15s ease}
@@ -232,13 +244,13 @@ html,body{background:#282828!important}
 @media (max-width:860px){
  [data-sv="app"],[data-sv="home"]{display:flex!important;flex-direction:column;gap:16px;padding:16px}
  [data-sv="side"],[data-sv="homeside"]{position:static!important;height:auto!important;padding:0!important;gap:16px!important;box-shadow:none!important;overflow:visible}
- [data-sv="side"]>div:first-child,[data-sv="homeside"]>div:first-child{display:block!important;padding:8px 0 0 4px}
- [data-sv="sidebody"],[data-sv="homebody"]{border-radius:10px;padding:16px 18px!important;gap:12px!important}
+ [data-sv="side"]>div:first-child,[data-sv="homeside"]>div:first-child{display:block!important;padding:8px 0 0 16px}
+ [data-sv="sidebody"],[data-sv="homebody"]{border-radius:0;padding:4px 16px 0!important;gap:12px!important}
  [data-sv="sidebody"]>div:first-child{margin-bottom:0!important}
  [data-sv="nav"]{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px!important;overflow:visible!important;padding:0!important}
  [data-sv="navi"]{height:48px!important;padding:0!important;justify-content:center;border-radius:8px;flex:auto}
  [data-sv="navl"]{display:none}
- [data-sv="homebody"]{padding:0 4px!important}
+
  [data-sv="setp"]{background:transparent!important;border-radius:0;padding:0 16px;flex:1 1 100%;order:4}
  [data-sv="hf"]{height:48px!important;max-width:none!important}
  [data-sv="main"],[data-sv="homemain"]{padding:20px 16px 16px!important;border-radius:10px;min-height:auto!important}
@@ -328,9 +340,8 @@ html,body{background:#282828!important}
 </div>
 </sc-if>
   <aside data-sv="side" style="width:300px;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
-    <div sc-camel-on-click="{{ goHome }}" title="All projects" style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;cursor:pointer"><img src="/studio/assets/solved-puzzle.svg" alt="SOLVED" width="46" height="44" style="display:block;width:46px;height:44px"></div>
+    <div sc-camel-on-click="{{ goImages }}" title="Images" style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;cursor:pointer"><img src="/studio/assets/solved-puzzle.svg" alt="SOLVED" width="46" height="44" style="display:block;width:46px;height:44px"></div>
     <div data-sv="sidebody" style="display:flex;flex-direction:column;gap:40px">
-      <div sc-camel-on-click="{{ goHome }}" title="All projects" style-hover="color:#1985FF" style="margin-bottom:-24px;height:16px;display:flex;align-items:center;gap:6px;font:700 11px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;cursor:pointer;transition:color .12s"><span>←</span><span>All projects</span></div>
       <div data-sv="proj" sc-camel-on-click="{{ goOverview }}" style="display:flex;flex-direction:column;gap:4px;height:38px;cursor:pointer">
         <div style="height:18px;font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:{{ projColor }}">{{ projName }}</div>
         <div style="height:16px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#929292;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ clientName }}</div>
@@ -340,6 +351,10 @@ html,body{background:#282828!important}
           <div data-sv="navi" data-on="{{ n.on }}" title="{{ n.label }}" aria-label="{{ n.label }}" sc-camel-on-click="{{ n.pick }}" style="transition:background-color .12s;height:29px;margin-bottom:{{ n.mb }};font:700 26px/29px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.01em;white-space:nowrap;cursor:pointer;color:{{ n.color }}"><svg data-sv="navic" width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ n.icon }}"></path></svg><span data-sv="navl">{{ n.label }}</span></div>
         </sc-for>
       </nav>
+      <div data-sv="libwrap">
+        <div data-sv="libbtn" data-on="{{ libOn }}" role="button" tabindex="0" sc-camel-on-click="{{ goLib }}"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h7l2 2h9v11H3z"></path></svg><span>Library</span></div>
+        <label data-sv="libsearch"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5"></path></svg><input type="search" value="{{ libQ }}" sc-camel-on-change="{{ setLibQ }}" placeholder="Search files" aria-label="Search files" spellcheck="false" autocomplete="off"></label>
+      </div>
     </div>
     <div data-sv="setp"><div data-sv="hf" sc-camel-on-click="{{ hfOpen }}" style="margin-top:auto;display:flex;align-items:center;gap:8px;height:28px;cursor:pointer">
       <span style="width:8px;height:8px;border-radius:50%;flex:none;background:{{ hfDot }}"></span>
@@ -910,6 +925,7 @@ html,body{background:#282828!important}
       <div data-screen-label="Library" class="x-page">
         <div class="x-head"><div class="ds-sub">All files <i class="ds-dim" style="font-style:normal">· {{ x.fTotal }}</i></div><div class="x-bar-btns"><button class="{{ x.gridCls }}" sc-camel-on-click="{{ x.setGrid }}">Grid</button><button class="{{ x.listCls }}" sc-camel-on-click="{{ x.setList }}">List</button></div></div>
         <sc-if value="{{ x.fNone }}" hint-placeholder-val="{{ false }}"><div class="ds-empty"><div><b>No files yet</b>Everything you make in this project appears here, organized by section.</div></div></sc-if>
+        <sc-if value="{{ x.fNoMatch }}" hint-placeholder-val="{{ false }}"><div class="ds-empty"><div><b>No files match “{{ x.fQuery }}”</b>Try a name like a character, product, location or shot.</div></div></sc-if>
         <sc-for list="{{ x.fgroups }}" as="g"><div class="ds-group"><h3>{{ g.title }} · {{ g.count }}</h3>
           <sc-if value="{{ x.libGrid }}" hint-placeholder-val="{{ true }}"><div class="x-files x-files-lg"><sc-for list="{{ g.files }}" as="f"><div class="x-file" title="{{ f.name }}" sc-camel-on-click="{{ f.download }}"><div class="x-file-img"><sc-if value="{{ f.isImg }}" hint-placeholder-val="{{ false }}"><div style="{{ f.bg }}"></div></sc-if><sc-if value="{{ f.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ f.src }}" muted preload="metadata"></video></sc-if><sc-if value="{{ f.isDoc }}" hint-placeholder-val="{{ false }}"><div class="x-doc">DOC</div></sc-if></div><div class="ds-tile-name">{{ f.name }}</div></div></sc-for></div></sc-if>
           <sc-if value="{{ x.libList }}" hint-placeholder-val="{{ false }}"><div class="x-list"><sc-for list="{{ g.files }}" as="f"><div class="x-hist"><span>{{ f.name }}</span><button class="ds-btn" sc-camel-on-click="{{ f.download }}">Download</button></div></sc-for></div></sc-if>
@@ -1346,10 +1362,10 @@ html,body{background:#282828!important}
 <script type="text/x-dc" data-dc-script="">
 const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
 // Workflow order (Back / Next arrows). Style lives inside Storyboards.
-const NAV_ORDER = ['OVERVIEW', 'BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
+const NAV_ORDER = ['BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
 // Sidebar: main sections only. Brief opens from the Dashboard.
-const NAV_ICON = { OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
-const SIDE_NAV = [['OVERVIEW', 'DASHBOARD'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY'], ['LIBRARY', 'LIBRARY']];
+const NAV_ICON = { BRIEF: 'M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5', OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
+const SIDE_NAV = [['BRIEF', 'BRIEF'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY']];
 const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
 const SOON_PAGES = { VIDEOS: ['Make your videos', 'Videos are made from your storyboard frames. This section is built in step 5.'], EDITING: ['Edit your content', 'Image Editor and Video Editor are built in step 5.'], DELIVERY: ['Choose your file destination', 'ZIP, Google Drive, Dropbox, Frame.io and share links are built in step 6.'], LIBRARY: ['All files in this project', 'Brief, Images, Videos, Editing and Delivery files. Built in step 6.'] };
 const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Storyboards' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Set design' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Images' : p.charAt(0) + p.slice(1).toLowerCase();
@@ -1639,8 +1655,8 @@ class Component extends DCLogic {
   selRef = React.createRef();
   state = {
     bopen: {}, bedit: {}, bdraft: {}, bdocs: load('solved-brief-docs', []), bNote: '', bBusy: false,
-    home: (() => { try { const f = sessionStorage.getItem('solved-open'); sessionStorage.removeItem('solved-open'); return !f; } catch (e) { return true; } })(), covers: null, homeEdit: null, homeConfirm: null,
-    page: 'OVERVIEW', view: 'all', item: null, values: this.initial, items: (() => { const it = load('solved-items', defaultItems()); return { ...it, KEYFRAMES: Array.isArray(it.KEYFRAMES) ? it.KEYFRAMES : defaultItems().KEYFRAMES }; })(),
+    home: (() => { try { sessionStorage.removeItem('solved-open'); } catch (e) {} return false; })(), covers: null, homeEdit: null, homeConfirm: null,
+    page: 'IMAGES', view: 'all', item: null, values: this.initial, items: (() => { const it = load('solved-items', defaultItems()); return { ...it, KEYFRAMES: Array.isArray(it.KEYFRAMES) ? it.KEYFRAMES : defaultItems().KEYFRAMES }; })(),
     store: load('solved-assets', { seq: {}, TALENT: [] }),
     prompt: '', mode: 'generate', attach: [], attachOpen: false,
     create: freshCreate(), tab: 'identity', varCat: 'ANGLES', confirmDelete: false,
@@ -2713,14 +2729,14 @@ class Component extends DCLogic {
         vxExport: () => this.exportTimeline(), vxBusy: !!S.vxBusy, vxLabel: S.vxBusy || 'Export edit (WebM)' });
     }
     if (X.dlOn || X.libOn) {
-      const all = this.projectFiles(), key = f => f.section + '|' + f.name + '|' + f.src.length, sel = S.dlSel;
+      const libQ = X.libOn ? (S.libQ || '').trim().toLowerCase() : '', all0 = this.projectFiles(), all = libQ ? all0.filter(f => (f.name + ' ' + f.section).toLowerCase().includes(libQ)) : all0, key = f => f.section + '|' + f.name + '|' + f.src.length, sel = S.dlSel;
       const sections = ['Brief', 'Products', 'Characters', 'Wardrobe', 'Locations', 'Set design', 'Storyboards', 'Videos', 'Editing'];
       const groups = sections.map(sec => { const fs = all.filter(f => f.section === sec); return { title: sec, count: String(fs.length), has: fs.length > 0,
         files: fs.map(f => { const on = !sel || !!sel[key(f)]; return { name: f.name, isImg: f.kind === 'image', isVid: f.kind === 'video', isDoc: f.kind === 'doc', src: f.src, bg: fit(f.src), mark: on ? '✓' : '', line: on ? '#1985FF' : '#303030',
           toggle: () => this.setState(s => { const cur = s.dlSel || Object.fromEntries(all.map(g => [key(g), true])); const n = { ...cur }; if (n[key(f)]) delete n[key(f)]; else n[key(f)] = true; return { dlSel: n }; }),
           download: e => { stop(e); const a = document.createElement('a'); a.href = f.src; a.download = (f.name || 'file').replace(/[^\w .-]+/g, ''); a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); } }; }) }; }).filter(g => g.has);
       const nSel = sel ? all.filter(f => sel[key(f)]).length : all.length;
-      Object.assign(X, { fgroups: groups, fNone: !all.length, fTotal: String(all.length), nSel: nSel + ' of ' + all.length + ' files selected',
+      Object.assign(X, { fgroups: groups, fNone: !all0.length, fNoMatch: !!libQ && !!all0.length && !all.length, fQuery: S.libQ || '', fTotal: libQ && all0.length ? all.length + ' of ' + all0.length + ' match “' + (S.libQ || '').trim() + '”' : String(all.length), nSel: nSel + ' of ' + all.length + ' files selected',
         selAll: () => this.setState({ dlSel: null }), selNone: () => this.setState({ dlSel: {} }), dlBusy: !!S.dlBusy, dlBusyLabel: S.dlBusy || '',
         dests: [['zip', 'ZIP download', 'Download the selected files as one ZIP, organized by section.', 'Download ZIP', () => this.deliverZip(), true],
           ['link', 'Client share link', 'Upload a ZIP and copy a private link that works for 7 days.', 'Create link', () => this.deliverLink(), true],
@@ -2983,8 +2999,12 @@ class Component extends DCLogic {
           create: () => { const id = 'p' + Date.now().toString(36); SV.saveRegistry(SV.registry().concat([{ id, created: Date.now(), start: '', end: '' }])); SV.set('solved-current', id); reload(true); } };
       })(),
       projName: proj || 'Untitled project', projColor: proj ? '#f5f5f5' : '#929292', clientName: client || 'No client',
+      goImages: () => { this.initial = values; this.setState({ page: 'IMAGES', view: 'all', item: null, attachOpen: false }); window.scrollTo(0, 0); },
+      libOn: page === 'LIBRARY' ? '1' : '0', libQ: this.state.libQ || '',
+      goLib: () => { this.initial = values; this.setState({ page: 'LIBRARY', view: 'all', item: null, attachOpen: false }); window.scrollTo(0, 0); },
+      setLibQ: e => { const q = e.target.value; this.initial = this.state.values; this.setState({ libQ: q, page: 'LIBRARY', view: 'all', item: null, attachOpen: false }); },
       goOverview: () => { this.initial = values; this.setState({ page: 'BRIEF', view: 'all', attachOpen: false }); },
-      nav: SIDE_NAV.map(([p, label]) => ({ label, mb: (p === 'OVERVIEW' || p === 'DELIVERY') ? '20px' : '0px', color: '#f5f5f5', on: (p === page || (p === 'IMAGES' && IMAGE_PAGES.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
+      nav: SIDE_NAV.map(([p, label]) => ({ label, mb: '0px', color: '#f5f5f5', on: (p === page || (p === 'IMAGES' && IMAGE_PAGES.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
 
       crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : isHub ? 'IMAGES' : page === 'STYLE' ? 'STORYBOARDS' : page === 'KEYFRAMES' ? 'STORYBOARDS' : page === 'PRODUCT' ? 'PRODUCTS' : page === 'LOCATION' ? 'LOCATIONS' : page === 'SETDESIGN' ? 'SET DESIGN' : page === 'TALENT' ? 'CHARACTERS' : page, crumbSep: '/',
