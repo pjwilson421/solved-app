@@ -146,6 +146,9 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-snew .x-simg{background:transparent;box-shadow:inset 0 0 0 1px #414141;border:0}
 .x-splus{font:300 34px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF}
 .x-sbadge{position:absolute;top:8px;left:8px;height:22px;padding:0 8px;border-radius:4px;background:#1985FF;color:#fff;display:flex;align-items:center;font:700 10px/1 'Helvetica Neue',Helvetica,sans-serif}
+.x-sexp{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:6px;background:rgba(17,17,17,.7);display:none;align-items:center;justify-content:center;color:#f5f5f5}
+.x-scard:hover .x-sexp,.x-scard:focus-visible .x-sexp{display:flex}
+.x-sexp:hover{color:#1985FF}
 .x-sname{display:flex;flex-direction:column;gap:2px;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5;min-width:0}
 .x-sname i{font-style:normal;font-weight:400;color:#a3a3a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .x-hubbody{display:flex;flex-direction:column;gap:20px;min-width:0}
@@ -922,7 +925,7 @@ html,body{background:#282828!important}
         <sc-if value="{{ x.modeStyle }}" hint-placeholder-val="{{ false }}">
           <div class="x-styles">
             <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
-            <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
+            <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
           </div>
         </sc-if>
         <div class="x-hubbody" data-kf="{{ x.kfOn }}">
@@ -1253,6 +1256,18 @@ html,body{background:#282828!important}
           <div style="display:flex;align-items:center;gap:18px;height:28px">
             <div style="flex:1;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">{{ previewLabel }}</div>
             <sc-for list="{{ previewActions }}" as="a" hint-placeholder-count="3"><div sc-camel-on-click="{{ a.click }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:{{ a.color }}">{{ a.label }}</div></sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ x.hasStylePreview }}" hint-placeholder-val="{{ false }}">
+      <div sc-camel-on-click="{{ x.closeStylePreview }}" style="position:fixed;inset:0;z-index:50;background:rgba(17,17,17,.55);display:flex;align-items:center;justify-content:center">
+        <div sc-camel-on-click="{{ stop }}" style="display:flex;flex-direction:column;gap:14px;padding:14px;border-radius:12px;background:#191919;box-shadow:0 12px 32px rgba(0,0,0,.2)">
+          <div style="width:min(860px,80vw);height:min(560px,64vh);background:#202020"><div style="{{ x.stylePreviewBg }}"></div></div>
+          <div style="display:flex;align-items:center;gap:18px;height:28px">
+            <div style="flex:1;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">{{ x.stylePreviewLabel }}</div>
+            <div sc-camel-on-click="{{ x.closeStylePreview }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:#929292">CLOSE</div>
           </div>
         </div>
       </div>
@@ -1776,7 +1791,7 @@ class Component extends DCLogic {
     store: load('solved-assets', { seq: {}, TALENT: [] }),
     prompt: '', mode: 'generate', attach: [], attachOpen: false,
     create: freshCreate(), tab: 'identity', varCat: 'ANGLES', confirmDelete: false,
-    gen: { running: false, status: '', count: 0, error: '' }, tcfg: loadTcfg(), sheetRun: null, gRun: null, gConfirm: null, ovrAsk2: null, slot: 'front', genSlot: null, sSlot: {}, castConfirm: null, castAtt: [], castCheck: null, castBusy: false, optOpen: null, ovrAsk: null, products: [], imgs: {}, pLoaded: false, pLoadError: '', pSlot: {}, locations: [], locPopup: null, locPreview: null,
+    gen: { running: false, status: '', count: 0, error: '' }, tcfg: loadTcfg(), sheetRun: null, gRun: null, gConfirm: null, ovrAsk2: null, slot: 'front', genSlot: null, sSlot: {}, castConfirm: null, castAtt: [], castCheck: null, castBusy: false, optOpen: null, ovrAsk: null, products: [], imgs: {}, pLoaded: false, pLoadError: '', pSlot: {}, locations: [], locPopup: null, locPreview: null, stylePreview: null,
     styles: [], sLoaded: false, sd: null, sNote: '', sBusy: false, imgMode: 'gen', activeStyle: load('solved-active-style', null), kfPick: {}, kfTab: 'c',
     hfShow: false, hfDraft: null, hfNote: '', hfBusy: false, hfTick: 0,
     kfImg: load('solved-kf', {}), kfSel: null, kfBusy: {},
@@ -2683,8 +2698,12 @@ class Component extends DCLogic {
       const L = (S.styles || []);
       out.styleCards = L.map(x => { const src = ((x.frames || [])[x.hero] || (x.frames || [])[0] || {}).src || '', on = !!st && st.uid === x.uid;
         return { name: x.name || 'Style', sub: x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }), on: on ? '1' : '0', isOn: on,
-          pick: () => { const v = on ? null : x.uid; this.setState({ activeStyle: v }); try { localStorage.setItem('solved-active-style', JSON.stringify(v)); } catch (e) {} } }; });
+          pick: () => { const v = on ? null : x.uid; this.setState({ activeStyle: v }); try { localStorage.setItem('solved-active-style', JSON.stringify(v)); } catch (e) {} },
+          expand: e => { stop(e); this.setState({ stylePreview: x.uid }); } }; });
       out.newStyle = () => { this.setState({ page: 'STYLE', view: 'all', item: null, prompt: '' }); setTimeout(() => this.newStyle(), 0); };
+      const spv = S.stylePreview, sps = spv ? L.find(y => y.uid === spv) : null, spSrc = sps ? ((sps.frames || [])[sps.hero] || (sps.frames || [])[0] || {}).src || '' : '';
+      out.hasStylePreview = !!sps; out.stylePreviewBg = fit(spSrc); out.stylePreviewLabel = sps ? sps.name : '';
+      out.closeStylePreview = () => this.setState({ stylePreview: null });
     }
     if (mode === 'kf') {
       const tab = S.kfTab || 'c', A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
@@ -3237,7 +3256,7 @@ class Component extends DCLogic {
       setLibQ: e => { const q = e.target.value; this.initial = this.state.values; this.setState({ libQ: q, page: 'LIBRARY', view: 'all', item: null, attachOpen: false }); },
       goOverview: () => { this.initial = values; this.setState({ page: 'BRIEF', view: 'all', attachOpen: false }); },
       nav: SIDE_NAV.map(([p, label]) => ({ label, mb: '0px', color: '#f5f5f5', on: (p === page || (p === 'IMAGES' && IMAGE_PAGES.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
-        pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
+        pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
 
       crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : isHub ? 'IMAGES' : page === 'STYLE' ? 'STORYBOARDS' : page === 'KEYFRAMES' ? 'STORYBOARDS' : page === 'PRODUCT' ? 'PRODUCTS' : page === 'LOCATION' ? 'LOCATIONS' : page === 'SETDESIGN' ? 'SET DESIGN' : page === 'TALENT' ? 'CHARACTERS' : page, crumbSep: '/',
       crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? ({ gen: 'GENERATE', style: 'STYLE', kf: 'KEY FRAMES' })[this.imgMode()] : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : inDetail ? curItem.name : 'ALL',
@@ -3309,7 +3328,7 @@ class Component extends DCLogic {
         const pImg = p => { const v = p.views.find(y => y && y.source === 'uploaded') || p.views.find(Boolean); return v ? this.state.imgs[v.img] || '' : ''; };
         const lImg = l => { const v = l.views.find(Boolean); return v ? this.state.imgs[v.img] || '' : ''; };
         const saved = OV.filter(([k]) => (values[k] || '').trim()).length, excerpt = (values['SUMMARY'] || values['CONCEPT'] || values['PROJECT NAME'] || '').trim();
-        const go = pg => () => { this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front' }); };
+        const go = pg => () => { this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front' }); };
         const first = (arr, fn) => { const a = arr.map(fn).find(Boolean); return a || ''; };
         const rows = [
           ['BRIEF', 'BRIEF', saved + ' of ' + OV.length + ' sections saved', '', excerpt],
@@ -3667,7 +3686,7 @@ class Component extends DCLogic {
         else this.setState(st => ({ castAtt: [...st.castAtt, ...c.srcs], castCheck: null })); },
       ...(() => {
         const i = NAV_ORDER.indexOf(page === 'STYLE' ? 'KEYFRAMES' : page), prev = page === 'STYLE' ? 'KEYFRAMES' : i > 0 ? NAV_ORDER[i - 1] : null, next = i >= 0 && i < NAV_ORDER.length - 1 ? NAV_ORDER[i + 1] : null;
-        const goPage = pg => { this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); };
+        const goPage = pg => { this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); };
         return {
           // on a character sheet, back returns to the main Characters page
           pagePrev: () => { if (isSheet) return goPage('TALENT'); if (gDetail) { this.setState({ sd: null }); return goPage(page); } if (prev) goPage(prev); },
