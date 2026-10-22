@@ -2371,6 +2371,18 @@ class Component extends DCLogic {
       idb.set('styles', list).catch(() => {});
     }
     list = list.map(s => ('auto' in s ? s : { ...s, auto: /^Style [1-7]$/.test(s.name) && (s.frames || []).length === 1 }));
+    const legacyIdx = list.map((s, i) => (s.auto && /^Style [1-7]$/.test(s.name) ? i : -1)).filter(i => i >= 0);
+    if (legacyIdx.length) {
+      const upgrades = {};
+      await Promise.all(legacyIdx.map(async (idx, n) => {
+        const p = SPRESETS[n]; if (!p) return;
+        const seed = n * 7 + 3;
+        upgrades[idx] = { ...list[idx], name: p.name, f: p.f, desc: p.desc, at: Date.now(),
+          frames: [{ label: 'Hero', subject: '', base: null, seed, src: await styleRender(null, p.f, 70, seed, 'Hero') }] };
+      }));
+      list = list.map((s, i) => upgrades[i] || s).filter((s, i) => legacyIdx.indexOf(i) < 0 || legacyIdx.indexOf(i) < SPRESETS.length);
+      idb.set('styles', list).catch(() => {});
+    }
     this.setState({ styles: list, sLoaded: true }, () => this.syncAutoStyles());
   }
   sceneSrcs() {
