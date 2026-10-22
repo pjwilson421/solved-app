@@ -123,6 +123,13 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-clip{flex:none;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:6px;background:#13263F;border:1px solid #1985FF}
 .x-clip-top{font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap}
 .x-clip-trim{display:flex;gap:8px;font:400 11px 'Helvetica Neue',Helvetica,sans-serif;color:#CFE2FA}.x-clip-trim input{width:56px;height:26px;margin-left:4px;border:0;border-radius:4px;background:#0f2017;color:#f5f5f5}
+[data-sv="edbar"]{margin-top:auto;position:sticky;bottom:24px;border-radius:12px;background:#1A1A1C;display:flex;flex-direction:column;gap:10px;padding:14px 14px 12px;box-shadow:0 8px 28px rgba(0,0,0,.18)}
+[data-sv="edbar"] textarea{flex:1;min-width:0;height:40px;max-height:120px;padding:10px 0;border:none;outline:none;resize:none;overflow:auto;background:transparent;color:#f5f5f5;font:400 14px/20px 'Helvetica Neue',Helvetica,sans-serif}
+[data-sv="edbar"] textarea::placeholder{color:#6a6a6a}
+[data-sv="edmic"]{width:40px;height:40px;flex:none;border:0;border-radius:50%;background:#2A2A2E;color:#929292;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background-color .12s,color .12s}
+[data-sv="edmic"]:hover{color:#f5f5f5}
+[data-sv="edmic"][data-on="1"]{background:#ef6b61;color:#fff}
+[data-sv="ednote"]{flex:1;min-width:0;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
 .x-dests{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
 .x-dest{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:8px;background:#191919}.x-dest .x-name{font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif}.x-dest .x-desc{flex:1;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}.x-dest .ds-btn{justify-content:center}
 .x-hist{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #222;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif}
@@ -1031,6 +1038,16 @@ html,body{background:#282828!important}
         <div class="ds-sub">Finished videos</div>
         <sc-if value="{{ x.vxNone }}" hint-placeholder-val="{{ false }}"><div class="x-muted">No finished videos yet. Make them on the Videos page.</div></sc-if>
         <div class="x-wrap"><sc-for list="{{ x.vxAvail }}" as="a"><button class="ds-btn" sc-camel-on-click="{{ a.add }}">+ {{ a.name }}</button></sc-for></div>
+        <div data-sv="edbar">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <textarea rows="1" value="{{ x.edPrompt }}" sc-camel-on-change="{{ x.edPromptSet }}" placeholder="Tell the AI editor what to do — “trim clip 2 to the action”, “put the product shot first”, “cut it down to 15 seconds”…" spellcheck="false"></textarea>
+            <button type="button" data-sv="edmic" data-on="{{ x.edMicOn }}" title="{{ x.edMicTitle }}" aria-label="{{ x.edMicTitle }}" sc-camel-on-click="{{ x.edMicToggle }}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg></button>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <sc-if value="{{ x.edHasNote }}" hint-placeholder-val="{{ false }}"><div data-sv="ednote">{{ x.edNote }}</div></sc-if>
+            <button type="button" class="ds-btn ds-on" style="margin-left:auto" disabled="{{ x.edDisabled }}" sc-camel-on-click="{{ x.edSubmit }}">{{ x.edSubmitLabel }}</button>
+          </div>
+        </div>
         <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div class="ds-err" role="alert">{{ errorText }}</div></sc-if>
       </div>
     </sc-if>
@@ -2920,6 +2937,40 @@ class Component extends DCLogic {
       this.setState({ vxBusy: null });
     } catch (e) { this.setState({ vxBusy: null }); this.setErr('Export failed — ' + (e && e.message ? e.message : 'unknown error') + '. Clips from Higgsfield may need to finish saving first.'); }
   }
+  async aiEditTimeline() {
+    const S = this.state, prompt = (S.edPrompt || '').trim();
+    if (!prompt || S.edBusy) return;
+    if (!window.claude || !window.claude.complete) return this.setErr('The AI editor isn’t available.');
+    const avail = (S.videos || []).filter(v => v.status === 'done' && v.url);
+    if (!avail.length) return this.setErr('Make some finished videos first, then describe the edit.');
+    const cur = (S.timeline || []).map(t => { const v = avail.find(x => x.uid === t.vid); return v ? { vid: t.vid, name: v.name, in: t.in || 0, out: t.out != null ? t.out : (v.duration || 5) } : null; }).filter(Boolean);
+    this.setState({ edBusy: 'Editing…' }); this.setErr('');
+    try {
+      const content = ['You are an AI video editor working with Adobe Premiere-level editing craft: tight pacing, trimming to the action, clean cuts on motion, and clear sequencing.',
+        'AVAILABLE CLIPS (reference by vid id only — do not invent ids):\n' + avail.map(v => '- vid:' + v.uid + ' "' + v.name + '" duration:' + (v.duration || 5).toFixed(1) + 's').join('\n'),
+        'CURRENT TIMELINE (in order):\n' + (cur.length ? cur.map((c, i) => (i + 1) + '. vid:' + c.vid + ' "' + c.name + '" in:' + c.in.toFixed(1) + ' out:' + c.out.toFixed(1)).join('\n') : 'empty'),
+        'EDITING NOTE FROM THE USER: ' + prompt,
+        'Rewrite the full timeline to satisfy the note. You may reorder clips, trim in/out points (seconds; out must stay within the clip’s duration and out > in), add available clips not yet on the timeline, or remove clips. Keep clips the note doesn’t mention unless it implies a full rebuild.',
+        'Return ONLY JSON: {"timeline":[{"vid":"","in":0,"out":0}],"note":"one short sentence describing what you changed"}'].join('\n\n');
+      const res = parseJSON(await window.claude.complete({ messages: [{ role: 'user', content }], max_tokens: 900 }));
+      const list = Array.isArray(res.timeline) ? res.timeline : [];
+      const next = list.map(e => { const v = avail.find(x => x.uid === e.vid); if (!v) return null; const dur = v.duration || 5, inV = Math.max(0, Math.min(dur - 0.1, +e.in || 0)), outV = Math.max(inV + 0.1, Math.min(dur, +e.out || dur)); return { id: uid(), vid: v.uid, in: inV, out: outV }; }).filter(Boolean).slice(0, 60);
+      if (!next.length) throw new Error('the AI didn’t return a usable timeline');
+      this.setX('timeline', () => next);
+      this.setState({ edBusy: null, edPrompt: '', edNote: String(res.note || '').slice(0, 240), vxPlay: null });
+    } catch (e) { this.setState({ edBusy: null }); this.setErr('AI edit failed — ' + (e && e.message ? e.message : 'unknown error') + '.'); }
+  }
+  toggleEdMic() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return this.setErr('Voice input isn’t supported in this browser. Try Chrome.');
+    if (this.edRec) { try { this.edRec.stop(); } catch (e) {} return; }
+    const r = new SR(); r.lang = 'en-US'; r.interimResults = true; r.continuous = true;
+    const base = (this.state.edPrompt || '').trim();
+    r.onresult = e => { let txt = ''; for (let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript; this.setState({ edPrompt: (base ? base + ' ' : '') + txt }); };
+    r.onend = () => { this.edRec = null; this.setState({ edListening: false }); };
+    r.onerror = () => { this.edRec = null; this.setState({ edListening: false }); };
+    this.edRec = r; this.setState({ edListening: true }); r.start();
+  }
   // ---- every file in this project, in nav order
   projectFiles() {
     const S = this.state, I = S.imgs || {}, out = [], add = (section, name, src, kind, extra) => src && out.push({ id: section + ':' + out.length, section, name, src, kind: kind || 'image', ...(extra || {}) });
@@ -3036,7 +3087,11 @@ class Component extends DCLogic {
           left: () => i > 0 && this.setX('timeline', a => { const b = a.slice(); [b[i - 1], b[i]] = [b[i], b[i - 1]]; return b; }), right: () => i < T.length - 1 && this.setX('timeline', a => { const b = a.slice(); [b[i + 1], b[i]] = [b[i], b[i + 1]]; return b; }),
           remove: () => this.setX('timeline', a => a.filter(y => y.id !== t.id)), play: () => this.setState({ vxPlay: x.url, vxIn: t.in || 0 }) }; }),
         tlEmpty: !T.length, tlTotal: T.reduce((n, t) => n + Math.max(0, (t.out || 5) - (t.in || 0)), 0).toFixed(1) + ' s', vxPlay: S.vxPlay || '', vxHasPlay: !!S.vxPlay,
-        vxExport: () => this.exportTimeline(), vxBusy: !!S.vxBusy, vxLabel: S.vxBusy || 'Export edit (WebM)' });
+        vxExport: () => this.exportTimeline(), vxBusy: !!S.vxBusy, vxLabel: S.vxBusy || 'Export edit (WebM)',
+        edPrompt: S.edPrompt || '', edPromptSet: e => this.setState({ edPrompt: e.target.value }),
+        edMicOn: S.edListening ? '1' : '0', edMicTitle: S.edListening ? 'Stop voice input' : 'Voice input', edMicToggle: () => this.toggleEdMic(),
+        edHasNote: !!S.edNote, edNote: S.edNote || '',
+        edDisabled: !(S.edPrompt || '').trim() || !!S.edBusy, edSubmitLabel: S.edBusy || 'Edit timeline', edSubmit: () => this.aiEditTimeline() });
     }
     if (X.dlOn || X.libOn) {
       const libQ = X.libOn ? (S.libQ || '').trim().toLowerCase() : '', all0 = this.projectFiles(), all = libQ ? all0.filter(f => (f.name + ' ' + f.section).toLowerCase().includes(libQ)) : all0, key = f => f.section + '|' + f.name + '|' + f.src.length, sel = S.dlSel;
