@@ -1700,6 +1700,7 @@ const SFACT = [
   ['comp', 'Composition', ['Rule of Thirds', 'Centered', 'Negative Space', 'Tight Crop']],
 ];
 const SDEF = { medium: 'Photograph', light: 'Natural Daylight', palette: 'Natural', lens: '35mm', texture: 'Fine Grain', comp: 'Rule of Thirds' };
+const STYLE_PREVIEW_BASE = '/studio/assets/style-preview-base.jpg';
 const SPRESETS = [
   { name: 'Studio Pop', desc: 'Glossy studio photograph against a saturated, color-blocked geometric backdrop. Soft high-key beauty lighting, vivid color, 50mm lens, clean digital finish, centered composition.', f: { ...SDEF, light: 'Soft Studio', palette: 'Vivid', lens: '50mm', texture: 'Clean Digital', comp: 'Centered' } },
   { name: 'Clean Catalog', desc: 'Bright, flat, evenly lit commercial photograph — classic catalog and lifestyle ad look. Natural color, 35mm lens, clean digital finish, rule-of-thirds composition.', f: { ...SDEF, light: 'Soft Studio', palette: 'Natural', lens: '35mm', texture: 'Clean Digital', comp: 'Rule of Thirds' } },
@@ -2367,7 +2368,7 @@ class Component extends DCLogic {
     let list = await idb.get('styles').catch(() => null);
     if (!Array.isArray(list)) {
       list = await Promise.all(SPRESETS.map(async (p, i) => ({ ...freshStyle(), uid: uid(), name: p.name, f: p.f, desc: p.desc, at: Date.now(),
-        auto: true, frames: [{ label: 'Hero', subject: '', base: null, seed: i * 7 + 3, src: await styleRender(null, p.f, 70, i * 7 + 3, 'Hero') }] })));
+        auto: true, frames: [{ label: 'Hero', subject: '', base: null, seed: i * 7 + 3, src: await styleRender(STYLE_PREVIEW_BASE, p.f, 70, i * 7 + 3, 'Hero') }] })));
       idb.set('styles', list).catch(() => {});
     }
     list = list.map(s => ('auto' in s ? s : { ...s, auto: /^Style [1-7]$/.test(s.name) && (s.frames || []).length === 1 }));
@@ -2378,7 +2379,7 @@ class Component extends DCLogic {
         const p = SPRESETS[n]; if (!p) return;
         const seed = n * 7 + 3;
         upgrades[idx] = { ...list[idx], name: p.name, f: p.f, desc: p.desc, at: Date.now(),
-          frames: [{ label: 'Hero', subject: '', base: null, seed, src: await styleRender(null, p.f, 70, seed, 'Hero') }] };
+          frames: [{ label: 'Hero', subject: '', base: null, seed, src: await styleRender(STYLE_PREVIEW_BASE, p.f, 70, seed, 'Hero') }] };
       }));
       list = list.map((s, i) => upgrades[i] || s).filter((s, i) => legacyIdx.indexOf(i) < 0 || legacyIdx.indexOf(i) < SPRESETS.length);
       idb.set('styles', list).catch(() => {});
@@ -2396,7 +2397,7 @@ class Component extends DCLogic {
     const todo = this.state.styles.filter(s => s.auto && s.sceneKey !== key); if (!todo.length) return;
     this.syncing = true;
     try {
-      const scene = sc.talent || sc.loc ? await composeScene(sc.loc, sc.talent) : null, out = {};
+      const scene = sc.talent || sc.loc ? await composeScene(sc.loc, sc.talent) : STYLE_PREVIEW_BASE, out = {};
       for (const s of todo) { const fr = s.frames[0] || { label: 'Hero', seed: 3 }; out[s.uid] = { ...fr, base: scene, src: await styleRender(scene, s.f, s.strength, fr.seed || 0, 'Hero') }; }
       this.updStyles(this.state.styles.map(s => (out[s.uid] ? { ...s, sceneKey: key, frames: [out[s.uid]] } : s)));
     } catch (e) {}

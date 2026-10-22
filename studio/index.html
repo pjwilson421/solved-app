@@ -1700,6 +1700,7 @@ const SFACT = [
   ['comp', 'Composition', ['Rule of Thirds', 'Centered', 'Negative Space', 'Tight Crop']],
 ];
 const SDEF = { medium: 'Photograph', light: 'Natural Daylight', palette: 'Natural', lens: '35mm', texture: 'Fine Grain', comp: 'Rule of Thirds' };
+const STYLE_PREVIEW_BASE = '/studio/assets/style-preview-base.jpg';
 const SPRESETS = [
   { name: 'Studio Pop', desc: 'Glossy studio photograph against a saturated, color-blocked geometric backdrop. Soft high-key beauty lighting, vivid color, 50mm lens, clean digital finish, centered composition.', f: { ...SDEF, light: 'Soft Studio', palette: 'Vivid', lens: '50mm', texture: 'Clean Digital', comp: 'Centered' } },
   { name: 'Clean Catalog', desc: 'Bright, flat, evenly lit commercial photograph — classic catalog and lifestyle ad look. Natural color, 35mm lens, clean digital finish, rule-of-thirds composition.', f: { ...SDEF, light: 'Soft Studio', palette: 'Natural', lens: '35mm', texture: 'Clean Digital', comp: 'Rule of Thirds' } },
@@ -1719,7 +1720,7 @@ const SCOMP = { 'Rule of Thirds': 1.12, Centered: 1, 'Negative Space': 1, 'Tight
 const SBASE = { Natural: [32, 14], Warm: [28, 40], Cool: [212, 26], Muted: [40, 8], Monochrome: [0, 0], Vivid: [340, 55] };
 const sDescOf = f => f.medium + ' · ' + f.light + ' · ' + f.palette + ' color · ' + f.lens + ' lens · ' + f.texture + ' · ' + f.comp + ' composition';
 const freshStyle = () => ({ uid: null, name: '', source: 'text', text: '', url: '', refs: [], f: { ...SDEF }, strength: 70, use: { brief: true, talent: true, product: true, wardrobe: true, location: true, set: true }, frames: [], hero: 0, desc: '', fTouched: false, descTouched: false });
-async function composeScene(locSrc, talSrc) {
+async function composeScene(locSrc, talSrc, prodSrc) {
   const W = 560, H = 560, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
   x.fillStyle = '#CFCAC2'; x.fillRect(0, 0, W, H);
   if (locSrc) { const i = await loadImg(locSrc), s = Math.max(W / i.width, H / i.height); x.drawImage(i, (W - i.width * s) / 2, (H - i.height * s) / 2, i.width * s, i.height * s); }
@@ -1727,6 +1728,13 @@ async function composeScene(locSrc, talSrc) {
     const i = await loadImg(talSrc), s = Math.min(W * (locSrc ? .62 : 1) / i.width, H * (locSrc ? .86 : 1) / i.height), w = i.width * s, hh = i.height * s, px = (W - w) / 2, py = locSrc ? H - hh - H * .04 : (H - hh) / 2;
     if (locSrc) { x.save(); x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 24; x.shadowOffsetY = 8; x.fillStyle = '#000'; x.fillRect(px, py, w, hh); x.restore(); }
     x.drawImage(i, px, py, w, hh);
+  }
+  if (prodSrc) {
+    // Product call-out: a framed inset in the corner, readable regardless of what's behind it.
+    const i = await loadImg(prodSrc), box = W * .32, pad = W * .05, bx0 = W - box - pad, by0 = H - box - pad;
+    const s = Math.max(box / i.width, box / i.height), iw = i.width * s, ih = i.height * s;
+    x.save(); x.shadowColor = 'rgba(0,0,0,.4)'; x.shadowBlur = 16; x.shadowOffsetY = 4; x.fillStyle = '#fff'; x.fillRect(bx0, by0, box, box); x.restore();
+    x.save(); x.beginPath(); x.rect(bx0, by0, box, box); x.clip(); x.drawImage(i, bx0 + (box - iw) / 2, by0 + (box - ih) / 2, iw, ih); x.restore();
   }
   return c.toDataURL('image/jpeg', 0.88);
 }
@@ -2367,7 +2375,7 @@ class Component extends DCLogic {
     let list = await idb.get('styles').catch(() => null);
     if (!Array.isArray(list)) {
       list = await Promise.all(SPRESETS.map(async (p, i) => ({ ...freshStyle(), uid: uid(), name: p.name, f: p.f, desc: p.desc, at: Date.now(),
-        auto: true, frames: [{ label: 'Hero', subject: '', base: null, seed: i * 7 + 3, src: await styleRender(null, p.f, 70, i * 7 + 3, 'Hero') }] })));
+        auto: true, frames: [{ label: 'Hero', subject: '', base: null, seed: i * 7 + 3, src: await styleRender(STYLE_PREVIEW_BASE, p.f, 70, i * 7 + 3, 'Hero') }] })));
       idb.set('styles', list).catch(() => {});
     }
     list = list.map(s => ('auto' in s ? s : { ...s, auto: /^Style [1-7]$/.test(s.name) && (s.frames || []).length === 1 }));
@@ -2378,7 +2386,7 @@ class Component extends DCLogic {
         const p = SPRESETS[n]; if (!p) return;
         const seed = n * 7 + 3;
         upgrades[idx] = { ...list[idx], name: p.name, f: p.f, desc: p.desc, at: Date.now(),
-          frames: [{ label: 'Hero', subject: '', base: null, seed, src: await styleRender(null, p.f, 70, seed, 'Hero') }] };
+          frames: [{ label: 'Hero', subject: '', base: null, seed, src: await styleRender(STYLE_PREVIEW_BASE, p.f, 70, seed, 'Hero') }] };
       }));
       list = list.map((s, i) => upgrades[i] || s).filter((s, i) => legacyIdx.indexOf(i) < 0 || legacyIdx.indexOf(i) < SPRESETS.length);
       idb.set('styles', list).catch(() => {});
@@ -2388,15 +2396,17 @@ class Component extends DCLogic {
   sceneSrcs() {
     const T = (this.state.store.TALENT || []).map(a => ({ n: a.name, s: (a.sheet && (a.sheet.front || Object.values(a.sheet).find(Boolean))) || a.main || '' })).find(x => x.s);
     const L = this.state.locations.map(l => { const v = l.views.find(Boolean); return { n: l.name, s: v ? this.state.imgs[v.img] || '' : '' }; }).find(x => x.s);
-    return { talent: T ? T.s : '', loc: L ? L.s : '', tn: T ? T.n : '', ln: L ? L.n : '' };
+    const P = this.state.products.filter(x => (x.kind || 'product') === 'product')
+      .map(p => { const v = p.views.find(y => y && y.source === 'uploaded') || p.views.find(Boolean); return { n: p.name, s: v ? this.state.imgs[v.img] || '' : '' }; }).find(x => x.s);
+    return { talent: T ? T.s : '', loc: L ? L.s : '', prod: P ? P.s : '', tn: T ? T.n : '', ln: L ? L.n : '', pn: P ? P.n : '' };
   }
   async syncAutoStyles() {
     if (!this.state.sLoaded || !this.state.pLoaded || this.syncing) return;
-    const sc = this.sceneSrcs(), key = sc.talent.length + ':' + sc.talent.slice(-40) + '|' + sc.loc.length + ':' + sc.loc.slice(-40);
+    const sc = this.sceneSrcs(), key = sc.talent.length + ':' + sc.talent.slice(-40) + '|' + sc.loc.length + ':' + sc.loc.slice(-40) + '|' + sc.prod.length + ':' + sc.prod.slice(-40);
     const todo = this.state.styles.filter(s => s.auto && s.sceneKey !== key); if (!todo.length) return;
     this.syncing = true;
     try {
-      const scene = sc.talent || sc.loc ? await composeScene(sc.loc, sc.talent) : null, out = {};
+      const scene = sc.talent || sc.loc || sc.prod ? await composeScene(sc.loc, sc.talent, sc.prod) : STYLE_PREVIEW_BASE, out = {};
       for (const s of todo) { const fr = s.frames[0] || { label: 'Hero', seed: 3 }; out[s.uid] = { ...fr, base: scene, src: await styleRender(scene, s.f, s.strength, fr.seed || 0, 'Hero') }; }
       this.updStyles(this.state.styles.map(s => (out[s.uid] ? { ...s, sceneKey: key, frames: [out[s.uid]] } : s)));
     } catch (e) {}
