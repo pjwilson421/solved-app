@@ -977,7 +977,7 @@ html,body{background:#282828!important}
               </div>
               <div class="x-vrow"><input class="x-vname" value="{{ v.name }}" sc-camel-on-change="{{ v.rename }}" spellcheck="false"><div class="{{ v.approveCls }}" sc-camel-on-click="{{ v.toggleApprove }}">{{ v.approveLabel }}</div></div>
               <textarea class="x-vprompt" value="{{ v.prompt }}" sc-camel-on-change="{{ v.setPrompt }}" placeholder="Describe the motion: camera move, action, mood…"></textarea>
-              <div class="x-vrow"><label class="x-muted">Length <select value="{{ v.duration }}" sc-camel-on-change="{{ v.setDuration }}"><option value="5">5 s</option><option value="10">10 s</option><option value="15">15 s</option></select></label>
+              <div class="x-vrow"><label class="x-muted">Length <select value="{{ v.duration }}" sc-camel-on-change="{{ v.setDuration }}"><sc-for list="{{ v.durOpts }}" as="d" hint-placeholder-count="5"><option value="{{ d.value }}">{{ d.label }}</option></sc-for></select></label>
                 <div class="x-bar-btns"><sc-if value="{{ v.canEdit }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.toTimeline }}">Edit</button></sc-if><button class="ds-btn" sc-camel-on-click="{{ v.del }}">Delete</button><button class="ds-btn ds-on" disabled="{{ v.running }}" sc-camel-on-click="{{ v.go }}">{{ v.goLabel }}</button></div></div>
               <div class="x-vnote" style="color:{{ v.noteColor }}">{{ v.note }}</div>
             </div>
@@ -1422,7 +1422,9 @@ html,body{background:#282828!important}
           <textarea ref="{{ taRef }}" rows="1" value="{{ prompt }}" sc-camel-on-change="{{ onPrompt }}" sc-camel-on-key-down="{{ onKey }}" placeholder="{{ barPh }}" data-sv="bartext" spellcheck="false" style="flex:1;min-width:0;height:40px;max-height:132px;padding:12px 0;border:none;outline:none;resize:none;overflow:auto;background:transparent;color:#191919;font:400 14px/20px 'Helvetica Neue',Helvetica,sans-serif"></textarea>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <sc-if value="{{ showAttach }}" hint-placeholder-val="{{ false }}">
           <div style="flex:none;display:flex;align-items:center"><div data-sv="addbtn" sc-camel-on-click="{{ talentPlus }}" style="position:relative;width:28px;height:28px;border-radius:50%;background:#2A2A2E;cursor:pointer"><span style="position:absolute;left:8px;top:13px;width:12px;height:2px;border-radius:1px;background:#191919"></span><span style="position:absolute;left:13px;top:8px;width:2px;height:12px;border-radius:1px;background:#191919"></span></div></div>
+          </sc-if>
           <sc-if value="{{ showGenOpts }}" hint-placeholder-val="{{ false }}">
             <sc-for list="{{ genOpts }}" as="o" hint-placeholder-count="5">
               <div data-sv="optwrap" sc-camel-on-mouse-enter="{{ o.open }}" sc-camel-on-mouse-leave="{{ o.close }}" style="flex:none">
@@ -1660,6 +1662,8 @@ const PTYPES = {
 };
 const PTYPE_KEYS = Object.keys(PTYPES);
 const TCFG_DEF = { model: 'gpt_image_2_5', ratio: '1:1', resolution: '1k', quality: 'high' };
+// Per-context defaults layered on top of TCFG_DEF (e.g. key frames default to 16:9; Videos default to a real video model, not an image one).
+const tcfgCtxDefaults = ctx => ({ ...TCFG_DEF, ...(ctx === 'IMAGES:kf' ? { ratio: '16:9' } : ctx === 'VIDEOS:main' ? { model: VMODEL_DEFAULT, duration: VMODELS[VMODEL_DEFAULT].durations[0], sound: 'off', ratio: '16:9', resolution: '720p' } : {}) });
 function loadTcfg() {
   try { const v = JSON.parse(localStorage.getItem('solved-gencfg') || '{}'); return v && typeof v === 'object' ? v : {}; } catch (e) { return {}; }
 }
@@ -1716,6 +1720,13 @@ const SFACT = [
 ];
 const SDEF = { medium: 'Photograph', light: 'Natural Daylight', palette: 'Natural', lens: '35mm', texture: 'Fine Grain', comp: 'Rule of Thirds' };
 const STYLE_PREVIEW_BASE = '/studio/assets/style-preview-base.jpg';
+// Video models mirror lib/hf.js's VIDEO_MODELS: each is either image-to-video (needs a start/end frame)
+// or text-to-video (needs a ratio + resolution instead). `connected: false` shows a clear "not connected" state.
+const VMODELS = {
+  kling3: { label: 'Kling 3.0 Standard', mode: 'image-to-video', durations: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], sound: true, connected: true },
+  seedance: { label: 'Seedance 2.5', mode: 'text-to-video', durations: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12], ratios: ['16:9', '9:16', '1:1', '4:3', '3:4'], resolutions: ['480p', '720p', '1080p'], connected: false },
+};
+const VMODEL_DEFAULT = 'kling3';
 const SPRESETS = [
   { name: 'Studio Pop', desc: 'Glossy studio photograph against a saturated, color-blocked geometric backdrop. Soft high-key beauty lighting, vivid color, 50mm lens, clean digital finish, centered composition.', f: { ...SDEF, light: 'Soft Studio', palette: 'Vivid', lens: '50mm', texture: 'Clean Digital', comp: 'Centered' } },
   { name: 'Clean Catalog', desc: 'Bright, flat, evenly lit commercial photograph — classic catalog and lifestyle ad look. Natural color, 35mm lens, clean digital finish, rule-of-thirds composition.', f: { ...SDEF, light: 'Soft Studio', palette: 'Natural', lens: '35mm', texture: 'Clean Digital', comp: 'Rule of Thirds' } },
@@ -2141,9 +2152,9 @@ class Component extends DCLogic {
     }, 1200);
   }
   // Characters keeps two sets of prompt-bar settings: one for the headshot, one for the sheet.
-  tcfg(ctx) { return { ...TCFG_DEF, ...(ctx === 'IMAGES:kf' ? { ratio: '16:9' } : {}), ...((this.state.tcfg || {})[ctx] || {}) }; }
+  tcfg(ctx) { return { ...tcfgCtxDefaults(ctx), ...((this.state.tcfg || {})[ctx] || {}) }; }
   tset(ctx, v) {
-    this.setState(s => { const next = { ...(s.tcfg || {}), [ctx]: { ...TCFG_DEF, ...((s.tcfg || {})[ctx] || {}), ...v } };
+    this.setState(s => { const next = { ...(s.tcfg || {}), [ctx]: { ...tcfgCtxDefaults(ctx), ...((s.tcfg || {})[ctx] || {}), ...v } };
       try { localStorage.setItem('solved-gencfg', JSON.stringify(next)); } catch (e) {}
       return { tcfg: next }; });
   }
@@ -2754,7 +2765,7 @@ class Component extends DCLogic {
   }
   // ---- videos
   frameSrc(n) { return this.state.kfImg[n + '-main'] || this.state.kfImg[n + '-start'] || ''; }
-  newVideo(patch) { return { uid: uid(), name: 'Video', frameN: null, start: '', end: '', prompt: '', duration: 5, status: 'idle', url: '', error: '', approved: false, at: Date.now(), ...patch }; }
+  newVideo(patch) { return { uid: uid(), name: 'Video', frameN: null, start: '', end: '', prompt: '', duration: 5, model: VMODEL_DEFAULT, sound: 'off', ratio: '16:9', resolution: '720p', status: 'idle', url: '', error: '', approved: false, at: Date.now(), ...patch }; }
   videoFromFrame(n, run) {
     const t = (this.state.items.KEYFRAMES || []).find(x => x.n === n); if (!t) return;
     const src = this.frameSrc(n); if (!src) return this.setErr('Generate the frame image first, then make its video.');
@@ -2775,15 +2786,29 @@ class Component extends DCLogic {
   async runVideo(id) {
     const v = (this.state.videos || []).find(x => x.uid === id); if (!v || v.status === 'running') return;
     const HF = window.SOLVED_HF; if (!HF || !HF.connected() || !HF.video) return this.updVideo(id, x => { x.error = 'Higgsfield isn’t connected, so you can’t make videos.'; return x; });
-    if (!v.start) return this.updVideo(id, x => { x.error = 'Add a start frame first.'; return x; });
+    const vm = VMODELS[v.model] || VMODELS[VMODEL_DEFAULT];
+    if (!vm.connected) return this.updVideo(id, x => { x.error = vm.label + ' isn’t connected yet. Use Kling 3.0 Standard for now.'; return x; });
+    if (vm.mode === 'image-to-video' && !v.start) return this.updVideo(id, x => { x.error = 'Add a start frame first.'; return x; });
     if (!(v.prompt || '').trim()) return this.updVideo(id, x => { x.error = 'Describe the shot first.'; return x; });
     this.updVideo(id, x => { x.status = 'running'; x.error = ''; x.note = 'Starting'; return x; });
     try {
-      const url = await HF.video({ image: v.start, lastImage: v.end || undefined, prompt: v.prompt, duration: v.duration, onStatus: s => this.updVideo(id, x => { x.note = s; return x; }) });
+      const url = await HF.video({ image: vm.mode === 'image-to-video' ? v.start : undefined, lastImage: vm.mode === 'image-to-video' ? (v.end || undefined) : undefined, prompt: v.prompt, duration: v.duration, model: v.model, sound: v.sound, ratio: v.ratio, resolution: v.resolution, onStatus: s => this.updVideo(id, x => { x.note = s; return x; }) });
       let keep = url; try { const r = await fetch(url); if (r.ok) { const b = await r.blob(); keep = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); } } catch (e) {}
       this.updVideo(id, x => { x.status = 'done'; x.url = keep; x.note = ''; x.at = Date.now(); return x; });
       this.recordUsage('VIDEOS', 'Videos · ' + v.name);
     } catch (e) { this.updVideo(id, x => { x.status = 'failed'; x.error = e && e.message ? e.message : 'Video failed.'; x.note = ''; return x; }); }
+  }
+  vidGen(p) {
+    const o = this.tcfg('VIDEOS:main'), model = o.model || VMODEL_DEFAULT, vm = VMODELS[model] || VMODELS[VMODEL_DEFAULT];
+    const att = this.state.castAtt || [];
+    if (vm.mode === 'image-to-video' && !att[0]) return this.setErr('Attach a start frame first.');
+    if (!(p || '').trim()) return this.setErr('Describe the shot to create.');
+    const v = this.newVideo({ prompt: p.trim(), model, duration: o.duration || vm.durations[0], sound: o.sound || 'off',
+      ratio: o.ratio || (vm.ratios ? vm.ratios[0] : '16:9'), resolution: o.resolution || (vm.resolutions ? vm.resolutions[0] : '720p'),
+      ...(vm.mode === 'image-to-video' ? { start: att[0] || '', end: att[1] || '' } : {}) });
+    this.setX('videos', a => [v, ...a]);
+    this.setState({ prompt: '', castAtt: [] });
+    setTimeout(() => this.runVideo(v.uid), 50);
   }
   // ---- editing
   allImages() { return this.projectFiles().filter(f => f.kind === 'image'); }
@@ -2939,7 +2964,9 @@ class Component extends DCLogic {
         vids: V.map(x => { const set = k => e => { const val = e.target.value; this.updVideo(x.uid, y => { y[k] = k === 'duration' ? +val : val; return y; }); };
           return { name: x.name, done: x.status === 'done' && !!x.url, url: x.url, notDone: !(x.status === 'done' && x.url), hasStart: !!x.start, startBg: fit(x.start || ''),
             running: x.status === 'running', note: x.status === 'running' ? (x.note || 'Rendering') + '…' : x.error || (x.status === 'done' ? 'Ready' : x.frameN ? 'From storyboard frame ' + x.frameN : 'Manual video'),
-            noteColor: x.error ? '#ef6b61' : x.status === 'done' ? '#1985FF' : '#a3a3a3', prompt: x.prompt, setPrompt: set('prompt'), rename: set('name'), duration: String(x.duration || 5), setDuration: set('duration'),
+            noteColor: x.error ? '#ef6b61' : x.status === 'done' ? '#1985FF' : '#a3a3a3', prompt: x.prompt, setPrompt: set('prompt'), rename: set('name'),
+            duration: String(x.duration || 5), setDuration: set('duration'),
+            durOpts: ((VMODELS[x.model] || VMODELS[VMODEL_DEFAULT]).durations).map(d => ({ value: String(d), label: d + ' s' })),
             goLabel: x.status === 'running' ? 'Rendering…' : x.status === 'done' ? 'Regenerate video' : 'Make video', go: () => this.runVideo(x.uid),
             pickStart: () => this.pick('vstart:' + x.uid), dropStart: this.dropTo('vstart:' + x.uid),
             approveLabel: x.approved ? 'Approved' : 'Not approved', approveCls: x.approved ? 'ds-btn ds-on' : 'ds-btn', toggleApprove: () => this.updVideo(x.uid, y => { y.approved = !y.approved; return y; }),
@@ -3108,7 +3135,8 @@ class Component extends DCLogic {
   renderVals0() {
     const { page, view, item, values, items, prompt, mode, store, create, gen, attach, tab, varCat, sheetRun } = this.state;
     const cfg = CFG[page] || {}, pg = page.toLowerCase();
-    const isHub = page === 'IMAGES', isSoon = false, isXPage = !!SOON_PAGES[page];
+    const isHub = page === 'IMAGES', isVid = page === 'VIDEOS', isSoon = false, isXPage = !!SOON_PAGES[page];
+    const vModel = isVid ? (this.tcfg('VIDEOS:main').model || VMODEL_DEFAULT) : null, vm = isVid ? (VMODELS[vModel] || VMODELS[VMODEL_DEFAULT]) : null;
     const isOverview = page === 'BRIEF', isBlank = page === 'OVERVIEW', isTalent = page === 'TALENT', isShotsPage = page === 'KEYFRAMES';
     const pkind = page === 'WARDROBE' ? 'wardrobe' : 'product';
     const isProduct = page === 'PRODUCT' || page === 'WARDROBE', isLocation = page === 'LOCATION' || page === 'SETDESIGN';
@@ -3144,6 +3172,7 @@ class Component extends DCLogic {
       const p = prompt.trim();
       if (mode === 'search') { if (isTalent) this.setState({ view: 'all', item: null }); return; }
       if (isHub) { const md = this.imgMode(); if (md === 'style') return; if (!p) return this.setErr(md === 'kf' ? 'Describe the key frame to create.' : 'Describe the image to create.'); return md === 'kf' ? this.kfGen(p) : this.freeGen(p); }
+      if (isVid) return this.vidGen(p);
       if (isStyleAll) {
         if (!p) return this.setErr('Describe a style to create, or press + to start from an image.');
         const o = this.secOpts(page, 'main'); this.clearPrompt();
@@ -3479,7 +3508,7 @@ class Component extends DCLogic {
             { label: 'REMOVE', color: '#ef6b61', click: () => { close(); this.updLoc(pl.uid, x => { x.views[pv.idx] = null; return x; }); } },
             { label: 'CLOSE', color: '#929292', click: close }] : [] }; })(),
       isProdAll: false, isProdSheet: false, pLoading: (isProdAll || isLocAll) && !this.state.pLoaded,
-      barPh: isHub ? (this.imgMode() === 'kf' ? 'Describe the key frame…' : this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe an image to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Built sets use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a set to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
+      barPh: isHub ? (this.imgMode() === 'kf' ? 'Describe the key frame…' : this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe an image to create…') : isVid ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Built sets use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a set to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
       uploadNewProd: () => this.pick('newprod'),
       dropNewProd: e => { e.preventDefault(); this.handleFiles('newprod', e.dataTransfer.files); },
       pNewLabel: pkind === 'wardrobe' ? 'Upload new item' : 'Upload new product',
@@ -3515,7 +3544,7 @@ class Component extends DCLogic {
           tagBg: ai ? '#f5f5f5' : '#191919', tagColor: ai ? '#191919' : '#f5f5f5', line: slot === i ? '#f5f5f5' : 'transparent',
           pick: () => this.setState({ slot: i }), drop: this.dropTo('pslot:' + i) };
       }) : [],
-      talentPlus: () => isHub ? this.pick('hubatt') : isShotsPage ? this.pick('kfnew') : isCast ? this.pick('castatt') : isStyleAll ? (this.newStyle({ source: 'image' }), setTimeout(() => this.pick('styleref'), 0)) : isLocation ? (isLocSheet ? this.pick('lslot:' + (typeof slot === 'number' ? slot : 0)) : this.setState({ locPopup: { step: 'type', files: [], url: '', prompt: '', ref: null } })) : isProduct ? (isProdSheet ? this.pick(typeof slot === 'number' && !prod.views[slot] ? 'pslot:' + slot : 'pref') : this.pick('newprod')) : isSheet ? this.pick(`slot:${slot}`) : this.pick('newchar'),
+      talentPlus: () => isHub ? this.pick('hubatt') : isVid ? (vm.mode === 'image-to-video' ? this.pick('hubatt') : null) : isShotsPage ? this.pick('kfnew') : isCast ? this.pick('castatt') : isStyleAll ? (this.newStyle({ source: 'image' }), setTimeout(() => this.pick('styleref'), 0)) : isLocation ? (isLocSheet ? this.pick('lslot:' + (typeof slot === 'number' ? slot : 0)) : this.setState({ locPopup: { step: 'type', files: [], url: '', prompt: '', ref: null } })) : isProduct ? (isProdSheet ? this.pick(typeof slot === 'number' && !prod.views[slot] ? 'pslot:' + slot : 'pref') : this.pick('newprod')) : isSheet ? this.pick(`slot:${slot}`) : this.pick('newchar'),
       tal: (() => {
         const S = this.state, BUSY = ['queued', 'busy', 'checking'];
         const filledOf = a => SHEET.filter(([k]) => a.sheet && a.sheet[k]).length;
@@ -3644,13 +3673,14 @@ class Component extends DCLogic {
       sheetTitle: char ? ([(char.profile || {}).Name, (char.profile || {}).Role].map(s => (s || '').trim()).filter(Boolean).join(' - ') || char.name) : '',
       isSheet, genLabel: gen.running ? (gen.status || 'GENERATING') : 'GENERATING…',
       talentAction: isCast ? (this.state.castBusy ? 'CHECKING' : gen.running ? (gen.status || 'GENERATING') : 'GENERATE')
+        : isVid ? 'GENERATE'
         : isStyleAll ? (this.state.sBusy ? 'GENERATING' : 'GENERATE')
         : (isProduct || isLocation) ? (pBusy ? 'GENERATING' : 'GENERATE')
         : (isSheet && sheetRun) ? 'GENERATING ' + Math.min(sheetRun.done + 1, sheetRun.total) + ' OF ' + sheetRun.total
         : gen.running ? (gen.status || 'GENERATING') : 'GENERATE',
-      hasCastAtt: (isCast || isHub) && this.state.castAtt.length > 0,
+      hasCastAtt: (isCast || isHub || (isVid && vm.mode === 'image-to-video')) && this.state.castAtt.length > 0,
       castAttThumbs: this.state.castAtt.map((src, i) => ({ bg: bgOf(src), remove: e => { e.stopPropagation(); this.setState(st => ({ castAtt: st.castAtt.filter((_, j) => j !== i) })); } })),
-      dropCastAtt: e => { if (isHub) { e.preventDefault(); e.stopPropagation(); return this.handleFiles('hubatt', e.dataTransfer.files); } if (!isCast) return; e.preventDefault(); e.stopPropagation(); this.handleFiles('castatt', e.dataTransfer.files); },
+      dropCastAtt: e => { if (isHub || (isVid && vm.mode === 'image-to-video')) { e.preventDefault(); e.stopPropagation(); return this.handleFiles('hubatt', e.dataTransfer.files); } if (!isCast) return; e.preventDefault(); e.stopPropagation(); this.handleFiles('castatt', e.dataTransfer.files); },
       showOvr: !!this.state.ovrAsk || !!this.state.ovrAsk2,
       ...(() => { const id = this.state.ovrAsk, a = id && (store.TALENT || []).find(x => x.uid === id);
         const when = a && a.clientApprovedAt ? new Date(a.clientApprovedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
@@ -3823,20 +3853,14 @@ class Component extends DCLogic {
             return this.handleFiles('kfnew', fl); },
           d };
       })(),
-      showGenOpts: isCast || isHub || (!!gk && !gDetail),
+      showGenOpts: isCast || isHub || isVid || (!!gk && !gDetail),
       genOpts: (() => {
         const HF = window.SOLVED_HF;
         // Characters keeps its own settings per page: the main page drives the headshot,
         // the sheet page drives the sheet. Every other page still uses the shared defaults.
-        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : isHub ? (this.imgMode() === 'kf' ? 'IMAGES:kf' : 'IMAGES:main') : gk ? page + (gDetail ? ':sheet' : ':main') : null;
+        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : isHub ? (this.imgMode() === 'kf' ? 'IMAGES:kf' : 'IMAGES:main') : isVid ? 'VIDEOS:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
         const c = tctx ? this.tcfg(tctx) : (HF ? HF.get() : {});
         const put = v => { if (tctx) this.tset(tctx, v); else if (HF) { HF.set(v); this.setState(s2 => ({ hfTick: s2.hfTick + 1 })); } };
-        const model = c.model || 'gpt_image_2_5', ratio = c.ratio || (tctx === 'IMAGES:kf' ? '16:9' : '1:1'), res = c.resolution || '1k',
-              q = c.quality || 'high';
-        const MODELS = ['gpt_image_2_5', 'nano_banana', 'seedream', 'flux_pro'];
-        const RATIOS = ['1:1', '3:4', '4:3', '16:9', '9:16', '4:5'];
-        const RES = ['1k', '2k', '4k'];
-        const QUAL = ['low', 'medium', 'high', 'xhigh', 'max'];
         const pretty = m => m.replace(/_/g, ' ').replace(/\b\w/g, x => x.toUpperCase());
         const open = this.state.optOpen;
         const opts = (key, list, cur, fmt) => list.map(v => ({
@@ -3846,6 +3870,30 @@ class Component extends DCLogic {
         const ctl = (key, o) => ({ ...o, menu: open === key ? 'flex' : 'none',
           open: () => this.setState({ optOpen: key }),
           close: () => this.setState(s2 => (s2.optOpen === key ? { optOpen: null } : null)) });
+        // Video settings are entirely model-dependent: image-to-video models need Duration (+ Sound if supported),
+        // text-to-video models need Duration + Ratio + Resolution instead, and never a start/end frame.
+        if (isVid) {
+          const vcModel = c.model || VMODEL_DEFAULT, cvm = VMODELS[vcModel] || VMODELS[VMODEL_DEFAULT];
+          const dur = c.duration || cvm.durations[0];
+          const out = [ctl('model', { label: 'Model', value: cvm.label + (cvm.connected ? '' : ' (not connected)'), title: 'Video model',
+            options: Object.keys(VMODELS).map(k => ({ label: VMODELS[k].label + (VMODELS[k].connected ? '' : ' \u2014 not connected'), tick: k === vcModel ? '\u2713' : '',
+              bg: k === vcModel ? '#333337' : 'transparent', fg: k === vcModel ? '#191919' : '#C9C6C1',
+              pick: () => { put({ model: k }); this.setState(s2 => ({ optOpen: null, hfTick: s2.hfTick + 1 })); } })) })];
+          out.push(ctl('duration', { label: 'Length', value: dur + 's', title: 'Video length', options: opts('duration', cvm.durations, dur, v => v + 's') }));
+          if (cvm.sound) { const snd = c.sound || 'off'; out.push(ctl('sound', { label: 'Sound', value: snd === 'on' ? 'On' : 'Off', title: 'Generated audio', options: opts('sound', ['off', 'on'], snd, v => v === 'on' ? 'On' : 'Off') })); }
+          if (cvm.mode === 'text-to-video') {
+            const vr = c.ratio || cvm.ratios[0], vres = c.resolution || cvm.resolutions[0];
+            out.push(ctl('ratio', { label: 'Ratio', value: vr, title: 'Aspect ratio', options: opts('ratio', cvm.ratios, vr) }));
+            out.push(ctl('resolution', { label: 'Size', value: vres, title: 'Output resolution', options: opts('resolution', cvm.resolutions, vres) }));
+          }
+          return out;
+        }
+        const model = c.model || 'gpt_image_2_5', ratio = c.ratio || (tctx === 'IMAGES:kf' ? '16:9' : '1:1'), res = c.resolution || '1k',
+              q = c.quality || 'high';
+        const MODELS = ['gpt_image_2_5', 'nano_banana', 'seedream', 'flux_pro'];
+        const RATIOS = ['1:1', '3:4', '4:3', '16:9', '9:16', '4:5'];
+        const RES = ['1k', '2k', '4k'];
+        const QUAL = ['low', 'medium', 'high', 'xhigh', 'max'];
         return [
           ctl('model', { label: 'Model', value: pretty(model), title: 'Image model', options: opts('model', MODELS, model, pretty) }),
           // every sheet view has a fixed aspect, so Ratio would do nothing there
@@ -3854,7 +3902,8 @@ class Component extends DCLogic {
           ctl('quality', { label: 'Quality', value: q.charAt(0).toUpperCase() + q.slice(1), title: 'Render quality', options: opts('quality', QUAL, q, v => v.charAt(0).toUpperCase() + v.slice(1)) }),
         ];
       })(),
-      showTalentBar: isCast || (isHub && this.imgMode() !== 'style') || (!!gk && !gDetail),
+      showAttach: !isVid || vm.mode === 'image-to-video',
+      showTalentBar: isCast || (isHub && this.imgMode() !== 'style') || isVid || (!!gk && !gDetail),
       sl: Object.fromEntries(SHEET.map(([k]) => { const src = (char && char.sheet && char.sheet[k]) || ''; return [k, { has: !!src, src, bg: bgOf(src),
         busy: (gen.running && this.state.genSlot === k) || ['queued', 'busy', 'checking'].includes(this.state.sSlot[(char ? char.uid : '') + ':' + k]),
         tag: this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'wrong' ? 'WRONG ANGLE — REGENERATE' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'failed' ? 'FAILED · RETRY' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'checking' ? 'CHECKING ANGLE…' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'queued' ? 'QUEUED' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'busy' ? 'GENERATING…' : slot === k ? 'SELECTED' : 'DRAFT',

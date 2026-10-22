@@ -35,10 +35,11 @@
   }
   throw new Error('Generation is still pending. Check Higgsfield history before retrying.');
  }
- async function video({image,lastImage,prompt,duration=5,sound='off',onStatus}={}){
+ async function video({image,lastImage,prompt,duration=5,sound='off',model,ratio,resolution,onStatus}={}){
   if(!live||cfg.enabled===false)throw new Error(lastError||'Connect Higgsfield in the sidebar first.');
-  onStatus?.('Uploading frames');const image_url=await reference(image);const last_image_url=lastImage?await reference(lastImage):undefined;
-  const j=await api('/hf-video',{image_url,last_image_url,prompt,duration,sound});
+  let image_url,last_image_url;
+  if(image){onStatus?.('Uploading frames');image_url=await reference(image);last_image_url=lastImage?await reference(lastImage):undefined;}
+  const j=await api('/hf-video',{image_url,last_image_url,prompt,duration,sound,model,ratio,resolution});
   const deadline=Date.now()+30*60*1000;let failures=0;
   while(Date.now()<deadline){
    await new Promise(r=>setTimeout(r,failures?10000:5000));let s;
