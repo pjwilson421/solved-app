@@ -254,11 +254,13 @@ html,body{background:#282828!important}
 [data-sv="homemain"]{padding-bottom:48px!important}
 [data-sv="bar"]{border-radius:10px!important}
 [data-sv="libwrap"]{display:flex;flex-direction:column;gap:12px;margin-top:4px}
-[data-sv="libbtn"]{display:flex;align-items:center;gap:12px;height:40px;padding:0 4px;color:#f5f5f5;font:500 17px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;border-radius:8px;outline:none;transition:color .12s}
+[data-sv="libbtn"]{display:flex;align-items:center;gap:12px;height:40px;padding:0 4px;color:#1985FF;font:500 17px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;border-radius:8px;outline:none;transition:color .12s}
 [data-sv="libbtn"]:hover,[data-sv="libbtn"][data-on="1"]{color:#1985FF}
 [data-sv="libbtn"]:focus-visible{box-shadow:0 0 0 2px #1985FF}
 [data-sv="libbtn"] svg{flex:none;width:22px;height:22px}
-[data-sv="libsearch"]{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border-radius:8px;background:#1f1f1f;border:1px solid #3a3a3a;color:#929292;cursor:text;transition:border-color .12s}
+[data-sv="libchev"]{flex:none;width:16px;height:16px;margin-left:auto;cursor:pointer;transition:transform .15s}
+[data-sv="libchev"][data-open="0"]{transform:rotate(-90deg)}
+[data-sv="libsearch"]{display:flex;align-items:center;gap:10px;height:52px;padding:0 14px;border-radius:8px;background:#1f1f1f;border:1px solid #3a3a3a;color:#929292;cursor:text;transition:border-color .12s}
 [data-sv="libsearch"]:focus-within{border-color:#1985FF;color:#f5f5f5}
 [data-sv="libsearch"] svg{flex:none}
 [data-sv="libsearch"] input{flex:1;min-width:0;width:100%;height:100%;border:0;outline:none;background:transparent;color:#f5f5f5;font:400 14px/20px 'Helvetica Neue',Helvetica,Arial,sans-serif}
@@ -285,7 +287,9 @@ html,body{background:#282828!important}
 [data-sv="libmeta"] b{font:500 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 [data-sv="libmeta"] i{font-style:normal;font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#929292}
 [data-sv="libempty"]{grid-column:1/-1;padding:8px 2px;font:400 12px/17px 'Helvetica Neue',Helvetica,sans-serif;color:#929292}
-@media (max-width:860px){[data-sv="libbar"],[data-sv="libfiles"]{display:none!important}}
+[data-sv="libbody"]{display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
+[data-sv="libbody"][data-open="0"]{display:none}
+@media (max-width:860px){[data-sv="libbar"],[data-sv="libfiles"],[data-sv="libchev"]{display:none!important}}
 [data-sv="dash"]{display:grid;grid-template-columns:repeat(3,minmax(0,250px));gap:44px 14px;align-items:start}
 [data-sv="dtile"]{display:flex;flex-direction:column;gap:10px;cursor:pointer;min-width:0;outline:none}
 [data-sv="dbox"]{width:100%;aspect-ratio:1/1;border-radius:10px;background:#1f1f1f;display:flex;align-items:center;justify-content:center;color:#1985FF;transition:background-color .15s ease,box-shadow .15s ease}
@@ -426,12 +430,14 @@ html,body{background:#282828!important}
         </sc-for>
       </nav>
       <div data-sv="libwrap">
-        <div data-sv="libbtn" data-on="{{ libOn }}" role="button" tabindex="0" sc-camel-on-click="{{ goLib }}"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h7l2 2h9v11H3z"></path></svg><span>Library</span></div>
+        <div data-sv="libbtn" data-on="{{ libOn }}" role="button" tabindex="0" sc-camel-on-click="{{ goLib }}"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h7l2 2h9v11H3z"></path></svg><span>Library</span><svg data-sv="libchev" data-open="{{ libFilesOpen }}" role="button" tabindex="0" aria-label="Toggle file list" title="Toggle file list" sc-camel-on-click="{{ toggleLibFiles }}" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div>
         <label data-sv="libsearch"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5"></path></svg><input type="search" value="{{ libQ }}" sc-camel-on-change="{{ setLibQ }}" placeholder="Search files" aria-label="Search files" spellcheck="false" autocomplete="off"></label>
-        <div data-sv="libbar"><span>{{ sideCount }}</span><div data-sv="libtools"><button type="button" data-sv="libtool" data-on="{{ sideGridOn }}" aria-label="Thumbnail view" title="Thumbnail view" sc-camel-on-click="{{ sideGrid }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"></path></svg></button><button type="button" data-sv="libtool" data-on="{{ sideListOn }}" aria-label="List view" title="List view" sc-camel-on-click="{{ sideList }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.5M3 12h.5M3 18h.5"></path></svg></button><button type="button" data-sv="libtool" aria-label="Upload files" title="Upload images" sc-camel-on-click="{{ sideUpload }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg></button></div></div>
-        <div data-sv="libfiles" data-view="{{ sideView }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ sideDrop }}">
-          <sc-for list="{{ sideFiles }}" as="f" hint-placeholder-count="0"><div data-sv="libfile" role="button" tabindex="0" title="{{ f.title }}" sc-camel-on-click="{{ f.open }}"><div data-sv="libthumb"><sc-if value="{{ f.isImg }}" hint-placeholder-val="{{ false }}"><div style="{{ f.bg }}"></div></sc-if><sc-if value="{{ f.notImg }}" hint-placeholder-val="{{ false }}"><span>{{ f.ext }}</span></sc-if></div><div data-sv="libmeta"><b>{{ f.name }}</b><i>{{ f.section }}</i></div></div></sc-for>
-          <sc-if value="{{ sideEmpty }}" hint-placeholder-val="{{ false }}"><div data-sv="libempty">{{ sideEmptyText }}</div></sc-if>
+        <div data-sv="libbody" data-open="{{ libFilesOpen }}">
+          <div data-sv="libbar"><span>{{ sideCount }}</span><div data-sv="libtools"><button type="button" data-sv="libtool" data-on="{{ sideGridOn }}" aria-label="Thumbnail view" title="Thumbnail view" sc-camel-on-click="{{ sideGrid }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"></path></svg></button><button type="button" data-sv="libtool" data-on="{{ sideListOn }}" aria-label="List view" title="List view" sc-camel-on-click="{{ sideList }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.5M3 12h.5M3 18h.5"></path></svg></button><button type="button" data-sv="libtool" aria-label="Upload files" title="Upload images" sc-camel-on-click="{{ sideUpload }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg></button></div></div>
+          <div data-sv="libfiles" data-view="{{ sideView }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ sideDrop }}">
+            <sc-for list="{{ sideFiles }}" as="f" hint-placeholder-count="0"><div data-sv="libfile" role="button" tabindex="0" title="{{ f.title }}" sc-camel-on-click="{{ f.open }}"><div data-sv="libthumb"><sc-if value="{{ f.isImg }}" hint-placeholder-val="{{ false }}"><div style="{{ f.bg }}"></div></sc-if><sc-if value="{{ f.notImg }}" hint-placeholder-val="{{ false }}"><span>{{ f.ext }}</span></sc-if></div><div data-sv="libmeta"><b>{{ f.name }}</b><i>{{ f.section }}</i></div></div></sc-for>
+            <sc-if value="{{ sideEmpty }}" hint-placeholder-val="{{ false }}"><div data-sv="libempty">{{ sideEmptyText }}</div></sc-if>
+          </div>
         </div>
       </div>
     </div>
@@ -3308,6 +3314,8 @@ class Component extends DCLogic {
       projName: proj || 'Untitled project', projColor: proj ? '#f5f5f5' : '#929292', clientName: client || 'No client',
       goImages: () => { this.initial = values; this.setState({ page: 'IMAGES', view: 'all', item: null, attachOpen: false }); window.scrollTo(0, 0); },
       libOn: page === 'LIBRARY' ? '1' : '0', libQ: this.state.libQ || '',
+      libFilesOpen: this.state.libFilesOpen === false ? '0' : '1',
+      toggleLibFiles: e => { e.stopPropagation(); this.setState({ libFilesOpen: this.state.libFilesOpen === false ? true : false }); },
       ...(() => { const all = this.projectFiles(), q = (this.state.libQ || '').trim().toLowerCase(), fs = q ? all.filter(f => (f.name + ' ' + f.section).toLowerCase().includes(q)) : all, view = this.state.sideView || 'grid';
         return { sideView: view, sideGridOn: view === 'grid' ? '1' : '0', sideListOn: view === 'list' ? '1' : '0', sideGrid: () => this.setState({ sideView: 'grid' }), sideList: () => this.setState({ sideView: 'list' }),
           sideUpload: () => this.pick('libup'), sideDrop: e => { e.preventDefault(); e.stopPropagation(); this.handleFiles('libup', e.dataTransfer.files); },
