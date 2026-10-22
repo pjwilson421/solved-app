@@ -262,6 +262,27 @@ html,body{background:#282828!important}
 [data-sv="libsearch"] input::placeholder{color:#929292}
 @media (max-width:1200px){[data-sv="libbtn"]{font-size:16px}}
 @media (max-width:860px){[data-sv="libwrap"]{order:4;flex-basis:100%;min-width:0;max-width:100%;box-sizing:border-box;flex-direction:row;align-items:center;gap:12px;margin-top:0}[data-sv="libbtn"]{flex:none;height:44px;font-size:15px}[data-sv="libsearch"]{flex:1;min-width:0}[data-sv="nav"]{grid-template-columns:repeat(5,minmax(0,1fr))!important}}
+[data-sv="sidebody"]{flex:1;min-height:0}
+[data-sv="libwrap"]{flex:1;min-height:0}
+[data-sv="libbar"]{display:flex;align-items:center;justify-content:space-between;gap:8px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#929292}
+[data-sv="libtools"]{display:flex;gap:4px}
+[data-sv="libtool"]{width:28px;height:28px;border:0;border-radius:6px;background:transparent;color:#929292;display:flex;align-items:center;justify-content:center;cursor:pointer}
+[data-sv="libtool"]:hover{background:#3a3a3a;color:#f5f5f5}[data-sv="libtool"][data-on="1"]{background:#3a3a3a;color:#1985FF}
+[data-sv="libfiles"]{flex:1;min-height:120px;overflow:auto;scrollbar-width:thin;margin:0 -4px;padding:0 4px 4px}
+[data-sv="libfiles"][data-view="grid"]{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-content:start}
+[data-sv="libfiles"][data-view="list"]{display:flex;flex-direction:column;gap:2px}
+[data-sv="libfile"]{cursor:pointer;min-width:0;border-radius:6px;outline:none}
+[data-sv="libthumb"]{position:relative;aspect-ratio:1/1;border-radius:6px;overflow:hidden;background:#1f1f1f;display:flex;align-items:center;justify-content:center;font:700 9px/1 'Helvetica Neue',Helvetica,sans-serif;color:#929292}
+[data-sv="libfile"]:hover [data-sv="libthumb"],[data-sv="libfile"]:focus-visible [data-sv="libthumb"]{box-shadow:inset 0 0 0 1px #1985FF}
+[data-sv="libfiles"][data-view="grid"] [data-sv="libmeta"]{display:none}
+[data-sv="libfiles"][data-view="list"] [data-sv="libfile"]{display:flex;align-items:center;gap:10px;padding:5px 6px}
+[data-sv="libfiles"][data-view="list"] [data-sv="libfile"]:hover,[data-sv="libfiles"][data-view="list"] [data-sv="libfile"]:focus-visible{background:#333}
+[data-sv="libfiles"][data-view="list"] [data-sv="libthumb"]{flex:none;width:32px;height:32px;border-radius:4px}
+[data-sv="libmeta"]{display:flex;flex-direction:column;min-width:0}
+[data-sv="libmeta"] b{font:500 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+[data-sv="libmeta"] i{font-style:normal;font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#929292}
+[data-sv="libempty"]{grid-column:1/-1;padding:8px 2px;font:400 12px/17px 'Helvetica Neue',Helvetica,sans-serif;color:#929292}
+@media (max-width:860px){[data-sv="libbar"],[data-sv="libfiles"]{display:none!important}}
 [data-sv="dash"]{display:grid;grid-template-columns:repeat(3,minmax(0,250px));gap:44px 14px;align-items:start}
 [data-sv="dtile"]{display:flex;flex-direction:column;gap:10px;cursor:pointer;min-width:0;outline:none}
 [data-sv="dbox"]{width:100%;aspect-ratio:1/1;border-radius:10px;background:#1f1f1f;display:flex;align-items:center;justify-content:center;color:#1985FF;transition:background-color .15s ease,box-shadow .15s ease}
@@ -404,13 +425,13 @@ html,body{background:#282828!important}
       <div data-sv="libwrap">
         <div data-sv="libbtn" data-on="{{ libOn }}" role="button" tabindex="0" sc-camel-on-click="{{ goLib }}"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h7l2 2h9v11H3z"></path></svg><span>Library</span></div>
         <label data-sv="libsearch"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5"></path></svg><input type="search" value="{{ libQ }}" sc-camel-on-change="{{ setLibQ }}" placeholder="Search files" aria-label="Search files" spellcheck="false" autocomplete="off"></label>
+        <div data-sv="libbar"><span>{{ sideCount }}</span><div data-sv="libtools"><button type="button" data-sv="libtool" data-on="{{ sideGridOn }}" aria-label="Thumbnail view" title="Thumbnail view" sc-camel-on-click="{{ sideGrid }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"></path></svg></button><button type="button" data-sv="libtool" data-on="{{ sideListOn }}" aria-label="List view" title="List view" sc-camel-on-click="{{ sideList }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.5M3 12h.5M3 18h.5"></path></svg></button><button type="button" data-sv="libtool" aria-label="Upload files" title="Upload images" sc-camel-on-click="{{ sideUpload }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg></button></div></div>
+        <div data-sv="libfiles" data-view="{{ sideView }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ sideDrop }}">
+          <sc-for list="{{ sideFiles }}" as="f" hint-placeholder-count="0"><div data-sv="libfile" role="button" tabindex="0" title="{{ f.title }}" sc-camel-on-click="{{ f.open }}"><div data-sv="libthumb"><sc-if value="{{ f.isImg }}" hint-placeholder-val="{{ false }}"><div style="{{ f.bg }}"></div></sc-if><sc-if value="{{ f.notImg }}" hint-placeholder-val="{{ false }}"><span>{{ f.ext }}</span></sc-if></div><div data-sv="libmeta"><b>{{ f.name }}</b><i>{{ f.section }}</i></div></div></sc-for>
+          <sc-if value="{{ sideEmpty }}" hint-placeholder-val="{{ false }}"><div data-sv="libempty">{{ sideEmptyText }}</div></sc-if>
+        </div>
       </div>
     </div>
-    <div data-sv="setp"><div data-sv="hf" sc-camel-on-click="{{ hfOpen }}" style="margin-top:auto;display:flex;align-items:center;gap:8px;height:28px;cursor:pointer">
-      <span style="width:8px;height:8px;border-radius:50%;flex:none;background:{{ hfDot }}"></span>
-      <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;white-space:nowrap">HIGGSFIELD</span>
-      <span style="font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#929292;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ hfStatus }}</span>
-    </div></div>
   </aside>
   <sc-if value="{{ castUpOpen }}" hint-placeholder-val="{{ false }}">
     <div data-sv="castup" sc-camel-on-click="{{ castUpClose }}" style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center">
@@ -2147,7 +2168,7 @@ class Component extends DCLogic {
   async autoSlot(id, key, extra) {
     const hf = this.hf(), a = this.getAsset('TALENT', id), src = this.sheetSource(a);
     if (!a || !src) return;
-    if (!hf) { this.setErr('Connect Higgsfield (HIGGSFIELD in the sidebar) to generate the character sheet.'); return; }
+    if (!hf) { this.setErr('Higgsfield isn’t connected, so you can’t generate the character sheet.'); return; }
     this.setSlotState(id + ':' + key, 'busy');
     try {
       const wr = this.wardrobeRefs(a).slice(0, 6), wrNote = wr.length ? ' Wardrobe: the person wears exactly the clothing, shoes and accessories shown in reference images 2–' + (wr.length + 1) + ' (ignore any default white t-shirt, jeans or shoes). Match colors, fabric and fit.' : '';
@@ -2171,7 +2192,7 @@ class Component extends DCLogic {
     if (!this.sheetSource(a)) return this.setErr('Add or generate a headshot first.');
     this.sheetRuns = this.sheetRuns || {};
     if (this.sheetRuns[id] === 'running') return;
-    if (!this.hf()) return this.setErr('Connect Higgsfield (HIGGSFIELD in the sidebar) to generate the character sheet.');
+    if (!this.hf()) return this.setErr('Higgsfield isn’t connected, so you can’t generate the character sheet.');
     const keys = SHEET.map(s => s[0]).filter(k => !(a.sheet && a.sheet[k]));
     if (!keys.length) return;
     this.sheetRuns[id] = 'running'; this.setErr('');
@@ -2256,6 +2277,7 @@ class Component extends DCLogic {
   async handleFiles(target, fileList) {
     const files = [...(fileList || [])].filter(f => f.type.startsWith('image/'));
     if (!files.length) return;
+    if (target === 'libup') { const srcs = await Promise.all(files.map(readFile)); return this.setX('uploads', a => [...files.map((f, i) => ({ uid: uid(), name: (f.name || 'Upload').replace(/\.[^.]+$/, ''), src: srcs[i], kind: 'image', at: Date.now() })), ...a]); }
     if (target === 'hubatt') { const srcs = await Promise.all(files.map(readFile)); return this.setState(s => ({ castAtt: [...s.castAtt, ...srcs].slice(0, 8) })); }
     if (target.startsWith('vstart:')) { const vid = target.slice(7); const src = await readFile(files[0]); return this.updVideo(vid, x => { x.start = src; x.error = ''; return x; }); }
     if (target.startsWith('locset:')) { const lid = target.slice(7); const ids = await this.storeImgs(await Promise.all(files.map(readFile))); const views = Array(7).fill(null); ids.slice(0, 7).forEach((id, i) => { views[i] = { img: id, source: 'uploaded', at: Date.now() }; });
@@ -2473,7 +2495,7 @@ class Component extends DCLogic {
   }
   async genKf(key, p, opts) {
     const n = key.split('-')[0], shot = (this.state.items.KEYFRAMES || []).find(x => String(x.n) === n);
-    if (!window.SOLVED_HF || !window.SOLVED_HF.connected()) return this.setErr('Connect Higgsfield (bottom of the sidebar) to generate storyboard frames.');
+    if (!window.SOLVED_HF || !window.SOLVED_HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate storyboard frames.');
     const refs = [...this.attachSrcs(), ...this.storyboardRefs()].filter((x, i, a) => x && a.indexOf(x) === i);
     const st = this.storyStyle(), concept = ((this.state.values || {})['CONCEPT'] || '').trim();
     const prompt = [p, 'Cinematic storyboard frame, 16:9.' + (shot ? ' ' + shot.name + '.' : ''), concept ? 'Concept: ' + concept.slice(0, 400) : '',
@@ -2567,7 +2589,7 @@ class Component extends DCLogic {
   saveX(k) { idb.set(k, this.state[k]).catch(() => this.setErr('Couldn’t save — browser storage is unavailable.')); }
   setX(k, fn) { this.setState(s => ({ [k]: fn(s[k] || []) }), () => this.saveX(k)); }
   loadX() {
-    idb.getMany(['videos', 'edits', 'deliveries', 'timeline', 'gallery']).then(([v, e, d, t, g]) => this.setState({ gallery: Array.isArray(g) ? g : [], videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], xLoaded: true }))
+    idb.getMany(['videos', 'edits', 'deliveries', 'timeline', 'gallery', 'uploads']).then(([v, e, d, t, g, u]) => this.setState({ uploads: Array.isArray(u) ? u : [], gallery: Array.isArray(g) ? g : [], videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], xLoaded: true }))
       .catch(() => this.setState({ xLoaded: true }));
   }
   briefText() { const V = this.state.values || {}; return OV.map(([k]) => (V[k] || '').trim() ? k.charAt(0) + k.slice(1).toLowerCase() + ': ' + V[k].trim().slice(0, 600) : '').filter(Boolean).join('\n'); }
@@ -2673,7 +2695,7 @@ class Component extends DCLogic {
   }
   async kfGen(p) {
     const HF = window.SOLVED_HF;
-    if (!HF || !HF.connected()) return this.setErr('Connect Higgsfield (bottom of the sidebar) to generate key frames.');
+    if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate key frames.');
     const R = this.kfRefs(), st = this.activeStyle(), sref = this.styleRef(), refs = [...R.srcs, ...(this.state.castAtt || []), sref].filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 8), id = uid();
     const prompt = [p, 'Cinematic key frame, ' + ar + ', photoreal.', R.names.length ? 'Featuring: ' + R.names.join(', ') + '.' : '', st ? 'Visual style: ' + (st.desc || st.name) + '.' : '',
       refs.length ? 'Use the reference images for the exact people (faces, wardrobe), products and locations. Keep every person and product identical to the references.' : ''].filter(Boolean).join(' ');
@@ -2689,7 +2711,7 @@ class Component extends DCLogic {
   }
   async freeGen(p) {
     const HF = window.SOLVED_HF;
-    if (!HF || !HF.connected()) return this.setErr('Connect Higgsfield (bottom of the sidebar) to generate images.');
+    if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate images.');
     const o = this.tcfg('IMAGES:main'), st = this.activeStyle(), sref = this.styleRef(), refs = [...this.state.castAtt, sref].filter(Boolean).slice(0, 8), id = uid(), shown = p;
     if (st) p = p + ' Visual style: ' + (st.desc || st.name) + '.' + (sref ? ' Match the look of the style reference image.' : '');
     this.setErr(''); this.setState({ prompt: '', castAtt: [] });
@@ -2723,7 +2745,7 @@ class Component extends DCLogic {
   updVideo(id, fn) { this.setX('videos', a => a.map(v => (v.uid === id ? fn({ ...v }) : v))); }
   async runVideo(id) {
     const v = (this.state.videos || []).find(x => x.uid === id); if (!v || v.status === 'running') return;
-    const HF = window.SOLVED_HF; if (!HF || !HF.connected() || !HF.video) return this.updVideo(id, x => { x.error = 'Connect Higgsfield (bottom of the sidebar) to make videos.'; return x; });
+    const HF = window.SOLVED_HF; if (!HF || !HF.connected() || !HF.video) return this.updVideo(id, x => { x.error = 'Higgsfield isn’t connected, so you can’t make videos.'; return x; });
     if (!v.start) return this.updVideo(id, x => { x.error = 'Add a start frame first.'; return x; });
     if (!(v.prompt || '').trim()) return this.updVideo(id, x => { x.error = 'Describe the shot first.'; return x; });
     this.updVideo(id, x => { x.status = 'running'; x.error = ''; x.note = 'Starting'; return x; });
@@ -2758,7 +2780,7 @@ class Component extends DCLogic {
   }
   async edAI(tool) {
     const E = this.state.ed || {}; if (!E.src || this.state.edBusy) return;
-    const HF = window.SOLVED_HF; if (!HF || !HF.connected()) return this.setErr('Connect Higgsfield (bottom of the sidebar) to use AI tools.');
+    const HF = window.SOLVED_HF; if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t use AI tools.');
     const P = {
       prompt: [(E.text || '').trim(), 'Edit the reference image as described. Keep everything else identical: subject identity, product details, composition, lighting and colors.'],
       removebg: ['Remove the background completely. Keep the subject exactly as it is, cleanly cut out, on a pure white seamless background (#ffffff).'],
@@ -2809,6 +2831,7 @@ class Component extends DCLogic {
   projectFiles() {
     const S = this.state, I = S.imgs || {}, out = [], add = (section, name, src, kind, extra) => src && out.push({ id: section + ':' + out.length, section, name, src, kind: kind || 'image', ...(extra || {}) });
     (S.bdocs || []).forEach(d => { if (d && (d.data || d.url)) add('Brief', d.name || 'Document', d.data || d.url, 'doc'); });
+    (S.uploads || []).forEach(u => add('Uploads', u.name, u.src, u.kind || 'image'));
     (S.gallery || []).forEach(g => g.status === 'done' && add('Images', (g.kind === 'kf' ? 'Key frame · ' : '') + g.prompt.slice(0, 60), g.src));
     (S.products || []).filter(p => (p.kind || 'product') === 'product').forEach(p => (p.views || []).forEach((v, i) => v && add('Products', p.name + ' · ' + vlabel(p.type, i), I[v.img])));
     (S.store.TALENT || []).forEach(c => { const sh = c.sheet || {}; Object.keys(sh).forEach(k => add('Characters', c.name + ' · ' + ((SHEET.find(x => x[0] === k) || [k, k])[1]), sh[k])); });
@@ -2922,7 +2945,7 @@ class Component extends DCLogic {
     }
     if (X.dlOn || X.libOn) {
       const libQ = X.libOn ? (S.libQ || '').trim().toLowerCase() : '', all0 = this.projectFiles(), all = libQ ? all0.filter(f => (f.name + ' ' + f.section).toLowerCase().includes(libQ)) : all0, key = f => f.section + '|' + f.name + '|' + f.src.length, sel = S.dlSel;
-      const sections = ['Brief', 'Images', 'Products', 'Characters', 'Wardrobe', 'Locations', 'Set design', 'Storyboards', 'Videos', 'Editing'];
+      const sections = ['Uploads', 'Brief', 'Images', 'Products', 'Characters', 'Wardrobe', 'Locations', 'Set design', 'Storyboards', 'Videos', 'Editing'];
       const groups = sections.map(sec => { const fs = all.filter(f => f.section === sec); return { title: sec, count: String(fs.length), has: fs.length > 0,
         files: fs.map(f => { const on = !sel || !!sel[key(f)]; return { name: f.name, isImg: f.kind === 'image', isVid: f.kind === 'video', isDoc: f.kind === 'doc', src: f.src, bg: fit(f.src), mark: on ? '✓' : '', line: on ? '#1985FF' : '#303030',
           toggle: () => this.setState(s => { const cur = s.dlSel || Object.fromEntries(all.map(g => [key(g), true])); const n = { ...cur }; if (n[key(f)]) delete n[key(f)]; else n[key(f)] = true; return { dlSel: n }; }),
@@ -3194,6 +3217,12 @@ class Component extends DCLogic {
       projName: proj || 'Untitled project', projColor: proj ? '#f5f5f5' : '#929292', clientName: client || 'No client',
       goImages: () => { this.initial = values; this.setState({ page: 'IMAGES', view: 'all', item: null, attachOpen: false }); window.scrollTo(0, 0); },
       libOn: page === 'LIBRARY' ? '1' : '0', libQ: this.state.libQ || '',
+      ...(() => { const all = this.projectFiles(), q = (this.state.libQ || '').trim().toLowerCase(), fs = q ? all.filter(f => (f.name + ' ' + f.section).toLowerCase().includes(q)) : all, view = this.state.sideView || 'grid';
+        return { sideView: view, sideGridOn: view === 'grid' ? '1' : '0', sideListOn: view === 'list' ? '1' : '0', sideGrid: () => this.setState({ sideView: 'grid' }), sideList: () => this.setState({ sideView: 'list' }),
+          sideUpload: () => this.pick('libup'), sideDrop: e => { e.preventDefault(); e.stopPropagation(); this.handleFiles('libup', e.dataTransfer.files); },
+          sideCount: q ? fs.length + ' of ' + all.length + ' files' : all.length + (all.length === 1 ? ' file' : ' files'), sideEmpty: !fs.length, sideEmptyText: q ? 'No files match.' : 'Generated and uploaded files appear here. Drop images here to upload.',
+          sideFiles: fs.slice(0, 120).map(f => ({ name: f.name, section: f.section, title: f.section + ' · ' + f.name, isImg: f.kind === 'image', notImg: f.kind !== 'image', ext: f.kind === 'video' ? 'VID' : 'DOC',
+            bg: f.kind === 'image' ? bgOf(f.src) : {}, open: () => { const w = window.open(); if (w) { w.document.title = f.name; w.document.body.style.cssText = 'margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh'; const el = w.document.createElement(f.kind === 'video' ? 'video' : 'img'); el.src = f.src; if (f.kind === 'video') el.controls = true; el.style.cssText = 'max-width:100%;max-height:100vh'; w.document.body.appendChild(el); } } })) }; })(),
       goLib: () => { this.initial = values; this.setState({ page: 'LIBRARY', view: 'all', item: null, attachOpen: false }); window.scrollTo(0, 0); },
       setLibQ: e => { const q = e.target.value; this.initial = this.state.values; this.setState({ libQ: q, page: 'LIBRARY', view: 'all', item: null, attachOpen: false }); },
       goOverview: () => { this.initial = values; this.setState({ page: 'BRIEF', view: 'all', attachOpen: false }); },
