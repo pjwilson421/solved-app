@@ -1715,12 +1715,10 @@ const STINT = { Warm: 'rgba(255,170,90,.35)', Cool: 'rgba(70,130,255,.35)', Mute
 const SLIGHT = { 'Natural Daylight': '', 'Soft Studio': 'contrast(.88) brightness(1.08)', 'Golden Hour': 'sepia(.25) brightness(1.05) saturate(1.2)', 'Hard Flash': 'contrast(1.4) brightness(1.1)', 'Low-Key / Moody': 'brightness(.7) contrast(1.3)', 'Neon / Practical': 'hue-rotate(-35deg) saturate(1.6) contrast(1.15)' };
 const SLTINT = { 'Golden Hour': 'rgba(255,140,40,.4)', 'Neon / Practical': 'rgba(220,40,200,.4)' };
 const SMED = { Photograph: '', 'Film Still': 'contrast(1.08) saturate(.92)', Illustration: 'contrast(1.45) saturate(1.4)', '3D Render': 'contrast(1.12) saturate(1.15) blur(.8px)' };
-const SLENS = { '24mm Wide': .92, '35mm': 1.05, '50mm': 1.18, '85mm Portrait': 1.38, Macro: 1.9 };
-const SCOMP = { 'Rule of Thirds': 1.12, Centered: 1, 'Negative Space': 1, 'Tight Crop': 1.45 };
 const SBASE = { Natural: [32, 14], Warm: [28, 40], Cool: [212, 26], Muted: [40, 8], Monochrome: [0, 0], Vivid: [340, 55] };
 const sDescOf = f => f.medium + ' · ' + f.light + ' · ' + f.palette + ' color · ' + f.lens + ' lens · ' + f.texture + ' · ' + f.comp + ' composition';
 const freshStyle = () => ({ uid: null, name: '', source: 'text', text: '', url: '', refs: [], f: { ...SDEF }, strength: 70, use: { brief: true, talent: true, product: true, wardrobe: true, location: true, set: true }, frames: [], hero: 0, desc: '', fTouched: false, descTouched: false });
-async function composeScene(locSrc, talSrc, prodSrc) {
+async function composeScene(locSrc, talSrc) {
   const W = 560, H = 560, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
   x.fillStyle = '#CFCAC2'; x.fillRect(0, 0, W, H);
   if (locSrc) { const i = await loadImg(locSrc), s = Math.max(W / i.width, H / i.height); x.drawImage(i, (W - i.width * s) / 2, (H - i.height * s) / 2, i.width * s, i.height * s); }
@@ -1728,13 +1726,6 @@ async function composeScene(locSrc, talSrc, prodSrc) {
     const i = await loadImg(talSrc), s = Math.min(W * (locSrc ? .62 : 1) / i.width, H * (locSrc ? .86 : 1) / i.height), w = i.width * s, hh = i.height * s, px = (W - w) / 2, py = locSrc ? H - hh - H * .04 : (H - hh) / 2;
     if (locSrc) { x.save(); x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 24; x.shadowOffsetY = 8; x.fillStyle = '#000'; x.fillRect(px, py, w, hh); x.restore(); }
     x.drawImage(i, px, py, w, hh);
-  }
-  if (prodSrc) {
-    // Product call-out: a framed inset in the corner, readable regardless of what's behind it.
-    const i = await loadImg(prodSrc), box = W * .32, pad = W * .05, bx0 = W - box - pad, by0 = H - box - pad;
-    const s = Math.max(box / i.width, box / i.height), iw = i.width * s, ih = i.height * s;
-    x.save(); x.shadowColor = 'rgba(0,0,0,.4)'; x.shadowBlur = 16; x.shadowOffsetY = 4; x.fillStyle = '#fff'; x.fillRect(bx0, by0, box, box); x.restore();
-    x.save(); x.beginPath(); x.rect(bx0, by0, box, box); x.clip(); x.drawImage(i, bx0 + (box - iw) / 2, by0 + (box - ih) / 2, iw, ih); x.restore();
   }
   return c.toDataURL('image/jpeg', 0.88);
 }
@@ -1746,12 +1737,10 @@ async function styleRender(src, f, strength, seed, label) {
   const [hu, sa] = SBASE[f.palette] || SBASE.Natural, h = (hu + (seed * 23) % 30) % 360;
   const g = bx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, 'hsl(' + h + ' ' + sa + '% 80%)'); g.addColorStop(1, 'hsl(' + ((h + 20) % 360) + ' ' + sa + '% 48%)'); bx.fillStyle = g; bx.fillRect(0, 0, W, H);
   if (src) {
-    const img = await loadImg(src), neg = f.comp === 'Negative Space';
-    const z = (SLENS[f.lens] || 1) * (SCOMP[f.comp] || 1) * (neg ? .62 : 1), s = Math.max(W / img.width, H / img.height) * z, iw = img.width * s, ih = img.height * s;
-    let dx = (W - iw) / 2, dy = (H - ih) / 2;
-    if (f.comp === 'Rule of Thirds') dx += (seed % 2 ? 1 : -1) * W * .09;
-    if (neg) { dx = seed % 2 ? W - iw - W * .06 : W * .06; dy = H - ih - H * .08; }
-    bx.drawImage(img, dx, dy, iw, ih);
+    // Fixed cover-fit crop so every style preset's preview shares identical framing — only the filters below should differ between presets.
+    const img = await loadImg(src);
+    const s = Math.max(W / img.width, H / img.height), iw = img.width * s, ih = img.height * s;
+    bx.drawImage(img, (W - iw) / 2, (H - ih) / 2, iw, ih);
   } else {
     bx.fillStyle = 'hsl(' + h + ' ' + sa + '% 30% / .55)'; bx.fillRect(0, H * .62, W, H * .38);
     bx.fillStyle = 'hsl(' + ((h + 180) % 360) + ' ' + Math.max(10, sa) + '% 70% / .5)'; bx.beginPath(); bx.arc(W * (.3 + (seed % 4) * .13), H * .4, W * (.12 + (seed % 3) * .04), 0, 7); bx.fill();
@@ -2396,17 +2385,15 @@ class Component extends DCLogic {
   sceneSrcs() {
     const T = (this.state.store.TALENT || []).map(a => ({ n: a.name, s: (a.sheet && (a.sheet.front || Object.values(a.sheet).find(Boolean))) || a.main || '' })).find(x => x.s);
     const L = this.state.locations.map(l => { const v = l.views.find(Boolean); return { n: l.name, s: v ? this.state.imgs[v.img] || '' : '' }; }).find(x => x.s);
-    const P = this.state.products.filter(x => (x.kind || 'product') === 'product')
-      .map(p => { const v = p.views.find(y => y && y.source === 'uploaded') || p.views.find(Boolean); return { n: p.name, s: v ? this.state.imgs[v.img] || '' : '' }; }).find(x => x.s);
-    return { talent: T ? T.s : '', loc: L ? L.s : '', prod: P ? P.s : '', tn: T ? T.n : '', ln: L ? L.n : '', pn: P ? P.n : '' };
+    return { talent: T ? T.s : '', loc: L ? L.s : '', tn: T ? T.n : '', ln: L ? L.n : '' };
   }
   async syncAutoStyles() {
     if (!this.state.sLoaded || !this.state.pLoaded || this.syncing) return;
-    const sc = this.sceneSrcs(), key = sc.talent.length + ':' + sc.talent.slice(-40) + '|' + sc.loc.length + ':' + sc.loc.slice(-40) + '|' + sc.prod.length + ':' + sc.prod.slice(-40);
+    const sc = this.sceneSrcs(), key = sc.talent.length + ':' + sc.talent.slice(-40) + '|' + sc.loc.length + ':' + sc.loc.slice(-40);
     const todo = this.state.styles.filter(s => s.auto && s.sceneKey !== key); if (!todo.length) return;
     this.syncing = true;
     try {
-      const scene = sc.talent || sc.loc || sc.prod ? await composeScene(sc.loc, sc.talent, sc.prod) : STYLE_PREVIEW_BASE, out = {};
+      const scene = sc.talent || sc.loc ? await composeScene(sc.loc, sc.talent) : STYLE_PREVIEW_BASE, out = {};
       for (const s of todo) { const fr = s.frames[0] || { label: 'Hero', seed: 3 }; out[s.uid] = { ...fr, base: scene, src: await styleRender(scene, s.f, s.strength, fr.seed || 0, 'Hero') }; }
       this.updStyles(this.state.styles.map(s => (out[s.uid] ? { ...s, sceneKey: key, frames: [out[s.uid]] } : s)));
     } catch (e) {}
