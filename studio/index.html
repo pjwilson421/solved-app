@@ -145,6 +145,11 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-mode:hover{background:#2a2a2a}.x-mode[data-on="1"]{background:transparent;border-color:#1985FF;color:#1985FF}.x-mode:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .x-mode svg{flex:none}.x-ms{display:none}
 .x-mode-hint{font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;margin-top:-8px}
+.x-imgtabs{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.x-stylewrap{position:relative;flex:none}
+.x-stylebtn{height:36px;padding:0 14px;border:1px solid #3a3a3a;border-radius:999px;background:transparent;color:#d0d0d0;font:700 12px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer;white-space:nowrap;transition:background-color .12s,border-color .12s,color .12s}
+.x-stylebtn:hover{background:#2a2a2a}.x-stylebtn[data-on="1"]{border-color:#1985FF;color:#1985FF}
+.x-stylepop{position:absolute;right:0;top:calc(100% + 8px);z-index:30;width:min(420px,80vw);max-height:60vh;overflow-y:auto;padding:12px;border-radius:10px;background:#1f1f1f;box-shadow:0 12px 32px rgba(0,0,0,.35);display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
 .x-styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px 14px}
 .x-scard{display:flex;flex-direction:column;gap:10px;cursor:pointer;min-width:0;outline:none}
 .x-simg{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#1f1f1f;box-shadow:inset 0 0 0 1px #333;display:flex;align-items:center;justify-content:center;transition:box-shadow .12s}
@@ -534,6 +539,20 @@ html,body{background:#282828!important}
 
     <sc-if value="{{ isCast }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="02 Talent All" style="width:100%;max-width:1100px;display:flex;flex-direction:column;gap:48px">
+        <div class="x-imgtabs">
+          <div class="x-modes" role="tablist" aria-label="Images">
+            <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
+          </div>
+          <div class="x-stylewrap">
+            <button type="button" class="x-stylebtn" data-on="{{ x.styleOpen }}" sc-camel-on-click="{{ x.styleToggle }}">{{ x.styleBtnLabel }}</button>
+            <sc-if value="{{ x.styleOpen }}" hint-placeholder-val="{{ false }}">
+              <div class="x-stylepop">
+                <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
+                <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
         <div style="display:flex;flex-direction:column;gap:20px">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid #414141">
             <div style="font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">Cast <span style="font-weight:400">· {{ tal.count }}</span></div>
@@ -594,6 +613,20 @@ html,body{background:#282828!important}
 
     <sc-if value="{{ ds.on }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Detail Sheet" class="ds">
+        <div class="x-imgtabs">
+          <div class="x-modes" role="tablist" aria-label="Images">
+            <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
+          </div>
+          <div class="x-stylewrap">
+            <button type="button" class="x-stylebtn" data-on="{{ x.styleOpen }}" sc-camel-on-click="{{ x.styleToggle }}">{{ x.styleBtnLabel }}</button>
+            <sc-if value="{{ x.styleOpen }}" hint-placeholder-val="{{ false }}">
+              <div class="x-stylepop">
+                <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
+                <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
         <div class="ds-sub">{{ ds.title }} <i class="ds-dim" style="font-style:normal">{{ ds.subtitle }}</i></div>
         <div class="ds-grid">
           <div class="ds-left">
@@ -738,6 +771,20 @@ html,body{background:#282828!important}
 
     <sc-if value="{{ g.isAll }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Section All" style="width:100%;max-width:1100px;display:flex;flex-direction:column;gap:48px">
+        <div class="x-imgtabs">
+          <div class="x-modes" role="tablist" aria-label="Images">
+            <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
+          </div>
+          <div class="x-stylewrap">
+            <button type="button" class="x-stylebtn" data-on="{{ x.styleOpen }}" sc-camel-on-click="{{ x.styleToggle }}">{{ x.styleBtnLabel }}</button>
+            <sc-if value="{{ x.styleOpen }}" hint-placeholder-val="{{ false }}">
+              <div class="x-stylepop">
+                <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
+                <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
         <div style="display:flex;flex-direction:column;gap:20px">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid #414141">
             <div style="font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">{{ g.countLabel }} <span style="font-weight:400">· {{ g.count }}</span></div>
@@ -931,20 +978,24 @@ html,body{background:#282828!important}
 
     <sc-if value="{{ x.hubOn }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Images" class="x-page x-hub" style="flex:1">
-        <div class="x-modes" role="tablist" aria-label="What to make">
-          <sc-for list="{{ x.modes }}" as="m" hint-placeholder-count="3"><button type="button" role="tab" class="x-mode" data-on="{{ m.on }}" aria-selected="{{ m.sel }}" sc-camel-on-click="{{ m.pick }}"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ m.icon }}"></path></svg><span class="x-ml">{{ m.label }}</span><span class="x-ms">{{ m.short }}</span></button></sc-for>
+        <div class="x-imgtabs">
+          <div class="x-modes" role="tablist" aria-label="Images">
+            <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
+          </div>
+          <div class="x-stylewrap">
+            <button type="button" class="x-stylebtn" data-on="{{ x.styleOpen }}" sc-camel-on-click="{{ x.styleToggle }}">{{ x.styleBtnLabel }}</button>
+            <sc-if value="{{ x.styleOpen }}" hint-placeholder-val="{{ false }}">
+              <div class="x-stylepop">
+                <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
+                <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
+              </div>
+            </sc-if>
+          </div>
         </div>
         <div class="x-mode-hint">{{ x.modeHint }}</div>
-        <sc-if value="{{ x.modeGen }}" hint-placeholder-val="{{ false }}">
-          <div class="x-styles">
-            <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
-            <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
-          </div>
-        </sc-if>
-        <div class="x-hubbody" data-kf="{{ x.kfOn }}">
-          <sc-if value="{{ x.modeKf }}" hint-placeholder-val="{{ false }}">
-            <aside class="x-kfp" aria-label="Project assets">
-              <div class="x-kft" role="tablist"><sc-for list="{{ x.kfTabs }}" as="t" hint-placeholder-count="3"><button type="button" role="tab" class="x-kftab" data-on="{{ t.on }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }} · {{ t.count }}</button></sc-for></div>
+        <div class="x-hubbody" data-kf="1">
+          <aside class="x-kfp" aria-label="Project assets">
+              <div class="x-kft" role="tablist"><sc-for list="{{ x.kfTabs }}" as="t" hint-placeholder-count="4"><button type="button" role="tab" class="x-kftab" data-on="{{ t.on }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }} · {{ t.count }}</button></sc-for></div>
               <div class="x-kfrefs"><span>References · {{ x.kfRefCount }} of 8</span><sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-kfclear" sc-camel-on-click="{{ x.kfClear }}">Clear</button></sc-if></div>
               <div class="x-kflist">
                 <sc-for list="{{ x.kfAssets }}" as="a" hint-placeholder-count="0"><div class="x-kfa" data-on="{{ a.on }}">
@@ -956,22 +1007,19 @@ html,body{background:#282828!important}
                 </div></sc-for>
                 <sc-if value="{{ x.kfEmpty }}" hint-placeholder-val="{{ false }}"><div class="x-kfempty">{{ x.kfEmptyText }}</div></sc-if>
               </div>
-              <div class="x-kflinks"><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfNew }}">+ {{ x.kfNewLabel }}</button><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfBoards }}">Storyboards</button></div>
+              <div class="x-kflinks"><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfNew }}">+ {{ x.kfNewLabel }}</button><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfBoards }}">Keyframes</button></div>
             </aside>
-          </sc-if>
-          <sc-if value="{{ x.showGal }}" hint-placeholder-val="{{ false }}">
-            <div class="x-galwrap">
-              <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
-              <div class="x-gal"><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0">
-                <div class="x-gcard" title="{{ g.prompt }}"><div class="x-gimg" style="aspect-ratio:{{ g.ar }}">
-                  <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><div style="{{ g.bg }}"></div></sc-if>
-                  <sc-if value="{{ g.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if>
-                  <sc-if value="{{ g.failed }}" hint-placeholder-val="{{ false }}"><div class="x-gerr">{{ g.err }}</div></sc-if>
-                  <div class="x-gacts"><sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ g.download }}">Download</span><span sc-camel-on-click="{{ g.edit }}">Edit</span></sc-if><span sc-camel-on-click="{{ g.reuse }}">Reuse prompt</span><span sc-camel-on-click="{{ g.del }}">Delete</span></div>
-                </div><div class="x-gp"><b>{{ g.kind }}</b> {{ g.prompt }}</div></div>
-              </sc-for></div>
-            </div>
-          </sc-if>
+          <div class="x-galwrap">
+            <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
+            <div class="x-gal"><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0">
+              <div class="x-gcard" title="{{ g.prompt }}"><div class="x-gimg" style="aspect-ratio:{{ g.ar }}">
+                <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><div style="{{ g.bg }}"></div></sc-if>
+                <sc-if value="{{ g.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if>
+                <sc-if value="{{ g.failed }}" hint-placeholder-val="{{ false }}"><div class="x-gerr">{{ g.err }}</div></sc-if>
+                <div class="x-gacts"><sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ g.download }}">Download</span><span sc-camel-on-click="{{ g.edit }}">Edit</span></sc-if><span sc-camel-on-click="{{ g.reuse }}">Reuse prompt</span><span sc-camel-on-click="{{ g.del }}">Delete</span></div>
+              </div><div class="x-gp"><b>{{ g.kind }}</b> {{ g.prompt }}</div></div>
+            </sc-for></div>
+          </div>
         </div>
       </div>
     </sc-if>
@@ -1526,7 +1574,7 @@ const NAV_ICON = { BRIEF: 'M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5', OVER
 const SIDE_NAV = [['BRIEF', 'BRIEF'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY']];
 const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
 const SOON_PAGES = { VIDEOS: ['Make your videos', 'Videos are made from your storyboard frames. This section is built in step 5.'], EDITING: ['Edit your content', 'Image Editor and Video Editor are built in step 5.'], DELIVERY: ['Choose your file destination', 'ZIP, Google Drive, Dropbox, Frame.io and share links are built in step 6.'], LIBRARY: ['All files in this project', 'Brief, Images, Videos, Editing and Delivery files. Built in step 6.'] };
-const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Storyboards' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Set design' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Images' : p.charAt(0) + p.slice(1).toLowerCase();
+const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Keyframes' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Props' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Images' : p.charAt(0) + p.slice(1).toLowerCase();
 const CFG = {
   TALENT: { one: 'Character', prefix: 'CHR', ph: 'Describe a new character — age, look, expression, wardrobe…', search: 'Search characters by name, ID or appearance…' },
   PRODUCT: { one: 'Product', prefix: 'PRD', heroH: 418, ph: 'Describe a product image to generate…', search: 'Search existing product photography…',
@@ -2574,7 +2622,7 @@ class Component extends DCLogic {
     try {
       const src = await window.SOLVED_IMAGE_GEN({ prompt, references: refs.slice(0, 8), ...(opts || {}), aspect: '16:9' });
       this.setKf(key, src);
-      this.recordUsage('STORYBOARDS', 'Storyboards · ' + (shot ? shot.name : 'Shot'));
+      this.recordUsage('STORYBOARDS', 'Keyframes · ' + (shot ? shot.name : 'Shot'));
     } catch (e) { this.setErr('Frame didn’t generate — ' + (e && e.message ? e.message : 'unknown error')); }
     finally { this.setState(s => { const kfBusy = { ...s.kfBusy }; delete kfBusy[key]; return { kfBusy }; }); }
   }
@@ -2720,60 +2768,71 @@ class Component extends DCLogic {
       return { k: 'p', id: p.uid, name: p.name || 'Product', sub: (p.type || 'Product') + ' · ' + (v.length > 1 ? v.length + '-view sheet' : 'no sheet yet'), photo: this.imgOfView(p) || v[0] || '', sheet: v.slice(1, 4) }; });
     const locs = (S.locations || []).filter(l => (l.sect || 'location') === 'location').map(l => { const v = viewsOf(l);
       return { k: 'l', id: l.uid, name: l.name || 'Location', sub: (l.kind === 'ai' ? 'AI location' : 'Real location') + ' · ' + (v.length > 1 ? v.length + ' views' : 'no sheet yet'), photo: v[0] || '', sheet: v.slice(1, 4) }; });
-    return { c: chars, p: prods, l: locs };
+    const wardrobe = [];
+    (S.store.TALENT || []).forEach(c => (c.wardrobe || []).forEach(wid => {
+      const p = (S.products || []).find(x => x.uid === wid && x.kind === 'wardrobe');
+      if (!p) return;
+      const v = viewsOf(p);
+      wardrobe.push({ k: 'w', id: p.uid, name: p.name || 'Wardrobe', sub: (c.name || 'Character') + '’s wardrobe · ' + (v.length > 1 ? v.length + '-view sheet' : 'no sheet yet'), photo: this.imgOfView(p) || v[0] || '', sheet: v.slice(1, 4) });
+    }));
+    return { c: chars, p: prods, l: locs, w: wardrobe };
   }
   kfRefs() {
-    const P = this.state.kfPick || {}, A = this.kfAssetsAll(), all = [...A.c, ...A.p, ...A.l], out = [], names = [];
+    const P = this.state.kfPick || {}, A = this.kfAssetsAll(), all = [...A.c, ...A.p, ...A.l, ...A.w], out = [], names = [];
     all.forEach(a => { const ph = P[a.k + ':' + a.id + ':photo'], sh = P[a.k + ':' + a.id + ':sheet'];
       if (ph && a.photo) out.push(a.photo); if (sh) a.sheet.forEach(x => out.push(x)); if ((ph && a.photo) || (sh && a.sheet.length)) names.push(a.name); });
     return { srcs: [...new Set(out)], names };
   }
-  hubModeData(fit, stop) {
-    const S = this.state, mode = this.imgMode(), st = this.activeStyle();
-    const MODES = [['gen', 'Generate image', 'M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM3 16l5-5 5 5 3-3 5 5M14 9.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0'],
-      ['kf', 'Create key frames', 'M4 5h16v14H4zM4 9h16M9 5v4M15 5v4']];
-    const SHORT = { gen: 'Image', kf: 'Key frames' };
-    const modes = MODES.map(([k, label, icon]) => ({ label, short: SHORT[k], icon, on: mode === k ? '1' : '0', sel: mode === k ? 'true' : 'false', pick: () => this.setState({ imgMode: k, gen: { ...this.state.gen, error: '' } }) }));
-    const styleName = st ? st.name : 'none';
-    const out = { modes, modeGen: mode === 'gen', modeKf: mode === 'kf', kfOn: mode === 'kf' ? '1' : '0', showGal: true,
-      modeHint: mode === 'gen' ? 'Describe any image in the prompt bar, or choose a style below. Style in use: ' + styleName + '.' : 'Add a character, product and location (photo, sheet or both), then describe the frame. Style in use: ' + styleName + '.',
-      galEmptyText: mode === 'kf' ? 'Your key frames appear here.' : 'Your images appear here.' };
-    if (mode === 'gen') {
-      const L = (S.styles || []);
-      out.styleCards = L.map(x => { const src = ((x.frames || [])[x.hero] || (x.frames || [])[0] || {}).src || '', on = !!st && st.uid === x.uid;
-        return { name: x.name || 'Style', sub: x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }), on: on ? '1' : '0', isOn: on,
-          pick: () => { const v = on ? null : x.uid; this.setState({ activeStyle: v }); try { localStorage.setItem('solved-active-style', JSON.stringify(v)); } catch (e) {} },
-          expand: e => { stop(e); this.setState({ stylePreview: x.uid }); } }; });
-      out.newStyle = () => { this.setState({ page: 'STYLE', view: 'all', item: null, prompt: '' }); setTimeout(() => this.newStyle(), 0); };
-      const spv = S.stylePreview, sps = spv ? L.find(y => y.uid === spv) : null, spSrc = sps ? ((sps.frames || [])[sps.hero] || (sps.frames || [])[0] || {}).src || '' : '';
-      out.hasStylePreview = !!sps; out.stylePreviewBg = fit(spSrc); out.stylePreviewLabel = sps ? sps.name : '';
-      out.closeStylePreview = () => this.setState({ stylePreview: null });
-    }
-    if (mode === 'kf') {
-      const tab = S.kfTab || 'c', A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
-      const toggle = key => () => this.setState(s => { const n = { ...(s.kfPick || {}) }; if (n[key]) delete n[key]; else n[key] = true; return { kfPick: n }; });
-      out.kfTabs = [['c', 'Characters'], ['p', 'Products'], ['l', 'Locations']].map(([k, label]) => ({ label, count: String(A[k].length), on: tab === k ? '1' : '0', pick: () => this.setState({ kfTab: k }) }));
-      out.kfAssets = A[tab].map(a => { const kp = a.k + ':' + a.id + ':photo', ks = a.k + ':' + a.id + ':sheet', ph = !!P[kp], sh = !!P[ks];
-        return { name: a.name, sub: a.sub, hasPhoto: !!a.photo, photoBg: Object.assign(bgOf(a.photo), { backgroundSize: 'cover' }), hasSheet: a.sheet.length > 0, sheetBg: Object.assign(bgOf(a.sheet[0] || ''), { backgroundSize: 'cover' }), on: ph || sh ? '1' : '0',
-          photoOn: ph ? '1' : '0', sheetOn: sh ? '1' : '0', photoLabel: ph ? '✓ Photo' : '+ Photo', sheetLabel: sh ? '✓ Sheet' : '+ Sheet',
-          noPhoto: !a.photo, noSheet: !a.sheet.length, togglePhoto: toggle(kp), toggleSheet: toggle(ks) }; });
-      const label = { c: 'character', p: 'product', l: 'location' }[tab], pg = { c: 'TALENT', p: 'PRODUCT', l: 'LOCATION' }[tab];
-      Object.assign(out, { kfEmpty: !A[tab].length, kfEmptyText: 'No ' + label + 's yet. Use “+ New ' + label + '” below.', kfNewLabel: 'New ' + label,
-        kfNew: () => this.setState({ page: pg, view: 'all', item: null, prompt: '', slot: pg === 'TALENT' ? 'front' : 0 }),
-        kfBoards: () => this.setState({ page: 'KEYFRAMES', view: 'all', item: null, prompt: '' }),
-        kfRefCount: String(Math.min(8, refs.srcs.length + (S.castAtt || []).length + (this.styleRef() ? 1 : 0))), kfHasRefs: Object.keys(P).length > 0, kfClear: () => this.setState({ kfPick: {} }) });
-      out.gal = (out.gal || []);
-    }
+  /** Compact style control — shared header, visible on every Images tab (not just Shots). */
+  styleControlData(fit, stop) {
+    const S = this.state, st = this.activeStyle(), styleName = st ? st.name : 'none';
+    const L = (S.styles || []);
+    const out = { styleBtnLabel: 'Style: ' + styleName, styleOpen: S.stylePopoverOpen ? '1' : '0',
+      styleToggle: () => this.setState(s => ({ stylePopoverOpen: !s.stylePopoverOpen })) };
+    out.styleCards = L.map(x => { const src = ((x.frames || [])[x.hero] || (x.frames || [])[0] || {}).src || '', on = !!st && st.uid === x.uid;
+      return { name: x.name || 'Style', sub: x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }), on: on ? '1' : '0', isOn: on,
+        pick: () => { const v = on ? null : x.uid; this.setState({ activeStyle: v }); try { localStorage.setItem('solved-active-style', JSON.stringify(v)); } catch (e) {} },
+        expand: e => { stop(e); this.setState({ stylePreview: x.uid }); } }; });
+    out.newStyle = () => { this.setState({ page: 'STYLE', view: 'all', item: null, prompt: '' }); setTimeout(() => this.newStyle(), 0); };
+    const spv = S.stylePreview, sps = spv ? L.find(y => y.uid === spv) : null, spSrc = sps ? ((sps.frames || [])[sps.hero] || (sps.frames || [])[0] || {}).src || '' : '';
+    out.hasStylePreview = !!sps; out.stylePreviewBg = fit(spSrc); out.stylePreviewLabel = sps ? sps.name : '';
+    out.closeStylePreview = () => this.setState({ stylePreview: null });
     return out;
+  }
+  hubModeData() {
+    const S = this.state, st = this.activeStyle(), styleName = st ? st.name : 'none';
+    const tab = S.kfTab || 'c', A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
+    const toggle = key => () => this.setState(s => { const n = { ...(s.kfPick || {}) }; if (n[key]) delete n[key]; else n[key] = true; return { kfPick: n }; });
+    const out = { kfOn: '1',
+      modeHint: 'Describe any image in the prompt bar, or quickly attach a character, product, location or wardrobe reference. Style in use: ' + styleName + '.',
+      galEmptyText: 'Your images appear here.' };
+    out.kfTabs = [['c', 'Characters'], ['p', 'Products'], ['l', 'Locations'], ['w', 'Wardrobe']].map(([k, label]) => ({ label, count: String(A[k].length), on: tab === k ? '1' : '0', pick: () => this.setState({ kfTab: k }) }));
+    out.kfAssets = A[tab].map(a => { const kp = a.k + ':' + a.id + ':photo', ks = a.k + ':' + a.id + ':sheet', ph = !!P[kp], sh = !!P[ks];
+      return { name: a.name, sub: a.sub, hasPhoto: !!a.photo, photoBg: Object.assign(bgOf(a.photo), { backgroundSize: 'cover' }), hasSheet: a.sheet.length > 0, sheetBg: Object.assign(bgOf(a.sheet[0] || ''), { backgroundSize: 'cover' }), on: ph || sh ? '1' : '0',
+        photoOn: ph ? '1' : '0', sheetOn: sh ? '1' : '0', photoLabel: ph ? '✓ Photo' : '+ Photo', sheetLabel: sh ? '✓ Sheet' : '+ Sheet',
+        noPhoto: !a.photo, noSheet: !a.sheet.length, togglePhoto: toggle(kp), toggleSheet: toggle(ks) }; });
+    const label = { c: 'character', p: 'product', l: 'location', w: 'wardrobe item' }[tab], pg = { c: 'TALENT', p: 'PRODUCT', l: 'LOCATION', w: 'TALENT' }[tab];
+    Object.assign(out, { kfEmpty: !A[tab].length, kfEmptyText: tab === 'w' ? 'No wardrobe yet. Add one from a character’s page.' : 'No ' + label + 's yet. Use “+ New ' + label + '” below.', kfNewLabel: 'New ' + label,
+      kfNew: () => this.setState({ page: pg, view: 'all', item: null, prompt: '', slot: pg === 'TALENT' ? 'front' : 0 }),
+      kfBoards: () => this.setState({ page: 'KEYFRAMES', view: 'all', item: null, prompt: '' }),
+      kfRefCount: String(Math.min(8, refs.srcs.length + (S.castAtt || []).length + (this.styleRef() ? 1 : 0))), kfHasRefs: Object.keys(P).length > 0, kfClear: () => this.setState({ kfPick: {} }) });
+    return out;
+  }
+  /** Shared tab bar (Products/Characters/Locations/Shots/Keyframes) — same screen set as {@link IMAGE_PAGES_TOP}. */
+  imageTabsData() {
+    const page = this.state.page;
+    return [['PRODUCT', 'Products'], ['TALENT', 'Characters'], ['LOCATION', 'Locations'], ['IMAGES', 'Shots'], ['KEYFRAMES', 'Keyframes']]
+      .map(([p, label]) => ({ label, on: page === p ? '1' : '0', sel: page === p ? 'true' : 'false',
+        pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } }));
   }
   async kfGen(p) {
     const HF = window.SOLVED_HF;
     if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate key frames.');
     const R = this.kfRefs(), st = this.activeStyle(), sref = this.styleRef(), refs = [...R.srcs, ...(this.state.castAtt || []), sref].filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 8), id = uid();
+    const o = this.tcfg('IMAGES:kf'), ar = o.ratio || '16:9';
     const prompt = [p, 'Cinematic key frame, ' + ar + ', photoreal.', R.names.length ? 'Featuring: ' + R.names.join(', ') + '.' : '', st ? 'Visual style: ' + (st.desc || st.name) + '.' : '',
       refs.length ? 'Use the reference images for the exact people (faces, wardrobe), products and locations. Keep every person and product identical to the references.' : ''].filter(Boolean).join(' ');
     this.setErr(''); this.setState({ prompt: '', castAtt: [] });
-    const o = this.tcfg('IMAGES:kf'), ar = o.ratio || '16:9';
     this.setX('gallery', a => [{ uid: id, kind: 'kf', prompt: p, src: '', status: 'running', aspect: ar, refs: refs.length, at: Date.now() }, ...a]);
     try {
       const url = await HF.generate({ prompt, references: refs, aspect: ar, model: o.model, quality: o.quality, resolution: o.resolution });
@@ -2980,7 +3039,7 @@ class Component extends DCLogic {
     (S.store.TALENT || []).forEach(c => { const sh = c.sheet || {}; Object.keys(sh).forEach(k => add('Characters', c.name + ' · ' + ((SHEET.find(x => x[0] === k) || [k, k])[1]), sh[k])); });
     (S.products || []).filter(p => p.kind === 'wardrobe').forEach(p => (p.views || []).forEach((v, i) => v && add('Wardrobe', p.name + ' · ' + vlabel(p.type, i), I[v.img])));
     (S.locations || []).filter(l => (l.sect || 'location') === 'location').forEach(l => (l.views || []).forEach((v, i) => v && add('Locations', l.name + ' · ' + (LAI[i] || 'View'), I[v.img])));
-    (S.locations || []).filter(l => l.sect === 'set').forEach(l => (l.views || []).forEach((v, i) => v && add('Set design', l.name + ' · ' + (LAI[i] || 'View'), I[v.img])));
+    (S.locations || []).filter(l => l.sect === 'set').forEach(l => (l.views || []).forEach((v, i) => v && add('Props', l.name + ' · ' + (LAI[i] || 'View'), I[v.img])));
     (S.items.KEYFRAMES || []).forEach(t => add('Storyboards', t.name, this.frameSrc(t.n)));
     (S.videos || []).forEach(v => v.status === 'done' && add('Videos', v.name, v.url, 'video'));
     (S.edits || []).forEach(e => add('Editing', e.name, e.src, e.kind));
@@ -3035,8 +3094,10 @@ class Component extends DCLogic {
       edit: e => { stop(e); this.setState({ page: 'EDITING', edTool: 'image', ed: { src: g.src, name: g.prompt.slice(0, 40), adj: { b: 100, c: 100, s: 100 } } }); },
       reuse: e => { stop(e); this.setState({ prompt: g.prompt }); },
       del: e => { stop(e); this.setX('gallery', a => a.filter(y => y.uid !== g.uid)); } })),
-      ...this.hubModeData(fit, stop) } : {};
-    const X = { ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
+      ...this.hubModeData() } : {};
+    const imageTabsPage = ['PRODUCT', 'TALENT', 'LOCATION', 'IMAGES', 'KEYFRAMES', 'WARDROBE', 'SETDESIGN', 'STYLE'].includes(page);
+    const sharedImgHeader = imageTabsPage ? { imageTabs: this.imageTabsData(), ...this.styleControlData(fit, stop) } : {};
+    const X = { ...sharedImgHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
     if (X.sbOn) {
       const n = (S.items.KEYFRAMES || []).length, made = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n)).length, st = this.storyStyle();
       Object.assign(X, { sbInfo: made + ' of ' + n + ' frames generated · Style: ' + (st ? st.name : 'none'), sbBusy: !!S.sbBusy,
@@ -3094,7 +3155,7 @@ class Component extends DCLogic {
     }
     if (X.dlOn || X.libOn) {
       const libQ = X.libOn ? (S.libQ || '').trim().toLowerCase() : '', all0 = this.projectFiles(), all = libQ ? all0.filter(f => (f.name + ' ' + f.section).toLowerCase().includes(libQ)) : all0, key = f => f.section + '|' + f.name + '|' + f.src.length, sel = S.dlSel;
-      const sections = ['Uploads', 'Brief', 'Images', 'Products', 'Characters', 'Wardrobe', 'Locations', 'Set design', 'Storyboards', 'Videos', 'Editing'];
+      const sections = ['Uploads', 'Brief', 'Images', 'Products', 'Characters', 'Wardrobe', 'Locations', 'Props', 'Keyframes', 'Videos', 'Editing'];
       const groups = sections.map(sec => { const fs = all.filter(f => f.section === sec); return { title: sec, count: String(fs.length), has: fs.length > 0,
         files: fs.map(f => { const on = !sel || !!sel[key(f)]; return { name: f.name, isImg: f.kind === 'image', isVid: f.kind === 'video', isDoc: f.kind === 'doc', src: f.src, bg: fit(f.src), mark: on ? '✓' : '', line: on ? '#1985FF' : '#303030',
           toggle: () => this.setState(s => { const cur = s.dlSel || Object.fromEntries(all.map(g => [key(g), true])); const n = { ...cur }; if (n[key(f)]) delete n[key(f)]; else n[key(f)] = true; return { dlSel: n }; }),
@@ -3214,8 +3275,8 @@ class Component extends DCLogic {
       ...delBits(isSet ? 'Delete set' : 'Delete location', () => this.secDel('location', l.uid)),
       fields: [inp('Name', l.name, 'Location name', val => this.updLoc(l.uid, x => { x.name = val; return x; }), true), inp('Description', d.sub, 'Describe the location', val => d.setSub({ target: { value: val } }), true),
         ...d.fields.map(f => ({ ...f, cls: '' }))],
-      hasBox: !isSet, boxTitle: 'Set design', boxCount: String(mine.filter(u => SETS.some(x => x.uid === u)).length), canPick: SETS.length > 0, pickLabel: S.dsPick ? 'Close' : 'Pick existing sets',
-      togglePick: () => this.setState(st => ({ dsPick: !st.dsPick })), addLabel: 'Add set photos', boxAdd: () => this.pick('locset:' + l.uid), boxDrop: this.dropTo('locset:' + l.uid), pickOpen: !!S.dsPick,
+      hasBox: !isSet, boxTitle: 'Props', boxCount: String(mine.filter(u => SETS.some(x => x.uid === u)).length), canPick: SETS.length > 0, pickLabel: S.dsPick ? 'Close' : 'Pick existing props',
+      togglePick: () => this.setState(st => ({ dsPick: !st.dsPick })), addLabel: 'Add props', boxAdd: () => this.pick('locset:' + l.uid), boxDrop: this.dropTo('locset:' + l.uid), pickOpen: !!S.dsPick,
       pickAll: SETS.map(x => { const has = mine.includes(x.uid), im = firstImg(x); return { name: x.name, has: !!im, bg: bgOf(im), line: has ? '#1985FF' : 'transparent', mark: has ? '✓' : '', pick: () => setSets(a => has ? a.filter(u => u !== x.uid) : [...a, x.uid]) }; }),
       boxItems: SETS.filter(x => mine.includes(x.uid)).map(x => { const im = firstImg(x); return { name: x.name, has: !!im, bg: bgOf(im), open: () => this.setState({ page: 'SETDESIGN', view: 'item', item: x.uid }), remove: e => { stop(e); setSets(a => a.filter(u => u !== x.uid)); } }; }),
       busy: !!d.busy2, goLabel: d.goLabel, generate: d.generate, ...settings, showSettings: !!d.showRes,
@@ -3264,7 +3325,7 @@ class Component extends DCLogic {
       if (gen.running || this.state.sheetRun) return;
       const p = prompt.trim();
       if (mode === 'search') { if (isTalent) this.setState({ view: 'all', item: null }); return; }
-      if (isHub) { const md = this.imgMode(); if (md === 'style') return; if (!p) return this.setErr(md === 'kf' ? 'Describe the key frame to create.' : 'Describe the image to create.'); return md === 'kf' ? this.kfGen(p) : this.freeGen(p); }
+      if (isHub) { if (!p) return this.setErr('Describe the image to create.'); return this.kfGen(p); }
       if (isVid) return this.vidGen(p);
       if (isStyleAll) {
         if (!p) return this.setErr('Describe a style to create, or press + to start from an image.');
@@ -3280,7 +3341,7 @@ class Component extends DCLogic {
         return;
       }
       if (isLocation) {
-        if (isLocSheet) { if (loc.kind !== 'ai') return this.setErr((lsect === 'set' ? 'Built sets use uploaded photos only — nothing is generated.' : 'Real locations use uploaded photos only — nothing is generated.')); this.genLocSlot(loc.uid, typeof slot === 'number' ? slot : 0, p); this.clearPrompt(); return; }
+        if (isLocSheet) { if (loc.kind !== 'ai') return this.setErr((lsect === 'set' ? 'Props use uploaded photos only — nothing is generated.' : 'Real locations use uploaded photos only — nothing is generated.')); this.genLocSlot(loc.uid, typeof slot === 'number' ? slot : 0, p); this.clearPrompt(); return; }
         return this.setState({ locPopup: { step: 'ai', files: [], url: '', prompt: p, ref: null }, prompt: '' });
       }
       if (isProduct) {
@@ -3380,10 +3441,10 @@ class Component extends DCLogic {
       setLibQ: e => { const q = e.target.value; this.initial = this.state.values; this.setState({ libQ: q, page: 'LIBRARY', view: 'all', item: null, attachOpen: false }); },
       goOverview: () => { this.initial = values; this.setState({ page: 'BRIEF', view: 'all', attachOpen: false }); },
       nav: SIDE_NAV.map(([p, label]) => ({ label, mb: '0px', color: '#f5f5f5', on: (p === page || (p === 'IMAGES' && IMAGE_PAGES.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
-        pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
+        pick: () => { const pg = p === 'IMAGES' && !IMAGE_PAGES.includes(page) ? 'PRODUCT' : p; this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
 
-      crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : isHub ? 'IMAGES' : page === 'STYLE' ? 'STORYBOARDS' : page === 'KEYFRAMES' ? 'STORYBOARDS' : page === 'PRODUCT' ? 'PRODUCTS' : page === 'LOCATION' ? 'LOCATIONS' : page === 'SETDESIGN' ? 'SET DESIGN' : page === 'TALENT' ? 'CHARACTERS' : page, crumbSep: '/',
-      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? ({ gen: 'GENERATE', kf: 'KEY FRAMES' })[this.imgMode()] : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : inDetail ? curItem.name : 'ALL',
+      crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : (isHub || page === 'STYLE' || page === 'KEYFRAMES' || page === 'PRODUCT' || page === 'WARDROBE' || page === 'LOCATION' || page === 'SETDESIGN' || page === 'TALENT') ? 'IMAGES' : page, crumbSep: '/',
+      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? 'SHOTS' : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : isTalent ? 'CHARACTERS' : isProduct ? 'PRODUCTS' : isLocation ? 'LOCATIONS' : (isShotsPage && !inDetail) ? 'KEYFRAMES' : inDetail ? curItem.name : 'ALL',
       leafColor: (isTalent || isProduct || isLocation || isStyle) ? '#1985FF' : '#f5f5f5',
       rootCursor: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'pointer' : 'default',
       rootUnderline: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'underline' : 'none',
@@ -3401,11 +3462,11 @@ class Component extends DCLogic {
           hfFields: [['account', 'ACCOUNT LABEL', 'text', ''], ['model', 'IMAGE MODEL', 'text', 'gpt_image_2_5'], ['quality', 'QUALITY (low · medium · high · xhigh · max)', 'text', 'high'], ['resolution', 'RESOLUTION (1k · 2k · 4k)', 'text', '1k']]
             .map(([k, label, type, ph]) => ({ label, type, ph, value: (d && d[k]) || '', set: setD(k) })) }; })(),
       barW: '100%',
-      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SOON_PAGES[page][0]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: ({ gen: 'Generate an image', kf: 'Create key frames' })[this.imgMode()], KEYFRAMES: inDetail ? 'Create your storyboard frame' : 'Create your storyboard frames' })[page]
+      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SOON_PAGES[page][0]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Describe a shot, or attach references', KEYFRAMES: inDetail ? 'Create your key frame' : 'Create your key frames' })[page]
         || (isStyleEdit ? 'Create your style' : isStyleAll ? 'Choose a style for your storyboard'
         : isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
         : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Create your wardrobe images' : 'Create your product images')
-        : isLocation ? (isLocSheet ? (loc.kind === 'ai' ? (lsect === 'set' ? 'Create your set sheet' : 'Create your location sheet') : (lsect === 'set' ? 'Add photos of your set' : 'Add photos of your location')) : lsect === 'set' ? 'Create your set images' : 'Create your location images') : ''),
+        : isLocation ? (isLocSheet ? (loc.kind === 'ai' ? (lsect === 'set' ? 'Create your prop sheet' : 'Create your location sheet') : (lsect === 'set' ? 'Add photos of your prop' : 'Add photos of your location')) : lsect === 'set' ? 'Create your prop images' : 'Create your location images') : ''),
       isStyleAll: false, isStyleEdit: false, sLoading: isStyleAll && !this.state.sLoaded,
       newStyle: () => this.newStyle(),
       dropNewStyle: e => { e.preventDefault(); const fl = [...e.dataTransfer.files]; this.newStyle({ source: 'image' }); setTimeout(() => this.handleFiles('styleref', fl), 0); },
@@ -3460,9 +3521,9 @@ class Component extends DCLogic {
           ['PRODUCT', 'PRODUCTS', PR.length ? n(PR.length, 'product') : 'No products yet', first(PR, pImg), ''],
           ['LOCATION', 'LOCATIONS', LC.length ? n(LC.length, 'location') + ' · ' + LC.filter(l => l.kind === 'real').length + ' real, ' + LC.filter(l => l.kind === 'ai').length + ' AI' : 'No locations yet', first(LC, lImg), ''],
           ['WARDROBE', 'WARDROBE', WR.length ? n(WR.length, 'item') : 'No wardrobe yet', first(WR, pImg), ''],
-          ['SETDESIGN', 'SET DESIGN', SE.length ? n(SE.length, 'set') : 'No sets yet', first(SE, lImg), ''],
+          ['SETDESIGN', 'PROPS', SE.length ? n(SE.length, 'set') : 'No props yet', first(SE, lImg), ''],
           ['STYLE', 'STYLE', this.state.styles.length ? n(this.state.styles.length, 'style') : 'No styles yet', first(this.state.styles, s => (s.frames[s.hero] || s.frames[0] || {}).src), ''],
-          ['KEYFRAMES', 'STORYBOARDS', (this.state.items.KEYFRAMES || []).length + ' shots · ' + (this.state.items.KEYFRAMES || []).filter(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).length + ' generated', ((this.state.items.KEYFRAMES || []).map(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).find(Boolean)) || '', ''],
+          ['KEYFRAMES', 'KEY FRAMES', (this.state.items.KEYFRAMES || []).length + ' shots · ' + (this.state.items.KEYFRAMES || []).filter(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).length + ' generated', ((this.state.items.KEYFRAMES || []).map(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).find(Boolean)) || '', ''],
         ];
         const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE'); const ORD = ['PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES']; imgRows.splice(0, imgRows.length, ...imgRows.filter(r => ORD.includes(r[0]))); imgRows.sort((a, b) => ORD.indexOf(a[0]) - ORD.indexOf(b[0])); // Products, Characters, Wardrobe first
         const imgCount = T.length + PR.length + LC.length + WR.length + SE.length;
@@ -3472,7 +3533,7 @@ class Component extends DCLogic {
           ['EDITING', 'EDITING', (this.state.edits || []).length ? n((this.state.edits || []).length, 'edit') : 'Image and video editors', ((this.state.edits || []).find(e => e.kind === 'image') || {}).src || '', ''],
           ['DELIVERY', 'DELIVERY', (this.state.deliveries || []).length ? n((this.state.deliveries || []).length, 'delivery') : 'Nothing sent yet', '', '']];
         const DICON = { BRIEF: 'M9 5h11M9 10h11M9 15h11M9 20h11M4 5h.5M4 10h.5M4 15h.5M4 20h.5', IMAGES: 'M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM3 16l5-5 5 5 3-3 5 5M14 9.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0', VIDEOS: 'M4 6h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM16 10.5l5-3.5v10l-5-3.5', EDITING: 'M11 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z', DELIVERY: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9.5 17.5l5-5M10.5 12.5h4v4' };
-        return (isHub ? imgRows : dash).map(([pg, label, desc, img, ex]) => ({ label, title: label.charAt(0) + label.slice(1).toLowerCase(), icon: NAV_ICON[pg] || DICON[pg] || '', desc, hasImg: !!img, bg: bgOf(img), hasExcerpt: !!ex, excerpt: ex, open: go(pg) }));
+        return (isHub ? imgRows : dash).map(([pg, label, desc, img, ex]) => ({ label, title: label.charAt(0) + label.slice(1).toLowerCase(), icon: NAV_ICON[pg] || DICON[pg] || '', desc, hasImg: !!img, bg: bgOf(img), hasExcerpt: !!ex, excerpt: ex, open: go(pg === 'IMAGES' ? 'PRODUCT' : pg) }));
       })(),
       brief: (() => {
         const st = this.state, V = values;
@@ -3575,7 +3636,7 @@ class Component extends DCLogic {
       popClearRef: () => this.setState(s => ({ locPopup: { ...s.locPopup, ref: null } })),
       popAIFg: this.state.locPopup && (this.state.locPopup.prompt.trim() || this.state.locPopup.ref) ? '#191919' : '#f5f5f5', popAIBg: this.state.locPopup && (this.state.locPopup.prompt.trim() || this.state.locPopup.ref) ? '#1985FF' : '#292929',
       popCreateAI: () => this.createAILoc(),
-      locNewLabel: lsect === 'set' ? 'Add new set' : 'Add new location',
+      locNewLabel: lsect === 'set' ? 'Add new prop' : 'Add new location',
       locCards: this.state.locations.filter(l => sectOf(l) === lsect).map(l => { const v = l.views.find(Boolean), src = v ? this.state.imgs[v.img] || '' : '';
         return { name: l.name, tag: l.kind === 'real' ? 'REAL' : 'AI', hasImg: !!src, bg: bgOf(src), open: () => this.openSheet(l.uid),
           rename: e => { const val = e.target.value; this.updLoc(l.uid, x => { x.name = val; return x; }); } }; }),
@@ -3603,7 +3664,7 @@ class Component extends DCLogic {
             { label: 'REMOVE', color: '#ef6b61', click: () => { close(); this.updLoc(pl.uid, x => { x.views[pv.idx] = null; return x; }); } },
             { label: 'CLOSE', color: '#929292', click: close }] : [] }; })(),
       isProdAll: false, isProdSheet: false, pLoading: (isProdAll || isLocAll) && !this.state.pLoaded,
-      barPh: isHub ? (this.imgMode() === 'kf' ? 'Describe the key frame…' : this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe an image to create…') : isVid ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Built sets use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a set to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
+      barPh: isHub ? (this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe a shot to create…') : isVid ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Props use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a prop to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
       uploadNewProd: () => this.pick('newprod'),
       dropNewProd: e => { e.preventDefault(); this.handleFiles('newprod', e.dataTransfer.files); },
       pNewLabel: pkind === 'wardrobe' ? 'Upload new item' : 'Upload new product',
@@ -3833,7 +3894,7 @@ class Component extends DCLogic {
           product: ['Products', 'product', 'Create new product', 'Upload photos or describe a product', 'Short description', 'product sheet'],
           wardrobe: ['Wardrobe', 'item', 'Create new item', 'Upload photos or describe a wardrobe item', 'Short description', 'wardrobe sheet'],
           location: ['Locations', 'location', 'Create new location', 'Upload photos or describe a location', 'Describe the location', 'location views'],
-          set: ['Sets', 'set', 'Create new set', 'Upload photos or describe a set', 'Describe the set', 'set views'],
+          set: ['Props', 'prop', 'Create new prop', 'Upload photos or describe a prop', 'Describe the prop', 'prop views'],
           style: ['Styles', 'style', 'Create new style', 'Add references or describe a look', 'Describe the look — lighting, color, mood', 'style'],
           shot: ['Shots', 'shot', 'Create new shot', 'Describe the shot or add a frame', 'Describe the shot', 'storyboard frame'],
         }[sub];
@@ -3953,7 +4014,7 @@ class Component extends DCLogic {
         const HF = window.SOLVED_HF;
         // Characters keeps its own settings per page: the main page drives the headshot,
         // the sheet page drives the sheet. Every other page still uses the shared defaults.
-        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : isHub ? (this.imgMode() === 'kf' ? 'IMAGES:kf' : 'IMAGES:main') : isVid ? 'VIDEOS:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
+        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : isHub ? 'IMAGES:kf' : isVid ? 'VIDEOS:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
         const c = tctx ? this.tcfg(tctx) : (HF ? HF.get() : {});
         const put = v => { if (tctx) this.tset(tctx, v); else if (HF) { HF.set(v); this.setState(s2 => ({ hfTick: s2.hfTick + 1 })); } };
         const pretty = m => m.replace(/_/g, ' ').replace(/\b\w/g, x => x.toUpperCase());
@@ -4069,7 +4130,7 @@ class Component extends DCLogic {
           set: e => { const v = e.target.value; updChar(x => { this.identityEdit(x); x.fields = { ...x.fields, [label]: v }; return x; }); } })),
         variations: char.variations.filter(v => v.cat === varCat).map(v => ({ src: v.src, tag: v.version === 'draft' ? 'DRAFT' : `IDENTITY ${v.version.toUpperCase()}`,
           remove: () => updChar(x => { x.variations = x.variations.filter(y => y.uid !== v.uid); return x; }) })),
-        usage: [['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['STORYBOARDS', 'STORYBOARDS'], ['KEYFRAMES', 'KEYFRAMES']].map(([k, label]) => {
+        usage: [['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['STORYBOARDS', 'KEY FRAMES'], ['KEYFRAMES', 'KEYFRAMES']].map(([k, label]) => {
           const rows = char.usage.filter(u => u.kind === k).slice().reverse();
           return { label, count: String(rows.length), empty: !rows.length, rows: rows.map(u => ({ label: u.label, meta: `v${u.version} · ${when(u.at)}` })) }; }),
         hasOriginal: !!char.original, original: char.original || '',
