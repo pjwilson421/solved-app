@@ -935,7 +935,7 @@ html,body{background:#282828!important}
           <sc-for list="{{ x.modes }}" as="m" hint-placeholder-count="3"><button type="button" role="tab" class="x-mode" data-on="{{ m.on }}" aria-selected="{{ m.sel }}" sc-camel-on-click="{{ m.pick }}"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ m.icon }}"></path></svg><span class="x-ml">{{ m.label }}</span><span class="x-ms">{{ m.short }}</span></button></sc-for>
         </div>
         <div class="x-mode-hint">{{ x.modeHint }}</div>
-        <sc-if value="{{ x.modeStyle }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ x.modeGen }}" hint-placeholder-val="{{ false }}">
           <div class="x-styles">
             <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
             <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
@@ -2731,15 +2731,14 @@ class Component extends DCLogic {
   hubModeData(fit, stop) {
     const S = this.state, mode = this.imgMode(), st = this.activeStyle();
     const MODES = [['gen', 'Generate image', 'M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM3 16l5-5 5 5 3-3 5 5M14 9.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0'],
-      ['style', 'Choose a style', 'M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.5 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.8.7-1.5 1.5-1.5H16a5 5 0 0 0 5-5c0-4.4-4-7.8-9-7.8zM7.5 12.5h.01M9.5 8h.01M14.5 8h.01M17 11.5h.01'],
       ['kf', 'Create key frames', 'M4 5h16v14H4zM4 9h16M9 5v4M15 5v4']];
-    const SHORT = { gen: 'Image', style: 'Style', kf: 'Key frames' };
+    const SHORT = { gen: 'Image', kf: 'Key frames' };
     const modes = MODES.map(([k, label, icon]) => ({ label, short: SHORT[k], icon, on: mode === k ? '1' : '0', sel: mode === k ? 'true' : 'false', pick: () => this.setState({ imgMode: k, gen: { ...this.state.gen, error: '' } }) }));
     const styleName = st ? st.name : 'none';
-    const out = { modes, modeGen: mode === 'gen', modeStyle: mode === 'style', modeKf: mode === 'kf', kfOn: mode === 'kf' ? '1' : '0', showGal: mode !== 'style',
-      modeHint: mode === 'gen' ? 'Describe any image in the prompt bar. Style in use: ' + styleName + '.' : mode === 'style' ? 'Pick a look. It is applied to every image and key frame you generate.' : 'Add a character, product and location (photo, sheet or both), then describe the frame. Style in use: ' + styleName + '.',
+    const out = { modes, modeGen: mode === 'gen', modeKf: mode === 'kf', kfOn: mode === 'kf' ? '1' : '0', showGal: true,
+      modeHint: mode === 'gen' ? 'Describe any image in the prompt bar, or choose a style below. Style in use: ' + styleName + '.' : 'Add a character, product and location (photo, sheet or both), then describe the frame. Style in use: ' + styleName + '.',
       galEmptyText: mode === 'kf' ? 'Your key frames appear here.' : 'Your images appear here.' };
-    if (mode === 'style') {
+    if (mode === 'gen') {
       const L = (S.styles || []);
       out.styleCards = L.map(x => { const src = ((x.frames || [])[x.hero] || (x.frames || [])[0] || {}).src || '', on = !!st && st.uid === x.uid;
         return { name: x.name || 'Style', sub: x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }), on: on ? '1' : '0', isOn: on,
@@ -3384,7 +3383,7 @@ class Component extends DCLogic {
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
 
       crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : isHub ? 'IMAGES' : page === 'STYLE' ? 'STORYBOARDS' : page === 'KEYFRAMES' ? 'STORYBOARDS' : page === 'PRODUCT' ? 'PRODUCTS' : page === 'LOCATION' ? 'LOCATIONS' : page === 'SETDESIGN' ? 'SET DESIGN' : page === 'TALENT' ? 'CHARACTERS' : page, crumbSep: '/',
-      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? ({ gen: 'GENERATE', style: 'STYLE', kf: 'KEY FRAMES' })[this.imgMode()] : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : inDetail ? curItem.name : 'ALL',
+      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? ({ gen: 'GENERATE', kf: 'KEY FRAMES' })[this.imgMode()] : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : inDetail ? curItem.name : 'ALL',
       leafColor: (isTalent || isProduct || isLocation || isStyle) ? '#1985FF' : '#f5f5f5',
       rootCursor: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'pointer' : 'default',
       rootUnderline: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'underline' : 'none',
@@ -3402,7 +3401,7 @@ class Component extends DCLogic {
           hfFields: [['account', 'ACCOUNT LABEL', 'text', ''], ['model', 'IMAGE MODEL', 'text', 'gpt_image_2_5'], ['quality', 'QUALITY (low · medium · high · xhigh · max)', 'text', 'high'], ['resolution', 'RESOLUTION (1k · 2k · 4k)', 'text', '1k']]
             .map(([k, label, type, ph]) => ({ label, type, ph, value: (d && d[k]) || '', set: setD(k) })) }; })(),
       barW: '100%',
-      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SOON_PAGES[page][0]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: ({ gen: 'Generate an image', style: 'Choose a style', kf: 'Create key frames' })[this.imgMode()], KEYFRAMES: inDetail ? 'Create your storyboard frame' : 'Create your storyboard frames' })[page]
+      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SOON_PAGES[page][0]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: ({ gen: 'Generate an image', kf: 'Create key frames' })[this.imgMode()], KEYFRAMES: inDetail ? 'Create your storyboard frame' : 'Create your storyboard frames' })[page]
         || (isStyleEdit ? 'Create your style' : isStyleAll ? 'Choose a style for your storyboard'
         : isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
         : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Create your wardrobe images' : 'Create your product images')
@@ -4018,7 +4017,7 @@ class Component extends DCLogic {
         return out;
       })(),
       showAttach: !isVid || vm.mode === 'image-to-video',
-      showTalentBar: isCast || (isHub && this.imgMode() !== 'style') || isVid || (!!gk && !gDetail),
+      showTalentBar: isCast || isHub || isVid || (!!gk && !gDetail),
       sl: Object.fromEntries(SHEET.map(([k]) => { const src = (char && char.sheet && char.sheet[k]) || ''; return [k, { has: !!src, src, bg: bgOf(src),
         busy: (gen.running && this.state.genSlot === k) || ['queued', 'busy', 'checking'].includes(this.state.sSlot[(char ? char.uid : '') + ':' + k]),
         tag: this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'wrong' ? 'WRONG ANGLE — REGENERATE' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'failed' ? 'FAILED · RETRY' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'checking' ? 'CHECKING ANGLE…' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'queued' ? 'QUEUED' : this.state.sSlot[(char ? char.uid : '') + ':' + k] === 'busy' ? 'GENERATING…' : slot === k ? 'SELECTED' : 'DRAFT',
