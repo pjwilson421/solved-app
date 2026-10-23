@@ -146,10 +146,10 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-mode svg{flex:none}.x-ms{display:none}
 .x-mode-hint{font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;margin-top:-8px}
 .x-imgtabs{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.x-stylewrap{position:relative;flex:none}
-.x-stylebtn{height:36px;padding:0 14px;border:1px solid #3a3a3a;border-radius:999px;background:transparent;color:#d0d0d0;font:700 12px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer;white-space:nowrap;transition:background-color .12s,border-color .12s,color .12s}
-.x-stylebtn:hover{background:#2a2a2a}.x-stylebtn[data-on="1"]{border-color:#1985FF;color:#1985FF}
-.x-stylepop{position:absolute;right:0;top:calc(100% + 8px);z-index:30;width:min(420px,80vw);max-height:60vh;overflow-y:auto;padding:12px;border-radius:10px;background:#1f1f1f;box-shadow:0 12px 32px rgba(0,0,0,.35);display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.x-styledots{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.x-styledot{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid transparent;padding:0;cursor:pointer;background-color:#1f1f1f;transition:border-color .12s}
+.x-styledot[data-on="1"]{border-color:#1985FF}
+.x-styledotnew{display:flex;align-items:center;justify-content:center;border:1px dashed #414141;color:#1985FF;font:300 20px/1 'Helvetica Neue',Helvetica,sans-serif;background-color:transparent}
 .x-styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px 14px}
 .x-scard{display:flex;flex-direction:column;gap:10px;cursor:pointer;min-width:0;outline:none}
 .x-simg{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#1f1f1f;box-shadow:inset 0 0 0 1px #333;display:flex;align-items:center;justify-content:center;transition:box-shadow .12s}
@@ -543,15 +543,6 @@ html,body{background:#282828!important}
           <div class="x-modes" role="tablist" aria-label="Images">
             <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
           </div>
-          <div class="x-stylewrap">
-            <button type="button" class="x-stylebtn" data-on="{{ x.styleOpen }}" sc-camel-on-click="{{ x.styleToggle }}">{{ x.styleBtnLabel }}</button>
-            <sc-if value="{{ x.styleOpen }}" hint-placeholder-val="{{ false }}">
-              <div class="x-stylepop">
-                <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
-                <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
-              </div>
-            </sc-if>
-          </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:20px">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid #414141">
@@ -616,15 +607,6 @@ html,body{background:#282828!important}
         <div class="x-imgtabs">
           <div class="x-modes" role="tablist" aria-label="Images">
             <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
-          </div>
-          <div class="x-stylewrap">
-            <button type="button" class="x-stylebtn" data-on="{{ x.styleOpen }}" sc-camel-on-click="{{ x.styleToggle }}">{{ x.styleBtnLabel }}</button>
-            <sc-if value="{{ x.styleOpen }}" hint-placeholder-val="{{ false }}">
-              <div class="x-stylepop">
-                <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
-                <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
-              </div>
-            </sc-if>
           </div>
         </div>
         <div class="ds-sub">{{ ds.title }} <i class="ds-dim" style="font-style:normal">{{ ds.subtitle }}</i></div>
@@ -774,15 +756,6 @@ html,body{background:#282828!important}
         <div class="x-imgtabs">
           <div class="x-modes" role="tablist" aria-label="Images">
             <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
-          </div>
-          <div class="x-stylewrap">
-            <button type="button" class="x-stylebtn" data-on="{{ x.styleOpen }}" sc-camel-on-click="{{ x.styleToggle }}">{{ x.styleBtnLabel }}</button>
-            <sc-if value="{{ x.styleOpen }}" hint-placeholder-val="{{ false }}">
-              <div class="x-stylepop">
-                <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
-                <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
-              </div>
-            </sc-if>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:20px">
@@ -978,18 +951,13 @@ html,body{background:#282828!important}
 
     <sc-if value="{{ x.hubOn }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Images" class="x-page x-hub" style="flex:1">
+        <div class="x-styledots" aria-label="Styles">
+          <button type="button" class="x-styledot x-styledotnew" title="New style" sc-camel-on-click="{{ x.newStyle }}">+</button>
+          <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><button type="button" class="x-styledot" data-on="{{ c.on }}" title="{{ c.name }}" style="{{ c.dot }}" sc-camel-on-click="{{ c.pick }}"></button></sc-for>
+        </div>
         <div class="x-imgtabs">
           <div class="x-modes" role="tablist" aria-label="Images">
             <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
-          </div>
-          <div class="x-stylewrap">
-            <button type="button" class="x-stylebtn" data-on="{{ x.styleOpen }}" sc-camel-on-click="{{ x.styleToggle }}">{{ x.styleBtnLabel }}</button>
-            <sc-if value="{{ x.styleOpen }}" hint-placeholder-val="{{ false }}">
-              <div class="x-stylepop">
-                <div class="x-scard x-snew" role="button" tabindex="0" sc-camel-on-click="{{ x.newStyle }}"><div class="x-simg"><span class="x-splus">+</span></div><div class="x-sname">New style<i>Opens the style builder</i></div></div>
-                <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><div class="x-scard" data-on="{{ c.on }}" role="button" tabindex="0" sc-camel-on-click="{{ c.pick }}"><div class="x-simg"><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if><sc-if value="{{ c.isOn }}" hint-placeholder-val="{{ false }}"><span class="x-sbadge">In use</span></sc-if><sc-if value="{{ c.has }}" hint-placeholder-val="{{ false }}"><span class="x-sexp" role="button" aria-label="Expand preview" title="Expand" sc-camel-on-click="{{ c.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span></sc-if></div><div class="x-sname">{{ c.name }}<i>{{ c.sub }}</i></div></div></sc-for>
-              </div>
-            </sc-if>
           </div>
         </div>
         <div class="x-mode-hint">{{ x.modeHint }}</div>
@@ -2790,7 +2758,8 @@ class Component extends DCLogic {
     const out = { styleBtnLabel: 'Style: ' + styleName, styleOpen: S.stylePopoverOpen ? '1' : '0',
       styleToggle: () => this.setState(s => ({ stylePopoverOpen: !s.stylePopoverOpen })) };
     out.styleCards = L.map(x => { const src = ((x.frames || [])[x.hero] || (x.frames || [])[0] || {}).src || '', on = !!st && st.uid === x.uid;
-      return { name: x.name || 'Style', sub: x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }), on: on ? '1' : '0', isOn: on,
+      return { name: x.name || 'Style', sub: x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }),
+        dot: { backgroundImage: 'url("' + src + '")', backgroundSize: 'cover', backgroundPosition: 'center' }, on: on ? '1' : '0', isOn: on,
         pick: () => { const v = on ? null : x.uid; this.setState({ activeStyle: v }); try { localStorage.setItem('solved-active-style', JSON.stringify(v)); } catch (e) {} },
         expand: e => { stop(e); this.setState({ stylePreview: x.uid }); } }; });
     out.newStyle = () => { this.setState({ page: 'STYLE', view: 'all', item: null, prompt: '' }); setTimeout(() => this.newStyle(), 0); };
