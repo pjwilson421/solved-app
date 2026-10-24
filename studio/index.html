@@ -2796,29 +2796,6 @@ class Component extends DCLogic {
   }
   async kfGen(p) {
     const HF = window.SOLVED_HF;
-    if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate key frames.');
-    const R = this.kfRefs(), st = this.activeStyle(), sref = this.styleRef(), refs = [...R.srcs, ...(this.state.castAtt || []), sref].filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 8), id = uid();
-    const o = this.tcfg('IMAGES:kf'), ar = o.ratio || '16:9';
-    const prompt = [p, 'Cinematic key frame, ' + ar + ', photoreal.', R.names.length ? 'Featuring: ' + R.names.join(', ') + '.' : '', st ? 'Visual style: ' + (st.desc || st.name) + '.' : '',
-      refs.length ? 'Use the reference images for the exact people (faces, wardrobe), products and locations. Keep every person and product identical to the references.' : ''].filter(Boolean).join(' ');
-    this.setErr(''); this.setState({ prompt: '', castAtt: [] });
-    this.setX('gallery', a => [{ uid: id, kind: 'kf', prompt: p, src: '', status: 'running', aspect: ar, refs: refs.length, at: Date.now() }, ...a]);
-    try {
-      const url = await HF.generate({ prompt, references: refs, aspect: ar, model: o.model, quality: o.quality, resolution: o.resolution });
-      let keep = url; try { const r = await fetch(url); if (r.ok) { const b = await r.blob(); keep = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); } } catch (e) {}
-      this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, src: keep, status: 'done' } : g)));
-      this.recordUsage('IMAGES', 'Key frame · ' + p.slice(0, 40));
-    } catch (e) { this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, status: 'failed', error: e && e.message ? e.message : 'Generation failed' } : g))); }
-  }
-  loadImgPresets() {
-    const HF = window.SOLVED_HF;
-    if (!HF || this.state.imgPresets || this.state.imgPresetsLoading) return;
-    this.setState({ imgPresetsLoading: true });
-    HF.presets().then(list => this.setState({ imgPresets: list, imgPresetsLoading: false }))
-      .catch(e => { this.setErr(e && e.message ? e.message : 'Could not load presets.'); this.setState({ imgPresetsLoading: false }); });
-  }
-  async freeGen(p) {
-    const HF = window.SOLVED_HF;
     if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate images.');
     const o = this.tcfg('IMAGES:main'), imod = IMODELS[o.model] || IMODELS[IMODEL_DEFAULT], st = this.activeStyle(), sref = this.styleRef();
     const enhance = !!o.enhancePrompt && imod.enhance;
@@ -2830,7 +2807,8 @@ class Component extends DCLogic {
     const refsMax = imod.refsMax || 8;
     // A ratio picked under a previously selected model may not be valid for this one — clamp to its actual list.
     const aspect = imod.ratios.includes(o.ratio) ? o.ratio : (imod.ratios.includes('1:1') ? '1:1' : imod.ratios[0] || '1:1');
-    const refs = enhance ? this.state.castAtt.filter(Boolean).slice(0, 2) : [...this.state.castAtt, sref].filter(Boolean).slice(0, refsMax);
+    const refs = enhance ? this.state.castAtt.filter(Boolean).slice(0, 2)
+      : [...this.kfRefs().srcs, ...(this.state.castAtt || []), sref].filter((x, i, a) => x && a.indexOf(x) === i).slice(0, refsMax);
     const id = uid(), shown = p;
     if (!enhance && st) p = p + ' Visual style: ' + (st.desc || st.name) + '.' + (sref ? ' Match the look of the style reference image.' : '');
     this.setErr(''); this.setState({ prompt: '', castAtt: [] });
@@ -2841,6 +2819,13 @@ class Component extends DCLogic {
       this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, src: keep, status: 'done' } : g)));
       this.recordUsage('IMAGES', 'Images · ' + shown.slice(0, 40));
     } catch (e) { this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, status: 'failed', error: e && e.message ? e.message : 'Generation failed' } : g))); }
+  }
+  loadImgPresets() {
+    const HF = window.SOLVED_HF;
+    if (!HF || this.state.imgPresets || this.state.imgPresetsLoading) return;
+    this.setState({ imgPresetsLoading: true });
+    HF.presets().then(list => this.setState({ imgPresets: list, imgPresetsLoading: false }))
+      .catch(e => { this.setErr(e && e.message ? e.message : 'Could not load presets.'); this.setState({ imgPresetsLoading: false }); });
   }
   // ---- videos
   frameSrc(n) { return this.state.kfImg[n + '-main'] || this.state.kfImg[n + '-start'] || ''; }
@@ -3983,7 +3968,7 @@ class Component extends DCLogic {
         const HF = window.SOLVED_HF;
         // Characters keeps its own settings per page: the main page drives the headshot,
         // the sheet page drives the sheet. Every other page still uses the shared defaults.
-        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : isHub ? 'IMAGES:kf' : isVid ? 'VIDEOS:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
+        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : isHub ? 'IMAGES:main' : isVid ? 'VIDEOS:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
         const c = tctx ? this.tcfg(tctx) : (HF ? HF.get() : {});
         const put = v => { if (tctx) this.tset(tctx, v); else if (HF) { HF.set(v); this.setState(s2 => ({ hfTick: s2.hfTick + 1 })); } };
         const pretty = m => m.replace(/_/g, ' ').replace(/\b\w/g, x => x.toUpperCase());
