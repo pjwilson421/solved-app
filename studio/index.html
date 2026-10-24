@@ -2801,7 +2801,8 @@ class Component extends DCLogic {
     const o = this.tcfg('IMAGES:kf'), ar = o.ratio || '16:9';
     const prompt = [p, 'Cinematic key frame, ' + ar + ', photoreal.', R.names.length ? 'Featuring: ' + R.names.join(', ') + '.' : '', st ? 'Visual style: ' + (st.desc || st.name) + '.' : '',
       refs.length ? 'Use the reference images for the exact people (faces, wardrobe), products and locations. Keep every person and product identical to the references.' : ''].filter(Boolean).join(' ');
-    this.setErr(''); this.setState({ prompt: '', castAtt: [] });
+    this.setErr(''); this.setState({ prompt: '', castAtt: [], kfPick: {}, activeStyle: null });
+    try { localStorage.removeItem('solved-active-style'); } catch (e) {}
     this.setX('gallery', a => [{ uid: id, kind: 'kf', prompt: p, src: '', status: 'running', aspect: ar, refs: refs.length, at: Date.now() }, ...a]);
     try {
       const url = await HF.generate({ prompt, references: refs, aspect: ar, model: o.model, quality: o.quality, resolution: o.resolution });
