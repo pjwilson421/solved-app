@@ -969,29 +969,6 @@ html,body{background:#282828!important}
           </div>
         </div>
         <div class="x-mode-hint">{{ x.modeHint }}</div>
-        <div class="x-refdd">
-          <button type="button" class="x-refddbtn" data-on="{{ x.kfPanelOpen }}" aria-expanded="{{ x.kfPanelOpen }}" sc-camel-on-click="{{ x.kfPanelToggle }}">
-            <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM4 9h16M9 5v4M15 5v4"></path></svg>
-            <span>References · {{ x.kfRefCount }} of 8</span>
-            <svg width="14" height="14" class="x-refddchev" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
-          </button>
-          <sc-if value="{{ x.kfPanelOpen }}" hint-placeholder-val="{{ false }}">
-            <div class="x-refddpanel">
-              <div class="x-kft" role="tablist"><sc-for list="{{ x.kfTabs }}" as="t" hint-placeholder-count="4"><button type="button" role="tab" class="x-kftab" data-on="{{ t.on }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }} · {{ t.count }}</button></sc-for></div>
-              <div class="x-kflist">
-                <sc-for list="{{ x.kfAssets }}" as="a" hint-placeholder-count="0"><div class="x-kfa" data-on="{{ a.on }}">
-                  <div class="x-kfth" title="Photo"><sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="{{ a.photoBg }}"></div></sc-if></div>
-                  <div class="x-kfth" title="Consistency sheet"><sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}"><div style="{{ a.sheetBg }}"></div></sc-if></div>
-                  <div class="x-kfinfo"><b>{{ a.name }}</b><i>{{ a.sub }}</i>
-                    <div class="x-kfbtns"><button type="button" class="x-kfbtn" data-on="{{ a.photoOn }}" disabled="{{ a.noPhoto }}" sc-camel-on-click="{{ a.togglePhoto }}">{{ a.photoLabel }}</button><button type="button" class="x-kfbtn" data-on="{{ a.sheetOn }}" disabled="{{ a.noSheet }}" sc-camel-on-click="{{ a.toggleSheet }}">{{ a.sheetLabel }}</button></div>
-                  </div>
-                </div></sc-for>
-                <sc-if value="{{ x.kfEmpty }}" hint-placeholder-val="{{ false }}"><div class="x-kfempty">{{ x.kfEmptyText }}</div></sc-if>
-              </div>
-              <div class="x-kflinks"><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfNew }}">+ {{ x.kfNewLabel }}</button><sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfClear }}">Clear</button></sc-if><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfBoards }}">Keyframes</button></div>
-            </div>
-          </sc-if>
-        </div>
         <div class="x-hubbody">
           <div class="x-galwrap">
             <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
@@ -2802,7 +2779,7 @@ class Component extends DCLogic {
     const tab = S.kfTab || 'c', A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
     const toggle = key => () => this.setState(s => { const n = { ...(s.kfPick || {}) }; if (n[key]) delete n[key]; else n[key] = true; return { kfPick: n }; });
     const out = { kfOn: '1',
-      modeHint: 'Describe any image in the prompt bar, or open References below to attach a character, product, location or wardrobe. Style in use: ' + styleName + '.',
+      modeHint: 'Describe any image in the prompt bar. Style in use: ' + styleName + '.',
       galEmptyText: 'Your images appear here.',
       kfPanelOpen: S.kfPanelOpen ? '1' : '0', kfPanelToggle: () => this.setState(s => ({ kfPanelOpen: !s.kfPanelOpen })) };
     out.kfTabs = [['c', 'Characters'], ['p', 'Products'], ['l', 'Locations'], ['w', 'Wardrobe']].map(([k, label]) => ({ label, count: String(A[k].length), on: tab === k ? '1' : '0', pick: () => this.setState({ kfTab: k }) }));
