@@ -2691,13 +2691,20 @@ class Component extends DCLogic {
   shotPrompt(t) { return [t.desc || t.name, ...SHOTF.map(([k, lab]) => (t.fields || {})[k] ? lab + ': ' + t.fields[k] : '').filter(Boolean)].join('. '); }
   /** Toggle a generated image as a key frame: creates (or removes) a KEYFRAMES shot whose main frame is this exact image. */
   kfShotForSrc(src) { return (this.state.items.KEYFRAMES || []).find(x => this.frameSrc(x.n) === src); }
+  /** Keyframe-selected is an explicit flag stored on the gallery item itself (not re-derived from the
+   * Keyframes list), so the button's state survives reloads and only changes on a manual click. */
   toggleGalKeyframe(g, e) {
     if (e && e.stopPropagation) e.stopPropagation();
     if (!g.src) return;
-    const existing = this.kfShotForSrc(g.src);
-    if (existing) return this.secDel('shot', existing.n);
-    const n = this.addShot(g.prompt || '');
-    this.setKf(n + '-main', g.src);
+    const cur = g.kf !== undefined ? !!g.kf : !!this.kfShotForSrc(g.src), next = !cur;
+    this.setX('gallery', a => a.map(y => (y.uid === g.uid ? { ...y, kf: next } : y)));
+    if (next) {
+      const n = this.addShot(g.prompt || '');
+      this.setKf(n + '-main', g.src);
+    } else {
+      const existing = this.kfShotForSrc(g.src);
+      if (existing) this.secDel('shot', existing.n);
+    }
   }
   // one press of the detail page's green button fills in everything that's missing, as a single run
   async secRun(kind, id) {
@@ -3166,7 +3173,7 @@ class Component extends DCLogic {
       }
       menuItems.push({ id: 'reuse', label: 'Reuse prompt', icon: GMENU_ICON.reuse, click: reuse });
       menuItems.push({ id: 'delete', label: 'Delete', icon: GMENU_ICON.delete, click: del });
-      const isKf = has && !!this.kfShotForSrc(g.src);
+      const isKf = has && (g.kf !== undefined ? !!g.kf : !!this.kfShotForSrc(g.src));
       return { kind: g.kind === 'kf' ? 'Key frame' : 'Image', has, bg: fit(g.src || ''), running: g.status === 'running', failed: g.status === 'failed', err: g.error || '', prompt: g.prompt, ar: (g.aspect || '1:1').replace(':', ' / '),
         expand, download, edit, reuse, del, menuItems, menuOpen: S.galMenuOpen === g.uid, menuOn: S.galMenuOpen === g.uid ? '1' : '0', toggleMenu: e => galMenuToggle(g, e),
         kfOn: isKf ? '1' : '0', kfOnBool: isKf, kfOff: !isKf, kfLabel: isKf ? 'Remove from keyframes' : 'Add to keyframes', toggleKf: e => this.toggleGalKeyframe(g, e) };
