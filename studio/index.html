@@ -98,6 +98,8 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-vgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
 .x-vcard{display:flex;flex-direction:column;gap:10px;min-width:0}
 .x-vbox{position:relative;aspect-ratio:16 / 9;border-radius:6px;overflow:hidden;background:#202020}
+.x-vexp{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;border:0;border-radius:6px;background:rgba(17,17,17,.7);display:none;align-items:center;justify-content:center;color:#f5f5f5;cursor:pointer}
+.x-vexp:hover{color:#1985FF}.x-vbox:hover .x-vexp,.x-vbox:focus-within .x-vexp{display:flex}
 .x-vbox video,.x-player video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
 .x-vstart{position:absolute;inset:0;cursor:pointer}.x-vhint{position:absolute;left:8px;bottom:8px;padding:4px 8px;border-radius:4px;background:rgba(17,17,17,.75);font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#d0d0d0}
 .x-vrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -1028,6 +1030,7 @@ html,body{background:#282828!important}
               <div class="x-vbox" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ v.dropStart }}">
                 <sc-if value="{{ v.done }}" hint-placeholder-val="{{ false }}"><video src="{{ v.url }}" controls playsinline preload="metadata"></video></sc-if>
                 <sc-if value="{{ v.notDone }}" hint-placeholder-val="{{ true }}"><div class="x-vstart" sc-camel-on-click="{{ v.pickStart }}"><sc-if value="{{ v.hasStart }}" hint-placeholder-val="{{ false }}"><div style="{{ v.startBg }}"></div></sc-if><sc-if value="{{ v.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if><span class="x-vhint">Start frame · click to change</span></div></sc-if>
+                <sc-if value="{{ v.done }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-vexp" aria-label="Expand" title="Expand" sc-camel-on-click="{{ v.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button></sc-if>
               </div>
               <div class="x-vrow"><input class="x-vname" value="{{ v.name }}" sc-camel-on-change="{{ v.rename }}" spellcheck="false"><div class="{{ v.approveCls }}" sc-camel-on-click="{{ v.toggleApprove }}">{{ v.approveLabel }}</div></div>
               <textarea class="x-vprompt" value="{{ v.prompt }}" sc-camel-on-change="{{ v.setPrompt }}" placeholder="Describe the motion: camera move, action, mood…"></textarea>
@@ -1350,6 +1353,21 @@ html,body{background:#282828!important}
           <div style="display:flex;align-items:center;gap:18px;height:28px">
             <div style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">{{ x.galPreviewLabel }}</div>
             <div sc-camel-on-click="{{ x.closeGalPreview }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:#929292">CLOSE</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ x.hasVidPreview }}" hint-placeholder-val="{{ false }}">
+      <div sc-camel-on-click="{{ x.closeVidPreview }}" style="position:fixed;inset:0;z-index:50;background:rgba(17,17,17,.75);display:flex;align-items:center;justify-content:center;padding:24px">
+        <div sc-camel-on-click="{{ stop }}" style="display:flex;flex-direction:column;gap:14px;width:100%;max-width:1400px">
+          <div style="position:relative;width:100%;height:min(88vh,1200px);background:#000">
+            <video src="{{ x.vidPreviewUrl }}" controls autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000"></video>
+            <button type="button" class="x-pvmin" aria-label="Minimize" title="Minimize" sc-camel-on-click="{{ x.closeVidPreview }}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v6H3M21 9h-6V3M9 21v-6H3M21 15h-6v6"></path></svg></button>
+          </div>
+          <div style="display:flex;align-items:center;gap:18px;height:28px">
+            <div style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">{{ x.vidPreviewLabel }}</div>
+            <div sc-camel-on-click="{{ x.closeVidPreview }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:#929292">CLOSE</div>
           </div>
         </div>
       </div>
@@ -3138,6 +3156,9 @@ class Component extends DCLogic {
     const imageTabsPage = ['PRODUCT', 'TALENT', 'LOCATION', 'IMAGES', 'KEYFRAMES', 'WARDROBE', 'SETDESIGN', 'STYLE'].includes(page);
     const sharedImgHeader = imageTabsPage ? { imageTabs: this.imageTabsData(), ...this.styleControlData(fit, stop) } : {};
     const X = { ...sharedImgHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
+    const vidPreviewItem = (S.videos || []).find(v => v.uid === S.vidPreview);
+    Object.assign(X, { hasVidPreview: !!(vidPreviewItem && vidPreviewItem.url), vidPreviewUrl: vidPreviewItem ? vidPreviewItem.url : '', vidPreviewLabel: vidPreviewItem ? vidPreviewItem.name : '',
+      closeVidPreview: () => this.setState({ vidPreview: null }) });
     if (X.sbOn) {
       const n = (S.items.KEYFRAMES || []).length, made = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n)).length, st = this.storyStyle();
       Object.assign(X, { sbInfo: made + ' of ' + n + ' frames generated · Style: ' + (st ? st.name : 'none'), sbBusy: !!S.sbBusy,
@@ -3152,7 +3173,9 @@ class Component extends DCLogic {
         vFromSb: () => this.videosFromStoryboard(), vManual: () => this.setX('videos', a => [...a, this.newVideo({ name: 'Video ' + (a.length + 1) })]),
         vFrameCount: FR.length + ' storyboard frame' + (FR.length === 1 ? '' : 's') + ' ready',
         vids: V.map(x => { const set = k => e => { const val = e.target.value; this.updVideo(x.uid, y => { y[k] = k === 'duration' ? +val : val; return y; }); };
-          return { name: x.name, done: x.status === 'done' && !!x.url, url: x.url, notDone: !(x.status === 'done' && x.url), hasStart: !!x.start, startBg: fit(x.start || ''),
+          const done = x.status === 'done' && !!x.url;
+          return { uid: x.uid, name: x.name, done, url: x.url, notDone: !done, hasStart: !!x.start, startBg: fit(x.start || ''),
+            expand: e => { stop(e); if (done) this.setState({ vidPreview: x.uid }); },
             running: x.status === 'running', note: x.status === 'running' ? (x.note || 'Rendering') + '…' : x.error || (x.status === 'done' ? 'Ready' : x.frameN ? 'From storyboard frame ' + x.frameN : 'Manual video'),
             noteColor: x.error ? '#ef6b61' : x.status === 'done' ? '#1985FF' : '#a3a3a3', prompt: x.prompt, setPrompt: set('prompt'), rename: set('name'),
             duration: String(x.duration || 5), setDuration: set('duration'),
