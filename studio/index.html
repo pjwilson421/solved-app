@@ -168,6 +168,11 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-galwrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px}
 .x-galempty{padding:28px 0;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
 .x-kfp{flex:0 0 360px;max-width:100%;box-sizing:border-box;border-radius:10px;background:#1f1f1f;padding:14px;display:flex;flex-direction:column;gap:12px;position:sticky;top:24px}
+.x-refdd{position:relative;margin-top:-6px}
+.x-refddbtn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border:1px solid #3a3a3a;border-radius:999px;background:transparent;color:#d0d0d0;font:700 12px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer;transition:background-color .12s,border-color .12s,color .12s}
+.x-refddbtn:hover{background:#2a2a2a}.x-refddbtn[data-on="1"]{border-color:#1985FF;color:#1985FF}
+.x-refddchev{transition:transform .12s}.x-refddbtn[data-on="1"] .x-refddchev{transform:rotate(180deg)}
+.x-refddpanel{margin-top:8px;max-width:520px;box-sizing:border-box;border-radius:10px;background:#1f1f1f;padding:14px;display:flex;flex-direction:column;gap:12px}
 .x-kft{display:flex;gap:4px}
 .x-kftab{flex:1;min-width:0;height:36px;border:1px solid #2a2a2a;border-radius:6px;background:transparent;color:#d0d0d0;font:700 12px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px;transition:background-color .12s,border-color .12s,color .12s}
 .x-kftab:hover{background:#242424}.x-kftab[data-on="1"]{background:transparent;border-color:#f5f5f5;color:#f5f5f5}
@@ -190,7 +195,8 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 @media(max-width:1100px){.x-hubbody[data-kf="1"]{flex-direction:column;align-items:stretch}.x-kfp{flex:none;width:100%;position:static}}
 @media(max-width:860px){.x-ml{display:none}.x-ms{display:inline}.x-kftab{font-size:11px;padding:0 4px}.x-mode{flex:1 1 0;justify-content:center;padding:0 8px;font-size:13px;min-width:0}.x-mode span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.x-styles{grid-template-columns:repeat(2,minmax(0,1fr))}.x-kflist{max-height:none}}
 @media(max-width:420px){.x-mode svg{display:none}}
-.x-gal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
+.x-gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}
+.x-gal .x-gcard:first-child{grid-column:1 / -1;max-width:720px}
 .x-gcard{display:flex;flex-direction:column;gap:6px;min-width:0}.x-gimg{position:relative;border-radius:6px;overflow:hidden;background:#202020}
 .x-gacts{position:absolute;left:0;right:0;bottom:0;display:none;gap:10px;flex-wrap:wrap;padding:8px;background:linear-gradient(transparent,rgba(0,0,0,.8));font:700 11px/14px 'Helvetica Neue',Helvetica,sans-serif}
 .x-gacts span{cursor:pointer}.x-gacts span:hover{color:#1985FF}.x-gimg:hover .x-gacts{display:flex}
@@ -961,10 +967,15 @@ html,body{background:#282828!important}
           </div>
         </div>
         <div class="x-mode-hint">{{ x.modeHint }}</div>
-        <div class="x-hubbody" data-kf="1">
-          <aside class="x-kfp" aria-label="Project assets">
+        <div class="x-refdd">
+          <button type="button" class="x-refddbtn" data-on="{{ x.kfPanelOpen }}" aria-expanded="{{ x.kfPanelOpen }}" sc-camel-on-click="{{ x.kfPanelToggle }}">
+            <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM4 9h16M9 5v4M15 5v4"></path></svg>
+            <span>References · {{ x.kfRefCount }} of 8</span>
+            <svg width="14" height="14" class="x-refddchev" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+          <sc-if value="{{ x.kfPanelOpen }}" hint-placeholder-val="{{ false }}">
+            <div class="x-refddpanel">
               <div class="x-kft" role="tablist"><sc-for list="{{ x.kfTabs }}" as="t" hint-placeholder-count="4"><button type="button" role="tab" class="x-kftab" data-on="{{ t.on }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }} · {{ t.count }}</button></sc-for></div>
-              <div class="x-kfrefs"><span>References · {{ x.kfRefCount }} of 8</span><sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-kfclear" sc-camel-on-click="{{ x.kfClear }}">Clear</button></sc-if></div>
               <div class="x-kflist">
                 <sc-for list="{{ x.kfAssets }}" as="a" hint-placeholder-count="0"><div class="x-kfa" data-on="{{ a.on }}">
                   <div class="x-kfth" title="Photo"><sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="{{ a.photoBg }}"></div></sc-if></div>
@@ -975,8 +986,11 @@ html,body{background:#282828!important}
                 </div></sc-for>
                 <sc-if value="{{ x.kfEmpty }}" hint-placeholder-val="{{ false }}"><div class="x-kfempty">{{ x.kfEmptyText }}</div></sc-if>
               </div>
-              <div class="x-kflinks"><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfNew }}">+ {{ x.kfNewLabel }}</button><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfBoards }}">Keyframes</button></div>
-            </aside>
+              <div class="x-kflinks"><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfNew }}">+ {{ x.kfNewLabel }}</button><sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfClear }}">Clear</button></sc-if><button type="button" class="x-kflink" sc-camel-on-click="{{ x.kfBoards }}">Keyframes</button></div>
+            </div>
+          </sc-if>
+        </div>
+        <div class="x-hubbody">
           <div class="x-galwrap">
             <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
             <div class="x-gal"><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0">
@@ -2773,8 +2787,9 @@ class Component extends DCLogic {
     const tab = S.kfTab || 'c', A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
     const toggle = key => () => this.setState(s => { const n = { ...(s.kfPick || {}) }; if (n[key]) delete n[key]; else n[key] = true; return { kfPick: n }; });
     const out = { kfOn: '1',
-      modeHint: 'Describe any image in the prompt bar, or quickly attach a character, product, location or wardrobe reference. Style in use: ' + styleName + '.',
-      galEmptyText: 'Your images appear here.' };
+      modeHint: 'Describe any image in the prompt bar, or open References below to attach a character, product, location or wardrobe. Style in use: ' + styleName + '.',
+      galEmptyText: 'Your images appear here.',
+      kfPanelOpen: S.kfPanelOpen ? '1' : '0', kfPanelToggle: () => this.setState(s => ({ kfPanelOpen: !s.kfPanelOpen })) };
     out.kfTabs = [['c', 'Characters'], ['p', 'Products'], ['l', 'Locations'], ['w', 'Wardrobe']].map(([k, label]) => ({ label, count: String(A[k].length), on: tab === k ? '1' : '0', pick: () => this.setState({ kfTab: k }) }));
     out.kfAssets = A[tab].map(a => { const kp = a.k + ':' + a.id + ':photo', ks = a.k + ':' + a.id + ':sheet', ph = !!P[kp], sh = !!P[ks];
       return { name: a.name, sub: a.sub, hasPhoto: !!a.photo, photoBg: Object.assign(bgOf(a.photo), { backgroundSize: 'cover' }), hasSheet: a.sheet.length > 0, sheetBg: Object.assign(bgOf(a.sheet[0] || ''), { backgroundSize: 'cover' }), on: ph || sh ? '1' : '0',
