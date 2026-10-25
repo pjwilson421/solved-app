@@ -30,6 +30,15 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="/studio/assets/solved-puzzle.svg">
+<script>
+/* Serve React/ReactDOM from the locally vendored copies (byte-identical to the
+   unpkg build dc-runtime defaults to) instead of fetching them from the CDN on
+   every page load — cuts two cross-origin round trips off initial render. */
+window.__resources = {
+  "https://unpkg.com/react@18.3.1/umd/react.production.min.js": "/studio/assets/b0a744fb-42bc-4fa2-81a0-bc9fcc7d2d3e.js",
+  "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js": "/studio/assets/5dc1acdf-3b78-481c-9f90-448e0a9a94d3.js"
+};
+</script>
 <script src="/studio/assets/a8fad9be-676a-442d-92f9-356dcc0e99ed.js"></script>
 <script defer src="/studio/assets/image-aspect.js?v=equal-height-2"></script>
 <style id="ds-css">
@@ -4325,7 +4334,6 @@ class Component extends DCLogic {
     }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS });
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
-  setInterval(function () { if (document.body) fixNode(document.body); }, 1000);
 })();
 </script>
 
