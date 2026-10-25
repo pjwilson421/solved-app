@@ -146,7 +146,6 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-mode{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 18px;border:1px solid #3a3a3a;border-radius:8px;background:transparent;color:#f5f5f5;font:500 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;transition:background-color .12s,border-color .12s,color .12s}
 .x-mode:hover{background:#2a2a2a}.x-mode[data-on="1"]{background:transparent;border-color:#1985FF;color:#1985FF}.x-mode:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .x-mode svg{flex:none}.x-ms{display:none}
-.x-mode-hint{font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;margin-top:-8px}
 .x-imgtabs{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .x-styledots{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .x-styleopt{display:flex;flex-direction:column;align-items:center;gap:6px;width:88px;flex:none;text-align:center}
@@ -994,7 +993,6 @@ html,body{background:#282828!important}
             <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
           </div>
         </div>
-        <div class="x-mode-hint">{{ x.modeHint }}</div>
         <div class="x-hubbody">
           <div class="x-galwrap">
             <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
@@ -2846,11 +2844,10 @@ class Component extends DCLogic {
     return out;
   }
   hubModeData() {
-    const S = this.state, st = this.activeStyle(), styleName = st ? st.name : 'Standard';
+    const S = this.state;
     const tab = S.kfTab || 'c', A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
     const toggle = key => () => this.setState(s => { const n = { ...(s.kfPick || {}) }; if (n[key]) delete n[key]; else n[key] = true; return { kfPick: n }; });
     const out = { kfOn: '1',
-      modeHint: 'Describe any image in the prompt bar. Style in use: ' + styleName + '.',
       galEmptyText: 'Your images appear here.',
       kfPanelOpen: S.kfPanelOpen ? '1' : '0', kfPanelToggle: () => this.setState(s => ({ kfPanelOpen: !s.kfPanelOpen })) };
     out.kfTabs = [['c', 'Characters'], ['p', 'Products'], ['l', 'Locations'], ['w', 'Wardrobe']].map(([k, label]) => ({ label, count: String(A[k].length), on: tab === k ? '1' : '0', pick: () => this.setState({ kfTab: k }) }));
