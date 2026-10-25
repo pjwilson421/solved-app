@@ -200,6 +200,8 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-gcard{display:flex;flex-direction:column;gap:6px;min-width:0}.x-gimg{position:relative;border-radius:6px;overflow:hidden;background:#202020}
 .x-gacts{position:absolute;left:0;right:0;bottom:0;display:none;gap:10px;flex-wrap:wrap;padding:8px;background:linear-gradient(transparent,rgba(0,0,0,.8));font:700 11px/14px 'Helvetica Neue',Helvetica,sans-serif}
 .x-gacts span{cursor:pointer}.x-gacts span:hover{color:#1985FF}.x-gimg:hover .x-gacts{display:flex}
+.x-gexp{position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;border-radius:6px;background:rgba(17,17,17,.7);display:none;align-items:center;justify-content:center;color:#f5f5f5;cursor:pointer}
+.x-gexp:hover{color:#1985FF}.x-gimg:hover .x-gexp,.x-gimg:focus-within .x-gexp{display:flex}
 .x-gerr{position:absolute;inset:0;padding:12px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#ef6b61}
 .x-gp{font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 @media(max-width:900px){.x-gal{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -998,7 +1000,8 @@ html,body{background:#282828!important}
                 <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><div style="{{ g.bg }}"></div></sc-if>
                 <sc-if value="{{ g.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if>
                 <sc-if value="{{ g.failed }}" hint-placeholder-val="{{ false }}"><div class="x-gerr">{{ g.err }}</div></sc-if>
-                <div class="x-gacts"><sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ g.download }}">Download</span><span sc-camel-on-click="{{ g.edit }}">Edit</span></sc-if><span sc-camel-on-click="{{ g.reuse }}">Reuse prompt</span><span sc-camel-on-click="{{ g.del }}">Delete</span></div>
+                <div class="x-gacts"><sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ g.expand }}">Expand</span><span sc-camel-on-click="{{ g.download }}">Download</span><span sc-camel-on-click="{{ g.edit }}">Edit</span></sc-if><span sc-camel-on-click="{{ g.reuse }}">Reuse prompt</span><span sc-camel-on-click="{{ g.del }}">Delete</span></div>
+                <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-gexp" aria-label="Expand" title="Expand" sc-camel-on-click="{{ g.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button></sc-if>
               </div><div class="x-gp"><b>{{ g.kind }}</b> {{ g.prompt }}</div></div>
             </sc-for></div>
           </div>
@@ -1321,6 +1324,18 @@ html,body{background:#282828!important}
           <div style="display:flex;align-items:center;gap:18px;height:28px">
             <div style="flex:1;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">{{ x.stylePreviewLabel }}</div>
             <div sc-camel-on-click="{{ x.closeStylePreview }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:#929292">CLOSE</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ x.hasGalPreview }}" hint-placeholder-val="{{ false }}">
+      <div sc-camel-on-click="{{ x.closeGalPreview }}" style="position:fixed;inset:0;z-index:50;background:rgba(17,17,17,.75);display:flex;align-items:center;justify-content:center;padding:24px">
+        <div sc-camel-on-click="{{ stop }}" style="display:flex;flex-direction:column;gap:14px;width:100%;max-width:1400px">
+          <div style="width:100%;height:min(88vh,1200px);background:#202020"><div style="{{ x.galPreviewBg }}"></div></div>
+          <div style="display:flex;align-items:center;gap:18px;height:28px">
+            <div style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">{{ x.galPreviewLabel }}</div>
+            <div sc-camel-on-click="{{ x.closeGalPreview }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:#929292">CLOSE</div>
           </div>
         </div>
       </div>
@@ -3075,11 +3090,15 @@ class Component extends DCLogic {
     const fit = src => Object.assign(bgOf(src), { backgroundSize: 'contain', backgroundRepeat: 'no-repeat' });
     const GAL = S.gallery || [];
     const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map(g => ({ kind: g.kind === 'kf' ? 'Key frame' : 'Image', has: g.status === 'done' && !!g.src, bg: fit(g.src || ''), running: g.status === 'running', failed: g.status === 'failed', err: g.error || '', prompt: g.prompt, ar: (g.aspect || '1:1').replace(':', ' / '),
+      expand: e => { stop(e); if (g.status === 'done' && g.src) this.setState({ galPreview: g.uid }); },
       download: e => { stop(e); const a = document.createElement('a'); a.href = g.src; a.download = g.prompt.slice(0, 40).replace(/\W+/g, '-') + '.jpg'; a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); },
       edit: e => { stop(e); this.setState({ page: 'EDITING', edTool: 'image', ed: { src: g.src, name: g.prompt.slice(0, 40), adj: { b: 100, c: 100, s: 100 } } }); },
       reuse: e => { stop(e); this.setState({ prompt: g.prompt }); },
       del: e => { stop(e); this.setX('gallery', a => a.filter(y => y.uid !== g.uid)); } })),
       ...this.hubModeData() } : {};
+    const galPreviewItem = GAL.find(g => g.uid === S.galPreview);
+    Object.assign(hubData, { hasGalPreview: !!(galPreviewItem && galPreviewItem.src), galPreviewBg: galPreviewItem ? fit(galPreviewItem.src || '') : {}, galPreviewLabel: galPreviewItem ? galPreviewItem.prompt : '',
+      closeGalPreview: () => this.setState({ galPreview: null }) });
     const imageTabsPage = ['PRODUCT', 'TALENT', 'LOCATION', 'IMAGES', 'KEYFRAMES', 'WARDROBE', 'SETDESIGN', 'STYLE'].includes(page);
     const sharedImgHeader = imageTabsPage ? { imageTabs: this.imageTabsData(), ...this.styleControlData(fit, stop) } : {};
     const X = { ...sharedImgHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
