@@ -210,6 +210,8 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-gmenu{position:absolute;top:40px;right:8px;z-index:2;width:176px;border-radius:10px;background:#1f1f1f;box-shadow:0 12px 32px rgba(0,0,0,.45);padding:6px;display:flex;flex-direction:column;gap:2px}
 .x-gmenuitem{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:#f5f5f5;font:500 12px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer;text-align:left}
 .x-gmenuitem:hover{background:#2a2a2a;color:#1985FF}.x-gmenuitem svg{flex:none}
+.x-pvmin{position:absolute;top:10px;right:10px;z-index:2;width:32px;height:32px;border:0;border-radius:6px;background:rgba(17,17,17,.7);display:flex;align-items:center;justify-content:center;color:#f5f5f5;cursor:pointer}
+.x-pvmin:hover{color:#1985FF;background:rgba(17,17,17,.9)}
 .x-gerr{position:absolute;inset:0;padding:12px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#ef6b61}
 .x-gp{font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 @media(max-width:900px){.x-gal{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -1314,7 +1316,9 @@ html,body{background:#282828!important}
     <sc-if value="{{ hasPreview }}" hint-placeholder-val="{{ false }}">
       <div sc-camel-on-click="{{ closePreview }}" style="position:fixed;inset:0;z-index:50;background:rgba(17,17,17,.55);display:flex;align-items:center;justify-content:center">
         <div sc-camel-on-click="{{ stop }}" style="display:flex;flex-direction:column;gap:14px;padding:14px;border-radius:12px;background:#191919;box-shadow:0 12px 32px rgba(0,0,0,.2)">
-          <div style="width:min(860px,80vw);height:min(560px,64vh);background:#202020"><div style="{{ previewBg }}"></div></div>
+          <div style="position:relative;width:min(860px,80vw);height:min(560px,64vh);background:#202020"><div style="{{ previewBg }}"></div>
+            <button type="button" class="x-pvmin" aria-label="Minimize" title="Minimize" sc-camel-on-click="{{ closePreview }}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v6H3M21 9h-6V3M9 21v-6H3M21 15h-6v6"></path></svg></button>
+          </div>
           <div style="display:flex;align-items:center;gap:18px;height:28px">
             <div style="flex:1;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">{{ previewLabel }}</div>
             <sc-for list="{{ previewActions }}" as="a" hint-placeholder-count="3"><div sc-camel-on-click="{{ a.click }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:{{ a.color }}">{{ a.label }}</div></sc-for>
@@ -1326,7 +1330,9 @@ html,body{background:#282828!important}
     <sc-if value="{{ x.hasStylePreview }}" hint-placeholder-val="{{ false }}">
       <div sc-camel-on-click="{{ x.closeStylePreview }}" style="position:fixed;inset:0;z-index:50;background:rgba(17,17,17,.55);display:flex;align-items:center;justify-content:center">
         <div sc-camel-on-click="{{ stop }}" style="display:flex;flex-direction:column;gap:14px;padding:14px;border-radius:12px;background:#191919;box-shadow:0 12px 32px rgba(0,0,0,.2)">
-          <div style="width:min(860px,80vw);height:min(560px,64vh);background:#202020"><div style="{{ x.stylePreviewBg }}"></div></div>
+          <div style="position:relative;width:min(860px,80vw);height:min(560px,64vh);background:#202020"><div style="{{ x.stylePreviewBg }}"></div>
+            <button type="button" class="x-pvmin" aria-label="Minimize" title="Minimize" sc-camel-on-click="{{ x.closeStylePreview }}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v6H3M21 9h-6V3M9 21v-6H3M21 15h-6v6"></path></svg></button>
+          </div>
           <div style="display:flex;align-items:center;gap:18px;height:28px">
             <div style="flex:1;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">{{ x.stylePreviewLabel }}</div>
             <div sc-camel-on-click="{{ x.closeStylePreview }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:#929292">CLOSE</div>
@@ -1338,7 +1344,9 @@ html,body{background:#282828!important}
     <sc-if value="{{ x.hasGalPreview }}" hint-placeholder-val="{{ false }}">
       <div sc-camel-on-click="{{ x.closeGalPreview }}" style="position:fixed;inset:0;z-index:50;background:rgba(17,17,17,.75);display:flex;align-items:center;justify-content:center;padding:24px">
         <div sc-camel-on-click="{{ stop }}" style="display:flex;flex-direction:column;gap:14px;width:100%;max-width:1400px">
-          <div style="width:100%;height:min(88vh,1200px);background:#202020"><div style="{{ x.galPreviewBg }}"></div></div>
+          <div style="position:relative;width:100%;height:min(88vh,1200px);background:#202020"><div style="{{ x.galPreviewBg }}"></div>
+            <button type="button" class="x-pvmin" aria-label="Minimize" title="Minimize" sc-camel-on-click="{{ x.closeGalPreview }}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v6H3M21 9h-6V3M9 21v-6H3M21 15h-6v6"></path></svg></button>
+          </div>
           <div style="display:flex;align-items:center;gap:18px;height:28px">
             <div style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif">{{ x.galPreviewLabel }}</div>
             <div sc-camel-on-click="{{ x.closeGalPreview }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:#929292">CLOSE</div>
