@@ -2682,7 +2682,7 @@ class Component extends DCLogic {
   }
   addShot(text) {
     const list = this.state.items.KEYFRAMES || [], n = list.reduce((m, x) => Math.max(m, x.n), 0) + 1, t = (text || '').trim();
-    this.setItems('KEYFRAMES', [...list, { n, name: t ? t.split(/\s+/).slice(0, 4).join(' ').slice(0, 40).replace(/^./, c => c.toUpperCase()) : 'Shot ' + n, desc: t, fields: {} }]);
+    this.setItems('KEYFRAMES', [{ n, name: t ? t.split(/\s+/).slice(0, 4).join(' ').slice(0, 40).replace(/^./, c => c.toUpperCase()) : 'Shot ' + n, desc: t, fields: {} }, ...list]);
     return n;
   }
   shotPrompt(t) { return [t.desc || t.name, ...SHOTF.map(([k, lab]) => (t.fields || {})[k] ? lab + ': ' + t.fields[k] : '').filter(Boolean)].join('. '); }
