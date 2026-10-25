@@ -146,10 +146,16 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-mode svg{flex:none}.x-ms{display:none}
 .x-mode-hint{font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;margin-top:-8px}
 .x-imgtabs{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.x-styledots{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.x-styledots{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.x-styleopt{display:flex;flex-direction:column;align-items:center;gap:6px;width:88px;flex:none;text-align:center}
 .x-styledot{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid transparent;padding:0;cursor:pointer;background-color:#1f1f1f;transition:border-color .12s}
 .x-styledot[data-on="1"]{border-color:#1985FF}
 .x-styledotnew{display:flex;align-items:center;justify-content:center;border:1px dashed #414141;color:#1985FF;font:300 20px/1 'Helvetica Neue',Helvetica,sans-serif;background-color:transparent}
+.x-styledotstd{display:flex;align-items:center;justify-content:center;color:#a3a3a3}
+.x-styledotstd[data-on="1"]{color:#1985FF}
+.x-styletxt{font:400 10px/13px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
+.x-styletxt b{display:block;font-weight:700;color:#f5f5f5;font-size:11px;line-height:14px}
+.x-styletxt i{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-style:normal}
 .x-styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px 14px}
 .x-scard{display:flex;flex-direction:column;gap:10px;cursor:pointer;min-width:0;outline:none}
 .x-simg{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#1f1f1f;box-shadow:inset 0 0 0 1px #333;display:flex;align-items:center;justify-content:center;transition:box-shadow .12s}
@@ -960,8 +966,22 @@ html,body{background:#282828!important}
     <sc-if value="{{ x.hubOn }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Images" class="x-page x-hub" style="flex:1">
         <div class="x-styledots" aria-label="Styles">
-          <button type="button" class="x-styledot x-styledotnew" title="New style" sc-camel-on-click="{{ x.newStyle }}">+</button>
-          <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0"><button type="button" class="x-styledot" data-on="{{ c.on }}" title="{{ c.name }}" style="{{ c.dot }}" sc-camel-on-click="{{ c.pick }}"></button></sc-for>
+          <div class="x-styleopt">
+            <button type="button" class="x-styledot x-styledotstd" data-on="{{ x.standardOn }}" title="Standard" sc-camel-on-click="{{ x.pickStandard }}">
+              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.4 5.5L20 11l-5.6 2.5L12 19l-2.4-5.5L4 11l5.6-2.5z"></path></svg>
+            </button>
+            <div class="x-styletxt"><b>Standard</b><i>{{ x.standardDesc }}</i></div>
+          </div>
+          <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0">
+            <div class="x-styleopt">
+              <button type="button" class="x-styledot" data-on="{{ c.on }}" title="{{ c.name }}" style="{{ c.dot }}" sc-camel-on-click="{{ c.pick }}"></button>
+              <div class="x-styletxt"><b>{{ c.name }}</b><i>{{ c.sub }}</i></div>
+            </div>
+          </sc-for>
+          <div class="x-styleopt">
+            <button type="button" class="x-styledot x-styledotnew" title="New style" sc-camel-on-click="{{ x.newStyle }}">+</button>
+            <div class="x-styletxt"><b>New style</b><i>Opens the style builder</i></div>
+          </div>
         </div>
         <div class="x-imgtabs">
           <div class="x-modes" role="tablist" aria-label="Images">
@@ -2759,14 +2779,17 @@ class Component extends DCLogic {
   }
   /** Compact style control — shared header, visible on every Images tab (not just Shots). */
   styleControlData(fit, stop) {
-    const S = this.state, st = this.activeStyle(), styleName = st ? st.name : 'none';
+    const S = this.state, st = this.activeStyle(), styleName = st ? st.name : 'Standard';
     const L = (S.styles || []);
+    const setStyle = v => { this.setState({ activeStyle: v }); try { localStorage.setItem('solved-active-style', JSON.stringify(v)); } catch (e) {} };
     const out = { styleBtnLabel: 'Style: ' + styleName, styleOpen: S.stylePopoverOpen ? '1' : '0',
-      styleToggle: () => this.setState(s => ({ stylePopoverOpen: !s.stylePopoverOpen })) };
+      styleToggle: () => this.setState(s => ({ stylePopoverOpen: !s.stylePopoverOpen })),
+      standardOn: !st ? '1' : '0', standardDesc: 'Default look from the AI model — no style applied.',
+      pickStandard: () => setStyle(null) };
     out.styleCards = L.map(x => { const src = ((x.frames || [])[x.hero] || (x.frames || [])[0] || {}).src || '', on = !!st && st.uid === x.uid;
       return { name: x.name || 'Style', sub: x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }),
         dot: { backgroundImage: 'url("' + src + '")', backgroundSize: 'cover', backgroundPosition: 'center' }, on: on ? '1' : '0', isOn: on,
-        pick: () => { const v = on ? null : x.uid; this.setState({ activeStyle: v }); try { localStorage.setItem('solved-active-style', JSON.stringify(v)); } catch (e) {} },
+        pick: () => setStyle(x.uid),
         expand: e => { stop(e); this.setState({ stylePreview: x.uid }); } }; });
     out.newStyle = () => { this.setState({ page: 'STYLE', view: 'all', item: null, prompt: '' }); setTimeout(() => this.newStyle(), 0); };
     const spv = S.stylePreview, sps = spv ? L.find(y => y.uid === spv) : null, spSrc = sps ? ((sps.frames || [])[sps.hero] || (sps.frames || [])[0] || {}).src || '' : '';
@@ -2775,7 +2798,7 @@ class Component extends DCLogic {
     return out;
   }
   hubModeData() {
-    const S = this.state, st = this.activeStyle(), styleName = st ? st.name : 'none';
+    const S = this.state, st = this.activeStyle(), styleName = st ? st.name : 'Standard';
     const tab = S.kfTab || 'c', A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
     const toggle = key => () => this.setState(s => { const n = { ...(s.kfPick || {}) }; if (n[key]) delete n[key]; else n[key] = true; return { kfPick: n }; });
     const out = { kfOn: '1',
