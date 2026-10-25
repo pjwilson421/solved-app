@@ -2681,7 +2681,12 @@ class Component extends DCLogic {
     if (kind === 'product') return this.setState(s => ({ products: s.products.filter(x => x.uid !== id) }), () => this.saveProducts());
     if (kind === 'location') return this.setState(s => ({ locations: s.locations.filter(x => x.uid !== id) }), () => this.saveLocations());
     if (kind === 'style') return this.updStyles(this.state.styles.filter(x => x.uid !== id));
-    if (kind === 'shot') { this.setKf(id + '-main', null); return this.setItems('KEYFRAMES', (this.state.items.KEYFRAMES || []).filter(x => x.n !== id)); }
+    if (kind === 'shot') {
+      const src = this.frameSrc(id);
+      this.setKf(id + '-main', null);
+      if (src) this.setX('gallery', a => a.map(y => (y.src === src ? { ...y, kf: false } : y)));
+      return this.setItems('KEYFRAMES', (this.state.items.KEYFRAMES || []).filter(x => x.n !== id));
+    }
   }
   addShot(text) {
     const list = this.state.items.KEYFRAMES || [], n = list.reduce((m, x) => Math.max(m, x.n), 0) + 1, t = (text || '').trim();
