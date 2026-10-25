@@ -170,6 +170,10 @@
       var row = rows[i], id = row.src + '\u0000' + row.k; cloud[id] = 1;
       if (row.src === 'ls' && row.k === 'solved-projects') cloudReg = JSON.stringify(row.v.d);
       var ts = Date.parse(row.updated_at);
+      // A locally-made change not yet uploaded has no entry in m[id] yet, so without this check
+      // it looks "stale" and gets clobbered by the cloud's older copy — silently losing the edit
+      // (e.g. a just-toggled keyframe) and cancelling the very upload that would have fixed it.
+      if (queue.has(id)) continue;
       if (m[id] && m[id] >= ts) continue;
       var v = await unpack(row.v.d);
       suppress++;
@@ -177,7 +181,7 @@
         if (row.src === 'ls') S.set(row.k, row.v.t === 'json' ? JSON.stringify(v) : v);
       } finally { suppress--; }
       if (row.src === 'idb') await idbWrite(row.k, v);
-      m[id] = ts; queue.delete(id); changed = true;
+      m[id] = ts; changed = true;
     }
     setMeta(m);
     // project list: if this browser's list differs from the cloud's and wasn't just replaced by it, upload it
