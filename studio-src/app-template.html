@@ -203,11 +203,13 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 @media(max-width:420px){.x-mode svg{display:none}}
 .x-gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}
 .x-gal .x-gcard:first-child{grid-column:1 / -1;max-width:720px}
-.x-gcard{display:flex;flex-direction:column;gap:6px;min-width:0}.x-gimg{position:relative;border-radius:6px;overflow:hidden;background:#202020}
-.x-gacts{position:absolute;left:0;right:0;bottom:0;display:none;gap:10px;flex-wrap:wrap;padding:8px;background:linear-gradient(transparent,rgba(0,0,0,.8));font:700 11px/14px 'Helvetica Neue',Helvetica,sans-serif}
-.x-gacts span{cursor:pointer}.x-gacts span:hover{color:#1985FF}.x-gimg:hover .x-gacts{display:flex}
-.x-gexp{position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;border-radius:6px;background:rgba(17,17,17,.7);display:none;align-items:center;justify-content:center;color:#f5f5f5;cursor:pointer}
-.x-gexp:hover{color:#1985FF}.x-gimg:hover .x-gexp,.x-gimg:focus-within .x-gexp{display:flex}
+.x-gcard{position:relative;display:flex;flex-direction:column;gap:6px;min-width:0}.x-gimg{position:relative;border-radius:6px;overflow:hidden;background:#202020}
+.x-gmenubtn{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;border:0;border-radius:6px;background:rgba(17,17,17,.7);display:none;align-items:center;justify-content:center;color:#f5f5f5;cursor:pointer}
+.x-gmenubtn:hover{color:#1985FF}.x-gmenubtn[data-on="1"]{display:flex;background:#1985FF;color:#fff}
+.x-gcard:hover .x-gmenubtn,.x-gcard:focus-within .x-gmenubtn{display:flex}
+.x-gmenu{position:absolute;top:40px;right:8px;z-index:2;width:176px;border-radius:10px;background:#1f1f1f;box-shadow:0 12px 32px rgba(0,0,0,.45);padding:6px;display:flex;flex-direction:column;gap:2px}
+.x-gmenuitem{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:#f5f5f5;font:500 12px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer;text-align:left}
+.x-gmenuitem:hover{background:#2a2a2a;color:#1985FF}.x-gmenuitem svg{flex:none}
 .x-gerr{position:absolute;inset:0;padding:12px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#ef6b61}
 .x-gp{font:400 11px/14px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 @media(max-width:900px){.x-gal{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -993,13 +995,20 @@ html,body{background:#282828!important}
           <div class="x-galwrap">
             <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
             <div class="x-gal"><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0">
-              <div class="x-gcard" title="{{ g.prompt }}"><div class="x-gimg" style="aspect-ratio:{{ g.ar }}">
-                <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><div style="{{ g.bg }}"></div></sc-if>
-                <sc-if value="{{ g.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if>
-                <sc-if value="{{ g.failed }}" hint-placeholder-val="{{ false }}"><div class="x-gerr">{{ g.err }}</div></sc-if>
-                <div class="x-gacts"><sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ g.expand }}">Expand</span><span sc-camel-on-click="{{ g.download }}">Download</span><span sc-camel-on-click="{{ g.edit }}">Edit</span></sc-if><span sc-camel-on-click="{{ g.reuse }}">Reuse prompt</span><span sc-camel-on-click="{{ g.del }}">Delete</span></div>
-                <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-gexp" aria-label="Expand" title="Expand" sc-camel-on-click="{{ g.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button></sc-if>
-              </div><div class="x-gp"><b>{{ g.kind }}</b> {{ g.prompt }}</div></div>
+              <div class="x-gcard" title="{{ g.prompt }}">
+                <div class="x-gimg" style="aspect-ratio:{{ g.ar }}">
+                  <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><div style="{{ g.bg }}"></div></sc-if>
+                  <sc-if value="{{ g.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if>
+                  <sc-if value="{{ g.failed }}" hint-placeholder-val="{{ false }}"><div class="x-gerr">{{ g.err }}</div></sc-if>
+                </div>
+                <button type="button" class="x-gmenubtn" data-on="{{ g.menuOn }}" aria-label="Image options" sc-camel-on-click="{{ g.toggleMenu }}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button>
+                <sc-if value="{{ g.menuOpen }}" hint-placeholder-val="{{ false }}">
+                  <div class="x-gmenu">
+                    <sc-for list="{{ g.menuItems }}" as="m" hint-placeholder-count="0"><button type="button" class="x-gmenuitem" sc-camel-on-click="{{ m.click }}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ m.icon }}"></path></svg><span>{{ m.label }}</span></button></sc-for>
+                  </div>
+                </sc-if>
+                <div class="x-gp"><b>{{ g.kind }}</b> {{ g.prompt }}</div>
+              </div>
             </sc-for></div>
           </div>
         </div>
@@ -3089,13 +3098,32 @@ class Component extends DCLogic {
     const S = this.state, page = S.page, stop = e => { if (e && e.stopPropagation) e.stopPropagation(); };
     const fit = src => Object.assign(bgOf(src), { backgroundSize: 'contain', backgroundRepeat: 'no-repeat' });
     const GAL = S.gallery || [];
-    const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map(g => ({ kind: g.kind === 'kf' ? 'Key frame' : 'Image', has: g.status === 'done' && !!g.src, bg: fit(g.src || ''), running: g.status === 'running', failed: g.status === 'failed', err: g.error || '', prompt: g.prompt, ar: (g.aspect || '1:1').replace(':', ' / '),
-      expand: e => { stop(e); if (g.status === 'done' && g.src) this.setState({ galPreview: g.uid }); },
-      download: e => { stop(e); const a = document.createElement('a'); a.href = g.src; a.download = g.prompt.slice(0, 40).replace(/\W+/g, '-') + '.jpg'; a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); },
-      edit: e => { stop(e); this.setState({ page: 'EDITING', edTool: 'image', ed: { src: g.src, name: g.prompt.slice(0, 40), adj: { b: 100, c: 100, s: 100 } } }); },
-      reuse: e => { stop(e); this.setState({ prompt: g.prompt }); },
-      del: e => { stop(e); this.setX('gallery', a => a.filter(y => y.uid !== g.uid)); } })),
-      ...this.hubModeData() } : {};
+    const GMENU_ICON = {
+      expand: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',
+      download: 'M12 3v12M7 10l5 5 5-5M4 19h16',
+      edit: 'M11 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z',
+      reuse: 'M3 12a9 9 0 1 0 3-6.7M3 4v5h5',
+      delete: 'M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3',
+    };
+    const galMenuToggle = (g, e) => { stop(e); this.setState(s => ({ galMenuOpen: s.galMenuOpen === g.uid ? null : g.uid })); };
+    const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map(g => {
+      const has = g.status === 'done' && !!g.src;
+      const expand = e => { stop(e); this.setState({ galPreview: g.uid, galMenuOpen: null }); };
+      const download = e => { stop(e); const a = document.createElement('a'); a.href = g.src; a.download = g.prompt.slice(0, 40).replace(/\W+/g, '-') + '.jpg'; a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); this.setState({ galMenuOpen: null }); };
+      const edit = e => { stop(e); this.setState({ page: 'EDITING', edTool: 'image', ed: { src: g.src, name: g.prompt.slice(0, 40), adj: { b: 100, c: 100, s: 100 } }, galMenuOpen: null }); };
+      const reuse = e => { stop(e); this.setState({ prompt: g.prompt, galMenuOpen: null }); };
+      const del = e => { stop(e); this.setX('gallery', a => a.filter(y => y.uid !== g.uid)); this.setState({ galMenuOpen: null }); };
+      const menuItems = [];
+      if (has) {
+        menuItems.push({ id: 'expand', label: 'Expand', icon: GMENU_ICON.expand, click: expand });
+        menuItems.push({ id: 'download', label: 'Download', icon: GMENU_ICON.download, click: download });
+        menuItems.push({ id: 'edit', label: 'Edit Image', icon: GMENU_ICON.edit, click: edit });
+      }
+      menuItems.push({ id: 'reuse', label: 'Reuse prompt', icon: GMENU_ICON.reuse, click: reuse });
+      menuItems.push({ id: 'delete', label: 'Delete', icon: GMENU_ICON.delete, click: del });
+      return { kind: g.kind === 'kf' ? 'Key frame' : 'Image', has, bg: fit(g.src || ''), running: g.status === 'running', failed: g.status === 'failed', err: g.error || '', prompt: g.prompt, ar: (g.aspect || '1:1').replace(':', ' / '),
+        expand, download, edit, reuse, del, menuItems, menuOpen: S.galMenuOpen === g.uid, menuOn: S.galMenuOpen === g.uid ? '1' : '0', toggleMenu: e => galMenuToggle(g, e) };
+    }), ...this.hubModeData() } : {};
     const galPreviewItem = GAL.find(g => g.uid === S.galPreview);
     Object.assign(hubData, { hasGalPreview: !!(galPreviewItem && galPreviewItem.src), galPreviewBg: galPreviewItem ? fit(galPreviewItem.src || '') : {}, galPreviewLabel: galPreviewItem ? galPreviewItem.prompt : '',
       closeGalPreview: () => this.setState({ galPreview: null }) });
