@@ -116,10 +116,9 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-vprompt{width:100%;box-sizing:border-box;min-height:64px;padding:10px;border:1px solid #303030;border-radius:6px;background:#191919;color:#f5f5f5;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;resize:vertical;outline:none}.x-vprompt:focus{border-color:#1985FF}
 .x-vrow select{height:28px;margin-left:6px;border:1px solid #303030;border-radius:5px;background:#191919;color:#f5f5f5;color-scheme:dark}
 .x-vnote{font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif}
-.x-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.x-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
 .x-tool{min-height:150px;padding:20px;border-radius:8px;background:#191919;display:flex;flex-direction:column;gap:8px;cursor:pointer;border:1px solid #191919}.x-tool:hover{border-color:#1985FF}
 .x-tool .x-name{font:700 18px/22px 'Helvetica Neue',Helvetica,sans-serif}.x-tool .x-desc{font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
-.x-tool.x-soon{opacity:.45;cursor:default}.x-tool.x-soon:hover{border-color:#191919}
 .x-ed{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
 .x-ed-canvas{position:relative;min-height:460px;border-radius:6px;background:#141414;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .x-ed-canvas img{max-width:100%;max-height:620px;display:block}
@@ -141,7 +140,7 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 [data-sv="edmic"]:hover{color:#f5f5f5}
 [data-sv="edmic"][data-on="1"]{background:#ef6b61;color:#fff}
 [data-sv="ednote"]{flex:1;min-width:0;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
-.x-dests{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.x-dests{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .x-dest{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:8px;background:#191919}.x-dest .x-name{font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif}.x-dest .x-desc{flex:1;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}.x-dest .ds-btn{justify-content:center}
 .x-hist{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #222;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif}
 .x-files{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:12px}.x-files-lg{grid-template-columns:repeat(5,minmax(0,1fr))}
@@ -156,6 +155,9 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-mode:hover{background:#2a2a2a}.x-mode[data-on="1"]{background:transparent;border-color:#1985FF;color:#1985FF}.x-mode:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .x-mode svg{flex:none}.x-ms{display:none}
 .x-imgtabs{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.x-createtoggle{display:inline-flex;align-items:center;width:fit-content;padding:3px;border-radius:9px;background:#191919;gap:2px}
+.x-createtab{height:30px;padding:0 16px;border:0;border-radius:6px;background:transparent;color:#929292;font:700 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;transition:background-color .12s,color .12s}
+.x-createtab:hover{color:#f5f5f5}.x-createtab[data-on="1"]{background:#2a2a2a;color:#f5f5f5}
 .x-styledots{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .x-styleopt{display:flex;flex-direction:column;align-items:center;gap:6px;width:88px;flex:none;text-align:center}
 .x-styledot{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid transparent;padding:0;cursor:pointer;background-color:#1f1f1f;transition:border-color .12s}
@@ -561,7 +563,7 @@ html,body{background:#282828!important}
 <div class="estimate-bottom"><label>Estimate notes<textarea aria-label="Estimate notes" placeholder="Scope, exclusions, or payment terms" value="{{ brief.budget.notes }}" sc-camel-on-change="{{ brief.budget.notesChange }}"></textarea></label><div class="estimate-total"><div class="estimate-grand">Grand total <b>{{ brief.budget.total }}</b></div></div></div></details>
 <details class="brief-collapse"><summary><h2>Timeline</h2><small>Client sees</small></summary><div class="brief-milestones"><sc-for list="{{ brief.tl.main }}" as="m"><label>{{ m.label }}<input type="{{ m.inputType }}" aria-label="{{ m.label }}" value="{{ m.date }}" sc-camel-on-input="{{ m.onDate }}" sc-camel-on-change="{{ m.onDate }}" sc-camel-on-blur="{{ m.onBlur }}"></label></sc-for><div class="brief-rounds"><sc-for list="{{ brief.tl.rounds }}" as="r"><div class="brief-round"><b>{{ r.label }}</b><sc-for list="{{ r.fields }}" as="m"><label>{{ m.shortLabel }}<input type="{{ m.inputType }}" aria-label="{{ m.label }}" value="{{ m.date }}" sc-camel-on-input="{{ m.onDate }}" sc-camel-on-change="{{ m.onDate }}" sc-camel-on-blur="{{ m.onBlur }}"></label></sc-for></div></sc-for></div><sc-for list="{{ brief.tl.extra }}" as="m"><label><input value="{{ m.label }}" aria-label="Milestone name" sc-camel-on-change="{{ m.onLabel }}" sc-camel-on-blur="{{ m.onBlur }}"><input type="{{ m.inputType }}" value="{{ m.date }}" aria-label="{{ m.label }}" sc-camel-on-input="{{ m.onDate }}" sc-camel-on-change="{{ m.onDate }}" sc-camel-on-blur="{{ m.onBlur }}"></label></sc-for><button class="brief-outline" sc-camel-on-click="{{ brief.tl.add }}">+ Add milestone</button></div></details>
 <details class="brief-collapse"><summary><h2>Terms</h2><small>Add your terms and conditions</small></summary><textarea aria-label="Terms" placeholder="Add your terms and conditions here." value="{{ brief.terms.value }}" sc-camel-on-change="{{ brief.terms.change }}" sc-camel-on-blur="{{ brief.terms.save }}"></textarea></details>
-<div class="brief-footer"><div><button title="Client view is coming in the functionality pass" disabled>Preview client view</button> <button title="PDF export is coming in the functionality pass" disabled>Download brief PDF</button></div><button class="brief-next" sc-camel-on-click="{{ goNext }}">Next: Images →</button></div>
+<div class="brief-footer"><div><button title="Client view is coming in the functionality pass" disabled>Preview client view</button> <button title="PDF export is coming in the functionality pass" disabled>Download brief PDF</button></div><button class="brief-next" sc-camel-on-click="{{ goNext }}">Next: Create →</button></div>
 </div>
     </sc-if>
 
@@ -831,6 +833,15 @@ html,body{background:#282828!important}
                     </div>
                   </div></sc-if>
                 </div>
+                <sc-if value="{{ c.isShot }}" hint-placeholder-val="{{ false }}">
+                  <div sc-camel-on-click="{{ c.pickEnd }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ c.dropEnd }}" title="End frame — paired with the start frame above for image-to-video" style="position:relative;display:flex;align-items:center;gap:8px;height:40px;border-radius:6px;border:1px dashed #414141;padding:0 8px;cursor:pointer">
+                    <div style="width:28px;height:28px;flex:none;border-radius:4px;overflow:hidden;background:#191919">
+                      <sc-if value="{{ c.hasEnd }}" hint-placeholder-val="{{ false }}"><div style="{{ c.endBg }};width:100%;height:100%"></div></sc-if>
+                    </div>
+                    <span style="flex:1;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">{{ c.endLabel }}</span>
+                    <sc-if value="{{ c.hasEnd }}" hint-placeholder-val="{{ false }}"><div sc-camel-on-click="{{ c.clearEnd }}" title="Remove end frame" style="width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#a3a3a3;cursor:pointer">×</div></sc-if>
+                  </div>
+                </sc-if>
                 <div style="display:flex;flex-direction:column;gap:4px">
                   <div style="display:flex;align-items:center;gap:6px">
                     <input value="{{ c.name }}" sc-camel-on-change="{{ c.rename }}" spellcheck="false" title="Name" style="flex:0 1 auto;min-width:40px;width:{{ c.nameW }};height:18px;padding:0;border:none;outline:none;background:transparent;color:#f5f5f5;font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif">
@@ -1010,7 +1021,14 @@ html,body{background:#282828!important}
             <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
           </div>
         </div>
+        <sc-if value="{{ showCreateToggle }}" hint-placeholder-val="{{ false }}">
+          <div class="x-createtoggle" role="tablist" aria-label="Image or video">
+            <button type="button" role="tab" class="x-createtab" data-on="{{ createImageOn }}" aria-selected="{{ createImageOn }}" sc-camel-on-click="{{ setCreateImage }}">Image</button>
+            <button type="button" role="tab" class="x-createtab" data-on="{{ createVideoOn }}" aria-selected="{{ createVideoOn }}" sc-camel-on-click="{{ setCreateVideo }}">Video</button>
+          </div>
+        </sc-if>
         <div class="x-hubbody">
+          <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
           <div class="x-galwrap">
             <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
             <div class="x-gal"><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0">
@@ -1033,12 +1051,36 @@ html,body{background:#282828!important}
               </div>
             </sc-for></div>
           </div>
+          </sc-if>
+          <sc-if value="{{ createVideoMode }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ x.vEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">Your videos appear here.</div></sc-if>
+          <div class="x-vgrid">
+            <sc-for list="{{ x.vids }}" as="v" hint-placeholder-count="0">
+              <div class="x-vcard">
+                <div class="x-vbox" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ v.dropStart }}">
+                  <sc-if value="{{ v.done }}" hint-placeholder-val="{{ false }}"><video src="{{ v.url }}" controls playsinline preload="metadata"></video></sc-if>
+                  <sc-if value="{{ v.notDone }}" hint-placeholder-val="{{ true }}"><div class="x-vstart" sc-camel-on-click="{{ v.pickStart }}"><sc-if value="{{ v.hasStart }}" hint-placeholder-val="{{ false }}"><div style="{{ v.startBg }}"></div></sc-if><sc-if value="{{ v.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if><span class="x-vhint">Start frame · click to change</span></div></sc-if>
+                  <sc-if value="{{ v.done }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-vexp" aria-label="Expand" title="Expand" sc-camel-on-click="{{ v.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button></sc-if>
+                </div>
+                <div class="x-vrow"><input class="x-vname" value="{{ v.name }}" sc-camel-on-change="{{ v.rename }}" spellcheck="false"><div class="{{ v.approveCls }}" sc-camel-on-click="{{ v.toggleApprove }}">{{ v.approveLabel }}</div></div>
+                <div class="x-vrow"><label class="x-muted">Length <select value="{{ v.duration }}" sc-camel-on-change="{{ v.setDuration }}"><sc-for list="{{ v.durOpts }}" as="d" hint-placeholder-count="5"><option value="{{ d.value }}">{{ d.label }}</option></sc-for></select></label>
+                  <div class="x-bar-btns"><sc-if value="{{ v.canEdit }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.toTimeline }}">Edit</button></sc-if><button class="ds-btn" sc-camel-on-click="{{ v.del }}">Delete</button><button class="ds-btn ds-on" disabled="{{ v.running }}" sc-camel-on-click="{{ v.go }}">{{ v.goLabel }}</button></div></div>
+                <div class="x-vnote" style="color:{{ v.noteColor }}">{{ v.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
         </div>
       </div>
     </sc-if>
 
     <sc-if value="{{ x.vidOn }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Videos" class="x-page">
+        <sc-if value="{{ x.showProduceTabs }}" hint-placeholder-val="{{ false }}">
+          <div class="x-modes" role="tablist" aria-label="Produce">
+            <sc-for list="{{ x.produceTabs }}" as="t" hint-placeholder-count="2"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
+          </div>
+        </sc-if>
         <div class="x-head"><div class="ds-sub">Videos <i class="ds-dim" style="font-style:normal">· {{ x.vCount }}</i></div>
           <div class="x-bar-btns"><span class="x-muted">{{ x.vFrameCount }}</span><button class="ds-btn ds-on" sc-camel-on-click="{{ x.vFromSb }}">From storyboard</button><button class="ds-btn" sc-camel-on-click="{{ x.vManual }}">+ Manual video</button></div></div>
         <sc-if value="{{ x.vEmpty }}" hint-placeholder-val="{{ true }}"><div class="ds-empty"><div><b>No videos yet</b>Click From storyboard to turn every storyboard frame into a video, or + Manual video to start from your own image.</div></div></sc-if>
@@ -1063,8 +1105,16 @@ html,body{background:#282828!important}
     </sc-if>
 
     <sc-if value="{{ x.edHub }}" hint-placeholder-val="{{ false }}">
-      <div data-screen-label="Editing" class="x-page"><div class="ds-sub">Editing tools <i class="ds-dim" style="font-style:normal">· 6</i></div>
-        <div class="x-tools"><sc-for list="{{ x.tools }}" as="t"><div class="{{ t.cls }}" sc-camel-on-click="{{ t.open }}"><div class="x-name">{{ t.name }}</div><div class="x-desc">{{ t.desc }}</div></div></sc-for></div></div>
+      <div data-screen-label="Editing" class="x-page">
+        <sc-if value="{{ x.showProduceTabs }}" hint-placeholder-val="{{ false }}">
+          <div class="x-modes" role="tablist" aria-label="Produce">
+            <sc-for list="{{ x.produceTabs }}" as="t" hint-placeholder-count="2"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
+          </div>
+        </sc-if>
+        <div class="ds-sub">Editing tools <i class="ds-dim" style="font-style:normal">· 2</i></div>
+        <div class="x-tools"><sc-for list="{{ x.tools }}" as="t"><div class="{{ t.cls }}" sc-camel-on-click="{{ t.open }}"><div class="x-name">{{ t.name }}</div><div class="x-desc">{{ t.desc }}</div></div></sc-for></div>
+        <div class="x-muted">3D & motion graphics — desktop / render queue (planned).</div>
+      </div>
     </sc-if>
 
     <sc-if value="{{ x.edImg }}" hint-placeholder-val="{{ false }}">
@@ -1136,13 +1186,6 @@ html,body{background:#282828!important}
           <sc-if value="{{ x.libGrid }}" hint-placeholder-val="{{ true }}"><div class="x-files x-files-lg"><sc-for list="{{ g.files }}" as="f"><div class="x-file" title="{{ f.name }}" sc-camel-on-click="{{ f.download }}"><div class="x-file-img"><sc-if value="{{ f.isImg }}" hint-placeholder-val="{{ false }}"><div style="{{ f.bg }}"></div></sc-if><sc-if value="{{ f.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ f.src }}" muted preload="metadata"></video></sc-if><sc-if value="{{ f.isDoc }}" hint-placeholder-val="{{ false }}"><div class="x-doc">DOC</div></sc-if></div><div class="ds-tile-name">{{ f.name }}</div></div></sc-for></div></sc-if>
           <sc-if value="{{ x.libList }}" hint-placeholder-val="{{ false }}"><div class="x-list"><sc-for list="{{ g.files }}" as="f"><div class="x-hist"><span>{{ f.name }}</span><button class="ds-btn" sc-camel-on-click="{{ f.download }}">Download</button></div></sc-for></div></sc-if>
         </div></sc-for>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{ isSoon }}" hint-placeholder-val="{{ false }}">
-      <div data-screen-label="Coming Soon" style="max-width:520px;display:flex;flex-direction:column;gap:8px">
-        <div style="font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF">Coming soon</div>
-        <div style="font:400 14px/20px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">{{ soonText }}</div>
       </div>
     </sc-if>
 
@@ -1544,24 +1587,31 @@ html,body{background:#282828!important}
           <div style="flex:none;display:flex;align-items:center"><div data-sv="addbtn" sc-camel-on-click="{{ talentPlus }}" style="position:relative;width:28px;height:28px;border-radius:50%;background:#2A2A2E;cursor:pointer"><span style="position:absolute;left:8px;top:13px;width:12px;height:2px;border-radius:1px;background:#191919"></span><span style="position:absolute;left:13px;top:8px;width:2px;height:12px;border-radius:1px;background:#191919"></span></div></div>
           </sc-if>
           <sc-if value="{{ showGenOpts }}" hint-placeholder-val="{{ false }}">
-            <sc-for list="{{ genOpts }}" as="o" hint-placeholder-count="5">
-              <div data-sv="optwrap" sc-camel-on-mouse-enter="{{ o.open }}" sc-camel-on-mouse-leave="{{ o.close }}" style="flex:none">
-                <div data-sv="chip" title="{{ o.title }}" style="height:32px;padding:0 12px;border-radius:16px;background:#2A2A2E;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap">
-                  <span style="font:700 10px/1 'Helvetica Neue',Helvetica,sans-serif;color:#8A8681">{{ o.label }}</span>
-                  <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF">{{ o.value }}</span>
-                </div>
-                <div data-sv="optmenu" style="display:{{ o.menu }}">
-                  <div data-sv="optinner">
-                  <sc-for list="{{ o.options }}" as="x" hint-placeholder-count="4">
-                    <div data-sv="optitem" sc-camel-on-click="{{ x.pick }}" style="height:32px;padding:0 10px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;background:{{ x.bg }}">
-                      <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF;white-space:nowrap">{{ x.label }}</span>
-                      <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF">{{ x.tick }}</span>
-                    </div>
-                  </sc-for>
+            <div data-sv="optwrap" style="flex:none">
+              <div data-sv="chip" sc-camel-on-click="{{ toggleSettingsPanel }}" title="Generation settings" style="height:32px;padding:0 12px;border-radius:16px;background:#2A2A2E;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap">
+                <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#8A8681" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span style="font:700 10px/1 'Helvetica Neue',Helvetica,sans-serif;color:#8A8681">Settings</span>
+              </div>
+              <sc-if value="{{ settingsPanelOpen }}" hint-placeholder-val="{{ false }}">
+                <div data-sv="optmenu" style="display:flex;min-width:260px;max-width:300px">
+                  <div data-sv="optinner" style="display:flex;flex-direction:column;gap:10px;padding:10px">
+                    <sc-for list="{{ genOpts }}" as="o" hint-placeholder-count="5">
+                      <div style="display:flex;flex-direction:column;gap:6px">
+                        <div style="font:700 10px/1 'Helvetica Neue',Helvetica,sans-serif;color:#8A8681" title="{{ o.title }}">{{ o.label }}</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:4px">
+                          <sc-for list="{{ o.options }}" as="x" hint-placeholder-count="4">
+                            <div data-sv="optitem" sc-camel-on-click="{{ x.pick }}" style="height:30px;padding:0 10px;border-radius:6px;display:flex;align-items:center;gap:6px;cursor:pointer;background:{{ x.bg }}">
+                              <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF;white-space:nowrap">{{ x.label }}</span>
+                              <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF">{{ x.tick }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
                   </div>
                 </div>
-              </div>
-            </sc-for>
+              </sc-if>
+            </div>
           </sc-if>
           <div data-sv="gobtn" sc-camel-on-click="{{ submit }}" style="margin-left:auto;width:104px;height:44px;flex:none;border-radius:6px;background:{{ actionBg }};color:{{ actionFg }};display:flex;align-items:center;justify-content:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:{{ actionCursor }}">{{ talentAction }}</div>
         </div>
@@ -1617,11 +1667,19 @@ const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION',
 // Workflow order (Back / Next arrows). Style lives inside Storyboards.
 const NAV_ORDER = ['BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
 // Sidebar: main sections only. Brief opens from the Dashboard.
-const NAV_ICON = { BRIEF: 'M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5', OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
-const SIDE_NAV = [['BRIEF', 'BRIEF'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY']];
-const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
-const SOON_PAGES = { VIDEOS: ['Make your videos', 'Videos are made from your storyboard frames. This section is built in step 5.'], EDITING: ['Edit your content', 'Image Editor and Video Editor are built in step 5.'], DELIVERY: ['Choose your file destination', 'ZIP, Google Drive, Dropbox, Frame.io and share links are built in step 6.'], LIBRARY: ['All files in this project', 'Brief, Images, Videos, Editing and Delivery files. Built in step 6.'] };
-const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Keyframes' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Props' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Images' : p.charAt(0) + p.slice(1).toLowerCase();
+const NAV_ICON = { BRIEF: 'M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5', OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', KEYFRAMES: 'M12 3l9 9-9 9-9-9z', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
+// Brief / Look / Keyframes / Produce / Deliver — collapsed top-level nav. "Look" and "Produce" are
+// each a group of pages sharing one sidebar button; see GROUP_PAGES/GROUP_DEFAULT below.
+const SIDE_NAV = [['BRIEF', 'Brief'], ['IMAGES', 'Look'], ['KEYFRAMES', 'Keyframes'], ['VIDEOS', 'Produce'], ['DELIVERY', 'Deliver']];
+const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE'];
+const PRODUCE_PAGES = ['VIDEOS', 'EDITING'];
+// Which pages belong to a given sidebar button, and which page to land on when entering that
+// group from somewhere else (re-clicking a group you're already in just re-opens its home page).
+const GROUP_PAGES = { IMAGES: IMAGE_PAGES, VIDEOS: PRODUCE_PAGES };
+const GROUP_DEFAULT = { IMAGES: 'PRODUCT', VIDEOS: 'VIDEOS' };
+// Header hint text for the "simple" pages (no breadcrumb drill-down, just a title + hint).
+const SIMPLE_PAGE_HINT = { VIDEOS: 'Make your videos', EDITING: 'Edit your content', DELIVERY: 'Choose your file destination', LIBRARY: 'All files in this project' };
+const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Keyframes' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Props' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Create' : p.charAt(0) + p.slice(1).toLowerCase();
 const CFG = {
   TALENT: { one: 'Character', prefix: 'CHR', ph: 'Describe a new character — age, look, expression, wardrobe…', search: 'Search characters by name, ID or appearance…' },
   PRODUCT: { one: 'Product', prefix: 'PRD', heroH: 418, ph: 'Describe a product image to generate…', search: 'Search existing product photography…',
@@ -1653,6 +1711,11 @@ const MODELS = [
   { value: 'gpt', label: 'GPT Image (not connected)', disabled: true },
 ];
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+// Storage-failure errors used to only ever land in the generation panel's gen.error slot, which
+// is invisible unless the user happens to have a create panel open at that exact moment — a
+// background save failure (character, product, location, style) could be silently lost. Route it
+// through cloud-sync's always-visible status badge too, when available.
+const storageErr = msg => { try { window.__solvedSync && window.__solvedSync.status(msg, 'err'); } catch (e) {} };
 const BSINGLE = ['CLIENT NAME', 'PROJECT NAME'];
 const bFmt = (label, raw) => {
   let t = String(raw || '').replace(/\r\n?/g, '\n').replace(/[\u00a0\t\u200b]/g, ' ').replace(/[ ]{2,}/g, ' ');
@@ -1794,7 +1857,10 @@ const idb = (() => {
   const open = () => dbp || (dbp = new Promise((res, rej) => { const q = indexedDB.open('solved-studio', 1); q.onupgradeneeded = () => q.result.createObjectStore('kv'); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }));
   const tx = (mode, fn) => open().then(db => new Promise((res, rej) => { const t = db.transaction('kv', mode); const out = fn(t.objectStore('kv')); t.oncomplete = () => res(out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }));
   const K = k => window.__solved ? window.__solved.idbKey(k) : k;
-  return { get: k => tx('readonly', st => st.get(K(k))).then(q => q.result), set: (k, v) => tx('readwrite', st => { st.put(v, K(k)); }), getMany: ks => tx('readonly', st => ks.map(k => st.get(K(k)))).then(qs => qs.map(q => q.result)), del: k => tx('readwrite', st => { st.delete(k); }) };
+  // del() namespaces like get/set/getMany (deletes the CURRENT project's key). delRaw() takes an
+  // already-resolved key as-is — needed when deleting a DIFFERENT project's data (e.g. on project
+  // delete), since K() can only ever resolve against the current project.
+  return { get: k => tx('readonly', st => st.get(K(k))).then(q => q.result), set: (k, v) => tx('readwrite', st => { st.put(v, K(k)); }), getMany: ks => tx('readonly', st => ks.map(k => st.get(K(k)))).then(qs => qs.map(q => q.result)), del: k => tx('readwrite', st => { st.delete(K(k)); }), delRaw: k => tx('readwrite', st => { st.delete(k); }) };
 })();
 async function shrinkB64(src, max) {
   const img = await loadImg(src); const k = Math.min(1, max / Math.max(img.width, img.height));
@@ -1849,9 +1915,6 @@ const vidDurations = vm => Array.from({ length: vm.durationMax - vm.durationMin 
 // Image models mirror lib/hf.js's IMAGE_MODELS: ratios and refsMax are exactly what each endpoint documents.
 const IMODELS = {
   gpt_image_2_5: { label: 'GPT Image 2.5', ratios: ['auto', '1:1', '3:2', '2:3', '4:3', '3:4', '16:9', '9:16', '21:9'], refs: true, refsMax: 16, enhance: true, connected: true },
-  seedream: { label: 'Seedream', ratios: [], refs: false, refsMax: 0, connected: false },
-  nano_banana: { label: 'Nano Banana', ratios: [], refs: false, refsMax: 0, connected: false },
-  flux_pro: { label: 'Flux Pro', ratios: [], refs: false, refsMax: 0, connected: false },
 };
 const IMODEL_DEFAULT = 'gpt_image_2_5';
 const SPRESETS = [
@@ -1927,7 +1990,7 @@ class Component extends DCLogic {
     home: (() => { try { sessionStorage.removeItem('solved-open'); } catch (e) {} return false; })(), covers: null, homeEdit: null, homeConfirm: null,
     page: 'IMAGES', view: 'all', item: null, values: this.initial, items: (() => { const it = load('solved-items', defaultItems()); return { ...it, KEYFRAMES: Array.isArray(it.KEYFRAMES) ? it.KEYFRAMES : defaultItems().KEYFRAMES }; })(),
     store: load('solved-assets', { seq: {}, TALENT: [] }),
-    prompt: '', mode: 'generate', attach: [], attachOpen: false,
+    prompt: '', mode: 'generate', attach: [], attachOpen: false, createMode: 'image',
     create: freshCreate(), tab: 'identity', varCat: 'ANGLES', confirmDelete: false,
     gen: { running: false, status: '', count: 0, error: '' }, tcfg: loadTcfg(), sheetRun: null, gRun: null, gConfirm: null, ovrAsk2: null, slot: 'front', genSlot: null, sSlot: {}, castConfirm: null, castAtt: [], castCheck: null, castBusy: false, optOpen: null, ovrAsk: null, products: [], imgs: {}, pLoaded: false, pLoadError: '', pSlot: {}, locations: [], locPopup: null, locPreview: null, stylePreview: null, imgPresets: null, imgPresetsLoading: false,
     styles: [], sLoaded: false, sd: null, sNote: '', sBusy: false, imgMode: 'gen', activeStyle: load('solved-active-style', null), kfPick: {}, kfTab: 'c',
@@ -1967,8 +2030,13 @@ class Component extends DCLogic {
 
   // ---- centralized asset store (shared shape for every asset type) ----
   persist = () => {
-    try { localStorage.setItem('solved-assets', JSON.stringify(this.state.store)); }
-    catch { this.setState(s => ({ gen: { ...s.gen, error: 'Browser storage is full — remove some images to keep saving.' } })); }
+    // Character/product/location asset records carry full-size base64 images, which can exceed
+    // localStorage's ~5-10MB quota on an active project — the same bug kfImg had before it moved
+    // to IndexedDB (far larger quota, same store as gallery/videos).
+    idb.set('assets', this.state.store).catch(() => {
+      storageErr('Couldn’t save — browser storage is full or unavailable');
+      this.setState(s => ({ gen: { ...s.gen, error: 'Browser storage is full — remove some images to keep saving.' } }));
+    });
   };
   assets(type) { return this.state.store[type] || []; }
   getAsset(type, id) { return this.assets(type).find(a => a.uid === id); }
@@ -2088,7 +2156,7 @@ class Component extends DCLogic {
   }
   newChar(data = {}) { return this.createAsset('TALENT', { name: `Character ${this.assets('TALENT').length + 1}`, sheet: {}, ...data }); }
   prodGet(id) { return this.state.products.find(p => p.uid === id); }
-  saveProducts() { if (!this.state.pLoaded) return; idb.set('products', this.state.products).catch(() => this.setErr('Couldn’t save products — browser storage is unavailable or full.')); }
+  saveProducts() { if (!this.state.pLoaded) return; idb.set('products', this.state.products).catch(() => { storageErr('Couldn’t save products — browser storage is full or unavailable'); this.setErr('Couldn’t save products — browser storage is unavailable or full.'); }); }
   updProduct(id, fn) { this.setState(s => ({ products: s.products.map(p => p.uid === id ? fn({ ...p, views: [...p.views], refs: [...p.refs], fields: { ...p.fields }, notes: { ...(p.notes || {}) } }) : p) }), () => this.saveProducts()); }
   async storeImgs(srcs) {
     const ids = srcs.map(() => uid());
@@ -2201,7 +2269,7 @@ class Component extends DCLogic {
   }
   setType(id, t) { this.updProduct(id, p => { p.type = t; p.typeLocked = true; return p; }); setTimeout(() => this.analyze(id, [], t), 0); }
   locGet(id) { return this.state.locations.find(l => l.uid === id); }
-  saveLocations() { if (!this.state.pLoaded) return; idb.set('locations', this.state.locations).catch(() => this.setErr('Couldn’t save locations — browser storage is unavailable or full.')); }
+  saveLocations() { if (!this.state.pLoaded) return; idb.set('locations', this.state.locations).catch(() => { storageErr('Couldn’t save locations — browser storage is full or unavailable'); this.setErr('Couldn’t save locations — browser storage is unavailable or full.'); }); }
   updLoc(id, fn) { this.setState(s => ({ locations: s.locations.map(l => l.uid === id ? fn({ ...l, views: [...l.views], refs: [...(l.refs || [])] }) : l) }), () => this.saveLocations()); }
   async popFiles(files, mode) {
     let srcs; try { srcs = await Promise.all(files.map(f => downscale(f, 1600))); } catch (e) { return this.setErr('Upload failed — ' + e.message + '.'); }
@@ -2453,6 +2521,7 @@ class Component extends DCLogic {
     this.setErr('');
     if (target === 'castatt') return this.castAttachFiles(srcs);
     if (target.startsWith('kf:')) return this.setKf(target.slice(3) + '-main', srcs[0]);
+    if (target.startsWith('kfend:')) return this.setKf(target.slice(6) + '-end', srcs[0]);
     if (target === 'kfnew') { const n = this.addShot(''); this.setKf(n + '-main', srcs[0]); return this.setState({ view: 'item', item: n, prompt: '' }); }
     if (target === 'newchar') {
       const a = this.newChar({ sheet: { front: srcs[0] }, main: srcs[0], original: srcs[0], events: [{ text: 'Created from upload', at }] });
@@ -2520,7 +2589,7 @@ class Component extends DCLogic {
     if (!Array.isArray(list)) {
       list = await Promise.all(SPRESETS.map(async (p, i) => ({ ...freshStyle(), uid: uid(), name: p.name, f: p.f, desc: p.desc, at: Date.now(),
         auto: true, frames: [{ label: 'Hero', subject: '', base: null, seed: i * 7 + 3, src: await styleRender(STYLE_PREVIEW_BASE, p.f, 70, i * 7 + 3, 'Hero') }] })));
-      idb.set('styles', list).catch(() => {});
+      idb.set('styles', list).catch(e => console.error('[styles] failed to save default presets', e));
     }
     list = list.map(s => ('auto' in s ? s : { ...s, auto: /^Style [1-7]$/.test(s.name) && (s.frames || []).length === 1 }));
     const legacyIdx = list.map((s, i) => (s.auto && /^Style [1-7]$/.test(s.name) ? i : -1)).filter(i => i >= 0);
@@ -2533,7 +2602,7 @@ class Component extends DCLogic {
           frames: [{ label: 'Hero', subject: '', base: null, seed, src: await styleRender(STYLE_PREVIEW_BASE, p.f, 70, seed, 'Hero') }] };
       }));
       list = list.map((s, i) => upgrades[i] || s).filter((s, i) => legacyIdx.indexOf(i) < 0 || legacyIdx.indexOf(i) < SPRESETS.length);
-      idb.set('styles', list).catch(() => {});
+      idb.set('styles', list).catch(e => console.error('[styles] failed to save upgraded presets', e));
     }
     this.setState({ styles: list, sLoaded: true }, () => this.syncAutoStyles());
   }
@@ -2554,7 +2623,7 @@ class Component extends DCLogic {
     } catch (e) {}
     this.syncing = false;
   }
-  updStyles(list) { this.setState({ styles: list }, () => this.state.sLoaded && idb.set('styles', this.state.styles).catch(() => this.setErr('Couldn’t save styles — browser storage is unavailable or full.'))); }
+  updStyles(list) { this.setState({ styles: list }, () => this.state.sLoaded && idb.set('styles', this.state.styles).catch(() => { storageErr('Couldn’t save styles — browser storage is full or unavailable'); this.setErr('Couldn’t save styles — browser storage is unavailable or full.'); })); }
   newStyle(patch) { this.setState({ view: 'create', item: null, sd: { ...freshStyle(), ...(patch || {}) }, sNote: '', prompt: '', gen: { ...this.state.gen, error: '' } }); window.scrollTo(0, 0); }
   openStyle(id) { const s = this.state.styles.find(x => x.uid === id); if (!s) return; this.setState({ view: 'create', item: id, sd: JSON.parse(JSON.stringify(s)), sNote: '' }); window.scrollTo(0, 0); }
   updSd(fn, rerender) { this.setState(s => (s.sd ? { sd: fn({ ...s.sd }) } : null), () => { if (rerender) this.queueRerender(); this.persistSd(); }); }
@@ -2786,15 +2855,20 @@ class Component extends DCLogic {
   saveX(k) { idb.set(k, this.state[k]).catch(() => this.setErr('Couldn’t save — browser storage is unavailable.')); }
   setX(k, fn) { this.setState(s => ({ [k]: fn(s[k] || []) }), () => this.saveX(k)); }
   loadX() {
-    idb.getMany(['videos', 'edits', 'deliveries', 'timeline', 'gallery', 'uploads', 'kf']).then(([v, e, d, t, g, u, kf]) => {
-      // kfImg used to live in localStorage, whose ~5-10MB quota full-size key-frame images can easily
-      // exceed, silently failing every save past that point. Migrate any pre-existing data into
-      // IndexedDB once, the same place gallery/videos already live.
+    idb.getMany(['videos', 'edits', 'deliveries', 'timeline', 'gallery', 'uploads', 'kf', 'assets']).then(([v, e, d, t, g, u, kf, assets]) => {
+      // kfImg (and now the character/product/location asset store) used to live in localStorage,
+      // whose ~5-10MB quota full-size images can easily exceed, silently failing every save past
+      // that point. Migrate any pre-existing data into IndexedDB once, the same place gallery/
+      // videos already live.
       if (!kf) {
         let legacy = null; try { legacy = JSON.parse(localStorage.getItem('solved-kf') || 'null'); } catch (err) {}
         if (legacy && typeof legacy === 'object') { kf = legacy; idb.set('kf', kf).catch(() => {}); }
       }
-      this.setState({ uploads: Array.isArray(u) ? u : [], gallery: Array.isArray(g) ? g : [], videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], kfImg: kf && typeof kf === 'object' ? kf : this.state.kfImg, xLoaded: true });
+      if (!assets) {
+        let legacy = null; try { legacy = JSON.parse(localStorage.getItem('solved-assets') || 'null'); } catch (err) {}
+        if (legacy && typeof legacy === 'object') { assets = legacy; idb.set('assets', assets).catch(() => {}); }
+      }
+      this.setState({ uploads: Array.isArray(u) ? u : [], gallery: Array.isArray(g) ? g : [], videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], kfImg: kf && typeof kf === 'object' ? kf : this.state.kfImg, store: assets && typeof assets === 'object' ? assets : this.state.store, xLoaded: true });
     }).catch(() => this.setState({ xLoaded: true }));
   }
   briefText() { const V = this.state.values || {}; return OV.map(([k]) => (V[k] || '').trim() ? k.charAt(0) + k.slice(1).toLowerCase() + ': ' + V[k].trim().slice(0, 600) : '').filter(Boolean).join('\n'); }
@@ -2912,26 +2986,16 @@ class Component extends DCLogic {
   /** Shared tab bar (Products/Characters/Locations/Shots/Keyframes) — same screen set as {@link IMAGE_PAGES_TOP}. */
   imageTabsData() {
     const page = this.state.page;
-    return [['PRODUCT', 'Products'], ['TALENT', 'Characters'], ['LOCATION', 'Locations'], ['IMAGES', 'Shots'], ['KEYFRAMES', 'Keyframes']]
+    return [['PRODUCT', 'Products'], ['TALENT', 'Characters'], ['LOCATION', 'Locations'], ['IMAGES', 'Create']]
       .map(([p, label]) => ({ label, on: page === p ? '1' : '0', sel: page === p ? 'true' : 'false',
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } }));
   }
-  async kfGen(p) {
-    const HF = window.SOLVED_HF;
-    if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate key frames.');
-    const R = this.kfRefs(), st = this.activeStyle(), sref = this.styleRef(), refs = [...R.srcs, ...(this.state.castAtt || []), sref].filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 8), id = uid();
-    const o = this.tcfg('IMAGES:kf'), ar = o.ratio || '16:9';
-    const prompt = [p, 'Cinematic key frame, ' + ar + ', photoreal.', R.names.length ? 'Featuring: ' + R.names.join(', ') + '.' : '', st ? 'Visual style: ' + (st.desc || st.name) + '.' : '',
-      refs.length ? 'Use the reference images for the exact people (faces, wardrobe), products and locations. Keep every person and product identical to the references.' : ''].filter(Boolean).join(' ');
-    this.setErr(''); this.setState({ prompt: '', castAtt: [], kfPick: {}, activeStyle: null });
-    try { localStorage.removeItem('solved-active-style'); } catch (e) {}
-    this.setX('gallery', a => [{ uid: id, kind: 'kf', prompt: p, src: '', status: 'running', aspect: ar, refs: refs.length, at: Date.now() }, ...a]);
-    try {
-      const url = await HF.generate({ prompt, references: refs, aspect: ar, model: o.model, quality: o.quality, resolution: o.resolution });
-      let keep = url; try { const r = await fetch(url); if (r.ok) { const b = await r.blob(); keep = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); } } catch (e) {}
-      this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, src: keep, status: 'done' } : g)));
-      this.recordUsage('IMAGES', 'Key frame · ' + p.slice(0, 40));
-    } catch (e) { this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, status: 'failed', error: e && e.message ? e.message : 'Generation failed' } : g))); }
+  /** Sub-tab bar for the "Produce" group (Videos / Editing), same pattern as imageTabsData(). */
+  produceTabsData() {
+    const page = this.state.page;
+    return [['VIDEOS', 'Videos'], ['EDITING', 'Editing']]
+      .map(([p, label]) => ({ label, on: page === p ? '1' : '0', sel: page === p ? 'true' : 'false',
+        pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, gen: { ...this.state.gen, error: '' } }); } }));
   }
   loadImgPresets() {
     const HF = window.SOLVED_HF;
@@ -2940,7 +3004,9 @@ class Component extends DCLogic {
     HF.presets().then(list => this.setState({ imgPresets: list, imgPresetsLoading: false }))
       .catch(e => { this.setErr(e && e.message ? e.message : 'Could not load presets.'); this.setState({ imgPresetsLoading: false }); });
   }
-  async freeGen(p) {
+  // The Create screen's single image generator — reads the IMAGES:main settings context
+  // (model/ratio/resolution/quality/enhance), shared with the one "Settings" control.
+  async createGen(p) {
     const HF = window.SOLVED_HF;
     if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate images.');
     const o = this.tcfg('IMAGES:main'), imod = IMODELS[o.model] || IMODELS[IMODEL_DEFAULT], st = this.activeStyle(), sref = this.styleRef();
@@ -2967,12 +3033,13 @@ class Component extends DCLogic {
   }
   // ---- videos
   frameSrc(n) { return this.state.kfImg[n + '-main'] || this.state.kfImg[n + '-start'] || ''; }
+  endFrameSrc(n) { return this.state.kfImg[n + '-end'] || ''; }
   newVideo(patch) { return { uid: uid(), name: 'Video', frameN: null, start: '', end: '', prompt: '', duration: 5, model: VMODEL_DEFAULT, sound: 'off', ratio: '16:9', resolution: '720p', status: 'idle', url: '', error: '', approved: false, at: Date.now(), ...patch }; }
   videoFromFrame(n, run) {
     const t = (this.state.items.KEYFRAMES || []).find(x => x.n === n); if (!t) return;
     const src = this.frameSrc(n); if (!src) return this.setErr('Generate the frame image first, then make its video.');
     const ex = (this.state.videos || []).find(v => v.frameN === n);
-    const v = ex || this.newVideo({ name: t.name, frameN: n, start: src, prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') });
+    const v = ex || this.newVideo({ name: t.name, frameN: n, start: src, end: this.endFrameSrc(n), prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') });
     if (!ex) this.setX('videos', a => [...a, v]);
     this.setState({ page: 'VIDEOS', view: 'all', item: null });
     if (run) setTimeout(() => this.runVideo(v.uid), 50);
@@ -2981,7 +3048,7 @@ class Component extends DCLogic {
     const frames = (this.state.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n));
     if (!frames.length) return this.setErr('Generate storyboard frames first (Images → Storyboards).');
     const have = new Set((this.state.videos || []).map(v => v.frameN));
-    const add = frames.filter(t => !have.has(t.n)).map(t => this.newVideo({ name: t.name, frameN: t.n, start: this.frameSrc(t.n), prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') }));
+    const add = frames.filter(t => !have.has(t.n)).map(t => this.newVideo({ name: t.name, frameN: t.n, start: this.frameSrc(t.n), end: this.endFrameSrc(t.n), prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') }));
     this.setX('videos', a => [...a, ...add]); this.setErr(add.length ? '' : 'Every storyboard frame already has a video.');
   }
   updVideo(id, fn) { this.setX('videos', a => a.map(v => (v.uid === id ? fn({ ...v }) : v))); }
@@ -3187,6 +3254,8 @@ class Component extends DCLogic {
       edit: 'M11 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z',
       reuse: 'M3 12a9 9 0 1 0 3-6.7M3 4v5h5',
       delete: 'M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3',
+      character: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6',
+      endFrame: 'M5 3v18M5 4h11l-2.5 3L16 10H5',
     };
     const galMenuToggle = (g, e) => { stop(e); this.setState(s => ({ galMenuOpen: s.galMenuOpen === g.uid ? null : g.uid })); };
     const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map(g => {
@@ -3196,11 +3265,24 @@ class Component extends DCLogic {
       const edit = e => { stop(e); this.setState({ page: 'EDITING', edTool: 'image', ed: { src: g.src, name: g.prompt.slice(0, 40), adj: { b: 100, c: 100, s: 100 } }, galMenuOpen: null }); };
       const reuse = e => { stop(e); this.setState({ prompt: g.prompt, galMenuOpen: null }); };
       const del = e => { stop(e); this.setX('gallery', a => a.filter(y => y.uid !== g.uid)); this.setState({ galMenuOpen: null }); };
+      // Promote a free-form generated image into a reusable Character asset — the only way today
+      // to turn a Create-screen result into something the 12-view consistency sheet can build on.
+      const saveAsCharacter = e => { stop(e); this.setState({ galMenuOpen: null });
+        const name = `Character ${this.assets('TALENT').length + 1}`;
+        const a = this.createAsset('TALENT', { name, main: g.src, original: g.src, events: [{ text: 'Saved from a generated image', at: Date.now() }] });
+        this.setState({ page: 'TALENT', view: 'item', item: a.uid, tab: 'identity', confirmDelete: false, create: freshCreate(), gen: { running: false, status: '', count: 0, error: '' } });
+      };
+      // Pair this image as the end frame of the most-recently-added keyframe shot (shots are
+      // prepended newest-first), wiring it into runVideo()'s already-working lastImage param.
+      const latestShot = (this.state.items.KEYFRAMES || [])[0];
+      const useAsEnd = e => { stop(e); this.setState({ galMenuOpen: null }); if (latestShot) this.setKf(latestShot.n + '-end', g.src); };
       const menuItems = [];
       if (has) {
         menuItems.push({ id: 'expand', label: 'Expand', icon: GMENU_ICON.expand, click: expand });
         menuItems.push({ id: 'download', label: 'Download', icon: GMENU_ICON.download, click: download });
         menuItems.push({ id: 'edit', label: 'Edit Image', icon: GMENU_ICON.edit, click: edit });
+        menuItems.push({ id: 'character', label: 'Save as character', icon: GMENU_ICON.character, click: saveAsCharacter });
+        if (latestShot) menuItems.push({ id: 'end', label: 'Use as end frame', icon: GMENU_ICON.endFrame, click: useAsEnd });
       }
       menuItems.push({ id: 'reuse', label: 'Reuse prompt', icon: GMENU_ICON.reuse, click: reuse });
       menuItems.push({ id: 'delete', label: 'Delete', icon: GMENU_ICON.delete, click: del });
@@ -3214,7 +3296,10 @@ class Component extends DCLogic {
       closeGalPreview: () => this.setState({ galPreview: null }) });
     const imageTabsPage = ['PRODUCT', 'TALENT', 'LOCATION', 'IMAGES', 'KEYFRAMES', 'WARDROBE', 'SETDESIGN', 'STYLE'].includes(page);
     const sharedImgHeader = imageTabsPage ? { imageTabs: this.imageTabsData(), ...this.styleControlData(fit, stop) } : {};
-    const X = { ...sharedImgHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
+    const producePage = PRODUCE_PAGES.includes(page);
+    const sharedProduceHeader = producePage ? { showProduceTabs: true, produceTabs: this.produceTabsData() } : {};
+    const createVideoMode = page === 'IMAGES' && S.createMode === 'video';
+    const X = { ...sharedImgHeader, ...sharedProduceHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
     const vidPreviewItem = (S.videos || []).find(v => v.uid === S.vidPreview);
     Object.assign(X, { hasVidPreview: !!(vidPreviewItem && vidPreviewItem.url), vidPreviewUrl: vidPreviewItem ? vidPreviewItem.url : '', vidPreviewLabel: vidPreviewItem ? vidPreviewItem.name : '',
       closeVidPreview: () => this.setState({ vidPreview: null }) });
@@ -3226,7 +3311,7 @@ class Component extends DCLogic {
         sbGenLabel: S.sbBusy === 'generating' ? 'Generating frames…' : 'Generate all frames', sbGen: () => this.genAllFrames(),
         sbVideos: () => { this.videosFromStoryboard(); this.setState({ page: 'VIDEOS', view: 'all', item: null }); } });
     }
-    if (X.vidOn) {
+    if (X.vidOn || createVideoMode) {
       const V = S.videos || [], FR = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n));
       Object.assign(X, { vCount: String(V.length), vEmpty: !V.length,
         vFromSb: () => this.videosFromStoryboard(), vManual: () => this.setX('videos', a => [...a, this.newVideo({ name: 'Video ' + (a.length + 1) })]),
@@ -3245,9 +3330,9 @@ class Component extends DCLogic {
             del: () => this.setX('videos', a => a.filter(y => y.uid !== x.uid)), toTimeline: () => { this.setX('timeline', a => [...a, { id: uid(), vid: x.uid, in: 0, out: x.duration || 5 }]); this.setState({ page: 'EDITING', edTool: 'video' }); },
             canEdit: x.status === 'done' && !!x.url }; }) });
     }
-    if (X.edHub) X.tools = [['image', 'Image Editor', 'Edit images with AI: change by prompt, remove background, upscale, relight, expand. Crop, rotate and adjust.'], ['video', 'Video Editor', 'Put your videos in order, trim them and export one edit.'],
-      ['', 'Motion Designer', 'Coming soon'], ['', '3D Animator', 'Coming soon'], ['', 'Sound Designer', 'Coming soon'], ['', 'Colorist', 'Coming soon']]
-      .map(([k, name, desc]) => ({ name, desc, live: !!k, soon: !k, cls: k ? 'x-tool' : 'x-tool x-soon', open: () => k && this.setState({ edTool: k }) }));
+    // Only tools with a real screen behind them belong here — see PR plan "only show what works".
+    if (X.edHub) X.tools = [['image', 'Image Editor', 'Edit images with AI: change by prompt, remove background, upscale, relight, expand. Crop, rotate and adjust.'], ['video', 'Video Editor', 'Put your videos in order, trim them and export one edit.']]
+      .map(([k, name, desc]) => ({ name, desc, cls: 'x-tool', open: () => this.setState({ edTool: k }) }));
     if (X.edImg) {
       const imgs = this.allImages(), E = S.ed || {}, adj = E.adj || { b: 100, c: 100, s: 100 };
       Object.assign(X, { edPicks: imgs.map(f => ({ name: f.section + ' · ' + f.name, bg: bgOf(f.src), line: E.src === f.src ? '#1985FF' : 'transparent', pick: () => this.setState({ ed: { src: f.src, name: f.name, adj: { b: 100, c: 100, s: 100 } } }) })),
@@ -3285,12 +3370,10 @@ class Component extends DCLogic {
       const nSel = sel ? all.filter(f => sel[key(f)]).length : all.length;
       Object.assign(X, { fgroups: groups, fNone: !all0.length, fNoMatch: !!libQ && !!all0.length && !all.length, fQuery: S.libQ || '', fTotal: libQ && all0.length ? all.length + ' of ' + all0.length + ' match “' + (S.libQ || '').trim() + '”' : String(all.length), nSel: nSel + ' of ' + all.length + ' files selected',
         selAll: () => this.setState({ dlSel: null }), selNone: () => this.setState({ dlSel: {} }), dlBusy: !!S.dlBusy, dlBusyLabel: S.dlBusy || '',
-        dests: [['zip', 'ZIP download', 'Download the selected files as one ZIP, organized by section.', 'Download ZIP', () => this.deliverZip(), true],
-          ['link', 'Client share link', 'Upload a ZIP and copy a private link that works for 7 days.', 'Create link', () => this.deliverLink(), true],
-          ['gdrive', 'Google Drive', 'Send files to a Drive folder.', 'Needs connection', () => this.setErr('Google Drive needs an account connection. It’s next on the build list.'), false],
-          ['dropbox', 'Dropbox', 'Send files to a Dropbox folder.', 'Needs connection', () => this.setErr('Dropbox needs an account connection. It’s next on the build list.'), false],
-          ['frameio', 'Frame.io', 'Send files to a Frame.io project for review.', 'Needs connection', () => this.setErr('Frame.io needs an account connection. It’s next on the build list.'), false]]
-          .map(([k, name, desc, btn, run, live]) => ({ name, desc, btn, run, cls: live ? 'ds-btn ds-on' : 'ds-btn' })),
+        // Only destinations that actually send files belong here — see PR plan "only show what works".
+        dests: [['zip', 'ZIP download', 'Download the selected files as one ZIP, organized by section.', 'Download ZIP', () => this.deliverZip()],
+          ['link', 'Client share link', 'Upload a ZIP and copy a private link that works for 7 days.', 'Create link', () => this.deliverLink()]]
+          .map(([k, name, desc, btn, run]) => ({ name, desc, btn, run, cls: 'ds-btn ds-on' })),
         history: (S.deliveries || []).map(d => ({ line: new Date(d.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' · ' + d.dest + ' · ' + d.count + ' files', url: d.url || '', hasUrl: !!d.url && (!d.expires || d.expires > Date.now()),
           copy: () => { try { navigator.clipboard.writeText(d.url); } catch (e) {} } })), hasHistory: (S.deliveries || []).length > 0,
         libGrid: (S.libView || 'grid') === 'grid', libList: S.libView === 'list', setGrid: () => this.setState({ libView: 'grid' }), setList: () => this.setState({ libView: 'list' }),
@@ -3411,8 +3494,11 @@ class Component extends DCLogic {
   renderVals0() {
     const { page, view, item, values, items, prompt, mode, store, create, gen, attach, tab, varCat, sheetRun } = this.state;
     const cfg = CFG[page] || {}, pg = page.toLowerCase();
-    const isHub = page === 'IMAGES', isVid = page === 'VIDEOS', isSoon = false, isXPage = !!SOON_PAGES[page];
-    const vModel = isVid ? (this.tcfg('VIDEOS:main').model || VMODEL_DEFAULT) : null, vm = isVid ? (VMODELS[vModel] || VMODELS[VMODEL_DEFAULT]) : null;
+    const isHub = page === 'IMAGES', isVid = page === 'VIDEOS', isXPage = !!SIMPLE_PAGE_HINT[page];
+    // The Create screen's Image/Video toggle: still on the IMAGES page, but switches the prompt
+    // bar, settings panel and submit action over to the same video-generation path VIDEOS uses.
+    const createVideoMode = isHub && this.state.createMode === 'video', anyVid = isVid || createVideoMode;
+    const vModel = anyVid ? (this.tcfg('VIDEOS:main').model || VMODEL_DEFAULT) : null, vm = anyVid ? (VMODELS[vModel] || VMODELS[VMODEL_DEFAULT]) : null;
     const isOverview = page === 'BRIEF', isBlank = page === 'OVERVIEW', isTalent = page === 'TALENT', isShotsPage = page === 'KEYFRAMES';
     const pkind = page === 'WARDROBE' ? 'wardrobe' : 'product';
     const isProduct = page === 'PRODUCT' || page === 'WARDROBE', isLocation = page === 'LOCATION' || page === 'SETDESIGN';
@@ -3447,7 +3533,7 @@ class Component extends DCLogic {
       if (gen.running || this.state.sheetRun) return;
       const p = prompt.trim();
       if (mode === 'search') { if (isTalent) this.setState({ view: 'all', item: null }); return; }
-      if (isHub) { if (!p) return this.setErr('Describe the image to create.'); return this.kfGen(p); }
+      if (isHub) { if (!p) return this.setErr(createVideoMode ? 'Describe the video to create.' : 'Describe the image to create.'); return createVideoMode ? this.vidGen(p) : this.createGen(p); }
       if (isVid) return this.vidGen(p);
       if (isStyleAll) {
         if (!p) return this.setErr('Describe a style to create, or press + to start from an image.');
@@ -3538,7 +3624,9 @@ class Component extends DCLogic {
             doDelete: e => { stop(e);
               const keys = p.id === 'legacy' ? LEGACY : SV.keys().filter(k => k.indexOf('solved-p:' + p.id + ':') === 0);
               keys.forEach(k => SV.del(k));
-              ['products', 'locations', 'styles', 'kf'].map(k => SV.idbKeyFor(p.id, k)).concat(['cover:' + p.id]).forEach(k => idb.del(k).catch(() => {}));
+              // Already-resolved keys for a (possibly different, non-active) project — must use
+              // delRaw, not del, or K() would wrongly re-namespace them against the current project.
+              ['products', 'locations', 'styles', 'kf', 'assets'].map(k => SV.idbKeyFor(p.id, k)).concat(['cover:' + p.id]).forEach(k => idb.delRaw(k).catch(e => console.error('[project delete] failed to remove', k, e)));
               let r = SV.registry().filter(x => x.id !== p.id);
               if (!r.length) r = [{ id: 'p' + Date.now().toString(36), created: Date.now(), start: '', end: '' }];
               SV.saveRegistry(r);
@@ -3562,11 +3650,12 @@ class Component extends DCLogic {
       goLib: () => { this.initial = values; this.setState(s => ({ page: 'LIBRARY', view: 'all', item: null, attachOpen: false, libFilesOpen: s.libFilesOpen === true ? false : true })); window.scrollTo(0, 0); },
       setLibQ: e => { const q = e.target.value; this.initial = this.state.values; this.setState({ libQ: q, page: 'LIBRARY', view: 'all', item: null, attachOpen: false }); },
       goOverview: () => { this.initial = values; this.setState({ page: 'BRIEF', view: 'all', attachOpen: false }); },
-      nav: SIDE_NAV.map(([p, label]) => ({ label, mb: '0px', color: '#f5f5f5', on: (p === page || (p === 'IMAGES' && IMAGE_PAGES.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
-        pick: () => { const pg = p === 'IMAGES' && !IMAGE_PAGES.includes(page) ? 'PRODUCT' : p; this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
+      nav: SIDE_NAV.map(([p, label]) => { const grp = GROUP_PAGES[p];
+        return { label, mb: '0px', color: '#f5f5f5', on: (p === page || (grp && grp.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
+        pick: () => { const pg = grp && !grp.includes(page) ? GROUP_DEFAULT[p] : p; this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } }; }),
 
       crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : (isHub || page === 'STYLE' || page === 'KEYFRAMES' || page === 'PRODUCT' || page === 'WARDROBE' || page === 'LOCATION' || page === 'SETDESIGN' || page === 'TALENT') ? 'IMAGES' : page, crumbSep: '/',
-      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? 'SHOTS' : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : isTalent ? 'CHARACTERS' : isProduct ? 'PRODUCTS' : isLocation ? 'LOCATIONS' : (isShotsPage && !inDetail) ? 'KEYFRAMES' : inDetail ? curItem.name : 'ALL',
+      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? 'CREATE' : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : isTalent ? 'CHARACTERS' : isProduct ? 'PRODUCTS' : isLocation ? 'LOCATIONS' : (isShotsPage && !inDetail) ? 'KEYFRAMES' : inDetail ? curItem.name : 'ALL',
       leafColor: (isTalent || isProduct || isLocation || isStyle) ? '#1985FF' : '#f5f5f5',
       rootCursor: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'pointer' : 'default',
       rootUnderline: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'underline' : 'none',
@@ -3584,7 +3673,7 @@ class Component extends DCLogic {
           hfFields: [['account', 'ACCOUNT LABEL', 'text', ''], ['model', 'IMAGE MODEL', 'text', 'gpt_image_2_5'], ['quality', 'QUALITY (low · medium · high · xhigh · max)', 'text', 'high'], ['resolution', 'RESOLUTION (1k · 2k · 4k)', 'text', '1k']]
             .map(([k, label, type, ph]) => ({ label, type, ph, value: (d && d[k]) || '', set: setD(k) })) }; })(),
       barW: '100%',
-      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SOON_PAGES[page][0]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Describe a shot, or attach references', KEYFRAMES: inDetail ? 'Create your key frame' : 'Create your key frames' })[page]
+      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SIMPLE_PAGE_HINT[page]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Describe a shot, or attach references', KEYFRAMES: inDetail ? 'Create your key frame' : 'Create your key frames' })[page]
         || (isStyleEdit ? 'Create your style' : isStyleAll ? 'Choose a style for your storyboard'
         : isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
         : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Create your wardrobe images' : 'Create your product images')
@@ -3626,7 +3715,7 @@ class Component extends DCLogic {
       isStoryTabs: (page === 'KEYFRAMES' || page === 'STYLE') && !gDetail && !isStyleEdit,
       storyTabs: [['KEYFRAMES', 'FRAMES'], ['STYLE', 'STYLE']].map(([pg, label]) => ({ label, color: page === pg ? '#f5f5f5' : '#929292', line: page === pg ? '#f5f5f5' : 'transparent',
         pick: () => this.setState({ page: pg, view: 'all', item: null, sd: null, prompt: '', attachOpen: false }) })),
-      isOverview, isBlank, isTiles: false, isDash: isBlank, isHub, isSoon, soonText: isSoon ? SOON_PAGES[page][1] : '',
+      isOverview, isBlank, isTiles: false, isDash: isBlank, isHub,
       dashTiles: (() => {
         const T = (store.TALENT || []), P = this.state.products, L = this.state.locations, n = (c, w) => c + ' ' + w + (c === 1 ? '' : 's');
         const PR = P.filter(x => (x.kind || 'product') === 'product'), WR = P.filter(x => x.kind === 'wardrobe');
@@ -3650,7 +3739,7 @@ class Component extends DCLogic {
         const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE'); const ORD = ['PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES']; imgRows.splice(0, imgRows.length, ...imgRows.filter(r => ORD.includes(r[0]))); imgRows.sort((a, b) => ORD.indexOf(a[0]) - ORD.indexOf(b[0])); // Products, Characters, Wardrobe first
         const imgCount = T.length + PR.length + LC.length + WR.length + SE.length;
         const dash = [rows[0],
-          ['IMAGES', 'IMAGES', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
+          ['IMAGES', 'LOOK', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
           ['VIDEOS', 'VIDEOS', (this.state.videos || []).length ? (this.state.videos || []).filter(x => x.status === 'done').length + ' of ' + (this.state.videos || []).length + ' videos made' : 'No videos yet', ((this.state.items.KEYFRAMES || []).map(t => this.frameSrc(t.n)).find(Boolean)) || '', ''],
           ['EDITING', 'EDITING', (this.state.edits || []).length ? n((this.state.edits || []).length, 'edit') : 'Image and video editors', ((this.state.edits || []).find(e => e.kind === 'image') || {}).src || '', ''],
           ['DELIVERY', 'DELIVERY', (this.state.deliveries || []).length ? n((this.state.deliveries || []).length, 'delivery') : 'Nothing sent yet', '', '']];
@@ -3786,7 +3875,7 @@ class Component extends DCLogic {
             { label: 'REMOVE', color: '#ef6b61', click: () => { close(); this.updLoc(pl.uid, x => { x.views[pv.idx] = null; return x; }); } },
             { label: 'CLOSE', color: '#929292', click: close }] : [] }; })(),
       isProdAll: false, isProdSheet: false, pLoading: (isProdAll || isLocAll) && !this.state.pLoaded,
-      barPh: isHub ? (this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe a shot to create…') : isVid ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Props use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a prop to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
+      barPh: isHub ? (createVideoMode ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe a shot to create…') : isVid ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Props use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a prop to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
       uploadNewProd: () => this.pick('newprod'),
       dropNewProd: e => { e.preventDefault(); this.handleFiles('newprod', e.dataTransfer.files); },
       pNewLabel: pkind === 'wardrobe' ? 'Upload new item' : 'Upload new product',
@@ -4051,6 +4140,13 @@ class Component extends DCLogic {
             isShot, leftOpacity: i > 0 ? '1' : '0.3', rightOpacity: i < recs.length - 1 ? '1' : '0.3',
             leftCursor: i > 0 ? 'pointer' : 'default', rightCursor: i < recs.length - 1 ? 'pointer' : 'default',
             moveLeft: e => { stop(e); this.moveShot(id, -1); }, moveRight: e => { stop(e); this.moveShot(id, 1); },
+            // End frame: paired with the start frame above into the same video via runVideo()'s
+            // lastImage param, so Kling/Seedance interpolate between the two instead of animating
+            // from a single still.
+            hasEnd: isShot && !!this.endFrameSrc(id), endBg: isShot ? bgFit(this.endFrameSrc(id)) : {},
+            endLabel: isShot && this.endFrameSrc(id) ? 'End frame set' : 'Set end frame',
+            pickEnd: e => { stop(e); if (isShot) this.pick('kfend:' + id); }, dropEnd: isShot ? this.dropTo('kfend:' + id) : () => {},
+            clearEnd: e => { stop(e); if (isShot) this.setKf(id + '-end', null); },
             rename: e => rename(id, e.target.value), setSub: e => setSub(id, e.target.value),
             delTitle: 'Delete ' + T[1], editTitle: 'Edit ' + T[1], delAsk: 'Delete this ' + T[1] + '?',
             delNote: kind === 'style' ? 'Removes the style and its frames.' : kind === 'shot' ? 'Removes the shot and its frame.' : 'Removes it and all its photos.',
@@ -4135,11 +4231,17 @@ class Component extends DCLogic {
           d };
       })(),
       showGenOpts: isCast || isHub || isVid || (!!gk && !gDetail),
+      settingsPanelOpen: !!this.state.settingsPanelOpen,
+      toggleSettingsPanel: () => this.setState(s => ({ settingsPanelOpen: !s.settingsPanelOpen })),
+      showCreateToggle: isHub, createVideoMode, createImageMode: isHub && !createVideoMode,
+      createImageOn: createVideoMode ? '0' : '1', createVideoOn: createVideoMode ? '1' : '0',
+      setCreateImage: () => this.setState({ createMode: 'image', settingsPanelOpen: false }),
+      setCreateVideo: () => this.setState({ createMode: 'video', settingsPanelOpen: false }),
       genOpts: (() => {
         const HF = window.SOLVED_HF;
         // Characters keeps its own settings per page: the main page drives the headshot,
         // the sheet page drives the sheet. Every other page still uses the shared defaults.
-        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : isHub ? 'IMAGES:kf' : isVid ? 'VIDEOS:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
+        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : createVideoMode ? 'VIDEOS:main' : isHub ? 'IMAGES:main' : isVid ? 'VIDEOS:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
         const c = tctx ? this.tcfg(tctx) : (HF ? HF.get() : {});
         const put = v => { if (tctx) this.tset(tctx, v); else if (HF) { HF.set(v); this.setState(s2 => ({ hfTick: s2.hfTick + 1 })); } };
         const pretty = m => m.replace(/_/g, ' ').replace(/\b\w/g, x => x.toUpperCase());
@@ -4153,7 +4255,7 @@ class Component extends DCLogic {
           close: () => this.setState(s2 => (s2.optOpen === key ? { optOpen: null } : null)) });
         // Video settings are entirely model-dependent: image-to-video models need Duration (+ Sound if supported),
         // text-to-video models need Duration + Ratio + Resolution instead, and never a start/end frame.
-        if (isVid) {
+        if (anyVid) {
           const vcModel = c.model || VMODEL_DEFAULT, cvm = VMODELS[vcModel] || VMODELS[VMODEL_DEFAULT];
           const dur = (c.duration && c.duration >= cvm.durationMin && c.duration <= cvm.durationMax) ? c.duration : cvm.durationMin;
           const out = [ctl('model', { label: 'Model', value: cvm.label + (cvm.connected ? '' : ' (not connected)'), title: 'Video model',
@@ -4175,8 +4277,9 @@ class Component extends DCLogic {
         const RES = ['1k', '2k', '4k'];
         const QUAL = ['low', 'medium', 'high', 'xhigh', 'max'];
         const out = [
-          ctl('model', { label: 'Model', value: imod.label + (imod.connected ? '' : ' (not connected)'), title: 'Image model',
-            options: Object.keys(IMODELS).map(k => ({ label: IMODELS[k].label + (IMODELS[k].connected ? '' : ' — not connected'), tick: k === model ? '✓' : '',
+          ctl('model', { label: 'Model', value: imod.label, title: 'Image model',
+            // Only real, working models belong in front of users — see PR plan "only show what works".
+            options: Object.keys(IMODELS).filter(k => IMODELS[k].connected).map(k => ({ label: IMODELS[k].label, tick: k === model ? '✓' : '',
               bg: k === model ? '#333337' : 'transparent', fg: k === model ? '#191919' : '#C9C6C1',
               pick: () => { put({ model: k }); this.setState(s2 => ({ optOpen: null, hfTick: s2.hfTick + 1 })); } })) }),
         ];
@@ -4202,7 +4305,7 @@ class Component extends DCLogic {
         }
         return out;
       })(),
-      showAttach: !isVid || vm.mode === 'image-to-video',
+      showAttach: !anyVid || vm.mode === 'image-to-video',
       showTalentBar: isCast || isHub || isVid || (!!gk && !gDetail),
       sl: Object.fromEntries(SHEET.map(([k]) => { const src = (char && char.sheet && char.sheet[k]) || ''; return [k, { has: !!src, src, bg: bgOf(src),
         busy: (gen.running && this.state.genSlot === k) || ['queued', 'busy', 'checking'].includes(this.state.sSlot[(char ? char.uid : '') + ':' + k]),
