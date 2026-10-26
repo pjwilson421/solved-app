@@ -2637,7 +2637,10 @@ class Component extends DCLogic {
   // ---- storyboard frames (Storyboards page) ----
   setKf(key, src) {
     const kfImg = { ...this.state.kfImg }; if (src) kfImg[key] = src; else delete kfImg[key];
-    try { localStorage.setItem('solved-kf', JSON.stringify(kfImg)); } catch (e) {}
+    // kfImg holds full-size image data, which can add up to well past localStorage's ~5-10MB quota —
+    // keep it in IndexedDB (same as gallery/videos) instead, so saves don't silently fail once a
+    // project has enough key frames.
+    idb.set('kf', kfImg).catch(() => this.setErr('Couldn’t save the key frame — browser storage is unavailable.'));
     this.setState({ kfImg });
   }
   kfFrames(t) {
@@ -2768,8 +2771,16 @@ class Component extends DCLogic {
   saveX(k) { idb.set(k, this.state[k]).catch(() => this.setErr('Couldn’t save — browser storage is unavailable.')); }
   setX(k, fn) { this.setState(s => ({ [k]: fn(s[k] || []) }), () => this.saveX(k)); }
   loadX() {
-    idb.getMany(['videos', 'edits', 'deliveries', 'timeline', 'gallery', 'uploads']).then(([v, e, d, t, g, u]) => this.setState({ uploads: Array.isArray(u) ? u : [], gallery: Array.isArray(g) ? g : [], videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], xLoaded: true }))
-      .catch(() => this.setState({ xLoaded: true }));
+    idb.getMany(['videos', 'edits', 'deliveries', 'timeline', 'gallery', 'uploads', 'kf']).then(([v, e, d, t, g, u, kf]) => {
+      // kfImg used to live in localStorage, whose ~5-10MB quota full-size key-frame images can easily
+      // exceed, silently failing every save past that point. Migrate any pre-existing data into
+      // IndexedDB once, the same place gallery/videos already live.
+      if (!kf) {
+        let legacy = null; try { legacy = JSON.parse(localStorage.getItem('solved-kf') || 'null'); } catch (err) {}
+        if (legacy && typeof legacy === 'object') { kf = legacy; idb.set('kf', kf).catch(() => {}); }
+      }
+      this.setState({ uploads: Array.isArray(u) ? u : [], gallery: Array.isArray(g) ? g : [], videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], kfImg: kf && typeof kf === 'object' ? kf : this.state.kfImg, xLoaded: true });
+    }).catch(() => this.setState({ xLoaded: true }));
   }
   briefText() { const V = this.state.values || {}; return OV.map(([k]) => (V[k] || '').trim() ? k.charAt(0) + k.slice(1).toLowerCase() + ': ' + V[k].trim().slice(0, 600) : '').filter(Boolean).join('\n'); }
   storyStyle() { const L = (this.state.styles || []); return L.find(s => s.uid === this.state.activeStyle) || L.find(s => s.status === 'approved') || L.find(s => !s.auto) || L[0] || null; }
@@ -2802,7 +2813,7 @@ class Component extends DCLogic {
       const m = String(txt).match(/\[[\s\S]*\]/); const arr = m ? JSON.parse(m[0]) : null;
       if (!Array.isArray(arr) || !arr.length) throw new Error('no frames came back');
       const list = arr.slice(0, 6).map((f, i) => ({ n: i + 1, name: String(f.name || 'Frame ' + (i + 1)).slice(0, 40), desc: String(f.desc || ''), fields: { size: f.size || '', angle: f.angle || '', move: f.move || '', action: f.action || '' } }));
-      const kfImg = {}; this.setItems('KEYFRAMES', list); this.setState({ kfImg }); try { localStorage.setItem('solved-kf', '{}'); } catch (e) {}
+      const kfImg = {}; this.setItems('KEYFRAMES', list); this.setState({ kfImg }); idb.set('kf', {}).catch(() => {});
     } catch (e) { this.setErr('Frames weren’t written — ' + (e && e.message ? e.message : 'unknown error') + '.'); }
     finally { this.setState({ sbBusy: null }); }
   }
@@ -3512,7 +3523,7 @@ class Component extends DCLogic {
             doDelete: e => { stop(e);
               const keys = p.id === 'legacy' ? LEGACY : SV.keys().filter(k => k.indexOf('solved-p:' + p.id + ':') === 0);
               keys.forEach(k => SV.del(k));
-              ['products', 'locations', 'styles'].map(k => SV.idbKeyFor(p.id, k)).concat(['cover:' + p.id]).forEach(k => idb.del(k).catch(() => {}));
+              ['products', 'locations', 'styles', 'kf'].map(k => SV.idbKeyFor(p.id, k)).concat(['cover:' + p.id]).forEach(k => idb.del(k).catch(() => {}));
               let r = SV.registry().filter(x => x.id !== p.id);
               if (!r.length) r = [{ id: 'p' + Date.now().toString(36), created: Date.now(), start: '', end: '' }];
               SV.saveRegistry(r);
