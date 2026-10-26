@@ -108,6 +108,17 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-pgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
 .x-pcard{display:flex;flex-direction:column;gap:10px;min-width:0}
 .x-pbox{position:relative;aspect-ratio:1 / 1;border-radius:6px;overflow:hidden;background:#202020}
+.x-refchips{display:flex;flex-wrap:wrap;gap:8px}
+.x-refchip{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 6px 0 12px;border-radius:15px;background:#242424;color:#f5f5f5;font:400 13px/1 'Helvetica Neue',Helvetica,sans-serif}
+.x-refchip button{width:20px;height:20px;border:0;border-radius:50%;background:transparent;color:#a3a3a3;font-size:15px;line-height:1;cursor:pointer}
+.x-refchip button:hover{background:#333;color:#f5f5f5}
+.x-refbody{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.x-refgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.x-refasset{display:flex;flex-direction:column;gap:8px;min-width:0}
+.x-refthumb{position:relative;aspect-ratio:1 / 1;border-radius:6px;overflow:hidden;background:#202020}
+.x-refname{font:700 13px/16px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.x-refpills{display:flex;gap:6px}
+@media(max-width:900px){.x-refgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .x-vcard{display:flex;flex-direction:column;gap:10px;min-width:0}
 .x-vbox{position:relative;aspect-ratio:16 / 9;border-radius:6px;overflow:hidden;background:#202020}
 .x-vexp{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;border:0;border-radius:6px;background:rgba(17,17,17,.7);display:none;align-items:center;justify-content:center;color:#f5f5f5;cursor:pointer}
@@ -1002,6 +1013,41 @@ html,body{background:#282828!important}
           <div class="x-createtoggle" role="tablist" aria-label="Image or video">
             <button type="button" role="tab" class="x-createtab" data-on="{{ createImageOn }}" aria-selected="{{ createImageOn }}" sc-camel-on-click="{{ setCreateImage }}">Image</button>
             <button type="button" role="tab" class="x-createtab" data-on="{{ createVideoOn }}" aria-selected="{{ createVideoOn }}" sc-camel-on-click="{{ setCreateVideo }}">Video</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}">
+            <div class="x-refchips">
+              <sc-for list="{{ x.kfChips }}" as="c" hint-placeholder-count="0">
+                <div class="x-refchip"><span>{{ c.name }}</span><button type="button" aria-label="Remove reference" sc-camel-on-click="{{ c.remove }}">×</button></div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div>
+            <button type="button" class="ds-btn" sc-camel-on-click="{{ x.kfPanelToggle }}">Reference: {{ x.kfRefCount }}</button>
+            <sc-if value="{{ x.kfPanelOpen }}" hint-placeholder-val="{{ false }}">
+              <div class="x-refbody">
+                <div class="x-modes" role="tablist" aria-label="Reference type">
+                  <sc-for list="{{ x.kfTabs }}" as="t" hint-placeholder-count="4"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }} · {{ t.count }}</button></sc-for>
+                </div>
+                <sc-if value="{{ x.kfEmpty }}" hint-placeholder-val="{{ false }}"><div class="ds-empty"><div><b>{{ x.kfEmptyText }}</b></div></div></sc-if>
+                <div class="x-refgrid">
+                  <sc-for list="{{ x.kfAssets }}" as="a" hint-placeholder-count="0">
+                    <div class="x-refasset">
+                      <div class="x-refthumb">
+                        <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="{{ a.photoBg }}"></div></sc-if>
+                        <sc-if value="{{ a.noPhoto }}" hint-placeholder-val="{{ true }}"><sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}"><div style="{{ a.sheetBg }}"></div></sc-if></sc-if>
+                      </div>
+                      <div class="x-refname">{{ a.name }}</div>
+                      <div class="x-refpills">
+                        <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><button type="button" class="{{ a.photoCls }}" sc-camel-on-click="{{ a.togglePhoto }}">{{ a.photoLabel }}</button></sc-if>
+                        <sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}"><button type="button" class="{{ a.sheetCls }}" sc-camel-on-click="{{ a.toggleSheet }}">{{ a.sheetLabel }}</button></sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
           </div>
         </sc-if>
         <div class="x-hubbody">
@@ -2816,10 +2862,11 @@ class Component extends DCLogic {
     return { c: chars, p: prods, l: locs, w: wardrobe };
   }
   kfRefs() {
-    const P = this.state.kfPick || {}, A = this.kfAssetsAll(), all = [...A.c, ...A.p, ...A.l, ...A.w], out = [], names = [];
-    all.forEach(a => { const ph = P[a.k + ':' + a.id + ':photo'], sh = P[a.k + ':' + a.id + ':sheet'];
-      if (ph && a.photo) out.push(a.photo); if (sh) a.sheet.forEach(x => out.push(x)); if ((ph && a.photo) || (sh && a.sheet.length)) names.push(a.name); });
-    return { srcs: [...new Set(out)], names };
+    const P = this.state.kfPick || {}, A = this.kfAssetsAll(), all = [...A.c, ...A.p, ...A.l, ...A.w], out = [], names = [], chips = [];
+    all.forEach(a => { const kp = a.k + ':' + a.id + ':photo', ks = a.k + ':' + a.id + ':sheet', ph = P[kp] && a.photo, sh = P[ks] && a.sheet.length;
+      if (ph) out.push(a.photo); if (sh) a.sheet.forEach(x => out.push(x));
+      if (ph || sh) { names.push(a.name); chips.push({ name: a.name, keys: [ph ? kp : null, sh ? ks : null].filter(Boolean) }); } });
+    return { srcs: [...new Set(out)], names, chips };
   }
   hubModeData() {
     const S = this.state;
@@ -2831,13 +2878,14 @@ class Component extends DCLogic {
     out.kfTabs = [['c', 'Characters'], ['p', 'Products'], ['l', 'Locations'], ['w', 'Wardrobe']].map(([k, label]) => ({ label, count: String(A[k].length), on: tab === k ? '1' : '0', pick: () => this.setState({ kfTab: k }) }));
     out.kfAssets = A[tab].map(a => { const kp = a.k + ':' + a.id + ':photo', ks = a.k + ':' + a.id + ':sheet', ph = !!P[kp], sh = !!P[ks];
       return { name: a.name, sub: a.sub, hasPhoto: !!a.photo, photoBg: Object.assign(bgOf(a.photo), { backgroundSize: 'cover' }), hasSheet: a.sheet.length > 0, sheetBg: Object.assign(bgOf(a.sheet[0] || ''), { backgroundSize: 'cover' }), on: ph || sh ? '1' : '0',
-        photoOn: ph ? '1' : '0', sheetOn: sh ? '1' : '0', photoLabel: ph ? '✓ Photo' : '+ Photo', sheetLabel: sh ? '✓ Sheet' : '+ Sheet',
+        photoOn: ph ? '1' : '0', sheetOn: sh ? '1' : '0', photoLabel: ph ? '✓ Photo' : '+ Photo', sheetLabel: sh ? '✓ Sheet' : '+ Sheet', photoCls: ph ? 'ds-btn ds-on' : 'ds-btn', sheetCls: sh ? 'ds-btn ds-on' : 'ds-btn',
         noPhoto: !a.photo, noSheet: !a.sheet.length, togglePhoto: toggle(kp), toggleSheet: toggle(ks) }; });
     const label = { c: 'character', p: 'product', l: 'location', w: 'wardrobe item' }[tab], pg = { c: 'TALENT', p: 'PRODUCT', l: 'LOCATION', w: 'TALENT' }[tab];
     Object.assign(out, { kfEmpty: !A[tab].length, kfEmptyText: tab === 'w' ? 'No wardrobe yet. Add one from a character’s page.' : 'No ' + label + 's yet. Use “+ New ' + label + '” below.', kfNewLabel: 'New ' + label,
       kfNew: () => this.setState({ page: pg, view: 'all', item: null, prompt: '', slot: pg === 'TALENT' ? 'front' : 0 }),
       kfBoards: () => this.setState({ page: 'KEYFRAMES', view: 'all', item: null, prompt: '' }),
-      kfRefCount: String(Math.min(8, refs.srcs.length + (S.castAtt || []).length + (this.styleRef() ? 1 : 0))), kfHasRefs: Object.keys(P).length > 0, kfClear: () => this.setState({ kfPick: {} }) });
+      kfRefCount: String(Math.min(8, refs.srcs.length + (S.castAtt || []).length + (this.styleRef() ? 1 : 0))), kfHasRefs: Object.keys(P).length > 0, kfClear: () => this.setState({ kfPick: {} }),
+      kfChips: refs.chips.map(c => ({ name: c.name, remove: () => this.setState(s => { const n = { ...(s.kfPick || {}) }; c.keys.forEach(k => delete n[k]); return { kfPick: n }; }) })) });
     return out;
   }
   /** Shared tab bar (Products/Characters/Locations/Shots/Keyframes) — same screen set as {@link IMAGE_PAGES_TOP}. */
@@ -2878,7 +2926,7 @@ class Component extends DCLogic {
     const refsMax = imod.refsMax || 8;
     // A ratio picked under a previously selected model may not be valid for this one — clamp to its actual list.
     const aspect = imod.ratios.includes(o.ratio) ? o.ratio : (imod.ratios.includes('1:1') ? '1:1' : imod.ratios[0] || '1:1');
-    const refs = enhance ? this.state.castAtt.filter(Boolean).slice(0, 2) : [...this.state.castAtt, sref].filter(Boolean).slice(0, refsMax);
+    const refs = enhance ? this.state.castAtt.filter(Boolean).slice(0, 2) : [...this.state.castAtt, ...this.kfRefs().srcs, sref].filter(Boolean).slice(0, refsMax);
     const id = uid(), shown = p;
     if (!enhance && st) p = p + ' Visual style: ' + (st.desc || st.name) + '.' + (sref ? ' Match the look of the style reference image.' : '');
     this.setErr(''); this.setState({ prompt: '', castAtt: [] });
