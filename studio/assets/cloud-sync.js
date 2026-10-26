@@ -228,8 +228,8 @@
         // explicit retry instead of requiring them to know to refresh.
         status('Couldn’t load from cloud — <a href="#" id="solved-retry-pull" style="color:#6fb3ff">retry</a>, or continue offline', 'link');
       }
-      document.documentElement.style.visibility = '';
     }
+    document.documentElement.style.visibility = '';
     ready = true; schedule(500);
   }).catch(function (e) {
     // getSession() itself can reject (e.g. storage access blocked); without this, the page
