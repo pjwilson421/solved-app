@@ -534,14 +534,6 @@ html,body{background:#282828!important}
       </div>
     </div>
 
-    <sc-if value="{{ isStoryTabs }}" hint-placeholder-val="{{ false }}">
-      <div data-sv="storytabs" style="display:flex;gap:24px;margin-top:-12px">
-        <sc-for list="{{ storyTabs }}" as="st" hint-placeholder-count="2">
-          <div sc-camel-on-click="{{ st.pick }}" style="height:28px;font:700 12px/28px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer;color:{{ st.color }};border-bottom:2px solid {{ st.line }}">{{ st.label }}</div>
-        </sc-for>
-      </div>
-    </sc-if>
-
     <sc-if value="{{ x.sbOn }}" hint-placeholder-val="{{ false }}">
       <div data-sv="sbbar" class="x-bar"><div class="x-bar-info">{{ x.sbInfo }}</div>
         <div class="x-bar-btns"><button class="ds-btn" disabled="{{ x.sbBusy }}" sc-camel-on-click="{{ x.sbWrite }}">{{ x.sbWriteLabel }}</button><button class="ds-btn" disabled="{{ x.sbBusy }}" sc-camel-on-click="{{ x.sbGen }}">{{ x.sbGenLabel }}</button><button class="ds-btn ds-on" sc-camel-on-click="{{ x.sbVideos }}">Make videos →</button></div></div>
@@ -998,24 +990,6 @@ html,body{background:#282828!important}
 
     <sc-if value="{{ x.hubOn }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Images" class="x-page x-hub" style="flex:1">
-        <div class="x-styledots" aria-label="Styles">
-          <div class="x-styleopt">
-            <button type="button" class="x-styledot x-styledotstd" data-on="{{ x.standardOn }}" title="Standard" sc-camel-on-click="{{ x.pickStandard }}">
-              <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.4 5.5L20 11l-5.6 2.5L12 19l-2.4-5.5L4 11l5.6-2.5z"></path></svg>
-            </button>
-            <div class="x-styletxt"><b>Standard</b></div>
-          </div>
-          <sc-for list="{{ x.styleCards }}" as="c" hint-placeholder-count="0">
-            <div class="x-styleopt">
-              <button type="button" class="x-styledot" data-on="{{ c.on }}" title="{{ c.name }}" style="{{ c.dot }}" sc-camel-on-click="{{ c.pick }}"></button>
-              <div class="x-styletxt"><b>{{ c.name }}</b></div>
-            </div>
-          </sc-for>
-          <div class="x-styleopt">
-            <button type="button" class="x-styledot x-styledotnew" title="New style" sc-camel-on-click="{{ x.newStyle }}">+</button>
-            <div class="x-styletxt"><b>New style</b></div>
-          </div>
-        </div>
         <div class="x-imgtabs">
           <div class="x-modes" role="tablist" aria-label="Images">
             <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
@@ -1236,114 +1210,6 @@ html,body{background:#282828!important}
         </div>
         <sc-if value="{{ pLoading }}" hint-placeholder-val="{{ false }}"><div style="font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#929292">Loading saved locations…</div></sc-if>
         <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div style="font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#ef6b61">{{ errorText }}</div></sc-if>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{ isStyleAll }}" hint-placeholder-val="{{ false }}">
-      <div data-screen-label="07 Style All" style="display:flex;flex-direction:column;gap:24px">
-        <div data-sv="g4" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 18px;align-items:start">
-          <div data-sv="newp" sc-camel-on-click="{{ newStyle }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ dropNewStyle }}" style="display:flex;flex-direction:column;gap:10px;cursor:pointer">
-            <div data-sv="newbox" style="width:100%;aspect-ratio:1 / 1;flex:none;background:transparent;border:1px dashed #414141;display:flex;align-items:center;justify-content:center"><div data-sv="newplus" style="position:relative;width:30px;height:30px"><span style="position:absolute;left:0;top:14px;width:30px;height:2px;border-radius:1px;background:#414141"></span><span style="position:absolute;left:14px;top:0;width:2px;height:30px;border-radius:1px;background:#414141"></span></div></div>
-            <div data-sv="newlabel" style="height:16px;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap">Create new style</div>
-          </div>
-          <sc-for list="{{ styleCards }}" as="c" hint-placeholder-count="7">
-            <div data-sv="pcard" style="display:flex;flex-direction:column;gap:10px">
-              <div data-sv="pimg" sc-camel-on-click="{{ c.open }}" style="position:relative;width:100%;aspect-ratio:1 / 1;flex:none;overflow:hidden;background:#202020;cursor:pointer">
-                <sc-if value="{{ c.hasImg }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if>
-              </div>
-              <input data-sv="pname" value="{{ c.name }}" sc-camel-on-change="{{ c.rename }}" spellcheck="false" style="width:100%;height:16px;padding:0;border:none;outline:none;background:transparent;color:#f5f5f5;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;text-overflow:ellipsis">
-            </div>
-          </sc-for>
-        </div>
-        <sc-if value="{{ sLoading }}" hint-placeholder-val="{{ false }}"><div style="font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#929292">Loading saved styles…</div></sc-if>
-        <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div style="font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#ef6b61">{{ errorText }}</div></sc-if>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{ isStyleEdit }}" hint-placeholder-val="{{ false }}">
-      <div data-screen-label="08 Create Style" style="display:flex;flex-direction:column;gap:32px">
-        <div data-sv="head" style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px">
-          <div style="display:flex;flex-direction:column;gap:22px;width:min(100%,418px);flex:none">
-            <div style="display:flex;align-items:center;gap:4px;height:22px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif">
-              <span style="flex:none;font-weight:700;white-space:nowrap">Name:</span>
-              <input value="{{ sName }}" sc-camel-on-change="{{ onSName }}" placeholder="AI names it on generate — or type a name" spellcheck="false" style="flex:1;min-width:0;height:16px;padding:0;border:none;outline:none;background:transparent;color:#f5f5f5;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif">
-            </div>
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div style="display:flex;gap:20px;height:24px">
-                <sc-for list="{{ sSources }}" as="t" hint-placeholder-count="3">
-                  <div sc-camel-on-click="{{ t.pick }}" style="height:22px;font:700 11px/22px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;color:{{ t.color }};border-bottom:2px solid {{ t.line }};cursor:pointer;white-space:nowrap">{{ t.label }}</div>
-                </sc-for>
-              </div>
-              <sc-if value="{{ sIsImage }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;flex-wrap:wrap;gap:8px">
-                  <div sc-camel-on-click="{{ pickStyleRef }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ dropStyleRef }}" title="Add reference images" style="width:64px;height:64px;flex:none;background:#202020;display:flex;align-items:center;justify-content:center;cursor:pointer"><div style="position:relative;width:28px;height:28px;border-radius:50%;background:#1985FF"><span style="position:absolute;left:8px;top:13px;width:12px;height:2px;border-radius:1px;background:#191919"></span><span style="position:absolute;left:13px;top:8px;width:2px;height:12px;border-radius:1px;background:#191919"></span></div></div>
-                  <sc-for list="{{ sRefs }}" as="r" hint-placeholder-count="0">
-                    <div style="position:relative;width:64px;height:64px;flex:none;overflow:hidden;background:#202020"><div style="{{ r.bg }}"></div><div sc-camel-on-click="{{ r.remove }}" style="position:absolute;top:4px;right:4px;width:18px;height:18px;background:#191919;display:flex;align-items:center;justify-content:center;font:700 12px/1 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer">×</div></div>
-                  </sc-for>
-                </div>
-                <div style="font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">Upload or drop images. AI reads their lighting, color, lens and texture.</div>
-              </sc-if>
-              <sc-if value="{{ sIsText }}" hint-placeholder-val="{{ true }}">
-                <textarea value="{{ sText }}" sc-camel-on-change="{{ onSText }}" rows="4" placeholder="Describe the look, e.g. sun-bleached 70s editorial, warm skin tones, soft haze…" spellcheck="false" style="width:100%;box-sizing:border-box;padding:12px;border:none;outline:none;resize:vertical;border-radius:6px;background:#191919;color:#f5f5f5;font:400 14px/20px 'Helvetica Neue',Helvetica,sans-serif"></textarea>
-              </sc-if>
-              <sc-if value="{{ sIsUrl }}" hint-placeholder-val="{{ false }}">
-                <input value="{{ sUrl }}" sc-camel-on-change="{{ onSUrl }}" placeholder="https://" spellcheck="false" style="height:44px;box-sizing:border-box;padding:0 12px;border:none;outline:none;border-radius:6px;background:#191919;color:#f5f5f5;font:400 14px/20px 'Helvetica Neue',Helvetica,sans-serif">
-                <div style="font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">A reference site, lookbook or film. AI infers the look from it.</div>
-              </sc-if>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <div style="font:700 11px/14px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;color:#a3a3a3">PROJECT CONTEXT</div>
-              <div style="display:flex;flex-wrap:wrap;gap:6px">
-                <sc-for list="{{ sContext }}" as="x" hint-placeholder-count="4"><div sc-camel-on-click="{{ x.toggle }}" style="height:28px;padding:0 12px;border-radius:14px;background:{{ x.bg }};color:{{ x.color }};display:flex;align-items:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.04em;white-space:nowrap;cursor:pointer">{{ x.label }}</div></sc-for>
-              </div>
-            </div>
-          </div>
-          <div data-sv="title" style="flex:1;min-width:0;margin-top:-6px;text-align:right;font-family:'Helvetica Neue',Helvetica,sans-serif;font-weight:700;font-size:72px;line-height:1;letter-spacing:-.01em;color:#f5f5f5;overflow-wrap:anywhere">{{ sTitle }}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div style="min-height:14px;font:700 11px/14px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;color:{{ sNoteColor }};animation:{{ sNoteAnim }}">{{ sNote }}</div>
-          <div data-sv="g4" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:18px;row-gap:21px">
-            <sc-for list="{{ sFrames }}" as="fr" hint-placeholder-count="5">
-              <div style="grid-column:{{ fr.gc }};grid-row:{{ fr.gr }};display:flex;flex-direction:column;gap:10px">
-                <div sc-camel-on-click="{{ fr.pick }}" title="{{ fr.subject }}" style="position:relative;width:100%;flex:{{ fr.fl }};min-height:0;aspect-ratio:{{ fr.ar }};overflow:hidden;background:#202020;cursor:{{ fr.cursor }}">
-                  <sc-if value="{{ fr.has }}" hint-placeholder-val="{{ false }}"><div style="{{ fr.bg }}"></div></sc-if>
-                  <sc-if value="{{ fr.busy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:#242424;display:flex;align-items:flex-end;padding:10px;animation:solvedPulse 1.2s ease-in-out infinite;font:700 10px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;color:#a3a3a3">GENERATING…</div></sc-if>
-                  <div style="position:absolute;top:8px;left:8px;height:18px;padding:0 6px;background:{{ fr.tagBg }};color:{{ fr.tagColor }};display:flex;align-items:center;font:700 9.5px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em">{{ fr.tag }}</div>
-                  <div style="position:absolute;inset:0;border:2px solid {{ fr.line }};pointer-events:none"></div>
-                </div>
-                <div style="height:16px;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ fr.label }}</div>
-              </div>
-            </sc-for>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:14px;padding-top:8px">
-          <div style="height:19px;font:700 19px/19px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.02em">STYLE SETTINGS</div>
-          <sc-for list="{{ sFactors }}" as="fc" hint-placeholder-count="6">
-            <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:start">
-              <div style="height:28px;font:700 12px/28px 'Helvetica Neue',Helvetica,sans-serif">{{ fc.label }}</div>
-              <div style="display:flex;flex-wrap:wrap;gap:6px">
-                <sc-for list="{{ fc.opts }}" as="o" hint-placeholder-count="4"><div sc-camel-on-click="{{ o.pick }}" style="height:28px;padding:0 12px;border-radius:14px;background:{{ o.bg }};color:{{ o.color }};display:flex;align-items:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.04em;white-space:nowrap;cursor:pointer">{{ o.label }}</div></sc-for>
-              </div>
-            </div>
-          </sc-for>
-          <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:center">
-            <div style="height:28px;font:700 12px/28px 'Helvetica Neue',Helvetica,sans-serif">Strength</div>
-            <div style="display:flex;align-items:center;gap:12px">
-              <input type="range" min="0" max="100" step="5" value="{{ sStrength }}" sc-camel-on-change="{{ onStrength }}" style="width:min(300px,100%);accent-color:#1985FF">
-              <div style="font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;width:40px">{{ sStrengthLabel }}</div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:start">
-            <div style="height:28px;font:700 12px/28px 'Helvetica Neue',Helvetica,sans-serif">Style Prompt</div>
-            <textarea value="{{ sDesc }}" sc-camel-on-change="{{ onSDesc }}" rows="3" placeholder="AI writes the style prompt applied to every image in the project…" spellcheck="false" style="width:100%;box-sizing:border-box;padding:12px;border:none;outline:none;resize:vertical;border-radius:6px;background:#191919;color:#f5f5f5;font:400 14px/20px 'Helvetica Neue',Helvetica,sans-serif"></textarea>
-          </div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end">
-          <sc-if value="{{ sCanDelete }}" hint-placeholder-val="{{ false }}"><div sc-camel-on-click="{{ sDelete }}" style="width:104px;height:44px;border-radius:6px;background:#202020;color:#ef6b61;display:flex;align-items:center;justify-content:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer">DELETE</div></sc-if>
-          <div sc-camel-on-click="{{ sCancel }}" style="width:104px;height:44px;border-radius:6px;background:#202020;color:#f5f5f5;display:flex;align-items:center;justify-content:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer">CANCEL</div>
-          <div sc-camel-on-click="{{ sGenerate }}" style="width:104px;height:44px;border-radius:6px;background:{{ sGenBg }};color:{{ sGenFg }};display:flex;align-items:center;justify-content:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer">{{ sGenLabel }}</div>
-          <div sc-camel-on-click="{{ sSave }}" style="width:104px;height:44px;border-radius:6px;background:{{ sSaveBg }};color:{{ sSaveFg }};display:flex;align-items:center;justify-content:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:pointer">SAVE</div>
-        </div>
       </div>
     </sc-if>
 
@@ -1663,15 +1529,15 @@ html,body{background:#282828!important}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script="">
-const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
-// Workflow order (Back / Next arrows). Style lives inside Storyboards.
+const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'KEYFRAMES'];
+// Workflow order (Back / Next arrows).
 const NAV_ORDER = ['BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
 // Sidebar: main sections only. Brief opens from the Dashboard.
 const NAV_ICON = { BRIEF: 'M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5', OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', KEYFRAMES: 'M12 3l9 9-9 9-9-9z', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
 // Brief / Images / Keyframes / Produce — collapsed top-level nav. "Images" and "Produce" are
 // each a group of pages sharing one sidebar button; see GROUP_PAGES/GROUP_DEFAULT below.
 const SIDE_NAV = [['BRIEF', 'Brief'], ['IMAGES', 'Images'], ['KEYFRAMES', 'Keyframes'], ['VIDEOS', 'Produce']];
-const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE'];
+const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN'];
 const PRODUCE_PAGES = ['VIDEOS', 'EDITING'];
 // Which pages belong to a given sidebar button, and which page to land on when entering that
 // group from somewhere else (re-clicking a group you're already in just re-opens its home page).
@@ -2017,7 +1883,7 @@ class Component extends DCLogic {
       this.setState({ products: list, locations: locs, imgs, pLoaded: true }, () => this.syncAutoStyles()); this.loadX();
     }).catch(() => this.setState({ pLoaded: true, pLoadError: 'Saved products couldn’t be loaded — browser storage is unavailable.' }));
   }
-  componentDidUpdate(pp, ps) { if (ps && ps.page !== this.state.page && this.state.page === 'STYLE') this.syncAutoStyles(); const el = this.selRef.current, p = this.state.page === 'PRODUCT' && this.prodGet(this.state.item); if (el && p && el.value !== p.type) el.value = p.type; }
+  componentDidUpdate(pp, ps) { const el = this.selRef.current, p = this.state.page === 'PRODUCT' && this.prodGet(this.state.item); if (el && p && el.value !== p.type) el.value = p.type; }
   componentWillUnmount() { clearInterval(this.timer); window.removeEventListener('solved-hf', this.onHf); }
   hf() { return window.SOLVED_HF && window.SOLVED_HF.connected() ? window.SOLVED_HF : null; }
   async hfConnect() {
@@ -2872,7 +2738,7 @@ class Component extends DCLogic {
     }).catch(() => this.setState({ xLoaded: true }));
   }
   briefText() { const V = this.state.values || {}; return OV.map(([k]) => (V[k] || '').trim() ? k.charAt(0) + k.slice(1).toLowerCase() + ': ' + V[k].trim().slice(0, 600) : '').filter(Boolean).join('\n'); }
-  storyStyle() { const L = (this.state.styles || []); return L.find(s => s.uid === this.state.activeStyle) || L.find(s => s.status === 'approved') || L.find(s => !s.auto) || L[0] || null; }
+  storyStyle() { return null; }
   imgOfView(x) { const v = x && (x.views || []).find(y => y && y.source === 'uploaded') || x && (x.views || []).find(Boolean); return v ? this.state.imgs[v.img] || '' : ''; }
   storyboardRefs() {
     const S = this.state, st = this.storyStyle(), out = [];
@@ -2918,8 +2784,8 @@ class Component extends DCLogic {
   }
   // ---- free image generation (Images page)
   imgMode() { return this.state.imgMode || 'gen'; }
-  activeStyle() { const L = this.state.styles || []; return L.find(s => s.uid === this.state.activeStyle) || null; }
-  styleRef() { const st = this.activeStyle(); return st ? ((st.frames || [])[st.hero] || (st.frames || [])[0] || {}).src || '' : ''; }
+  activeStyle() { return null; }
+  styleRef() { return ''; }
   kfAssetsAll() {
     const S = this.state, I = S.imgs || {}, sheetOf = arr => arr.filter(Boolean);
     const chars = (S.store.TALENT || []).map(c => { const sh = c.sheet || {}, views = SHEET.map(([k]) => sh[k]).filter(Boolean);
@@ -2943,26 +2809,6 @@ class Component extends DCLogic {
     all.forEach(a => { const ph = P[a.k + ':' + a.id + ':photo'], sh = P[a.k + ':' + a.id + ':sheet'];
       if (ph && a.photo) out.push(a.photo); if (sh) a.sheet.forEach(x => out.push(x)); if ((ph && a.photo) || (sh && a.sheet.length)) names.push(a.name); });
     return { srcs: [...new Set(out)], names };
-  }
-  /** Compact style control — shared header, visible on every Images tab (not just Shots). */
-  styleControlData(fit, stop) {
-    const S = this.state, st = this.activeStyle(), styleName = st ? st.name : 'Standard';
-    const L = (S.styles || []);
-    const setStyle = v => { this.setState({ activeStyle: v }); try { localStorage.setItem('solved-active-style', JSON.stringify(v)); } catch (e) {} };
-    const out = { styleBtnLabel: 'Style: ' + styleName, styleOpen: S.stylePopoverOpen ? '1' : '0',
-      styleToggle: () => this.setState(s => ({ stylePopoverOpen: !s.stylePopoverOpen })),
-      standardOn: !st ? '1' : '0', standardDesc: 'Default look from the AI model — no style applied.',
-      pickStandard: () => setStyle(null) };
-    out.styleCards = L.map(x => { const src = ((x.frames || [])[x.hero] || (x.frames || [])[0] || {}).src || '', on = !!st && st.uid === x.uid;
-      return { name: x.name || 'Style', sub: x.desc ? x.desc.slice(0, 60) : (x.frames || []).length + ' frames', has: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'cover' }),
-        dot: { backgroundImage: 'url("' + src + '")', backgroundSize: 'cover', backgroundPosition: 'center' }, on: on ? '1' : '0', isOn: on,
-        pick: () => setStyle(x.uid),
-        expand: e => { stop(e); this.setState({ stylePreview: x.uid }); } }; });
-    out.newStyle = () => { this.setState({ page: 'STYLE', view: 'all', item: null, prompt: '' }); setTimeout(() => this.newStyle(), 0); };
-    const spv = S.stylePreview, sps = spv ? L.find(y => y.uid === spv) : null, spSrc = sps ? ((sps.frames || [])[sps.hero] || (sps.frames || [])[0] || {}).src || '' : '';
-    out.hasStylePreview = !!sps; out.stylePreviewBg = fit(spSrc); out.stylePreviewLabel = sps ? sps.name : '';
-    out.closeStylePreview = () => this.setState({ stylePreview: null });
-    return out;
   }
   hubModeData() {
     const S = this.state;
@@ -3294,8 +3140,8 @@ class Component extends DCLogic {
     const galPreviewItem = GAL.find(g => g.uid === S.galPreview);
     Object.assign(hubData, { hasGalPreview: !!(galPreviewItem && galPreviewItem.src), galPreviewBg: galPreviewItem ? fit(galPreviewItem.src || '') : {}, galPreviewLabel: galPreviewItem ? galPreviewItem.prompt : '',
       closeGalPreview: () => this.setState({ galPreview: null }) });
-    const imageTabsPage = ['PRODUCT', 'TALENT', 'LOCATION', 'IMAGES', 'KEYFRAMES', 'WARDROBE', 'SETDESIGN', 'STYLE'].includes(page);
-    const sharedImgHeader = imageTabsPage ? { imageTabs: this.imageTabsData(), ...this.styleControlData(fit, stop) } : {};
+    const imageTabsPage = ['PRODUCT', 'TALENT', 'LOCATION', 'IMAGES', 'KEYFRAMES', 'WARDROBE', 'SETDESIGN'].includes(page);
+    const sharedImgHeader = imageTabsPage ? { imageTabs: this.imageTabsData() } : {};
     const producePage = PRODUCE_PAGES.includes(page);
     const sharedProduceHeader = producePage ? { showProduceTabs: true, produceTabs: this.produceTabsData() } : {};
     const createVideoMode = page === 'IMAGES' && S.createMode === 'video';
@@ -3304,8 +3150,8 @@ class Component extends DCLogic {
     Object.assign(X, { hasVidPreview: !!(vidPreviewItem && vidPreviewItem.url), vidPreviewUrl: vidPreviewItem ? vidPreviewItem.url : '', vidPreviewLabel: vidPreviewItem ? vidPreviewItem.name : '',
       closeVidPreview: () => this.setState({ vidPreview: null }) });
     if (X.sbOn) {
-      const n = (S.items.KEYFRAMES || []).length, made = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n)).length, st = this.storyStyle();
-      Object.assign(X, { sbInfo: made + ' of ' + n + ' frames generated · Style: ' + (st ? st.name : 'none'), sbBusy: !!S.sbBusy,
+      const n = (S.items.KEYFRAMES || []).length, made = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n)).length;
+      Object.assign(X, { sbInfo: made + ' of ' + n + ' frames generated', sbBusy: !!S.sbBusy,
         sbWriteLabel: S.sbBusy === 'writing' ? 'Writing frames…' : S.sbConfirm ? 'Click again to replace all frames' : 'Write frames from the brief',
         sbWrite: () => { if (n && !S.sbConfirm && (S.items.KEYFRAMES || []).some(t => this.frameSrc(t.n) || t.desc)) return this.setState({ sbConfirm: true }); this.writeFrames(); },
         sbGenLabel: S.sbBusy === 'generating' ? 'Generating frames…' : 'Generate all frames', sbGen: () => this.genAllFrames(),
@@ -3505,7 +3351,6 @@ class Component extends DCLogic {
     const lsect = page === 'SETDESIGN' ? 'set' : 'location';
     const sectOf = x => x.sect || 'location';
     const kindOf = x => x.kind || 'product';
-    const sd = this.state.sd, isStyle = page === 'STYLE', isStyleEdit = isStyle && view === 'create' && !!sd, isStyleAll = isStyle && !isStyleEdit;
     const loc = isLocation && view === 'item' ? this.state.locations.find(a => a.uid === item) : null;
     const isLocSheet = isLocation && !!loc, isLocAll = isLocation && !loc;
     const list = items[page] || [];
@@ -3514,11 +3359,11 @@ class Component extends DCLogic {
     const isProdSheet = isProduct && !!prod, isProdAll = isProduct && !prod;
     const curItem = !isTalent && !isProduct && !isLocation ? list.find(x => x.n === item) : null;
     const char = isTalent && view === 'item' ? (store.TALENT || []).find(a => a.uid === item) : null;
-    const inDetail = !isOverview && !isTalent && !isProduct && !isLocation && !isStyle && view === 'item' && !!curItem;
+    const inDetail = !isOverview && !isTalent && !isProduct && !isLocation && view === 'item' && !!curItem;
     const isCreate = false, isProfile = false, isSheet = isTalent && !!char;
     const isCast = isTalent && !isSheet;
     const gk = this.secKind(page);
-    const gDetail = (isProduct && !!prod) || (isLocation && !!loc) || isStyleEdit || (isShotsPage && inDetail);
+    const gDetail = (isProduct && !!prod) || (isLocation && !!loc) || (isShotsPage && inDetail);
     const slot = this.state.slot;
     const proj = (values['PROJECT NAME'] || '').trim(), client = (values['CLIENT NAME'] || '').trim();
     const query = mode === 'search' ? prompt.trim().toLowerCase() : '';
@@ -3535,13 +3380,6 @@ class Component extends DCLogic {
       if (mode === 'search') { if (isTalent) this.setState({ view: 'all', item: null }); return; }
       if (isHub) { if (!p) return this.setErr(createVideoMode ? 'Describe the video to create.' : 'Describe the image to create.'); return createVideoMode ? this.vidGen(p) : this.createGen(p); }
       if (isVid) return this.vidGen(p);
-      if (isStyleAll) {
-        if (!p) return this.setErr('Describe a style to create, or press + to start from an image.');
-        const o = this.secOpts(page, 'main'); this.clearPrompt();
-        this.createStyle({ source: 'text', text: p, desc: p });
-        setTimeout(async () => { this.setState({ gRun: { id: this.state.sd && this.state.sd.uid, done: 0, total: 1 } }); await this.generateStyle(o); this.setState({ gRun: null }); this.persistSd(); }, 0);
-        return;
-      }
       if (isShotsPage && !inDetail) {
         if (!p) return this.setErr('Describe the shot to create, or press + to add a frame.');
         const n = this.addShot(p), o = this.secOpts(page, 'main'); this.clearPrompt();
@@ -3654,12 +3492,12 @@ class Component extends DCLogic {
         return { label, mb: '0px', color: '#f5f5f5', on: (p === page || (grp && grp.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
         pick: () => { const pg = grp && !grp.includes(page) ? GROUP_DEFAULT[p] : p; this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } }; }),
 
-      crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : (isHub || page === 'STYLE' || page === 'KEYFRAMES' || page === 'PRODUCT' || page === 'WARDROBE' || page === 'LOCATION' || page === 'SETDESIGN' || page === 'TALENT') ? 'IMAGES' : page, crumbSep: '/',
-      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? 'CREATE' : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : isTalent ? 'CHARACTERS' : isProduct ? 'PRODUCTS' : isLocation ? 'LOCATIONS' : (isShotsPage && !inDetail) ? 'KEYFRAMES' : inDetail ? curItem.name : 'ALL',
-      leafColor: (isTalent || isProduct || isLocation || isStyle) ? '#1985FF' : '#f5f5f5',
-      rootCursor: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'pointer' : 'default',
-      rootUnderline: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'underline' : 'none',
-      goRoot: () => (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) && this.setState({ view: 'all', item: null, sd: null, prompt: '', create: freshCreate(), confirmDelete: false }),
+      crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : (isHub || page === 'KEYFRAMES' || page === 'PRODUCT' || page === 'WARDROBE' || page === 'LOCATION' || page === 'SETDESIGN' || page === 'TALENT') ? 'IMAGES' : page, crumbSep: '/',
+      crumbLeaf: isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? 'CREATE' : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : isTalent ? 'CHARACTERS' : isProduct ? 'PRODUCTS' : isLocation ? 'LOCATIONS' : (isShotsPage && !inDetail) ? 'KEYFRAMES' : inDetail ? curItem.name : 'ALL',
+      leafColor: (isTalent || isProduct || isLocation) ? '#1985FF' : '#f5f5f5',
+      rootCursor: (inDetail || isSheet || isProdSheet || isLocSheet) ? 'pointer' : 'default',
+      rootUnderline: (inDetail || isSheet || isProdSheet || isLocSheet) ? 'underline' : 'none',
+      goRoot: () => (inDetail || isSheet || isProdSheet || isLocSheet) && this.setState({ view: 'all', item: null, sd: null, prompt: '', create: freshCreate(), confirmDelete: false }),
       isTalent,
 
       ...(() => { const HF = window.SOLVED_HF, on = !!(HF && HF.connected()), c = HF ? HF.get() : {}, d = this.state.hfDraft || c;
@@ -3674,47 +3512,9 @@ class Component extends DCLogic {
             .map(([k, label, type, ph]) => ({ label, type, ph, value: (d && d[k]) || '', set: setD(k) })) }; })(),
       barW: '100%',
       pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SIMPLE_PAGE_HINT[page]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Describe a shot, or attach references', KEYFRAMES: inDetail ? 'Create your key frame' : 'Create your key frames' })[page]
-        || (isStyleEdit ? 'Create your style' : isStyleAll ? 'Choose a style for your storyboard'
-        : isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
+        || (isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
         : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Create your wardrobe images' : 'Create your product images')
         : isLocation ? (isLocSheet ? (loc.kind === 'ai' ? (lsect === 'set' ? 'Create your prop sheet' : 'Create your location sheet') : (lsect === 'set' ? 'Add photos of your prop' : 'Add photos of your location')) : lsect === 'set' ? 'Create your prop images' : 'Create your location images') : ''),
-      isStyleAll: false, isStyleEdit: false, sLoading: isStyleAll && !this.state.sLoaded,
-      newStyle: () => this.newStyle(),
-      dropNewStyle: e => { e.preventDefault(); const fl = [...e.dataTransfer.files]; this.newStyle({ source: 'image' }); setTimeout(() => this.handleFiles('styleref', fl), 0); },
-      styleCards: this.state.styles.map(x => { const src = (x.frames[x.hero] || x.frames[0] || {}).src || '';
-        return { name: x.name, hasImg: !!src, bg: Object.assign(bgOf(src), { backgroundSize: 'contain', backgroundRepeat: 'no-repeat' }), open: () => this.openStyle(x.uid), rename: e => { const val = e.target.value; this.updStyles(this.state.styles.map(y => (y.uid === x.uid ? { ...y, name: val } : y))); } }; }),
-      ...(sd ? (() => { const S = this.state, A = this.styleAssets({ brief: 1, talent: 1, product: 1, wardrobe: 1, location: 1, set: 1 }), briefN = OV.filter(([k]) => (values[k] || '').trim()).length, can = sd.frames.length > 0;
-        const POS = [['1 / span 2', '1 / span 2', '418px', '447px'], ['3', '1', '200px', '200px'], ['4', '1', '200px', '200px'], ['3', '2', '200px', '200px'], ['4', '2', '200px', '200px']];
-        return {
-          sName: sd.name, onSName: e => { const v = e.target.value; this.updSd(x => { x.name = v; return x; }); }, sTitle: sd.name.trim() || (sd.uid ? 'Untitled Style' : 'New Style'),
-          sSources: [['image', 'FROM IMAGE'], ['text', 'FROM TEXT'], ['url', 'FROM URL']].map(([k, label]) => ({ label, color: sd.source === k ? '#f5f5f5' : '#929292', line: sd.source === k ? '#f5f5f5' : 'transparent', pick: () => this.updSd(x => { x.source = k; return x; }) })),
-          sIsImage: sd.source === 'image', sIsText: sd.source === 'text', sIsUrl: sd.source === 'url',
-          sRefs: (sd.refs || []).map((src, i) => ({ bg: bgOf(src), remove: () => this.updSd(x => { x.refs = x.refs.filter((_, j) => j !== i); return x; }) })),
-          pickStyleRef: () => this.pick('styleref'), dropStyleRef: this.dropTo('styleref'),
-          sText: sd.text, onSText: e => { const v = e.target.value; this.updSd(x => { x.text = v; return x; }); },
-          sUrl: sd.url, onSUrl: e => { const v = e.target.value; this.updSd(x => { x.url = v; return x; }); },
-          sContext: [['brief', 'BRIEF', briefN + ' saved'], ['talent', 'TALENT', A.talent.length], ['product', 'PRODUCT', A.product.length], ['wardrobe', 'WARDROBE', A.wardrobe.length], ['location', 'LOCATION', A.location.length], ['set', 'SET DESIGN', A.set.length]].map(([k, l, n]) => ({ label: l + ' · ' + n,
-            bg: sd.use[k] ? '#f5f5f5' : '#191919', color: sd.use[k] ? '#191919' : '#929292', toggle: () => this.updSd(x => { x.use = { ...x.use, [k]: !x.use[k] }; return x; }) })),
-          sNote: S.sNote || (can ? '' : 'AI PICKS THE FRAMES FROM YOUR BRIEF, TALENT, PRODUCTS AND LOCATIONS'), sNoteColor: /FAILED|COULDN/.test(S.sNote) ? '#ef6b61' : '#a3a3a3', sNoteAnim: S.sBusy ? 'solvedPulse 1.2s ease-in-out infinite' : 'none',
-          sFrames: POS.map(([gc, gr, w, h], i) => { const fr = sd.frames[i], hero = !!fr && sd.hero === i;
-            return { gc, gr, fl: i === 0 ? '1 1 auto' : 'none', ar: i === 0 ? 'auto' : '1 / 1', label: fr ? fr.label : SFRAMES[i], subject: fr ? fr.subject || '' : '', has: !!(fr && fr.src), bg: bgOf(fr ? fr.src : ''), busy: S.sBusy, cursor: fr ? 'pointer' : 'default',
-              tag: hero ? 'HERO' : fr ? 'FRAME ' + (i + 1) : 'EMPTY', tagBg: hero ? '#1985FF' : '#191919', tagColor: hero ? '#191919' : '#f5f5f5', line: hero ? '#f5f5f5' : 'transparent',
-              pick: () => fr && this.updSd(x => { x.hero = i; return x; }) }; }),
-          sFactors: SFACT.map(([k, label, opts]) => ({ label, opts: opts.map(o => ({ label: o, bg: sd.f[k] === o ? '#f5f5f5' : '#191919', color: sd.f[k] === o ? '#191919' : '#f5f5f5',
-            pick: () => this.updSd(x => { x.f = { ...x.f, [k]: o }; x.fTouched = true; if (!x.descTouched) x.desc = sDescOf(x.f); return x; }, true) })) })),
-          sStrength: sd.strength, sStrengthLabel: sd.strength + '%', onStrength: e => { const v = +e.target.value; this.updSd(x => { x.strength = v; return x; }, true); },
-          sDesc: sd.desc, onSDesc: e => { const v = e.target.value; this.updSd(x => { x.desc = v; x.descTouched = true; return x; }); },
-          sGenLabel: S.sBusy ? 'GENERATING' : can ? 'REGENERATE' : 'GENERATE', sGenBg: S.sBusy ? '#292929' : '#1985FF', sGenFg: S.sBusy ? '#f5f5f5' : '#191919',
-          sSaveBg: can ? '#1985FF' : '#292929', sSaveFg: can ? '#191919' : '#929292',
-          sGenerate: () => this.generateStyle(), sSave: () => this.saveStyle(),
-          sCancel: () => this.setState({ view: 'all', item: null, sd: null, sNote: '' }),
-          sCanDelete: !!sd.uid && S.styles.some(x => x.uid === sd.uid),
-          sDelete: () => { this.updStyles(S.styles.filter(x => x.uid !== sd.uid)); this.setState({ view: 'all', item: null, sd: null, sNote: '' }); },
-        }; })() : {}),
-
-      isStoryTabs: (page === 'KEYFRAMES' || page === 'STYLE') && !gDetail && !isStyleEdit,
-      storyTabs: [['KEYFRAMES', 'FRAMES'], ['STYLE', 'STYLE']].map(([pg, label]) => ({ label, color: page === pg ? '#f5f5f5' : '#929292', line: page === pg ? '#f5f5f5' : 'transparent',
-        pick: () => this.setState({ page: pg, view: 'all', item: null, sd: null, prompt: '', attachOpen: false }) })),
       isOverview, isBlank, isTiles: false, isDash: isBlank, isHub,
       dashTiles: (() => {
         const T = (store.TALENT || []), P = this.state.products, L = this.state.locations, n = (c, w) => c + ' ' + w + (c === 1 ? '' : 's');
@@ -3733,13 +3533,12 @@ class Component extends DCLogic {
           ['LOCATION', 'LOCATIONS', LC.length ? n(LC.length, 'location') + ' · ' + LC.filter(l => l.kind === 'real').length + ' real, ' + LC.filter(l => l.kind === 'ai').length + ' AI' : 'No locations yet', first(LC, lImg), ''],
           ['WARDROBE', 'WARDROBE', WR.length ? n(WR.length, 'item') : 'No wardrobe yet', first(WR, pImg), ''],
           ['SETDESIGN', 'PROPS', SE.length ? n(SE.length, 'set') : 'No props yet', first(SE, lImg), ''],
-          ['STYLE', 'STYLE', this.state.styles.length ? n(this.state.styles.length, 'style') : 'No styles yet', first(this.state.styles, s => (s.frames[s.hero] || s.frames[0] || {}).src), ''],
           ['KEYFRAMES', 'KEY FRAMES', (this.state.items.KEYFRAMES || []).length + ' shots · ' + (this.state.items.KEYFRAMES || []).filter(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).length + ' generated', ((this.state.items.KEYFRAMES || []).map(x => this.state.kfImg[x.n + '-main'] || this.state.kfImg[x.n + '-start']).find(Boolean)) || '', ''],
         ];
-        const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE'); const ORD = ['PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES']; imgRows.splice(0, imgRows.length, ...imgRows.filter(r => ORD.includes(r[0]))); imgRows.sort((a, b) => ORD.indexOf(a[0]) - ORD.indexOf(b[0])); // Products, Characters, Wardrobe first
+        const imgRows = rows.slice(1); const ORD = ['PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES']; imgRows.splice(0, imgRows.length, ...imgRows.filter(r => ORD.includes(r[0]))); imgRows.sort((a, b) => ORD.indexOf(a[0]) - ORD.indexOf(b[0])); // Products, Characters, Wardrobe first
         const imgCount = T.length + PR.length + LC.length + WR.length + SE.length;
         const dash = [rows[0],
-          ['IMAGES', 'LOOK', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
+          ['IMAGES', 'IMAGES', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
           ['VIDEOS', 'VIDEOS', (this.state.videos || []).length ? (this.state.videos || []).filter(x => x.status === 'done').length + ' of ' + (this.state.videos || []).length + ' videos made' : 'No videos yet', ((this.state.items.KEYFRAMES || []).map(t => this.frameSrc(t.n)).find(Boolean)) || '', ''],
           ['EDITING', 'EDITING', (this.state.edits || []).length ? n((this.state.edits || []).length, 'edit') : 'Image and video editors', ((this.state.edits || []).find(e => e.kind === 'image') || {}).src || '', ''],
           ['DELIVERY', 'DELIVERY', (this.state.deliveries || []).length ? n((this.state.deliveries || []).length, 'delivery') : 'Nothing sent yet', '', '']];
@@ -3875,7 +3674,7 @@ class Component extends DCLogic {
             { label: 'REMOVE', color: '#ef6b61', click: () => { close(); this.updLoc(pl.uid, x => { x.views[pv.idx] = null; return x; }); } },
             { label: 'CLOSE', color: '#929292', click: close }] : [] }; })(),
       isProdAll: false, isProdSheet: false, pLoading: (isProdAll || isLocAll) && !this.state.pLoaded,
-      barPh: isHub ? (createVideoMode ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe a shot to create…') : isVid ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Props use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a prop to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
+      barPh: isHub ? (createVideoMode ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe a shot to create…') : isVid ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Props use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a prop to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
       uploadNewProd: () => this.pick('newprod'),
       dropNewProd: e => { e.preventDefault(); this.handleFiles('newprod', e.dataTransfer.files); },
       pNewLabel: pkind === 'wardrobe' ? 'Upload new item' : 'Upload new product',
@@ -3911,7 +3710,7 @@ class Component extends DCLogic {
           tagBg: ai ? '#f5f5f5' : '#191919', tagColor: ai ? '#191919' : '#f5f5f5', line: slot === i ? '#f5f5f5' : 'transparent',
           pick: () => this.setState({ slot: i }), drop: this.dropTo('pslot:' + i) };
       }) : [],
-      talentPlus: () => isHub ? this.pick('hubatt') : isVid ? (vm.mode === 'image-to-video' ? this.pick('hubatt') : null) : isShotsPage ? this.pick('kfnew') : isCast ? this.pick('castatt') : isStyleAll ? (this.newStyle({ source: 'image' }), setTimeout(() => this.pick('styleref'), 0)) : isLocation ? (isLocSheet ? this.pick('lslot:' + (typeof slot === 'number' ? slot : 0)) : this.setState({ locPopup: { step: 'type', files: [], url: '', prompt: '', ref: null } })) : isProduct ? (isProdSheet ? this.pick(typeof slot === 'number' && !prod.views[slot] ? 'pslot:' + slot : 'pref') : this.pick('newprod')) : isSheet ? this.pick(`slot:${slot}`) : this.pick('newchar'),
+      talentPlus: () => isHub ? this.pick('hubatt') : isVid ? (vm.mode === 'image-to-video' ? this.pick('hubatt') : null) : isShotsPage ? this.pick('kfnew') : isCast ? this.pick('castatt') : isLocation ? (isLocSheet ? this.pick('lslot:' + (typeof slot === 'number' ? slot : 0)) : this.setState({ locPopup: { step: 'type', files: [], url: '', prompt: '', ref: null } })) : isProduct ? (isProdSheet ? this.pick(typeof slot === 'number' && !prod.views[slot] ? 'pslot:' + slot : 'pref') : this.pick('newprod')) : isSheet ? this.pick(`slot:${slot}`) : this.pick('newchar'),
       tal: (() => {
         const S = this.state, BUSY = ['queued', 'busy', 'checking'];
         const filledOf = a => SHEET.filter(([k]) => a.sheet && a.sheet[k]).length;
@@ -4041,7 +3840,6 @@ class Component extends DCLogic {
       isSheet, genLabel: gen.running ? (gen.status || 'GENERATING') : 'GENERATING…',
       talentAction: isCast ? (this.state.castBusy ? 'CHECKING' : gen.running ? (gen.status || 'GENERATING') : 'GENERATE')
         : isVid ? 'GENERATE'
-        : isStyleAll ? (this.state.sBusy ? 'GENERATING' : 'GENERATE')
         : (isProduct || isLocation) ? (pBusy ? 'GENERATING' : 'GENERATE')
         : (isSheet && sheetRun) ? 'GENERATING ' + Math.min(sheetRun.done + 1, sheetRun.total) + ' OF ' + sheetRun.total
         : gen.running ? (gen.status || 'GENERATING') : 'GENERATE',
@@ -4082,7 +3880,7 @@ class Component extends DCLogic {
         if (c.kind === 'text') { this.setState({ castCheck: null }); this.castCreate([], c.text); }
         else this.setState(st => ({ castAtt: [...st.castAtt, ...c.srcs], castCheck: null })); },
       ...(() => {
-        const i = NAV_ORDER.indexOf(page === 'STYLE' ? 'KEYFRAMES' : page), prev = page === 'STYLE' ? 'KEYFRAMES' : i > 0 ? NAV_ORDER[i - 1] : null, next = i >= 0 && i < NAV_ORDER.length - 1 ? NAV_ORDER[i + 1] : null;
+        const i = NAV_ORDER.indexOf(page), prev = i > 0 ? NAV_ORDER[i - 1] : null, next = i >= 0 && i < NAV_ORDER.length - 1 ? NAV_ORDER[i + 1] : null;
         const goPage = pg => { this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); };
         return {
           // on a character sheet, back returns to the main Characters page
@@ -4168,7 +3966,7 @@ class Component extends DCLogic {
               this.secUpd(kind, id, x => { x.clientApproved = !was; x.clientApprovedAt = was ? null : Date.now(); if (!was) x.status = 'approved'; return x; }); } }; });
 
         // ---- detail page ----
-        const cur = kind === 'product' ? prod : kind === 'location' ? loc : kind === 'style' ? (isStyleEdit ? sd : null) : (inDetail ? curItem : null);
+        const cur = kind === 'product' ? prod : kind === 'location' ? loc : (inDetail ? curItem : null);
         let d = { fields: [], sizes: [] };
         if (cur) {
           const id = idOf(cur), src = imgOf(cur), run = S.gRun && S.gRun.id === id ? S.gRun : null;
@@ -4384,7 +4182,7 @@ class Component extends DCLogic {
         bg: varCat === c ? '#f5f5f5' : '#191919', color: varCat === c ? '#191919' : '#f5f5f5', pick: () => this.setState({ varCat: c }) })),
 
       // other sections (unchanged)
-      isLibrary: !isHub && !isXPage && !isOverview && !isBlank && !isTalent && !isProduct && !isLocation && !isStyle && !isShotsPage && !inDetail,
+      isLibrary: !isHub && !isXPage && !isOverview && !isBlank && !isTalent && !isProduct && !isLocation && !isShotsPage && !inDetail,
       isShots: false,
       isDetail: inDetail && !isShotsPage,
       isShotDetail: false,
@@ -4398,7 +4196,7 @@ class Component extends DCLogic {
       shotStart: curItem ? `${pg}-${curItem.n}-start` : '', shotEnd: curItem ? `${pg}-${curItem.n}-end` : '',
 
       // generation bar
-      showPrompt: !isHub && !isXPage && !isOverview && !isBlank && !isTalent && !isProduct && !isLocation && !isStyle && !isShotsPage,
+      showPrompt: !isHub && !isXPage && !isOverview && !isBlank && !isTalent && !isProduct && !isLocation && !isShotsPage,
       modes: ['generate', 'search'].map(md => ({ label: md.toUpperCase(), color: md === mode ? '#f5f5f5' : '#929292', pick: () => this.setState({ mode: md }) })),
       modeAction: gen.running ? (gen.status || 'GENERATING') : mode === 'generate' ? 'GENERATE' : 'SEARCH',
       ...(() => { const busy = gen.running || !!sheetRun || ((isProduct || isLocation) && pBusy) || (isCast && this.state.castBusy);
