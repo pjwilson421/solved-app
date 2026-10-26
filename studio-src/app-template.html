@@ -564,7 +564,7 @@ html,body{background:#282828!important}
 <div class="estimate-bottom"><label>Estimate notes<textarea aria-label="Estimate notes" placeholder="Scope, exclusions, or payment terms" value="{{ brief.budget.notes }}" sc-camel-on-change="{{ brief.budget.notesChange }}"></textarea></label><div class="estimate-total"><div class="estimate-grand">Grand total <b>{{ brief.budget.total }}</b></div></div></div></details>
 <details class="brief-collapse"><summary><h2>Timeline</h2><small>Client sees</small></summary><div class="brief-milestones"><sc-for list="{{ brief.tl.main }}" as="m"><label>{{ m.label }}<input type="{{ m.inputType }}" aria-label="{{ m.label }}" value="{{ m.date }}" sc-camel-on-input="{{ m.onDate }}" sc-camel-on-change="{{ m.onDate }}" sc-camel-on-blur="{{ m.onBlur }}"></label></sc-for><div class="brief-rounds"><sc-for list="{{ brief.tl.rounds }}" as="r"><div class="brief-round"><b>{{ r.label }}</b><sc-for list="{{ r.fields }}" as="m"><label>{{ m.shortLabel }}<input type="{{ m.inputType }}" aria-label="{{ m.label }}" value="{{ m.date }}" sc-camel-on-input="{{ m.onDate }}" sc-camel-on-change="{{ m.onDate }}" sc-camel-on-blur="{{ m.onBlur }}"></label></sc-for></div></sc-for></div><sc-for list="{{ brief.tl.extra }}" as="m"><label><input value="{{ m.label }}" aria-label="Milestone name" sc-camel-on-change="{{ m.onLabel }}" sc-camel-on-blur="{{ m.onBlur }}"><input type="{{ m.inputType }}" value="{{ m.date }}" aria-label="{{ m.label }}" sc-camel-on-input="{{ m.onDate }}" sc-camel-on-change="{{ m.onDate }}" sc-camel-on-blur="{{ m.onBlur }}"></label></sc-for><button class="brief-outline" sc-camel-on-click="{{ brief.tl.add }}">+ Add milestone</button></div></details>
 <details class="brief-collapse"><summary><h2>Terms</h2><small>Add your terms and conditions</small></summary><textarea aria-label="Terms" placeholder="Add your terms and conditions here." value="{{ brief.terms.value }}" sc-camel-on-change="{{ brief.terms.change }}" sc-camel-on-blur="{{ brief.terms.save }}"></textarea></details>
-<div class="brief-footer"><div><button title="Client view is coming in the functionality pass" disabled>Preview client view</button> <button title="PDF export is coming in the functionality pass" disabled>Download brief PDF</button></div><button class="brief-next" sc-camel-on-click="{{ goNext }}">Next: Images →</button></div>
+<div class="brief-footer"><div><button title="Client view is coming in the functionality pass" disabled>Preview client view</button> <button title="PDF export is coming in the functionality pass" disabled>Download brief PDF</button></div><button class="brief-next" sc-camel-on-click="{{ goNext }}">Next: Create →</button></div>
 </div>
     </sc-if>
 
@@ -1068,6 +1068,11 @@ html,body{background:#282828!important}
 
     <sc-if value="{{ x.vidOn }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Videos" class="x-page">
+        <sc-if value="{{ x.showProduceTabs }}" hint-placeholder-val="{{ false }}">
+          <div class="x-modes" role="tablist" aria-label="Produce">
+            <sc-for list="{{ x.produceTabs }}" as="t" hint-placeholder-count="2"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
+          </div>
+        </sc-if>
         <div class="x-head"><div class="ds-sub">Videos <i class="ds-dim" style="font-style:normal">· {{ x.vCount }}</i></div>
           <div class="x-bar-btns"><span class="x-muted">{{ x.vFrameCount }}</span><button class="ds-btn ds-on" sc-camel-on-click="{{ x.vFromSb }}">From storyboard</button><button class="ds-btn" sc-camel-on-click="{{ x.vManual }}">+ Manual video</button></div></div>
         <sc-if value="{{ x.vEmpty }}" hint-placeholder-val="{{ true }}"><div class="ds-empty"><div><b>No videos yet</b>Click From storyboard to turn every storyboard frame into a video, or + Manual video to start from your own image.</div></div></sc-if>
@@ -1092,7 +1097,13 @@ html,body{background:#282828!important}
     </sc-if>
 
     <sc-if value="{{ x.edHub }}" hint-placeholder-val="{{ false }}">
-      <div data-screen-label="Editing" class="x-page"><div class="ds-sub">Editing tools <i class="ds-dim" style="font-style:normal">· 6</i></div>
+      <div data-screen-label="Editing" class="x-page">
+        <sc-if value="{{ x.showProduceTabs }}" hint-placeholder-val="{{ false }}">
+          <div class="x-modes" role="tablist" aria-label="Produce">
+            <sc-for list="{{ x.produceTabs }}" as="t" hint-placeholder-count="2"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
+          </div>
+        </sc-if>
+        <div class="ds-sub">Editing tools <i class="ds-dim" style="font-style:normal">· 6</i></div>
         <div class="x-tools"><sc-for list="{{ x.tools }}" as="t"><div class="{{ t.cls }}" sc-camel-on-click="{{ t.open }}"><div class="x-name">{{ t.name }}</div><div class="x-desc">{{ t.desc }}</div></div></sc-for></div></div>
     </sc-if>
 
@@ -1165,13 +1176,6 @@ html,body{background:#282828!important}
           <sc-if value="{{ x.libGrid }}" hint-placeholder-val="{{ true }}"><div class="x-files x-files-lg"><sc-for list="{{ g.files }}" as="f"><div class="x-file" title="{{ f.name }}" sc-camel-on-click="{{ f.download }}"><div class="x-file-img"><sc-if value="{{ f.isImg }}" hint-placeholder-val="{{ false }}"><div style="{{ f.bg }}"></div></sc-if><sc-if value="{{ f.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ f.src }}" muted preload="metadata"></video></sc-if><sc-if value="{{ f.isDoc }}" hint-placeholder-val="{{ false }}"><div class="x-doc">DOC</div></sc-if></div><div class="ds-tile-name">{{ f.name }}</div></div></sc-for></div></sc-if>
           <sc-if value="{{ x.libList }}" hint-placeholder-val="{{ false }}"><div class="x-list"><sc-for list="{{ g.files }}" as="f"><div class="x-hist"><span>{{ f.name }}</span><button class="ds-btn" sc-camel-on-click="{{ f.download }}">Download</button></div></sc-for></div></sc-if>
         </div></sc-for>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{ isSoon }}" hint-placeholder-val="{{ false }}">
-      <div data-screen-label="Coming Soon" style="max-width:520px;display:flex;flex-direction:column;gap:8px">
-        <div style="font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF">Coming soon</div>
-        <div style="font:400 14px/20px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">{{ soonText }}</div>
       </div>
     </sc-if>
 
@@ -1653,11 +1657,19 @@ const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION',
 // Workflow order (Back / Next arrows). Style lives inside Storyboards.
 const NAV_ORDER = ['BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
 // Sidebar: main sections only. Brief opens from the Dashboard.
-const NAV_ICON = { BRIEF: 'M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5', OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
-const SIDE_NAV = [['BRIEF', 'BRIEF'], ['IMAGES', 'IMAGES'], ['VIDEOS', 'VIDEOS'], ['EDITING', 'EDITING'], ['DELIVERY', 'DELIVERY']];
-const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE', 'KEYFRAMES'];
-const SOON_PAGES = { VIDEOS: ['Make your videos', 'Videos are made from your storyboard frames. This section is built in step 5.'], EDITING: ['Edit your content', 'Image Editor and Video Editor are built in step 5.'], DELIVERY: ['Choose your file destination', 'ZIP, Google Drive, Dropbox, Frame.io and share links are built in step 6.'], LIBRARY: ['All files in this project', 'Brief, Images, Videos, Editing and Delivery files. Built in step 6.'] };
-const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Keyframes' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Props' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Images' : p.charAt(0) + p.slice(1).toLowerCase();
+const NAV_ICON = { BRIEF: 'M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5', OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', KEYFRAMES: 'M12 3l9 9-9 9-9-9z', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
+// Brief / Look / Keyframes / Produce / Deliver — collapsed top-level nav. "Look" and "Produce" are
+// each a group of pages sharing one sidebar button; see GROUP_PAGES/GROUP_DEFAULT below.
+const SIDE_NAV = [['BRIEF', 'Brief'], ['IMAGES', 'Look'], ['KEYFRAMES', 'Keyframes'], ['VIDEOS', 'Produce'], ['DELIVERY', 'Deliver']];
+const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN', 'STYLE'];
+const PRODUCE_PAGES = ['VIDEOS', 'EDITING'];
+// Which pages belong to a given sidebar button, and which page to land on when entering that
+// group from somewhere else (re-clicking a group you're already in just re-opens its home page).
+const GROUP_PAGES = { IMAGES: IMAGE_PAGES, VIDEOS: PRODUCE_PAGES };
+const GROUP_DEFAULT = { IMAGES: 'PRODUCT', VIDEOS: 'VIDEOS' };
+// Header hint text for the "simple" pages (no breadcrumb drill-down, just a title + hint).
+const SIMPLE_PAGE_HINT = { VIDEOS: 'Make your videos', EDITING: 'Edit your content', DELIVERY: 'Choose your file destination', LIBRARY: 'All files in this project' };
+const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Keyframes' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Props' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Create' : p.charAt(0) + p.slice(1).toLowerCase();
 const CFG = {
   TALENT: { one: 'Character', prefix: 'CHR', ph: 'Describe a new character — age, look, expression, wardrobe…', search: 'Search characters by name, ID or appearance…' },
   PRODUCT: { one: 'Product', prefix: 'PRD', heroH: 418, ph: 'Describe a product image to generate…', search: 'Search existing product photography…',
@@ -2955,9 +2967,16 @@ class Component extends DCLogic {
   /** Shared tab bar (Products/Characters/Locations/Shots/Keyframes) — same screen set as {@link IMAGE_PAGES_TOP}. */
   imageTabsData() {
     const page = this.state.page;
-    return [['PRODUCT', 'Products'], ['TALENT', 'Characters'], ['LOCATION', 'Locations'], ['IMAGES', 'Shots'], ['KEYFRAMES', 'Keyframes']]
+    return [['PRODUCT', 'Products'], ['TALENT', 'Characters'], ['LOCATION', 'Locations'], ['IMAGES', 'Create']]
       .map(([p, label]) => ({ label, on: page === p ? '1' : '0', sel: page === p ? 'true' : 'false',
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } }));
+  }
+  /** Sub-tab bar for the "Produce" group (Videos / Editing), same pattern as imageTabsData(). */
+  produceTabsData() {
+    const page = this.state.page;
+    return [['VIDEOS', 'Videos'], ['EDITING', 'Editing']]
+      .map(([p, label]) => ({ label, on: page === p ? '1' : '0', sel: page === p ? 'true' : 'false',
+        pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, gen: { ...this.state.gen, error: '' } }); } }));
   }
   loadImgPresets() {
     const HF = window.SOLVED_HF;
@@ -3251,8 +3270,10 @@ class Component extends DCLogic {
       closeGalPreview: () => this.setState({ galPreview: null }) });
     const imageTabsPage = ['PRODUCT', 'TALENT', 'LOCATION', 'IMAGES', 'KEYFRAMES', 'WARDROBE', 'SETDESIGN', 'STYLE'].includes(page);
     const sharedImgHeader = imageTabsPage ? { imageTabs: this.imageTabsData(), ...this.styleControlData(fit, stop) } : {};
+    const producePage = PRODUCE_PAGES.includes(page);
+    const sharedProduceHeader = producePage ? { showProduceTabs: true, produceTabs: this.produceTabsData() } : {};
     const createVideoMode = page === 'IMAGES' && S.createMode === 'video';
-    const X = { ...sharedImgHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
+    const X = { ...sharedImgHeader, ...sharedProduceHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
     const vidPreviewItem = (S.videos || []).find(v => v.uid === S.vidPreview);
     Object.assign(X, { hasVidPreview: !!(vidPreviewItem && vidPreviewItem.url), vidPreviewUrl: vidPreviewItem ? vidPreviewItem.url : '', vidPreviewLabel: vidPreviewItem ? vidPreviewItem.name : '',
       closeVidPreview: () => this.setState({ vidPreview: null }) });
@@ -3449,7 +3470,7 @@ class Component extends DCLogic {
   renderVals0() {
     const { page, view, item, values, items, prompt, mode, store, create, gen, attach, tab, varCat, sheetRun } = this.state;
     const cfg = CFG[page] || {}, pg = page.toLowerCase();
-    const isHub = page === 'IMAGES', isVid = page === 'VIDEOS', isSoon = false, isXPage = !!SOON_PAGES[page];
+    const isHub = page === 'IMAGES', isVid = page === 'VIDEOS', isXPage = !!SIMPLE_PAGE_HINT[page];
     // The Create screen's Image/Video toggle: still on the IMAGES page, but switches the prompt
     // bar, settings panel and submit action over to the same video-generation path VIDEOS uses.
     const createVideoMode = isHub && this.state.createMode === 'video', anyVid = isVid || createVideoMode;
@@ -3603,11 +3624,12 @@ class Component extends DCLogic {
       goLib: () => { this.initial = values; this.setState(s => ({ page: 'LIBRARY', view: 'all', item: null, attachOpen: false, libFilesOpen: s.libFilesOpen === true ? false : true })); window.scrollTo(0, 0); },
       setLibQ: e => { const q = e.target.value; this.initial = this.state.values; this.setState({ libQ: q, page: 'LIBRARY', view: 'all', item: null, attachOpen: false }); },
       goOverview: () => { this.initial = values; this.setState({ page: 'BRIEF', view: 'all', attachOpen: false }); },
-      nav: SIDE_NAV.map(([p, label]) => ({ label, mb: '0px', color: '#f5f5f5', on: (p === page || (p === 'IMAGES' && IMAGE_PAGES.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
-        pick: () => { const pg = p === 'IMAGES' && !IMAGE_PAGES.includes(page) ? 'PRODUCT' : p; this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } })),
+      nav: SIDE_NAV.map(([p, label]) => { const grp = GROUP_PAGES[p];
+        return { label, mb: '0px', color: '#f5f5f5', on: (p === page || (grp && grp.includes(page))) ? '1' : '0', icon: NAV_ICON[p] || '',
+        pick: () => { const pg = grp && !grp.includes(page) ? GROUP_DEFAULT[p] : p; this.initial = this.state.values; this.setState({ page: pg, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: pg === 'PRODUCT' || pg === 'WARDROBE' || pg === 'LOCATION' || pg === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } }; }),
 
       crumbRoot: (isOverview || isBlank || isXPage) ? 'PROJECT' : (isHub || page === 'STYLE' || page === 'KEYFRAMES' || page === 'PRODUCT' || page === 'WARDROBE' || page === 'LOCATION' || page === 'SETDESIGN' || page === 'TALENT') ? 'IMAGES' : page, crumbSep: '/',
-      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? 'SHOTS' : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : isTalent ? 'CHARACTERS' : isProduct ? 'PRODUCTS' : isLocation ? 'LOCATIONS' : (isShotsPage && !inDetail) ? 'KEYFRAMES' : inDetail ? curItem.name : 'ALL',
+      crumbLeaf: isStyleEdit ? (sd.name || 'Style') : isOverview ? 'BRIEF' : isBlank ? 'DASHBOARD' : isHub ? 'CREATE' : isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'IMAGE EDITOR' : 'VIDEO EDITOR') : page) : page === 'STYLE' ? 'STYLE' : isSheet ? `${char.name} sheet` : isProdSheet ? `${prod.name} sheet` : isLocSheet ? `${loc.name} sheet` : isTalent ? 'CHARACTERS' : isProduct ? 'PRODUCTS' : isLocation ? 'LOCATIONS' : (isShotsPage && !inDetail) ? 'KEYFRAMES' : inDetail ? curItem.name : 'ALL',
       leafColor: (isTalent || isProduct || isLocation || isStyle) ? '#1985FF' : '#f5f5f5',
       rootCursor: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'pointer' : 'default',
       rootUnderline: (inDetail || isSheet || isProdSheet || isLocSheet || isStyleEdit) ? 'underline' : 'none',
@@ -3625,7 +3647,7 @@ class Component extends DCLogic {
           hfFields: [['account', 'ACCOUNT LABEL', 'text', ''], ['model', 'IMAGE MODEL', 'text', 'gpt_image_2_5'], ['quality', 'QUALITY (low · medium · high · xhigh · max)', 'text', 'high'], ['resolution', 'RESOLUTION (1k · 2k · 4k)', 'text', '1k']]
             .map(([k, label, type, ph]) => ({ label, type, ph, value: (d && d[k]) || '', set: setD(k) })) }; })(),
       barW: '100%',
-      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SOON_PAGES[page][0]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Describe a shot, or attach references', KEYFRAMES: inDetail ? 'Create your key frame' : 'Create your key frames' })[page]
+      pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SIMPLE_PAGE_HINT[page]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Describe a shot, or attach references', KEYFRAMES: inDetail ? 'Create your key frame' : 'Create your key frames' })[page]
         || (isStyleEdit ? 'Create your style' : isStyleAll ? 'Choose a style for your storyboard'
         : isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
         : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Create your wardrobe images' : 'Create your product images')
@@ -3667,7 +3689,7 @@ class Component extends DCLogic {
       isStoryTabs: (page === 'KEYFRAMES' || page === 'STYLE') && !gDetail && !isStyleEdit,
       storyTabs: [['KEYFRAMES', 'FRAMES'], ['STYLE', 'STYLE']].map(([pg, label]) => ({ label, color: page === pg ? '#f5f5f5' : '#929292', line: page === pg ? '#f5f5f5' : 'transparent',
         pick: () => this.setState({ page: pg, view: 'all', item: null, sd: null, prompt: '', attachOpen: false }) })),
-      isOverview, isBlank, isTiles: false, isDash: isBlank, isHub, isSoon, soonText: isSoon ? SOON_PAGES[page][1] : '',
+      isOverview, isBlank, isTiles: false, isDash: isBlank, isHub,
       dashTiles: (() => {
         const T = (store.TALENT || []), P = this.state.products, L = this.state.locations, n = (c, w) => c + ' ' + w + (c === 1 ? '' : 's');
         const PR = P.filter(x => (x.kind || 'product') === 'product'), WR = P.filter(x => x.kind === 'wardrobe');
@@ -3691,7 +3713,7 @@ class Component extends DCLogic {
         const imgRows = rows.slice(1).filter(r => r[0] !== 'STYLE'); const ORD = ['PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES']; imgRows.splice(0, imgRows.length, ...imgRows.filter(r => ORD.includes(r[0]))); imgRows.sort((a, b) => ORD.indexOf(a[0]) - ORD.indexOf(b[0])); // Products, Characters, Wardrobe first
         const imgCount = T.length + PR.length + LC.length + WR.length + SE.length;
         const dash = [rows[0],
-          ['IMAGES', 'IMAGES', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
+          ['IMAGES', 'LOOK', imgCount ? imgCount + ' saved · 6 categories' : '6 categories', imgRows.map(r => r[3]).find(Boolean) || '', ''],
           ['VIDEOS', 'VIDEOS', (this.state.videos || []).length ? (this.state.videos || []).filter(x => x.status === 'done').length + ' of ' + (this.state.videos || []).length + ' videos made' : 'No videos yet', ((this.state.items.KEYFRAMES || []).map(t => this.frameSrc(t.n)).find(Boolean)) || '', ''],
           ['EDITING', 'EDITING', (this.state.edits || []).length ? n((this.state.edits || []).length, 'edit') : 'Image and video editors', ((this.state.edits || []).find(e => e.kind === 'image') || {}).src || '', ''],
           ['DELIVERY', 'DELIVERY', (this.state.deliveries || []).length ? n((this.state.deliveries || []).length, 'delivery') : 'Nothing sent yet', '', '']];
