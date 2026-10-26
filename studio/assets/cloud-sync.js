@@ -5,11 +5,16 @@
    Loads right after the multi-project storage shim and before the app. */
 (function () {
   'use strict';
+  // If this browser was signed in before, hide the page immediately — before first paint — so a
+  // stale empty-local-storage flash never shows while pull() catches it up with the cloud. This
+  // script is a synchronous <head> tag, so this runs before the body is even parsed. Every path
+  // below that can finish pull() (success, failure, or "nothing to do") un-hides it again.
+  if (document.cookie.indexOf('sb_at=') > -1) document.documentElement.style.visibility = 'hidden';
   var URL_ = 'https://wetzjfsdumraslfojcva.supabase.co', KEY = 'sb_publishable_bw0_xjD26NDCDCUAYKM0TA_NS9DE_D1';
   var BUCKET = 'project-files', META = 'solved-sync-meta', PULLED = 'solved-sync-pulled';
   var QKEY = 'solved-sync-queue', SKIP_LS = { 'solved-current': 1, 'solved-hf': 1, 'solved-sync-meta': 1, 'solved-sync-queue': 1 };
   var S = window.__solved, LS = window.localStorage;
-  if (!window.supabase || !S) return;
+  if (!window.supabase || !S) { document.documentElement.style.visibility = ''; return; }
   var sb = window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'sb-solved-auth' } });
   var user = null, ready = false, suppress = 0, queue = new Map(), timer = null, busy = false, fails = 0;
 
@@ -195,11 +200,19 @@
   function setCookie(s) { document.cookie = s ? 'sb_at=' + encodeURIComponent(s.access_token) + '; Path=/; Max-Age=3600; Secure; SameSite=Lax' : 'sb_at=; Path=/; Max-Age=0; Secure; SameSite=Lax'; }
   sb.auth.onAuthStateChange(function (ev, s) { if (s) setCookie(s); });
 
-  window.__solvedSync = { client: sb, flush: flush, pending: function () { return queue.size; } };
+  window.__solvedSync = { client: sb, flush: flush, pending: function () { return queue.size; }, status: status };
+
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('#solved-retry-pull');
+    if (!t) return;
+    e.preventDefault();
+    sessionStorage.removeItem(PULLED);
+    location.reload();
+  });
 
   sb.auth.getSession().then(async function (r) {
     var s = r.data && r.data.session;
-    if (!s) { ready = true; status('<a href="/studio/login" style="color:#00bd50">Sign in</a> to save projects to the cloud', 'link'); return; }
+    if (!s) { document.documentElement.style.visibility = ''; ready = true; status('<a href="/studio/login" style="color:#00bd50">Sign in</a> to save projects to the cloud', 'link'); return; }
     user = s.user; setCookie(s);
     var tabKey = user.id;
     if (sessionStorage.getItem(PULLED) !== tabKey) {
@@ -208,9 +221,21 @@
         var changed = await pull();
         sessionStorage.setItem(PULLED, tabKey);
         saveQ(); if (changed) { location.reload(); return; }
-      } catch (e) { console.warn('[cloud-sync] pull failed', e); status('Couldn’t load from cloud — working offline', 'err'); }
+      } catch (e) {
+        console.warn('[cloud-sync] pull failed', e);
+        // Leaving PULLED unset means the next reload retries automatically, but don't leave the
+        // user stuck on stale/empty local data with only a tiny badge as the only cue — offer an
+        // explicit retry instead of requiring them to know to refresh.
+        status('Couldn’t load from cloud — <a href="#" id="solved-retry-pull" style="color:#6fb3ff">retry</a>, or continue offline', 'link');
+      }
       document.documentElement.style.visibility = '';
     }
     ready = true; schedule(500);
+  }).catch(function (e) {
+    // getSession() itself can reject (e.g. storage access blocked); without this, the page
+    // would stay hidden forever for anyone whose browser previously signed in.
+    console.warn('[cloud-sync] session check failed', e);
+    document.documentElement.style.visibility = '';
+    ready = true;
   });
 })();

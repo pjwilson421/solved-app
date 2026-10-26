@@ -1711,6 +1711,11 @@ const MODELS = [
   { value: 'gpt', label: 'GPT Image (not connected)', disabled: true },
 ];
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+// Storage-failure errors used to only ever land in the generation panel's gen.error slot, which
+// is invisible unless the user happens to have a create panel open at that exact moment — a
+// background save failure (character, product, location, style) could be silently lost. Route it
+// through cloud-sync's always-visible status badge too, when available.
+const storageErr = msg => { try { window.__solvedSync && window.__solvedSync.status(msg, 'err'); } catch (e) {} };
 const BSINGLE = ['CLIENT NAME', 'PROJECT NAME'];
 const bFmt = (label, raw) => {
   let t = String(raw || '').replace(/\r\n?/g, '\n').replace(/[\u00a0\t\u200b]/g, ' ').replace(/[ ]{2,}/g, ' ');
@@ -1852,7 +1857,10 @@ const idb = (() => {
   const open = () => dbp || (dbp = new Promise((res, rej) => { const q = indexedDB.open('solved-studio', 1); q.onupgradeneeded = () => q.result.createObjectStore('kv'); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }));
   const tx = (mode, fn) => open().then(db => new Promise((res, rej) => { const t = db.transaction('kv', mode); const out = fn(t.objectStore('kv')); t.oncomplete = () => res(out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }));
   const K = k => window.__solved ? window.__solved.idbKey(k) : k;
-  return { get: k => tx('readonly', st => st.get(K(k))).then(q => q.result), set: (k, v) => tx('readwrite', st => { st.put(v, K(k)); }), getMany: ks => tx('readonly', st => ks.map(k => st.get(K(k)))).then(qs => qs.map(q => q.result)), del: k => tx('readwrite', st => { st.delete(k); }) };
+  // del() namespaces like get/set/getMany (deletes the CURRENT project's key). delRaw() takes an
+  // already-resolved key as-is — needed when deleting a DIFFERENT project's data (e.g. on project
+  // delete), since K() can only ever resolve against the current project.
+  return { get: k => tx('readonly', st => st.get(K(k))).then(q => q.result), set: (k, v) => tx('readwrite', st => { st.put(v, K(k)); }), getMany: ks => tx('readonly', st => ks.map(k => st.get(K(k)))).then(qs => qs.map(q => q.result)), del: k => tx('readwrite', st => { st.delete(K(k)); }), delRaw: k => tx('readwrite', st => { st.delete(k); }) };
 })();
 async function shrinkB64(src, max) {
   const img = await loadImg(src); const k = Math.min(1, max / Math.max(img.width, img.height));
@@ -2025,7 +2033,10 @@ class Component extends DCLogic {
     // Character/product/location asset records carry full-size base64 images, which can exceed
     // localStorage's ~5-10MB quota on an active project — the same bug kfImg had before it moved
     // to IndexedDB (far larger quota, same store as gallery/videos).
-    idb.set('assets', this.state.store).catch(() => this.setState(s => ({ gen: { ...s.gen, error: 'Browser storage is full — remove some images to keep saving.' } })));
+    idb.set('assets', this.state.store).catch(() => {
+      storageErr('Couldn’t save — browser storage is full or unavailable');
+      this.setState(s => ({ gen: { ...s.gen, error: 'Browser storage is full — remove some images to keep saving.' } }));
+    });
   };
   assets(type) { return this.state.store[type] || []; }
   getAsset(type, id) { return this.assets(type).find(a => a.uid === id); }
@@ -2145,7 +2156,7 @@ class Component extends DCLogic {
   }
   newChar(data = {}) { return this.createAsset('TALENT', { name: `Character ${this.assets('TALENT').length + 1}`, sheet: {}, ...data }); }
   prodGet(id) { return this.state.products.find(p => p.uid === id); }
-  saveProducts() { if (!this.state.pLoaded) return; idb.set('products', this.state.products).catch(() => this.setErr('Couldn’t save products — browser storage is unavailable or full.')); }
+  saveProducts() { if (!this.state.pLoaded) return; idb.set('products', this.state.products).catch(() => { storageErr('Couldn’t save products — browser storage is full or unavailable'); this.setErr('Couldn’t save products — browser storage is unavailable or full.'); }); }
   updProduct(id, fn) { this.setState(s => ({ products: s.products.map(p => p.uid === id ? fn({ ...p, views: [...p.views], refs: [...p.refs], fields: { ...p.fields }, notes: { ...(p.notes || {}) } }) : p) }), () => this.saveProducts()); }
   async storeImgs(srcs) {
     const ids = srcs.map(() => uid());
@@ -2258,7 +2269,7 @@ class Component extends DCLogic {
   }
   setType(id, t) { this.updProduct(id, p => { p.type = t; p.typeLocked = true; return p; }); setTimeout(() => this.analyze(id, [], t), 0); }
   locGet(id) { return this.state.locations.find(l => l.uid === id); }
-  saveLocations() { if (!this.state.pLoaded) return; idb.set('locations', this.state.locations).catch(() => this.setErr('Couldn’t save locations — browser storage is unavailable or full.')); }
+  saveLocations() { if (!this.state.pLoaded) return; idb.set('locations', this.state.locations).catch(() => { storageErr('Couldn’t save locations — browser storage is full or unavailable'); this.setErr('Couldn’t save locations — browser storage is unavailable or full.'); }); }
   updLoc(id, fn) { this.setState(s => ({ locations: s.locations.map(l => l.uid === id ? fn({ ...l, views: [...l.views], refs: [...(l.refs || [])] }) : l) }), () => this.saveLocations()); }
   async popFiles(files, mode) {
     let srcs; try { srcs = await Promise.all(files.map(f => downscale(f, 1600))); } catch (e) { return this.setErr('Upload failed — ' + e.message + '.'); }
@@ -2578,7 +2589,7 @@ class Component extends DCLogic {
     if (!Array.isArray(list)) {
       list = await Promise.all(SPRESETS.map(async (p, i) => ({ ...freshStyle(), uid: uid(), name: p.name, f: p.f, desc: p.desc, at: Date.now(),
         auto: true, frames: [{ label: 'Hero', subject: '', base: null, seed: i * 7 + 3, src: await styleRender(STYLE_PREVIEW_BASE, p.f, 70, i * 7 + 3, 'Hero') }] })));
-      idb.set('styles', list).catch(() => {});
+      idb.set('styles', list).catch(e => console.error('[styles] failed to save default presets', e));
     }
     list = list.map(s => ('auto' in s ? s : { ...s, auto: /^Style [1-7]$/.test(s.name) && (s.frames || []).length === 1 }));
     const legacyIdx = list.map((s, i) => (s.auto && /^Style [1-7]$/.test(s.name) ? i : -1)).filter(i => i >= 0);
@@ -2591,7 +2602,7 @@ class Component extends DCLogic {
           frames: [{ label: 'Hero', subject: '', base: null, seed, src: await styleRender(STYLE_PREVIEW_BASE, p.f, 70, seed, 'Hero') }] };
       }));
       list = list.map((s, i) => upgrades[i] || s).filter((s, i) => legacyIdx.indexOf(i) < 0 || legacyIdx.indexOf(i) < SPRESETS.length);
-      idb.set('styles', list).catch(() => {});
+      idb.set('styles', list).catch(e => console.error('[styles] failed to save upgraded presets', e));
     }
     this.setState({ styles: list, sLoaded: true }, () => this.syncAutoStyles());
   }
@@ -2612,7 +2623,7 @@ class Component extends DCLogic {
     } catch (e) {}
     this.syncing = false;
   }
-  updStyles(list) { this.setState({ styles: list }, () => this.state.sLoaded && idb.set('styles', this.state.styles).catch(() => this.setErr('Couldn’t save styles — browser storage is unavailable or full.'))); }
+  updStyles(list) { this.setState({ styles: list }, () => this.state.sLoaded && idb.set('styles', this.state.styles).catch(() => { storageErr('Couldn’t save styles — browser storage is full or unavailable'); this.setErr('Couldn’t save styles — browser storage is unavailable or full.'); })); }
   newStyle(patch) { this.setState({ view: 'create', item: null, sd: { ...freshStyle(), ...(patch || {}) }, sNote: '', prompt: '', gen: { ...this.state.gen, error: '' } }); window.scrollTo(0, 0); }
   openStyle(id) { const s = this.state.styles.find(x => x.uid === id); if (!s) return; this.setState({ view: 'create', item: id, sd: JSON.parse(JSON.stringify(s)), sNote: '' }); window.scrollTo(0, 0); }
   updSd(fn, rerender) { this.setState(s => (s.sd ? { sd: fn({ ...s.sd }) } : null), () => { if (rerender) this.queueRerender(); this.persistSd(); }); }
@@ -3613,7 +3624,9 @@ class Component extends DCLogic {
             doDelete: e => { stop(e);
               const keys = p.id === 'legacy' ? LEGACY : SV.keys().filter(k => k.indexOf('solved-p:' + p.id + ':') === 0);
               keys.forEach(k => SV.del(k));
-              ['products', 'locations', 'styles', 'kf', 'assets'].map(k => SV.idbKeyFor(p.id, k)).concat(['cover:' + p.id]).forEach(k => idb.del(k).catch(() => {}));
+              // Already-resolved keys for a (possibly different, non-active) project — must use
+              // delRaw, not del, or K() would wrongly re-namespace them against the current project.
+              ['products', 'locations', 'styles', 'kf', 'assets'].map(k => SV.idbKeyFor(p.id, k)).concat(['cover:' + p.id]).forEach(k => idb.delRaw(k).catch(e => console.error('[project delete] failed to remove', k, e)));
               let r = SV.registry().filter(x => x.id !== p.id);
               if (!r.length) r = [{ id: 'p' + Date.now().toString(36), created: Date.now(), start: '', end: '' }];
               SV.saveRegistry(r);
