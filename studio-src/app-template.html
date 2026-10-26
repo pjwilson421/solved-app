@@ -834,6 +834,15 @@ html,body{background:#282828!important}
                     </div>
                   </div></sc-if>
                 </div>
+                <sc-if value="{{ c.isShot }}" hint-placeholder-val="{{ false }}">
+                  <div sc-camel-on-click="{{ c.pickEnd }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ c.dropEnd }}" title="End frame — paired with the start frame above for image-to-video" style="position:relative;display:flex;align-items:center;gap:8px;height:40px;border-radius:6px;border:1px dashed #414141;padding:0 8px;cursor:pointer">
+                    <div style="width:28px;height:28px;flex:none;border-radius:4px;overflow:hidden;background:#191919">
+                      <sc-if value="{{ c.hasEnd }}" hint-placeholder-val="{{ false }}"><div style="{{ c.endBg }};width:100%;height:100%"></div></sc-if>
+                    </div>
+                    <span style="flex:1;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3">{{ c.endLabel }}</span>
+                    <sc-if value="{{ c.hasEnd }}" hint-placeholder-val="{{ false }}"><div sc-camel-on-click="{{ c.clearEnd }}" title="Remove end frame" style="width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#a3a3a3;cursor:pointer">×</div></sc-if>
+                  </div>
+                </sc-if>
                 <div style="display:flex;flex-direction:column;gap:4px">
                   <div style="display:flex;align-items:center;gap:6px">
                     <input value="{{ c.name }}" sc-camel-on-change="{{ c.rename }}" spellcheck="false" title="Name" style="flex:0 1 auto;min-width:40px;width:{{ c.nameW }};height:18px;padding:0;border:none;outline:none;background:transparent;color:#f5f5f5;font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif">
@@ -2503,6 +2512,7 @@ class Component extends DCLogic {
     this.setErr('');
     if (target === 'castatt') return this.castAttachFiles(srcs);
     if (target.startsWith('kf:')) return this.setKf(target.slice(3) + '-main', srcs[0]);
+    if (target.startsWith('kfend:')) return this.setKf(target.slice(6) + '-end', srcs[0]);
     if (target === 'kfnew') { const n = this.addShot(''); this.setKf(n + '-main', srcs[0]); return this.setState({ view: 'item', item: n, prompt: '' }); }
     if (target === 'newchar') {
       const a = this.newChar({ sheet: { front: srcs[0] }, main: srcs[0], original: srcs[0], events: [{ text: 'Created from upload', at }] });
@@ -3014,12 +3024,13 @@ class Component extends DCLogic {
   }
   // ---- videos
   frameSrc(n) { return this.state.kfImg[n + '-main'] || this.state.kfImg[n + '-start'] || ''; }
+  endFrameSrc(n) { return this.state.kfImg[n + '-end'] || ''; }
   newVideo(patch) { return { uid: uid(), name: 'Video', frameN: null, start: '', end: '', prompt: '', duration: 5, model: VMODEL_DEFAULT, sound: 'off', ratio: '16:9', resolution: '720p', status: 'idle', url: '', error: '', approved: false, at: Date.now(), ...patch }; }
   videoFromFrame(n, run) {
     const t = (this.state.items.KEYFRAMES || []).find(x => x.n === n); if (!t) return;
     const src = this.frameSrc(n); if (!src) return this.setErr('Generate the frame image first, then make its video.');
     const ex = (this.state.videos || []).find(v => v.frameN === n);
-    const v = ex || this.newVideo({ name: t.name, frameN: n, start: src, prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') });
+    const v = ex || this.newVideo({ name: t.name, frameN: n, start: src, end: this.endFrameSrc(n), prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') });
     if (!ex) this.setX('videos', a => [...a, v]);
     this.setState({ page: 'VIDEOS', view: 'all', item: null });
     if (run) setTimeout(() => this.runVideo(v.uid), 50);
@@ -3028,7 +3039,7 @@ class Component extends DCLogic {
     const frames = (this.state.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n));
     if (!frames.length) return this.setErr('Generate storyboard frames first (Images → Storyboards).');
     const have = new Set((this.state.videos || []).map(v => v.frameN));
-    const add = frames.filter(t => !have.has(t.n)).map(t => this.newVideo({ name: t.name, frameN: t.n, start: this.frameSrc(t.n), prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') }));
+    const add = frames.filter(t => !have.has(t.n)).map(t => this.newVideo({ name: t.name, frameN: t.n, start: this.frameSrc(t.n), end: this.endFrameSrc(t.n), prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') }));
     this.setX('videos', a => [...a, ...add]); this.setErr(add.length ? '' : 'Every storyboard frame already has a video.');
   }
   updVideo(id, fn) { this.setX('videos', a => a.map(v => (v.uid === id ? fn({ ...v }) : v))); }
@@ -3235,6 +3246,7 @@ class Component extends DCLogic {
       reuse: 'M3 12a9 9 0 1 0 3-6.7M3 4v5h5',
       delete: 'M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3',
       character: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6',
+      endFrame: 'M5 3v18M5 4h11l-2.5 3L16 10H5',
     };
     const galMenuToggle = (g, e) => { stop(e); this.setState(s => ({ galMenuOpen: s.galMenuOpen === g.uid ? null : g.uid })); };
     const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map(g => {
@@ -3251,12 +3263,17 @@ class Component extends DCLogic {
         const a = this.createAsset('TALENT', { name, main: g.src, original: g.src, events: [{ text: 'Saved from a generated image', at: Date.now() }] });
         this.setState({ page: 'TALENT', view: 'item', item: a.uid, tab: 'identity', confirmDelete: false, create: freshCreate(), gen: { running: false, status: '', count: 0, error: '' } });
       };
+      // Pair this image as the end frame of the most-recently-added keyframe shot (shots are
+      // prepended newest-first), wiring it into runVideo()'s already-working lastImage param.
+      const latestShot = (this.state.items.KEYFRAMES || [])[0];
+      const useAsEnd = e => { stop(e); this.setState({ galMenuOpen: null }); if (latestShot) this.setKf(latestShot.n + '-end', g.src); };
       const menuItems = [];
       if (has) {
         menuItems.push({ id: 'expand', label: 'Expand', icon: GMENU_ICON.expand, click: expand });
         menuItems.push({ id: 'download', label: 'Download', icon: GMENU_ICON.download, click: download });
         menuItems.push({ id: 'edit', label: 'Edit Image', icon: GMENU_ICON.edit, click: edit });
         menuItems.push({ id: 'character', label: 'Save as character', icon: GMENU_ICON.character, click: saveAsCharacter });
+        if (latestShot) menuItems.push({ id: 'end', label: 'Use as end frame', icon: GMENU_ICON.endFrame, click: useAsEnd });
       }
       menuItems.push({ id: 'reuse', label: 'Reuse prompt', icon: GMENU_ICON.reuse, click: reuse });
       menuItems.push({ id: 'delete', label: 'Delete', icon: GMENU_ICON.delete, click: del });
@@ -4114,6 +4131,13 @@ class Component extends DCLogic {
             isShot, leftOpacity: i > 0 ? '1' : '0.3', rightOpacity: i < recs.length - 1 ? '1' : '0.3',
             leftCursor: i > 0 ? 'pointer' : 'default', rightCursor: i < recs.length - 1 ? 'pointer' : 'default',
             moveLeft: e => { stop(e); this.moveShot(id, -1); }, moveRight: e => { stop(e); this.moveShot(id, 1); },
+            // End frame: paired with the start frame above into the same video via runVideo()'s
+            // lastImage param, so Kling/Seedance interpolate between the two instead of animating
+            // from a single still.
+            hasEnd: isShot && !!this.endFrameSrc(id), endBg: isShot ? bgFit(this.endFrameSrc(id)) : {},
+            endLabel: isShot && this.endFrameSrc(id) ? 'End frame set' : 'Set end frame',
+            pickEnd: e => { stop(e); if (isShot) this.pick('kfend:' + id); }, dropEnd: isShot ? this.dropTo('kfend:' + id) : () => {},
+            clearEnd: e => { stop(e); if (isShot) this.setKf(id + '-end', null); },
             rename: e => rename(id, e.target.value), setSub: e => setSub(id, e.target.value),
             delTitle: 'Delete ' + T[1], editTitle: 'Edit ' + T[1], delAsk: 'Delete this ' + T[1] + '?',
             delNote: kind === 'style' ? 'Removes the style and its frames.' : kind === 'shot' ? 'Removes the shot and its frame.' : 'Removes it and all its photos.',
