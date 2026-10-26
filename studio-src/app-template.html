@@ -156,6 +156,9 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-mode:hover{background:#2a2a2a}.x-mode[data-on="1"]{background:transparent;border-color:#1985FF;color:#1985FF}.x-mode:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .x-mode svg{flex:none}.x-ms{display:none}
 .x-imgtabs{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.x-createtoggle{display:inline-flex;align-items:center;width:fit-content;padding:3px;border-radius:9px;background:#191919;gap:2px}
+.x-createtab{height:30px;padding:0 16px;border:0;border-radius:6px;background:transparent;color:#929292;font:700 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;cursor:pointer;transition:background-color .12s,color .12s}
+.x-createtab:hover{color:#f5f5f5}.x-createtab[data-on="1"]{background:#2a2a2a;color:#f5f5f5}
 .x-styledots{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .x-styleopt{display:flex;flex-direction:column;align-items:center;gap:6px;width:88px;flex:none;text-align:center}
 .x-styledot{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid transparent;padding:0;cursor:pointer;background-color:#1f1f1f;transition:border-color .12s}
@@ -1010,7 +1013,14 @@ html,body{background:#282828!important}
             <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
           </div>
         </div>
+        <sc-if value="{{ showCreateToggle }}" hint-placeholder-val="{{ false }}">
+          <div class="x-createtoggle" role="tablist" aria-label="Image or video">
+            <button type="button" role="tab" class="x-createtab" data-on="{{ createImageOn }}" aria-selected="{{ createImageOn }}" sc-camel-on-click="{{ setCreateImage }}">Image</button>
+            <button type="button" role="tab" class="x-createtab" data-on="{{ createVideoOn }}" aria-selected="{{ createVideoOn }}" sc-camel-on-click="{{ setCreateVideo }}">Video</button>
+          </div>
+        </sc-if>
         <div class="x-hubbody">
+          <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
           <div class="x-galwrap">
             <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
             <div class="x-gal"><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0">
@@ -1033,6 +1043,25 @@ html,body{background:#282828!important}
               </div>
             </sc-for></div>
           </div>
+          </sc-if>
+          <sc-if value="{{ createVideoMode }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ x.vEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">Your videos appear here.</div></sc-if>
+          <div class="x-vgrid">
+            <sc-for list="{{ x.vids }}" as="v" hint-placeholder-count="0">
+              <div class="x-vcard">
+                <div class="x-vbox" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ v.dropStart }}">
+                  <sc-if value="{{ v.done }}" hint-placeholder-val="{{ false }}"><video src="{{ v.url }}" controls playsinline preload="metadata"></video></sc-if>
+                  <sc-if value="{{ v.notDone }}" hint-placeholder-val="{{ true }}"><div class="x-vstart" sc-camel-on-click="{{ v.pickStart }}"><sc-if value="{{ v.hasStart }}" hint-placeholder-val="{{ false }}"><div style="{{ v.startBg }}"></div></sc-if><sc-if value="{{ v.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if><span class="x-vhint">Start frame · click to change</span></div></sc-if>
+                  <sc-if value="{{ v.done }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-vexp" aria-label="Expand" title="Expand" sc-camel-on-click="{{ v.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button></sc-if>
+                </div>
+                <div class="x-vrow"><input class="x-vname" value="{{ v.name }}" sc-camel-on-change="{{ v.rename }}" spellcheck="false"><div class="{{ v.approveCls }}" sc-camel-on-click="{{ v.toggleApprove }}">{{ v.approveLabel }}</div></div>
+                <div class="x-vrow"><label class="x-muted">Length <select value="{{ v.duration }}" sc-camel-on-change="{{ v.setDuration }}"><sc-for list="{{ v.durOpts }}" as="d" hint-placeholder-count="5"><option value="{{ d.value }}">{{ d.label }}</option></sc-for></select></label>
+                  <div class="x-bar-btns"><sc-if value="{{ v.canEdit }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.toTimeline }}">Edit</button></sc-if><button class="ds-btn" sc-camel-on-click="{{ v.del }}">Delete</button><button class="ds-btn ds-on" disabled="{{ v.running }}" sc-camel-on-click="{{ v.go }}">{{ v.goLabel }}</button></div></div>
+                <div class="x-vnote" style="color:{{ v.noteColor }}">{{ v.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
         </div>
       </div>
     </sc-if>
@@ -1544,24 +1573,31 @@ html,body{background:#282828!important}
           <div style="flex:none;display:flex;align-items:center"><div data-sv="addbtn" sc-camel-on-click="{{ talentPlus }}" style="position:relative;width:28px;height:28px;border-radius:50%;background:#2A2A2E;cursor:pointer"><span style="position:absolute;left:8px;top:13px;width:12px;height:2px;border-radius:1px;background:#191919"></span><span style="position:absolute;left:13px;top:8px;width:2px;height:12px;border-radius:1px;background:#191919"></span></div></div>
           </sc-if>
           <sc-if value="{{ showGenOpts }}" hint-placeholder-val="{{ false }}">
-            <sc-for list="{{ genOpts }}" as="o" hint-placeholder-count="5">
-              <div data-sv="optwrap" sc-camel-on-mouse-enter="{{ o.open }}" sc-camel-on-mouse-leave="{{ o.close }}" style="flex:none">
-                <div data-sv="chip" title="{{ o.title }}" style="height:32px;padding:0 12px;border-radius:16px;background:#2A2A2E;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap">
-                  <span style="font:700 10px/1 'Helvetica Neue',Helvetica,sans-serif;color:#8A8681">{{ o.label }}</span>
-                  <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF">{{ o.value }}</span>
-                </div>
-                <div data-sv="optmenu" style="display:{{ o.menu }}">
-                  <div data-sv="optinner">
-                  <sc-for list="{{ o.options }}" as="x" hint-placeholder-count="4">
-                    <div data-sv="optitem" sc-camel-on-click="{{ x.pick }}" style="height:32px;padding:0 10px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;background:{{ x.bg }}">
-                      <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF;white-space:nowrap">{{ x.label }}</span>
-                      <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF">{{ x.tick }}</span>
-                    </div>
-                  </sc-for>
+            <div data-sv="optwrap" style="flex:none">
+              <div data-sv="chip" sc-camel-on-click="{{ toggleSettingsPanel }}" title="Generation settings" style="height:32px;padding:0 12px;border-radius:16px;background:#2A2A2E;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap">
+                <svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="#8A8681" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span style="font:700 10px/1 'Helvetica Neue',Helvetica,sans-serif;color:#8A8681">Settings</span>
+              </div>
+              <sc-if value="{{ settingsPanelOpen }}" hint-placeholder-val="{{ false }}">
+                <div data-sv="optmenu" style="display:flex;min-width:260px;max-width:300px">
+                  <div data-sv="optinner" style="display:flex;flex-direction:column;gap:10px;padding:10px">
+                    <sc-for list="{{ genOpts }}" as="o" hint-placeholder-count="5">
+                      <div style="display:flex;flex-direction:column;gap:6px">
+                        <div style="font:700 10px/1 'Helvetica Neue',Helvetica,sans-serif;color:#8A8681" title="{{ o.title }}">{{ o.label }}</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:4px">
+                          <sc-for list="{{ o.options }}" as="x" hint-placeholder-count="4">
+                            <div data-sv="optitem" sc-camel-on-click="{{ x.pick }}" style="height:30px;padding:0 10px;border-radius:6px;display:flex;align-items:center;gap:6px;cursor:pointer;background:{{ x.bg }}">
+                              <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF;white-space:nowrap">{{ x.label }}</span>
+                              <span style="font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;color:#1985FF">{{ x.tick }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
                   </div>
                 </div>
-              </div>
-            </sc-for>
+              </sc-if>
+            </div>
           </sc-if>
           <div data-sv="gobtn" sc-camel-on-click="{{ submit }}" style="margin-left:auto;width:104px;height:44px;flex:none;border-radius:6px;background:{{ actionBg }};color:{{ actionFg }};display:flex;align-items:center;justify-content:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:{{ actionCursor }}">{{ talentAction }}</div>
         </div>
@@ -1927,7 +1963,7 @@ class Component extends DCLogic {
     home: (() => { try { sessionStorage.removeItem('solved-open'); } catch (e) {} return false; })(), covers: null, homeEdit: null, homeConfirm: null,
     page: 'IMAGES', view: 'all', item: null, values: this.initial, items: (() => { const it = load('solved-items', defaultItems()); return { ...it, KEYFRAMES: Array.isArray(it.KEYFRAMES) ? it.KEYFRAMES : defaultItems().KEYFRAMES }; })(),
     store: load('solved-assets', { seq: {}, TALENT: [] }),
-    prompt: '', mode: 'generate', attach: [], attachOpen: false,
+    prompt: '', mode: 'generate', attach: [], attachOpen: false, createMode: 'image',
     create: freshCreate(), tab: 'identity', varCat: 'ANGLES', confirmDelete: false,
     gen: { running: false, status: '', count: 0, error: '' }, tcfg: loadTcfg(), sheetRun: null, gRun: null, gConfirm: null, ovrAsk2: null, slot: 'front', genSlot: null, sSlot: {}, castConfirm: null, castAtt: [], castCheck: null, castBusy: false, optOpen: null, ovrAsk: null, products: [], imgs: {}, pLoaded: false, pLoadError: '', pSlot: {}, locations: [], locPopup: null, locPreview: null, stylePreview: null, imgPresets: null, imgPresetsLoading: false,
     styles: [], sLoaded: false, sd: null, sNote: '', sBusy: false, imgMode: 'gen', activeStyle: load('solved-active-style', null), kfPick: {}, kfTab: 'c',
@@ -2923,23 +2959,6 @@ class Component extends DCLogic {
       .map(([p, label]) => ({ label, on: page === p ? '1' : '0', sel: page === p ? 'true' : 'false',
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } }));
   }
-  async kfGen(p) {
-    const HF = window.SOLVED_HF;
-    if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate key frames.');
-    const R = this.kfRefs(), st = this.activeStyle(), sref = this.styleRef(), refs = [...R.srcs, ...(this.state.castAtt || []), sref].filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 8), id = uid();
-    const o = this.tcfg('IMAGES:kf'), ar = o.ratio || '16:9';
-    const prompt = [p, 'Cinematic key frame, ' + ar + ', photoreal.', R.names.length ? 'Featuring: ' + R.names.join(', ') + '.' : '', st ? 'Visual style: ' + (st.desc || st.name) + '.' : '',
-      refs.length ? 'Use the reference images for the exact people (faces, wardrobe), products and locations. Keep every person and product identical to the references.' : ''].filter(Boolean).join(' ');
-    this.setErr(''); this.setState({ prompt: '', castAtt: [], kfPick: {}, activeStyle: null });
-    try { localStorage.removeItem('solved-active-style'); } catch (e) {}
-    this.setX('gallery', a => [{ uid: id, kind: 'kf', prompt: p, src: '', status: 'running', aspect: ar, refs: refs.length, at: Date.now() }, ...a]);
-    try {
-      const url = await HF.generate({ prompt, references: refs, aspect: ar, model: o.model, quality: o.quality, resolution: o.resolution });
-      let keep = url; try { const r = await fetch(url); if (r.ok) { const b = await r.blob(); keep = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); } } catch (e) {}
-      this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, src: keep, status: 'done' } : g)));
-      this.recordUsage('IMAGES', 'Key frame · ' + p.slice(0, 40));
-    } catch (e) { this.setX('gallery', a => a.map(g => (g.uid === id ? { ...g, status: 'failed', error: e && e.message ? e.message : 'Generation failed' } : g))); }
-  }
   loadImgPresets() {
     const HF = window.SOLVED_HF;
     if (!HF || this.state.imgPresets || this.state.imgPresetsLoading) return;
@@ -2947,7 +2966,9 @@ class Component extends DCLogic {
     HF.presets().then(list => this.setState({ imgPresets: list, imgPresetsLoading: false }))
       .catch(e => { this.setErr(e && e.message ? e.message : 'Could not load presets.'); this.setState({ imgPresetsLoading: false }); });
   }
-  async freeGen(p) {
+  // The Create screen's single image generator — reads the IMAGES:main settings context
+  // (model/ratio/resolution/quality/enhance), shared with the one "Settings" control.
+  async createGen(p) {
     const HF = window.SOLVED_HF;
     if (!HF || !HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate images.');
     const o = this.tcfg('IMAGES:main'), imod = IMODELS[o.model] || IMODELS[IMODEL_DEFAULT], st = this.activeStyle(), sref = this.styleRef();
@@ -3194,6 +3215,7 @@ class Component extends DCLogic {
       edit: 'M11 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z',
       reuse: 'M3 12a9 9 0 1 0 3-6.7M3 4v5h5',
       delete: 'M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3',
+      character: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6',
     };
     const galMenuToggle = (g, e) => { stop(e); this.setState(s => ({ galMenuOpen: s.galMenuOpen === g.uid ? null : g.uid })); };
     const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map(g => {
@@ -3203,11 +3225,19 @@ class Component extends DCLogic {
       const edit = e => { stop(e); this.setState({ page: 'EDITING', edTool: 'image', ed: { src: g.src, name: g.prompt.slice(0, 40), adj: { b: 100, c: 100, s: 100 } }, galMenuOpen: null }); };
       const reuse = e => { stop(e); this.setState({ prompt: g.prompt, galMenuOpen: null }); };
       const del = e => { stop(e); this.setX('gallery', a => a.filter(y => y.uid !== g.uid)); this.setState({ galMenuOpen: null }); };
+      // Promote a free-form generated image into a reusable Character asset — the only way today
+      // to turn a Create-screen result into something the 12-view consistency sheet can build on.
+      const saveAsCharacter = e => { stop(e); this.setState({ galMenuOpen: null });
+        const name = `Character ${this.assets('TALENT').length + 1}`;
+        const a = this.createAsset('TALENT', { name, main: g.src, original: g.src, events: [{ text: 'Saved from a generated image', at: Date.now() }] });
+        this.setState({ page: 'TALENT', view: 'item', item: a.uid, tab: 'identity', confirmDelete: false, create: freshCreate(), gen: { running: false, status: '', count: 0, error: '' } });
+      };
       const menuItems = [];
       if (has) {
         menuItems.push({ id: 'expand', label: 'Expand', icon: GMENU_ICON.expand, click: expand });
         menuItems.push({ id: 'download', label: 'Download', icon: GMENU_ICON.download, click: download });
         menuItems.push({ id: 'edit', label: 'Edit Image', icon: GMENU_ICON.edit, click: edit });
+        menuItems.push({ id: 'character', label: 'Save as character', icon: GMENU_ICON.character, click: saveAsCharacter });
       }
       menuItems.push({ id: 'reuse', label: 'Reuse prompt', icon: GMENU_ICON.reuse, click: reuse });
       menuItems.push({ id: 'delete', label: 'Delete', icon: GMENU_ICON.delete, click: del });
@@ -3221,6 +3251,7 @@ class Component extends DCLogic {
       closeGalPreview: () => this.setState({ galPreview: null }) });
     const imageTabsPage = ['PRODUCT', 'TALENT', 'LOCATION', 'IMAGES', 'KEYFRAMES', 'WARDROBE', 'SETDESIGN', 'STYLE'].includes(page);
     const sharedImgHeader = imageTabsPage ? { imageTabs: this.imageTabsData(), ...this.styleControlData(fit, stop) } : {};
+    const createVideoMode = page === 'IMAGES' && S.createMode === 'video';
     const X = { ...sharedImgHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
     const vidPreviewItem = (S.videos || []).find(v => v.uid === S.vidPreview);
     Object.assign(X, { hasVidPreview: !!(vidPreviewItem && vidPreviewItem.url), vidPreviewUrl: vidPreviewItem ? vidPreviewItem.url : '', vidPreviewLabel: vidPreviewItem ? vidPreviewItem.name : '',
@@ -3233,7 +3264,7 @@ class Component extends DCLogic {
         sbGenLabel: S.sbBusy === 'generating' ? 'Generating frames…' : 'Generate all frames', sbGen: () => this.genAllFrames(),
         sbVideos: () => { this.videosFromStoryboard(); this.setState({ page: 'VIDEOS', view: 'all', item: null }); } });
     }
-    if (X.vidOn) {
+    if (X.vidOn || createVideoMode) {
       const V = S.videos || [], FR = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n));
       Object.assign(X, { vCount: String(V.length), vEmpty: !V.length,
         vFromSb: () => this.videosFromStoryboard(), vManual: () => this.setX('videos', a => [...a, this.newVideo({ name: 'Video ' + (a.length + 1) })]),
@@ -3419,7 +3450,10 @@ class Component extends DCLogic {
     const { page, view, item, values, items, prompt, mode, store, create, gen, attach, tab, varCat, sheetRun } = this.state;
     const cfg = CFG[page] || {}, pg = page.toLowerCase();
     const isHub = page === 'IMAGES', isVid = page === 'VIDEOS', isSoon = false, isXPage = !!SOON_PAGES[page];
-    const vModel = isVid ? (this.tcfg('VIDEOS:main').model || VMODEL_DEFAULT) : null, vm = isVid ? (VMODELS[vModel] || VMODELS[VMODEL_DEFAULT]) : null;
+    // The Create screen's Image/Video toggle: still on the IMAGES page, but switches the prompt
+    // bar, settings panel and submit action over to the same video-generation path VIDEOS uses.
+    const createVideoMode = isHub && this.state.createMode === 'video', anyVid = isVid || createVideoMode;
+    const vModel = anyVid ? (this.tcfg('VIDEOS:main').model || VMODEL_DEFAULT) : null, vm = anyVid ? (VMODELS[vModel] || VMODELS[VMODEL_DEFAULT]) : null;
     const isOverview = page === 'BRIEF', isBlank = page === 'OVERVIEW', isTalent = page === 'TALENT', isShotsPage = page === 'KEYFRAMES';
     const pkind = page === 'WARDROBE' ? 'wardrobe' : 'product';
     const isProduct = page === 'PRODUCT' || page === 'WARDROBE', isLocation = page === 'LOCATION' || page === 'SETDESIGN';
@@ -3454,7 +3488,7 @@ class Component extends DCLogic {
       if (gen.running || this.state.sheetRun) return;
       const p = prompt.trim();
       if (mode === 'search') { if (isTalent) this.setState({ view: 'all', item: null }); return; }
-      if (isHub) { if (!p) return this.setErr('Describe the image to create.'); return this.kfGen(p); }
+      if (isHub) { if (!p) return this.setErr(createVideoMode ? 'Describe the video to create.' : 'Describe the image to create.'); return createVideoMode ? this.vidGen(p) : this.createGen(p); }
       if (isVid) return this.vidGen(p);
       if (isStyleAll) {
         if (!p) return this.setErr('Describe a style to create, or press + to start from an image.');
@@ -3793,7 +3827,7 @@ class Component extends DCLogic {
             { label: 'REMOVE', color: '#ef6b61', click: () => { close(); this.updLoc(pl.uid, x => { x.views[pv.idx] = null; return x; }); } },
             { label: 'CLOSE', color: '#929292', click: close }] : [] }; })(),
       isProdAll: false, isProdSheet: false, pLoading: (isProdAll || isLocAll) && !this.state.pLoaded,
-      barPh: isHub ? (this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe a shot to create…') : isVid ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Props use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a prop to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
+      barPh: isHub ? (createVideoMode ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : this.state.castAtt.length ? 'Describe what to make with the attached images…' : 'Describe a shot to create…') : isVid ? (vm.mode === 'image-to-video' ? (this.state.castAtt.length ? 'Describe the motion: camera move, action, mood…' : 'Attach a start frame, then describe the motion…') : 'Describe the video to create…') : isCast ? (this.state.castAtt.length ? 'Add instructions, or press generate for a standard headshot…' : 'Describe a character to create...') : isStyleAll ? 'Describe a style to create, or press + to start from an image…' : isLocSheet ? (loc.kind === 'ai' ? 'Describe changes for the selected view…' : (lsect === 'set' ? 'Props use uploaded photos only' : 'Real locations use uploaded photos only')) : isLocation ? (lsect === 'set' ? 'Describe a prop to create…' : 'Describe an AI location to create…') : isProdSheet ? 'Describe the ' + vlabel(prod.type, typeof slot === 'number' ? slot : 0).replace(/^\S+ (\/ )?/, '') + ' view to generate…' : isProduct ? (pkind === 'wardrobe' ? 'Describe a wardrobe item to generate, or press + to upload photos…' : 'Describe a product to generate, or press + to upload photos…') : isSheet ? (SHEET.some(([k]) => !(char.sheet && char.sheet[k])) ? 'Set the size, then press generate to create the character sheet' : 'Describe changes for the selected view…') : isShotsPage ? 'Describe a shot to create…' : 'Describe your character...',
       uploadNewProd: () => this.pick('newprod'),
       dropNewProd: e => { e.preventDefault(); this.handleFiles('newprod', e.dataTransfer.files); },
       pNewLabel: pkind === 'wardrobe' ? 'Upload new item' : 'Upload new product',
@@ -4142,11 +4176,17 @@ class Component extends DCLogic {
           d };
       })(),
       showGenOpts: isCast || isHub || isVid || (!!gk && !gDetail),
+      settingsPanelOpen: !!this.state.settingsPanelOpen,
+      toggleSettingsPanel: () => this.setState(s => ({ settingsPanelOpen: !s.settingsPanelOpen })),
+      showCreateToggle: isHub, createVideoMode, createImageMode: isHub && !createVideoMode,
+      createImageOn: createVideoMode ? '0' : '1', createVideoOn: createVideoMode ? '1' : '0',
+      setCreateImage: () => this.setState({ createMode: 'image', settingsPanelOpen: false }),
+      setCreateVideo: () => this.setState({ createMode: 'video', settingsPanelOpen: false }),
       genOpts: (() => {
         const HF = window.SOLVED_HF;
         // Characters keeps its own settings per page: the main page drives the headshot,
         // the sheet page drives the sheet. Every other page still uses the shared defaults.
-        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : isHub ? 'IMAGES:kf' : isVid ? 'VIDEOS:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
+        const tctx = isSheet ? 'sheet' : isCast ? 'cast' : createVideoMode ? 'VIDEOS:main' : isHub ? 'IMAGES:main' : isVid ? 'VIDEOS:main' : gk ? page + (gDetail ? ':sheet' : ':main') : null;
         const c = tctx ? this.tcfg(tctx) : (HF ? HF.get() : {});
         const put = v => { if (tctx) this.tset(tctx, v); else if (HF) { HF.set(v); this.setState(s2 => ({ hfTick: s2.hfTick + 1 })); } };
         const pretty = m => m.replace(/_/g, ' ').replace(/\b\w/g, x => x.toUpperCase());
@@ -4160,7 +4200,7 @@ class Component extends DCLogic {
           close: () => this.setState(s2 => (s2.optOpen === key ? { optOpen: null } : null)) });
         // Video settings are entirely model-dependent: image-to-video models need Duration (+ Sound if supported),
         // text-to-video models need Duration + Ratio + Resolution instead, and never a start/end frame.
-        if (isVid) {
+        if (anyVid) {
           const vcModel = c.model || VMODEL_DEFAULT, cvm = VMODELS[vcModel] || VMODELS[VMODEL_DEFAULT];
           const dur = (c.duration && c.duration >= cvm.durationMin && c.duration <= cvm.durationMax) ? c.duration : cvm.durationMin;
           const out = [ctl('model', { label: 'Model', value: cvm.label + (cvm.connected ? '' : ' (not connected)'), title: 'Video model',
@@ -4182,8 +4222,9 @@ class Component extends DCLogic {
         const RES = ['1k', '2k', '4k'];
         const QUAL = ['low', 'medium', 'high', 'xhigh', 'max'];
         const out = [
-          ctl('model', { label: 'Model', value: imod.label + (imod.connected ? '' : ' (not connected)'), title: 'Image model',
-            options: Object.keys(IMODELS).map(k => ({ label: IMODELS[k].label + (IMODELS[k].connected ? '' : ' — not connected'), tick: k === model ? '✓' : '',
+          ctl('model', { label: 'Model', value: imod.label, title: 'Image model',
+            // Only real, working models belong in front of users — see PR plan "only show what works".
+            options: Object.keys(IMODELS).filter(k => IMODELS[k].connected).map(k => ({ label: IMODELS[k].label, tick: k === model ? '✓' : '',
               bg: k === model ? '#333337' : 'transparent', fg: k === model ? '#191919' : '#C9C6C1',
               pick: () => { put({ model: k }); this.setState(s2 => ({ optOpen: null, hfTick: s2.hfTick + 1 })); } })) }),
         ];
@@ -4209,7 +4250,7 @@ class Component extends DCLogic {
         }
         return out;
       })(),
-      showAttach: !isVid || vm.mode === 'image-to-video',
+      showAttach: !anyVid || vm.mode === 'image-to-video',
       showTalentBar: isCast || isHub || isVid || (!!gk && !gDetail),
       sl: Object.fromEntries(SHEET.map(([k]) => { const src = (char && char.sheet && char.sheet[k]) || ''; return [k, { has: !!src, src, bg: bgOf(src),
         busy: (gen.running && this.state.genSlot === k) || ['queued', 'busy', 'checking'].includes(this.state.sSlot[(char ? char.uid : '') + ':' + k]),
