@@ -116,10 +116,9 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-vprompt{width:100%;box-sizing:border-box;min-height:64px;padding:10px;border:1px solid #303030;border-radius:6px;background:#191919;color:#f5f5f5;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;resize:vertical;outline:none}.x-vprompt:focus{border-color:#1985FF}
 .x-vrow select{height:28px;margin-left:6px;border:1px solid #303030;border-radius:5px;background:#191919;color:#f5f5f5;color-scheme:dark}
 .x-vnote{font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif}
-.x-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.x-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
 .x-tool{min-height:150px;padding:20px;border-radius:8px;background:#191919;display:flex;flex-direction:column;gap:8px;cursor:pointer;border:1px solid #191919}.x-tool:hover{border-color:#1985FF}
 .x-tool .x-name{font:700 18px/22px 'Helvetica Neue',Helvetica,sans-serif}.x-tool .x-desc{font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
-.x-tool.x-soon{opacity:.45;cursor:default}.x-tool.x-soon:hover{border-color:#191919}
 .x-ed{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
 .x-ed-canvas{position:relative;min-height:460px;border-radius:6px;background:#141414;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .x-ed-canvas img{max-width:100%;max-height:620px;display:block}
@@ -141,7 +140,7 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 [data-sv="edmic"]:hover{color:#f5f5f5}
 [data-sv="edmic"][data-on="1"]{background:#ef6b61;color:#fff}
 [data-sv="ednote"]{flex:1;min-width:0;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}
-.x-dests{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.x-dests{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .x-dest{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:8px;background:#191919}.x-dest .x-name{font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif}.x-dest .x-desc{flex:1;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#a3a3a3}.x-dest .ds-btn{justify-content:center}
 .x-hist{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #222;font:400 13px/18px 'Helvetica Neue',Helvetica,sans-serif}
 .x-files{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:12px}.x-files-lg{grid-template-columns:repeat(5,minmax(0,1fr))}
@@ -1112,8 +1111,10 @@ html,body{background:#282828!important}
             <sc-for list="{{ x.produceTabs }}" as="t" hint-placeholder-count="2"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
           </div>
         </sc-if>
-        <div class="ds-sub">Editing tools <i class="ds-dim" style="font-style:normal">· 6</i></div>
-        <div class="x-tools"><sc-for list="{{ x.tools }}" as="t"><div class="{{ t.cls }}" sc-camel-on-click="{{ t.open }}"><div class="x-name">{{ t.name }}</div><div class="x-desc">{{ t.desc }}</div></div></sc-for></div></div>
+        <div class="ds-sub">Editing tools <i class="ds-dim" style="font-style:normal">· 2</i></div>
+        <div class="x-tools"><sc-for list="{{ x.tools }}" as="t"><div class="{{ t.cls }}" sc-camel-on-click="{{ t.open }}"><div class="x-name">{{ t.name }}</div><div class="x-desc">{{ t.desc }}</div></div></sc-for></div>
+        <div class="x-muted">3D & motion graphics — desktop / render queue (planned).</div>
+      </div>
     </sc-if>
 
     <sc-if value="{{ x.edImg }}" hint-placeholder-val="{{ false }}">
@@ -1906,9 +1907,6 @@ const vidDurations = vm => Array.from({ length: vm.durationMax - vm.durationMin 
 // Image models mirror lib/hf.js's IMAGE_MODELS: ratios and refsMax are exactly what each endpoint documents.
 const IMODELS = {
   gpt_image_2_5: { label: 'GPT Image 2.5', ratios: ['auto', '1:1', '3:2', '2:3', '4:3', '3:4', '16:9', '9:16', '21:9'], refs: true, refsMax: 16, enhance: true, connected: true },
-  seedream: { label: 'Seedream', ratios: [], refs: false, refsMax: 0, connected: false },
-  nano_banana: { label: 'Nano Banana', ratios: [], refs: false, refsMax: 0, connected: false },
-  flux_pro: { label: 'Flux Pro', ratios: [], refs: false, refsMax: 0, connected: false },
 };
 const IMODEL_DEFAULT = 'gpt_image_2_5';
 const SPRESETS = [
@@ -3321,9 +3319,9 @@ class Component extends DCLogic {
             del: () => this.setX('videos', a => a.filter(y => y.uid !== x.uid)), toTimeline: () => { this.setX('timeline', a => [...a, { id: uid(), vid: x.uid, in: 0, out: x.duration || 5 }]); this.setState({ page: 'EDITING', edTool: 'video' }); },
             canEdit: x.status === 'done' && !!x.url }; }) });
     }
-    if (X.edHub) X.tools = [['image', 'Image Editor', 'Edit images with AI: change by prompt, remove background, upscale, relight, expand. Crop, rotate and adjust.'], ['video', 'Video Editor', 'Put your videos in order, trim them and export one edit.'],
-      ['', 'Motion Designer', 'Coming soon'], ['', '3D Animator', 'Coming soon'], ['', 'Sound Designer', 'Coming soon'], ['', 'Colorist', 'Coming soon']]
-      .map(([k, name, desc]) => ({ name, desc, live: !!k, soon: !k, cls: k ? 'x-tool' : 'x-tool x-soon', open: () => k && this.setState({ edTool: k }) }));
+    // Only tools with a real screen behind them belong here — see PR plan "only show what works".
+    if (X.edHub) X.tools = [['image', 'Image Editor', 'Edit images with AI: change by prompt, remove background, upscale, relight, expand. Crop, rotate and adjust.'], ['video', 'Video Editor', 'Put your videos in order, trim them and export one edit.']]
+      .map(([k, name, desc]) => ({ name, desc, cls: 'x-tool', open: () => this.setState({ edTool: k }) }));
     if (X.edImg) {
       const imgs = this.allImages(), E = S.ed || {}, adj = E.adj || { b: 100, c: 100, s: 100 };
       Object.assign(X, { edPicks: imgs.map(f => ({ name: f.section + ' · ' + f.name, bg: bgOf(f.src), line: E.src === f.src ? '#1985FF' : 'transparent', pick: () => this.setState({ ed: { src: f.src, name: f.name, adj: { b: 100, c: 100, s: 100 } } }) })),
@@ -3361,12 +3359,10 @@ class Component extends DCLogic {
       const nSel = sel ? all.filter(f => sel[key(f)]).length : all.length;
       Object.assign(X, { fgroups: groups, fNone: !all0.length, fNoMatch: !!libQ && !!all0.length && !all.length, fQuery: S.libQ || '', fTotal: libQ && all0.length ? all.length + ' of ' + all0.length + ' match “' + (S.libQ || '').trim() + '”' : String(all.length), nSel: nSel + ' of ' + all.length + ' files selected',
         selAll: () => this.setState({ dlSel: null }), selNone: () => this.setState({ dlSel: {} }), dlBusy: !!S.dlBusy, dlBusyLabel: S.dlBusy || '',
-        dests: [['zip', 'ZIP download', 'Download the selected files as one ZIP, organized by section.', 'Download ZIP', () => this.deliverZip(), true],
-          ['link', 'Client share link', 'Upload a ZIP and copy a private link that works for 7 days.', 'Create link', () => this.deliverLink(), true],
-          ['gdrive', 'Google Drive', 'Send files to a Drive folder.', 'Needs connection', () => this.setErr('Google Drive needs an account connection. It’s next on the build list.'), false],
-          ['dropbox', 'Dropbox', 'Send files to a Dropbox folder.', 'Needs connection', () => this.setErr('Dropbox needs an account connection. It’s next on the build list.'), false],
-          ['frameio', 'Frame.io', 'Send files to a Frame.io project for review.', 'Needs connection', () => this.setErr('Frame.io needs an account connection. It’s next on the build list.'), false]]
-          .map(([k, name, desc, btn, run, live]) => ({ name, desc, btn, run, cls: live ? 'ds-btn ds-on' : 'ds-btn' })),
+        // Only destinations that actually send files belong here — see PR plan "only show what works".
+        dests: [['zip', 'ZIP download', 'Download the selected files as one ZIP, organized by section.', 'Download ZIP', () => this.deliverZip()],
+          ['link', 'Client share link', 'Upload a ZIP and copy a private link that works for 7 days.', 'Create link', () => this.deliverLink()]]
+          .map(([k, name, desc, btn, run]) => ({ name, desc, btn, run, cls: 'ds-btn ds-on' })),
         history: (S.deliveries || []).map(d => ({ line: new Date(d.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' · ' + d.dest + ' · ' + d.count + ' files', url: d.url || '', hasUrl: !!d.url && (!d.expires || d.expires > Date.now()),
           copy: () => { try { navigator.clipboard.writeText(d.url); } catch (e) {} } })), hasHistory: (S.deliveries || []).length > 0,
         libGrid: (S.libView || 'grid') === 'grid', libList: S.libView === 'list', setGrid: () => this.setState({ libView: 'grid' }), setList: () => this.setState({ libView: 'list' }),
