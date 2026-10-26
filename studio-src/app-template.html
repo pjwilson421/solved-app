@@ -806,6 +806,14 @@ html,body{background:#282828!important}
                   <sc-if value="{{ c.hasImg }}" hint-placeholder-val="{{ false }}"><div style="{{ c.bg }}"></div></sc-if>
                   <sc-if value="{{ c.noImg }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><sc-if value="{{ g.ic.product }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2l7 4v8l-7 4-7-4V6z"></path><path d="M2 6l7 4 7-4"></path><path d="M9 10v8"></path></svg></sc-if><sc-if value="{{ g.ic.wardrobe }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L2 5l2 4 2-1v10h8V8l2 1 2-4-4-3c-.5 1.7-2 3-4 3S6.5 3.7 6 2z"></path></svg></sc-if><sc-if value="{{ g.ic.location }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"></path><path d="M7 8a2 2 0 1 0 4 0a2 2 0 1 0-4 0"></path></svg></sc-if><sc-if value="{{ g.ic.set }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h14v11H2z"></path><path d="M2 12l4-4 3 3 2-2 5 5"></path></svg></sc-if><sc-if value="{{ g.ic.style }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2s6 6.5 6 10.5a6 6 0 0 1-12 0C3 8.5 9 2 9 2z"></path></svg></sc-if><sc-if value="{{ g.ic.shot }}" hint-placeholder-val="{{ false }}"><svg width="64" height="64" sc-camel-view-box="-2 -1 22 22" fill="none" stroke="#929292" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h15v11H2z"></path><path d="M6 4v11"></path><path d="M13 4v11"></path></svg></sc-if></div></sc-if>
                   <sc-if value="{{ c.busy }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:#242424;animation:solvedPulse 1.2s ease-in-out infinite"></div></sc-if>
+                  <sc-if value="{{ c.isShot }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:6px;left:6px;display:flex;gap:4px">
+                    <div sc-camel-on-click="{{ c.moveLeft }}" title="Move earlier" style="width:28px;height:28px;border-radius:6px;background:rgba(32,32,32,0.85);display:flex;align-items:center;justify-content:center;cursor:{{ c.leftCursor }};opacity:{{ c.leftOpacity }}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f5f5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+                    </div>
+                    <div sc-camel-on-click="{{ c.moveRight }}" title="Move later" style="width:28px;height:28px;border-radius:6px;background:rgba(32,32,32,0.85);display:flex;align-items:center;justify-content:center;cursor:{{ c.rightCursor }};opacity:{{ c.rightOpacity }}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5f5f5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+                    </div>
+                  </div></sc-if>
                   <sc-if value="{{ c.notConfirming }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;top:6px;right:6px;display:flex;flex-direction:column;gap:6px">
                     <div sc-camel-on-click="{{ c.askDelete }}" title="{{ c.delTitle }}" style="width:32px;height:32px;border-radius:6px;background:rgba(32,32,32,0.85);display:flex;align-items:center;justify-content:center;cursor:pointer">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
@@ -2691,6 +2699,13 @@ class Component extends DCLogic {
       return this.setItems('KEYFRAMES', (this.state.items.KEYFRAMES || []).filter(x => x.n !== id));
     }
   }
+  /** Swap a keyframe shot with its neighbor to reorder the Keyframes grid. */
+  moveShot(id, dir) {
+    const list = this.state.items.KEYFRAMES || [], i = list.findIndex(x => x.n === id), j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return;
+    const next = list.slice(); [next[i], next[j]] = [next[j], next[i]];
+    this.setItems('KEYFRAMES', next);
+  }
   addShot(text) {
     const list = this.state.items.KEYFRAMES || [], n = list.reduce((m, x) => Math.max(m, x.n), 0) + 1, t = (text || '').trim();
     this.setItems('KEYFRAMES', [{ n, name: t ? t.split(/\s+/).slice(0, 4).join(' ').slice(0, 40).replace(/^./, c => c.toUpperCase()) : 'Shot ' + n, desc: t, fields: {} }, ...list]);
@@ -4029,10 +4044,13 @@ class Component extends DCLogic {
         const on = r => r.status === 'approved' || r.status === 'locked';
         const fit = kind === 'product' ? 'contain' : 'cover', tileBg = kind === 'product' ? '#191919' : '#242424';
         const bgFit = src => Object.assign(bgOf(src), { backgroundSize: fit, backgroundRepeat: 'no-repeat' });
-        const cards = recs.map(r => { const id = idOf(r), src = imgOf(r), conf = S.gConfirm === kind + ':' + id;
+        const cards = recs.map((r, i) => { const id = idOf(r), src = imgOf(r), conf = S.gConfirm === kind + ':' + id, isShot = kind === 'shot';
           return { name: r.name, sub: subOf(r), subPh: T[4], hasImg: !!src, noImg: !src, bg: bgFit(src), tileBg, busy: busyOf(r),
             nameW: Math.max(40, Math.min(150, ((r.name || '').length * 8) + 6)) + 'px',
             open: () => { if (!conf) open(r); }, edit: e => { stop(e); open(r); }, stop,
+            isShot, leftOpacity: i > 0 ? '1' : '0.3', rightOpacity: i < recs.length - 1 ? '1' : '0.3',
+            leftCursor: i > 0 ? 'pointer' : 'default', rightCursor: i < recs.length - 1 ? 'pointer' : 'default',
+            moveLeft: e => { stop(e); this.moveShot(id, -1); }, moveRight: e => { stop(e); this.moveShot(id, 1); },
             rename: e => rename(id, e.target.value), setSub: e => setSub(id, e.target.value),
             delTitle: 'Delete ' + T[1], editTitle: 'Edit ' + T[1], delAsk: 'Delete this ' + T[1] + '?',
             delNote: kind === 'style' ? 'Removes the style and its frames.' : kind === 'shot' ? 'Removes the shot and its frame.' : 'Removes it and all its photos.',
