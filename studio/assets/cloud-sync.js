@@ -5,16 +5,25 @@
    Loads right after the multi-project storage shim and before the app. */
 (function () {
   'use strict';
-  // If this browser was signed in before, hide the page immediately — before first paint — so a
-  // stale empty-local-storage flash never shows while pull() catches it up with the cloud. This
-  // script is a synchronous <head> tag, so this runs before the body is even parsed. Every path
-  // below that can finish pull() (success, failure, or "nothing to do") un-hides it again.
-  if (document.cookie.indexOf('sb_at=') > -1) document.documentElement.style.visibility = 'hidden';
+  // If this browser was signed in before, show a loading shell immediately — before first paint —
+  // so a stale empty-local-storage flash never shows while pull() catches it up with the cloud.
+  // document.write from this synchronous <head> tag lands as the first thing in <body>, visible
+  // right away. The page itself is never hidden: every path below that can finish pull() (success,
+  // failure, or "nothing to do") removes the shell again, so the UI can never get stuck behind it.
+  var shellShown = document.cookie.indexOf('sb_at=') > -1;
+  if (shellShown) {
+    document.write('<div id="solved-boot-shell" style="position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#080808">' +
+      '<style>@keyframes solvedBootPulse{0%,100%{opacity:.5}50%{opacity:1}}</style>' +
+      '<img src="/studio/assets/solved-puzzle.svg" width="40" height="38" alt="" style="animation:solvedBootPulse 1.4s ease-in-out infinite">' +
+      '<div id="solved-boot-text" style="font:13px \'Helvetica Neue\',Helvetica,Arial,sans-serif;color:#a3a3a3;letter-spacing:.02em">Loading…</div></div>');
+  }
+  function shellText(t) { var el = document.getElementById('solved-boot-text'); if (el) el.textContent = t; }
+  function hideShell() { var el = document.getElementById('solved-boot-shell'); if (el && el.parentNode) el.parentNode.removeChild(el); }
   var URL_ = 'https://wetzjfsdumraslfojcva.supabase.co', KEY = 'sb_publishable_bw0_xjD26NDCDCUAYKM0TA_NS9DE_D1';
   var BUCKET = 'project-files', META = 'solved-sync-meta', PULLED = 'solved-sync-pulled';
   var QKEY = 'solved-sync-queue', SKIP_LS = { 'solved-current': 1, 'solved-hf': 1, 'solved-sync-meta': 1, 'solved-sync-queue': 1 };
   var S = window.__solved, LS = window.localStorage;
-  if (!window.supabase || !S) { document.documentElement.style.visibility = ''; return; }
+  if (!window.supabase || !S) { hideShell(); return; }
   var sb = window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'sb-solved-auth' } });
   var user = null, ready = false, suppress = 0, queue = new Map(), timer = null, busy = false, fails = 0;
 
@@ -212,11 +221,11 @@
 
   sb.auth.getSession().then(async function (r) {
     var s = r.data && r.data.session;
-    if (!s) { document.documentElement.style.visibility = ''; ready = true; status('<a href="/studio/login" style="color:#00bd50">Sign in</a> to save projects to the cloud', 'link'); return; }
+    if (!s) { hideShell(); ready = true; status('<a href="/studio/login" style="color:#00bd50">Sign in</a> to save projects to the cloud', 'link'); return; }
     user = s.user; setCookie(s);
     var tabKey = user.id;
     if (sessionStorage.getItem(PULLED) !== tabKey) {
-      document.documentElement.style.visibility = 'hidden';
+      shellText('Syncing…');
       try {
         var changed = await pull();
         sessionStorage.setItem(PULLED, tabKey);
@@ -229,13 +238,13 @@
         status('Couldn’t load from cloud — <a href="#" id="solved-retry-pull" style="color:#6fb3ff">retry</a>, or continue offline', 'link');
       }
     }
-    document.documentElement.style.visibility = '';
+    hideShell();
     ready = true; schedule(500);
   }).catch(function (e) {
-    // getSession() itself can reject (e.g. storage access blocked); without this, the page
-    // would stay hidden forever for anyone whose browser previously signed in.
+    // getSession() itself can reject (e.g. storage access blocked); without this, the shell
+    // would stay up forever for anyone whose browser previously signed in.
     console.warn('[cloud-sync] session check failed', e);
-    document.documentElement.style.visibility = '';
+    hideShell();
     ready = true;
   });
 })();
