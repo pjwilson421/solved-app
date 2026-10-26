@@ -1967,8 +1967,10 @@ class Component extends DCLogic {
 
   // ---- centralized asset store (shared shape for every asset type) ----
   persist = () => {
-    try { localStorage.setItem('solved-assets', JSON.stringify(this.state.store)); }
-    catch { this.setState(s => ({ gen: { ...s.gen, error: 'Browser storage is full — remove some images to keep saving.' } })); }
+    // Character/product/location asset records carry full-size base64 images, which can exceed
+    // localStorage's ~5-10MB quota on an active project — the same bug kfImg had before it moved
+    // to IndexedDB (far larger quota, same store as gallery/videos).
+    idb.set('assets', this.state.store).catch(() => this.setState(s => ({ gen: { ...s.gen, error: 'Browser storage is full — remove some images to keep saving.' } })));
   };
   assets(type) { return this.state.store[type] || []; }
   getAsset(type, id) { return this.assets(type).find(a => a.uid === id); }
@@ -2786,15 +2788,20 @@ class Component extends DCLogic {
   saveX(k) { idb.set(k, this.state[k]).catch(() => this.setErr('Couldn’t save — browser storage is unavailable.')); }
   setX(k, fn) { this.setState(s => ({ [k]: fn(s[k] || []) }), () => this.saveX(k)); }
   loadX() {
-    idb.getMany(['videos', 'edits', 'deliveries', 'timeline', 'gallery', 'uploads', 'kf']).then(([v, e, d, t, g, u, kf]) => {
-      // kfImg used to live in localStorage, whose ~5-10MB quota full-size key-frame images can easily
-      // exceed, silently failing every save past that point. Migrate any pre-existing data into
-      // IndexedDB once, the same place gallery/videos already live.
+    idb.getMany(['videos', 'edits', 'deliveries', 'timeline', 'gallery', 'uploads', 'kf', 'assets']).then(([v, e, d, t, g, u, kf, assets]) => {
+      // kfImg (and now the character/product/location asset store) used to live in localStorage,
+      // whose ~5-10MB quota full-size images can easily exceed, silently failing every save past
+      // that point. Migrate any pre-existing data into IndexedDB once, the same place gallery/
+      // videos already live.
       if (!kf) {
         let legacy = null; try { legacy = JSON.parse(localStorage.getItem('solved-kf') || 'null'); } catch (err) {}
         if (legacy && typeof legacy === 'object') { kf = legacy; idb.set('kf', kf).catch(() => {}); }
       }
-      this.setState({ uploads: Array.isArray(u) ? u : [], gallery: Array.isArray(g) ? g : [], videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], kfImg: kf && typeof kf === 'object' ? kf : this.state.kfImg, xLoaded: true });
+      if (!assets) {
+        let legacy = null; try { legacy = JSON.parse(localStorage.getItem('solved-assets') || 'null'); } catch (err) {}
+        if (legacy && typeof legacy === 'object') { assets = legacy; idb.set('assets', assets).catch(() => {}); }
+      }
+      this.setState({ uploads: Array.isArray(u) ? u : [], gallery: Array.isArray(g) ? g : [], videos: Array.isArray(v) ? v : [], edits: Array.isArray(e) ? e : [], deliveries: Array.isArray(d) ? d : [], timeline: Array.isArray(t) ? t : [], kfImg: kf && typeof kf === 'object' ? kf : this.state.kfImg, store: assets && typeof assets === 'object' ? assets : this.state.store, xLoaded: true });
     }).catch(() => this.setState({ xLoaded: true }));
   }
   briefText() { const V = this.state.values || {}; return OV.map(([k]) => (V[k] || '').trim() ? k.charAt(0) + k.slice(1).toLowerCase() + ': ' + V[k].trim().slice(0, 600) : '').filter(Boolean).join('\n'); }
@@ -3538,7 +3545,7 @@ class Component extends DCLogic {
             doDelete: e => { stop(e);
               const keys = p.id === 'legacy' ? LEGACY : SV.keys().filter(k => k.indexOf('solved-p:' + p.id + ':') === 0);
               keys.forEach(k => SV.del(k));
-              ['products', 'locations', 'styles', 'kf'].map(k => SV.idbKeyFor(p.id, k)).concat(['cover:' + p.id]).forEach(k => idb.del(k).catch(() => {}));
+              ['products', 'locations', 'styles', 'kf', 'assets'].map(k => SV.idbKeyFor(p.id, k)).concat(['cover:' + p.id]).forEach(k => idb.del(k).catch(() => {}));
               let r = SV.registry().filter(x => x.id !== p.id);
               if (!r.length) r = [{ id: 'p' + Date.now().toString(36), created: Date.now(), start: '', end: '' }];
               SV.saveRegistry(r);
