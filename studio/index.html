@@ -112,13 +112,21 @@ button.ds-btn{border:0;font-family:inherit}button.ds-btn:disabled{opacity:.5;cur
 .x-refchip{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 6px 0 12px;border-radius:15px;background:#242424;color:#f5f5f5;font:400 13px/1 'Helvetica Neue',Helvetica,sans-serif}
 .x-refchip button{width:20px;height:20px;border:0;border-radius:50%;background:transparent;color:#a3a3a3;font-size:15px;line-height:1;cursor:pointer}
 .x-refchip button:hover{background:#333;color:#f5f5f5}
-.x-refbody{display:flex;flex-direction:column;gap:14px;margin-top:14px}
-.x-refgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.x-refasset{display:flex;flex-direction:column;gap:8px;min-width:0}
-.x-refthumb{position:relative;aspect-ratio:1 / 1;border-radius:6px;overflow:hidden;background:#202020}
-.x-refname{font:700 13px/16px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.x-refpills{display:flex;gap:6px}
-@media(max-width:900px){.x-refgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.x-railgrp{display:flex;flex-direction:column;gap:10px}
+.x-raillabel{font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.04em;color:#a3a3a3;text-transform:uppercase}
+.x-rail{display:flex;flex-direction:row;gap:14px;overflow-x:auto;padding-bottom:4px}
+.x-railcard{flex:0 0 120px;display:flex;flex-direction:column;gap:8px}
+.x-railthumb{position:relative;width:120px;aspect-ratio:1 / 1;border-radius:6px;overflow:hidden;background:#202020;cursor:pointer}
+.x-railname{font:700 13px/16px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.x-railpills{display:flex;gap:6px;flex-wrap:wrap}
+.x-railnew{flex:0 0 120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:120px;aspect-ratio:1 / 1;border-radius:6px;border:1px dashed #3a3a3a;color:#a3a3a3;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer}
+.x-railnewbox{font-size:20px;line-height:1}
+.x-railsheet{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:8px;background:#191919}
+.x-railsheetname{font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.02em;color:#a3a3a3}
+.x-railsheetrow{display:flex;gap:10px}
+.x-railsheetthumb{position:relative;width:80px;aspect-ratio:1 / 1;border-radius:6px;overflow:hidden;background:#202020}
+.x-railmanage{align-self:flex-start;border:0;background:transparent;color:#1985FF;font:700 12px/16px 'Helvetica Neue',Helvetica,sans-serif;cursor:pointer;padding:0}
+@media(max-width:900px){.x-railcard,.x-railthumb,.x-railnew{width:96px;flex-basis:96px}}
 .x-vcard{display:flex;flex-direction:column;gap:10px;min-width:0}
 .x-vbox{position:relative;aspect-ratio:16 / 9;border-radius:6px;overflow:hidden;background:#202020}
 .x-vexp{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;border:0;border-radius:6px;background:rgba(17,17,17,.7);display:none;align-items:center;justify-content:center;color:#f5f5f5;cursor:pointer}
@@ -1004,11 +1012,6 @@ html,body{background:#282828!important}
 
     <sc-if value="{{ x.hubOn }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Images" class="x-page x-hub" style="flex:1">
-        <div class="x-imgtabs">
-          <div class="x-modes" role="tablist" aria-label="Images">
-            <sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
-          </div>
-        </div>
         <sc-if value="{{ showCreateToggle }}" hint-placeholder-val="{{ false }}">
           <div class="x-createtoggle" role="tablist" aria-label="Image or video">
             <button type="button" role="tab" class="x-createtab" data-on="{{ createImageOn }}" aria-selected="{{ createImageOn }}" sc-camel-on-click="{{ setCreateImage }}">Image</button>
@@ -1016,6 +1019,35 @@ html,body{background:#282828!important}
           </div>
         </sc-if>
         <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ x.kfRailGroups }}" as="g" hint-placeholder-count="3">
+            <div class="x-railgrp">
+              <div class="x-raillabel">{{ g.label }}</div>
+              <div class="x-rail">
+                <sc-for list="{{ g.cards }}" as="a" hint-placeholder-count="0">
+                  <div class="x-railcard">
+                    <div class="x-railthumb" sc-camel-on-click="{{ a.toggleExpand }}">
+                      <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="{{ a.photoBg }}"></div></sc-if>
+                    </div>
+                    <div class="x-railname">{{ a.name }}</div>
+                    <div class="x-railpills">
+                      <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><button type="button" class="{{ a.photoCls }}" sc-camel-on-click="{{ a.togglePhoto }}">{{ a.photoLabel }}</button></sc-if>
+                      <sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}"><button type="button" class="{{ a.sheetCls }}" sc-camel-on-click="{{ a.toggleSheet }}">{{ a.sheetLabel }}</button></sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+                <div class="x-railnew" sc-camel-on-click="{{ g.onNew }}"><div class="x-railnewbox">+</div><span>{{ g.newLabel }}</span></div>
+              </div>
+              <sc-if value="{{ g.expanded }}" hint-placeholder-val="{{ false }}">
+                <div class="x-railsheet">
+                  <div class="x-railsheetname">{{ g.expanded.name }} — sheet</div>
+                  <div class="x-railsheetrow">
+                    <sc-for list="{{ g.expanded.thumbs }}" as="s" hint-placeholder-count="0"><div class="x-railsheetthumb"><div style="{{ s.bg }}"></div></div></sc-for>
+                  </div>
+                  <button type="button" class="x-railmanage" sc-camel-on-click="{{ g.expanded.open }}">Manage →</button>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
           <sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}">
             <div class="x-refchips">
               <sc-for list="{{ x.kfChips }}" as="c" hint-placeholder-count="0">
@@ -1023,32 +1055,6 @@ html,body{background:#282828!important}
               </sc-for>
             </div>
           </sc-if>
-          <div>
-            <button type="button" class="ds-btn" sc-camel-on-click="{{ x.kfPanelToggle }}">Reference: {{ x.kfRefCount }}</button>
-            <sc-if value="{{ x.kfPanelOpen }}" hint-placeholder-val="{{ false }}">
-              <div class="x-refbody">
-                <div class="x-modes" role="tablist" aria-label="Reference type">
-                  <sc-for list="{{ x.kfTabs }}" as="t" hint-placeholder-count="4"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }} · {{ t.count }}</button></sc-for>
-                </div>
-                <sc-if value="{{ x.kfEmpty }}" hint-placeholder-val="{{ false }}"><div class="ds-empty"><div><b>{{ x.kfEmptyText }}</b></div></div></sc-if>
-                <div class="x-refgrid">
-                  <sc-for list="{{ x.kfAssets }}" as="a" hint-placeholder-count="0">
-                    <div class="x-refasset">
-                      <div class="x-refthumb">
-                        <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="{{ a.photoBg }}"></div></sc-if>
-                        <sc-if value="{{ a.noPhoto }}" hint-placeholder-val="{{ true }}"><sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}"><div style="{{ a.sheetBg }}"></div></sc-if></sc-if>
-                      </div>
-                      <div class="x-refname">{{ a.name }}</div>
-                      <div class="x-refpills">
-                        <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><button type="button" class="{{ a.photoCls }}" sc-camel-on-click="{{ a.togglePhoto }}">{{ a.photoLabel }}</button></sc-if>
-                        <sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}"><button type="button" class="{{ a.sheetCls }}" sc-camel-on-click="{{ a.toggleSheet }}">{{ a.sheetLabel }}</button></sc-if>
-                      </div>
-                    </div>
-                  </sc-for>
-                </div>
-              </div>
-            </sc-if>
-          </div>
         </sc-if>
         <div class="x-hubbody">
           <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
@@ -2868,22 +2874,29 @@ class Component extends DCLogic {
       if (ph || sh) { names.push(a.name); chips.push({ name: a.name, keys: [ph ? kp : null, sh ? ks : null].filter(Boolean) }); } });
     return { srcs: [...new Set(out)], names, chips };
   }
+  // Products/Characters/Locations as always-visible rails on the Create page (not a tabbed
+  // picker) — each card doubles as a reference-picker (Photo/Sheet pills, unchanged from before)
+  // and a browse entry point (click to expand its sheet preview inline, or "New …" to open the
+  // full page's create flow). Deep editing stays on those full pages; this is browse + pick only.
   hubModeData() {
     const S = this.state;
-    const tab = S.kfTab || 'c', A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
+    const A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
     const toggle = key => () => this.setState(s => { const n = { ...(s.kfPick || {}) }; if (n[key]) delete n[key]; else n[key] = true; return { kfPick: n }; });
-    const out = { kfOn: '1',
-      galEmptyText: 'Your images appear here.',
-      kfPanelOpen: !!S.kfPanelOpen, kfPanelToggle: () => this.setState(s => ({ kfPanelOpen: !s.kfPanelOpen })) };
-    out.kfTabs = [['c', 'Characters'], ['p', 'Products'], ['l', 'Locations'], ['w', 'Wardrobe']].map(([k, label]) => ({ label, count: String(A[k].length), on: tab === k ? '1' : '0', pick: () => this.setState({ kfTab: k }) }));
-    out.kfAssets = A[tab].map(a => { const kp = a.k + ':' + a.id + ':photo', ks = a.k + ':' + a.id + ':sheet', ph = !!P[kp], sh = !!P[ks];
-      return { name: a.name, sub: a.sub, hasPhoto: !!a.photo, photoBg: Object.assign(bgOf(a.photo), { backgroundSize: 'cover' }), hasSheet: a.sheet.length > 0, sheetBg: Object.assign(bgOf(a.sheet[0] || ''), { backgroundSize: 'cover' }), on: ph || sh ? '1' : '0',
+    const out = { kfOn: '1', galEmptyText: 'Your images appear here.' };
+    const mkCard = a => { const kp = a.k + ':' + a.id + ':photo', ks = a.k + ':' + a.id + ':sheet', ph = !!P[kp], sh = !!P[ks], key = a.k + ':' + a.id;
+      return { name: a.name, sub: a.sub, hasPhoto: !!a.photo, photoBg: Object.assign(bgOf(a.photo), { backgroundSize: 'cover' }), hasSheet: a.sheet.length > 0,
         photoOn: ph ? '1' : '0', sheetOn: sh ? '1' : '0', photoLabel: ph ? '✓ Photo' : '+ Photo', sheetLabel: sh ? '✓ Sheet' : '+ Sheet', photoCls: ph ? 'ds-btn ds-on' : 'ds-btn', sheetCls: sh ? 'ds-btn ds-on' : 'ds-btn',
-        noPhoto: !a.photo, noSheet: !a.sheet.length, togglePhoto: toggle(kp), toggleSheet: toggle(ks) }; });
-    const label = { c: 'character', p: 'product', l: 'location', w: 'wardrobe item' }[tab], pg = { c: 'TALENT', p: 'PRODUCT', l: 'LOCATION', w: 'TALENT' }[tab];
-    Object.assign(out, { kfEmpty: !A[tab].length, kfEmptyText: tab === 'w' ? 'No wardrobe yet. Add one from a character’s page.' : 'No ' + label + 's yet. Use “+ New ' + label + '” below.', kfNewLabel: 'New ' + label,
-      kfNew: () => this.setState({ page: pg, view: 'all', item: null, prompt: '', slot: pg === 'TALENT' ? 'front' : 0 }),
-      kfBoards: () => this.setState({ page: 'KEYFRAMES', view: 'all', item: null, prompt: '' }),
+        togglePhoto: toggle(kp), toggleSheet: toggle(ks),
+        expanded: S.kfExpand === key, toggleExpand: () => this.setState(s => ({ kfExpand: s.kfExpand === key ? null : key })),
+        open: () => this.setState({ page: { c: 'TALENT', p: 'PRODUCT', l: 'LOCATION' }[a.k], view: 'item', item: a.id }) }; };
+    const mkGroup = (label, key, pg, newSlot) => {
+      const cards = A[key].map(mkCard), expandedSrc = A[key].find(a => (a.k + ':' + a.id) === S.kfExpand);
+      return { label, cards, empty: !cards.length, newLabel: 'New ' + label.slice(0, -1).toLowerCase(),
+        onNew: () => this.setState({ page: pg, view: 'all', item: null, prompt: '', slot: newSlot }),
+        expanded: expandedSrc ? { name: expandedSrc.name, open: mkCard(expandedSrc).open, thumbs: (expandedSrc.sheet || []).map(s => ({ bg: Object.assign(bgOf(s), { backgroundSize: 'cover' }) })) } : null };
+    };
+    out.kfRailGroups = [mkGroup('Products', 'p', 'PRODUCT', 0), mkGroup('Characters', 'c', 'TALENT', 'front'), mkGroup('Locations', 'l', 'LOCATION', 0)];
+    Object.assign(out, {
       kfRefCount: String(Math.min(8, refs.srcs.length + (S.castAtt || []).length + (this.styleRef() ? 1 : 0))), kfHasRefs: Object.keys(P).length > 0, kfClear: () => this.setState({ kfPick: {} }),
       kfChips: refs.chips.map(c => ({ name: c.name, remove: () => this.setState(s => { const n = { ...(s.kfPick || {}) }; c.keys.forEach(k => delete n[k]); return { kfPick: n }; }) })) });
     return out;
