@@ -6,7 +6,8 @@
     "node": ">=24"
   },
   "scripts": {
-    "test:seedance": "node index.ts"
+    "test:seedance": "node index.ts",
+    "test:ui": "node tests/studio-workflow.test.cjs"
   },
   "dependencies": {
     "@higgsfield/client": "0.2.6",
