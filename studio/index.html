@@ -28,6 +28,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="/studio/assets/cloud-sync.js?v=2"></script>
 
+<link rel="stylesheet" href="/studio/assets/studio-theme.css?v=20261102">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="/studio/assets/solved-puzzle.svg">
 <script>
@@ -405,12 +406,12 @@ html,body{background:#282828!important}
  [data-sv="bar"]>[data-sv="gobtn"],[data-sv="bar"] [data-sv="gobtn"]{position:static!important;transform:none!important;margin-left:auto!important}
 }
 @media (max-width:560px){[data-sv="homegrid"]{grid-template-columns:minmax(0,1fr)!important}}
-</style></helmet>
+</style><link rel="stylesheet" href="/studio/assets/studio-theme.css?v=20261102"></helmet>
 <div data-sv="app" style="display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px;min-height:100vh">
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
 <div data-sv="home" data-screen-label="00 Projects" style="position:fixed;inset:0;z-index:60;overflow:auto;background:#080808;display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px">
   <aside data-sv="homeside" style="width:300px;box-sizing:border-box;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
-    <div style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em"><img src="/studio/assets/solved-puzzle.svg" alt="SOLVED" width="46" height="44" style="display:block;width:46px;height:44px"></div>
+    <div style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em"><div class="studio-brand"><img src="/studio/assets/solved-puzzle.svg" alt="" width="23" height="23">SOLVED <span>STUDIO</span></div></div>
     <div data-sv="homebody" style="display:flex;flex-direction:column;gap:40px">
       <div style="display:flex;flex-direction:column;gap:4px;height:38px">
         <div style="height:18px;font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5">{{ home.countLabel }}</div>
@@ -482,8 +483,9 @@ html,body{background:#282828!important}
 </div>
 </sc-if>
   <aside data-sv="side" style="width:300px;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
-    <div sc-camel-on-click="{{ goImages }}" title="Images" style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;cursor:pointer"><img src="/studio/assets/solved-puzzle.svg" alt="SOLVED" width="46" height="44" style="display:block;width:46px;height:44px"></div>
+    <div sc-camel-on-click="{{ goImages }}" title="Images" style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;cursor:pointer"><div class="studio-brand"><img src="/studio/assets/solved-puzzle.svg" alt="" width="23" height="23">SOLVED <span>STUDIO</span></div></div>
     <div data-sv="sidebody" style="display:flex;flex-direction:column;gap:40px">
+      <button type="button" class="studio-projects" sc-camel-on-click="{{ goHome }}"><span>‹</span> All projects</button>
       <div data-sv="proj" sc-camel-on-click="{{ goOverview }}" style="display:flex;flex-direction:column;gap:4px;height:38px;cursor:pointer">
         <div style="height:18px;font:700 14px/18px 'Helvetica Neue',Helvetica,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:{{ projColor }}">{{ projName }}</div>
         <div style="height:16px;font:400 12px/16px 'Helvetica Neue',Helvetica,sans-serif;color:#929292;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ clientName }}</div>
@@ -505,6 +507,7 @@ html,body{background:#282828!important}
         </div>
       </div>
     </div>
+    <button type="button" class="studio-settings" sc-camel-on-click="{{ hfOpen }}" aria-label="Settings and connections"><svg width="17" height="17" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"></path></svg><span>Settings &amp; connections</span><i class="studio-status-dot" style="background:{{ hfDot }}"></i></button>
   </aside>
   <sc-if value="{{ castUpOpen }}" hint-placeholder-val="{{ false }}">
     <div data-sv="castup" sc-camel-on-click="{{ castUpClose }}" style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center">
@@ -545,11 +548,12 @@ html,body{background:#282828!important}
 
   <main data-sv="main" style="width:auto;min-width:0;min-height:100vh;padding:101px 64px 24px 0;display:flex;flex-direction:column;gap:40px">
     <input type="file" accept="image/*" multiple="{{ true }}" ref="{{ fileRef }}" sc-camel-on-change="{{ onFiles }}" style="display:none">
+    <div class="studio-topline"><div class="studio-breadcrumb"><button type="button" sc-camel-on-click="{{ goHome }}">Projects</button><span>›</span><span>{{ projName }}</span></div><button type="button" class="studio-utility" sc-camel-on-click="{{ goLib }}"><svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"></path></svg>Library</button></div>
     <div data-sv="crumbs" style="display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:32px;font:400 12px/14px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.03em">
       <div data-sv="pgback" sc-camel-on-click="{{ pagePrev }}" title="{{ pagePrevTitle }}" aria-label="{{ pagePrevTitle }}" style="flex:none;width:28px;height:28px;margin-left:-6px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:{{ pagePrevCursor }};opacity:{{ pagePrevOpacity }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
       </div>
-      <div style="flex:1;min-width:0;font:700 28px/36px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ pageHint }}</div>
+      <div style="flex:1;min-width:0;font:700 28px/36px 'Helvetica Neue',Helvetica,sans-serif;color:#f5f5f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ screenTitle }}</div>
       <div style="display:flex;align-items:center;gap:6px;white-space:nowrap;flex:none"><span sc-camel-on-click="{{ goRoot }}" style="cursor:{{ rootCursor }};text-decoration:{{ rootUnderline }}">{{ crumbRoot }}</span><span>{{ crumbSep }}</span><b style="color:{{ leafColor }}">{{ crumbLeaf }}</b></div>
       <div data-sv="pgfwd" sc-camel-on-click="{{ pageNext }}" title="{{ pageNextTitle }}" aria-label="{{ pageNextTitle }}" style="flex:none;width:28px;height:28px;margin-right:-6px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:{{ pageNextCursor }};opacity:{{ pageNextOpacity }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
@@ -557,6 +561,7 @@ html,body{background:#282828!important}
     </div>
 
     <sc-if value="{{ x.sbOn }}" hint-placeholder-val="{{ false }}">
+      <div class="studio-subnav"><div class="x-modes" role="tablist" aria-label="Video tools"><button type="button" class="x-mode" sc-camel-on-click="{{ openVideos }}">Videos</button><button type="button" class="x-mode" data-on="1">Keyframes</button><button type="button" class="x-mode" sc-camel-on-click="{{ openEditors }}">Editing</button></div></div>
       <div data-sv="sbbar" class="x-bar"><div class="x-bar-info">{{ x.sbInfo }}</div>
         <div class="x-bar-btns"><button class="ds-btn" disabled="{{ x.sbBusy }}" sc-camel-on-click="{{ x.sbWrite }}">{{ x.sbWriteLabel }}</button><button class="ds-btn" disabled="{{ x.sbBusy }}" sc-camel-on-click="{{ x.sbGen }}">{{ x.sbGenLabel }}</button><button class="ds-btn ds-on" sc-camel-on-click="{{ x.sbVideos }}">Make videos →</button></div></div>
     </sc-if>
@@ -1012,12 +1017,23 @@ html,body{background:#282828!important}
 
     <sc-if value="{{ x.hubOn }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Images" class="x-page x-hub" style="flex:1">
-        <sc-if value="{{ showCreateToggle }}" hint-placeholder-val="{{ false }}">
-          <div class="x-createtoggle" role="tablist" aria-label="Image or video">
-            <button type="button" role="tab" class="x-createtab" data-on="{{ createImageOn }}" aria-selected="{{ createImageOn }}" sc-camel-on-click="{{ setCreateImage }}">Image</button>
-            <button type="button" role="tab" class="x-createtab" data-on="{{ createVideoOn }}" aria-selected="{{ createVideoOn }}" sc-camel-on-click="{{ setCreateVideo }}">Video</button>
+        <div class="studio-subnav"><div class="x-modes" role="tablist" aria-label="Image tools"><sc-for list="{{ x.imageTabs }}" as="t" hint-placeholder-count="6"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for></div><span class="studio-count">{{ x.versionCount }} versions</span></div>
+        <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div role="alert" class="studio-inline-error">{{ errorText }}</div></sc-if>
+          <div class="studio-workspace">
+            <div class="studio-stage" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ dropCastAtt }}">
+              <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="studio-canvas-empty"><svg width="42" height="42" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 4h18v16H3zM3 17l6-6 4 4 3-3 5 5"></path><circle cx="16" cy="8" r="1.5"></circle></svg><h2>Bring your idea into focus.</h2><p>Describe an image below. Add a character, product, or location to keep every detail consistent.</p><button type="button" class="studio-utility" sc-camel-on-click="{{ talentPlus }}">+ Attach an image</button></div></sc-if>
+              <sc-if value="{{ x.active.has }}" hint-placeholder-val="{{ false }}"><div class="studio-stage-image" role="button" tabindex="0" aria-label="Expand selected image" sc-camel-on-click="{{ x.active.expand }}"><div style="{{ x.active.bg }}"></div></div><sc-if value="{{ x.active.kfOnBool }}" hint-placeholder-val="{{ false }}"><div class="studio-keyframe-badge">◇ Start frame · {{ x.active.shotLabel }}</div></sc-if>
+              <div class="studio-toolbar"><button type="button" sc-camel-on-click="{{ x.active.edit }}"><svg sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20l4-1L20 7l-3-3L5 16zM14 7l3 3"></path></svg>Edit</button><button type="button" sc-camel-on-click="{{ x.active.variations }}"><svg sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"></path></svg>Variations</button><button type="button" title="Open image editor to upscale to 4K" sc-camel-on-click="{{ x.active.upscale }}"><svg sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 14v6h16v-6M12 16V4M7 9l5-5 5 5"></path></svg>Upscale</button><button type="button" class="studio-kf-button" sc-camel-on-click="{{ x.active.toggleKf }}">◇ {{ x.active.keyframeAction }}</button></div></sc-if>
+              <sc-if value="{{ x.active.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div><div class="studio-canvas-empty"><h2>Creating your image…</h2><p>You can keep working while it renders.</p></div></sc-if>
+              <sc-if value="{{ x.active.failed }}" hint-placeholder-val="{{ false }}"><div class="studio-canvas-empty"><h2>Image could not be created</h2><p>{{ x.active.err }}</p><button type="button" class="studio-utility" sc-camel-on-click="{{ x.active.reuse }}">Restore prompt</button></div></sc-if>
+              <sc-if value="{{ x.hasActive }}" hint-placeholder-val="{{ false }}"><button type="button" class="studio-canvas-menu" aria-label="Image options" sc-camel-on-click="{{ x.active.toggleMenu }}">•••</button><sc-if value="{{ x.active.menuOpen }}" hint-placeholder-val="{{ false }}"><div class="x-gmenu"><sc-for list="{{ x.active.menuItems }}" as="m" hint-placeholder-count="0"><button type="button" class="x-gmenuitem" sc-camel-on-click="{{ m.click }}"><svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="{{ m.icon }}"></path></svg><span>{{ m.label }}</span></button></sc-for></div></sc-if></sc-if>
+            </div>
+            <div class="studio-versions"><div class="studio-versions-head">Versions <span>{{ x.versionCount }}</span></div><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0"><button type="button" class="studio-version" data-on="{{ g.selected }}" aria-pressed="{{ g.selectedBool }}" aria-label="{{ g.versionLabel }}" title="{{ g.prompt }}" sc-camel-on-click="{{ g.select }}"><sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><div style="{{ g.bg }}"></div></sc-if><sc-if value="{{ g.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if><sc-if value="{{ g.failed }}" hint-placeholder-val="{{ false }}"><div class="x-gerr">Failed</div></sc-if><span class="studio-version-index">{{ g.versionLabel }}</span></button></sc-for><sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="studio-no-versions">Your generated images appear here.</div></sc-if></div>
           </div>
+          <div class="studio-ref-section"><div class="studio-section-heading"><div>References <span>{{ x.kfRefCount }} attached</span></div><button type="button" class="studio-utility" sc-camel-on-click="{{ x.toggleReferences }}">{{ x.referenceAction }}</button></div><div class="studio-ref-summary"><sc-for list="{{ x.refSummary }}" as="r" hint-placeholder-count="3"><div class="studio-ref-category"><div class="studio-ref-preview"><sc-if value="{{ r.has }}" hint-placeholder-val="{{ false }}"><div style="{{ r.bg }}"></div></sc-if><sc-if value="{{ r.empty }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="{{ r.icon }}"></path></svg></sc-if></div><div class="studio-ref-label"><button type="button" sc-camel-on-click="{{ r.open }}">{{ r.label }}</button><span>{{ r.info }}</span></div><button type="button" class="studio-ref-open" data-on="{{ r.on }}" aria-label="{{ r.action }}" title="{{ r.action }}" sc-camel-on-click="{{ r.pick }}">{{ r.mark }}</button></div></sc-for></div></div>
         </sc-if>
+        <sc-if value="{{ x.referencesOpen }}" hint-placeholder-val="{{ false }}"><div class="studio-ref-drawer">
         <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
           <sc-for list="{{ x.kfRailGroups }}" as="g" hint-placeholder-count="3">
             <div class="x-railgrp">
@@ -1056,31 +1072,8 @@ html,body{background:#282828!important}
             </div>
           </sc-if>
         </sc-if>
+        </div></sc-if>
         <div class="x-hubbody">
-          <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
-          <div class="x-galwrap">
-            <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
-            <div class="x-gal"><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0">
-              <div class="x-gcard" title="{{ g.prompt }}">
-                <div class="x-gimg" style="aspect-ratio:{{ g.ar }}">
-                  <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><div style="{{ g.bg }}"></div></sc-if>
-                  <sc-if value="{{ g.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if>
-                  <sc-if value="{{ g.failed }}" hint-placeholder-val="{{ false }}"><div class="x-gerr">{{ g.err }}</div></sc-if>
-                </div>
-                <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-gkf" data-on="{{ g.kfOn }}" aria-label="{{ g.kfLabel }}" aria-pressed="{{ g.kfOn }}" title="{{ g.kfLabel }}" sc-camel-on-click="{{ g.toggleKf }}">
-                  <sc-if value="{{ g.kfOnBool }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" sc-camel-view-box="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.86,6.49l-4.34-4.36c-.85-.82-2.18-.82-3.04.01L2.15,6.49c-.4.4-.63.94-.63,1.52s.22,1.11.63,1.52l4.33,4.33c.41.41.95.64,1.52.64s1.11-.23,1.53-.64l4.33-4.33c.4-.4.63-.94.63-1.52,0-.57-.22-1.11-.62-1.51Z"></path></svg></sc-if>
-                  <sc-if value="{{ g.kfOff }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" sc-camel-view-box="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8,14.49c-.57,0-1.11-.23-1.52-.64l-4.33-4.33c-.83-.84-.83-2.21,0-3.04L6.46,2.13c.86-.82,2.19-.82,3.04,0l4.49,4.54c.31.38.48.85.48,1.35,0,.57-.22,1.11-.63,1.51l-4.33,4.33c-.41.41-.95.64-1.52.64ZM7.99,2.51c-.29,0-.59.11-.83.34L2.85,7.19c-.45.45-.44,1.17,0,1.63l4.33,4.33c.44.44,1.19.44,1.63,0l4.33-4.33c.22-.22.33-.5.33-.81s-.12-.59-.33-.81l-4.34-4.37c-.23-.22-.52-.33-.81-.33Z"></path></svg></sc-if>
-                </button></sc-if>
-                <button type="button" class="x-gmenubtn" data-on="{{ g.menuOn }}" aria-label="Image options" sc-camel-on-click="{{ g.toggleMenu }}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button>
-                <sc-if value="{{ g.menuOpen }}" hint-placeholder-val="{{ false }}">
-                  <div class="x-gmenu">
-                    <sc-for list="{{ g.menuItems }}" as="m" hint-placeholder-count="0"><button type="button" class="x-gmenuitem" sc-camel-on-click="{{ m.click }}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ m.icon }}"></path></svg><span>{{ m.label }}</span></button></sc-for>
-                  </div>
-                </sc-if>
-              </div>
-            </sc-for></div>
-          </div>
-          </sc-if>
           <sc-if value="{{ createVideoMode }}" hint-placeholder-val="{{ false }}">
           <sc-if value="{{ x.vEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">Your videos appear here.</div></sc-if>
           <div class="x-vgrid">
@@ -1104,7 +1097,7 @@ html,body{background:#282828!important}
     </sc-if>
 
     <sc-if value="{{ x.vidOn }}" hint-placeholder-val="{{ false }}">
-      <div data-screen-label="Videos" class="x-page">
+      <div data-screen-label="Videos" class="x-page"><div class="studio-subnav"><div class="x-modes" role="tablist" aria-label="Video tools"><button type="button" class="x-mode" data-on="1">Videos</button><button type="button" class="x-mode" sc-camel-on-click="{{ openKeyframes }}">Keyframes</button><button type="button" class="x-mode" sc-camel-on-click="{{ openEditors }}">Editing</button></div></div>
         <sc-if value="{{ x.showProduceTabs }}" hint-placeholder-val="{{ false }}">
           <div class="x-modes" role="tablist" aria-label="Produce">
             <sc-for list="{{ x.produceTabs }}" as="t" hint-placeholder-count="2"><button type="button" role="tab" class="x-mode" data-on="{{ t.on }}" aria-selected="{{ t.sel }}" sc-camel-on-click="{{ t.pick }}">{{ t.label }}</button></sc-for>
@@ -1542,7 +1535,8 @@ html,body{background:#282828!important}
               </sc-if>
             </div>
           </sc-if>
-          <div data-sv="gobtn" sc-camel-on-click="{{ submit }}" style="margin-left:auto;width:104px;height:44px;flex:none;border-radius:6px;background:{{ actionBg }};color:{{ actionFg }};display:flex;align-items:center;justify-content:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:{{ actionCursor }}">{{ talentAction }}</div>
+          <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ false }}"><button type="button" class="studio-utility studio-sheet-button" sc-camel-on-click="{{ x.toggleReferences }}">Reference sheets</button><span class="studio-compose-spacer"></span><sc-for list="{{ quickImageOptions }}" as="o" hint-placeholder-count="2"><label class="studio-quick-control"><select aria-label="{{ o.label }}" value="{{ o.value }}" sc-camel-on-change="{{ o.change }}"><sc-for list="{{ o.options }}" as="v" hint-placeholder-count="3"><option value="{{ v.value }}">{{ v.label }}</option></sc-for></select></label></sc-for></sc-if>
+          <div data-sv="gobtn" role="button" tabindex="0" aria-label="Generate" sc-camel-on-click="{{ submit }}" style="margin-left:auto;width:104px;height:44px;flex:none;border-radius:6px;background:{{ actionBg }};color:{{ actionFg }};display:flex;align-items:center;justify-content:center;font:700 11px/1 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.06em;cursor:{{ actionCursor }}">{{ talentAction }}</div>
         </div>
       </div>
     </sc-if>
@@ -1599,13 +1593,13 @@ const NAV_ORDER = ['BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAME
 const NAV_ICON = { BRIEF: 'M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5', OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', KEYFRAMES: 'M12 3l9 9-9 9-9-9z', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
 // Brief / Images / Keyframes / Produce — collapsed top-level nav. "Images" and "Produce" are
 // each a group of pages sharing one sidebar button; see GROUP_PAGES/GROUP_DEFAULT below.
-const SIDE_NAV = [['BRIEF', 'Brief'], ['IMAGES', 'Images'], ['KEYFRAMES', 'Keyframes'], ['VIDEOS', 'Produce']];
+const SIDE_NAV = [['BRIEF', 'Brief'], ['IMAGES', 'Images'], ['VIDEOS', 'Videos'], ['DELIVERY', 'Deliver']];
 const IMAGE_PAGES = ['IMAGES', 'TALENT', 'PRODUCT', 'LOCATION', 'WARDROBE', 'SETDESIGN'];
-const PRODUCE_PAGES = ['VIDEOS', 'EDITING'];
+const PRODUCE_PAGES = ['VIDEOS', 'EDITING', 'KEYFRAMES'];
 // Which pages belong to a given sidebar button, and which page to land on when entering that
 // group from somewhere else (re-clicking a group you're already in just re-opens its home page).
 const GROUP_PAGES = { IMAGES: IMAGE_PAGES, VIDEOS: PRODUCE_PAGES };
-const GROUP_DEFAULT = { IMAGES: 'PRODUCT', VIDEOS: 'VIDEOS' };
+const GROUP_DEFAULT = { IMAGES: 'IMAGES', VIDEOS: 'VIDEOS' };
 // Header hint text for the "simple" pages (no breadcrumb drill-down, just a title + hint).
 const SIMPLE_PAGE_HINT = { VIDEOS: 'Make your videos', EDITING: 'Edit your content', DELIVERY: 'Choose your file destination', LIBRARY: 'All files in this project' };
 const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Keyframes' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Props' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Create' : p.charAt(0) + p.slice(1).toLowerCase();
@@ -2904,7 +2898,7 @@ class Component extends DCLogic {
   /** Shared tab bar (Products/Characters/Locations/Shots/Keyframes) — same screen set as {@link IMAGE_PAGES_TOP}. */
   imageTabsData() {
     const page = this.state.page;
-    return [['PRODUCT', 'Products'], ['TALENT', 'Characters'], ['LOCATION', 'Locations'], ['IMAGES', 'Create']]
+    return [['IMAGES', 'Create'], ['TALENT', 'Characters'], ['PRODUCT', 'Products'], ['LOCATION', 'Locations'], ['WARDROBE', 'Wardrobe'], ['SETDESIGN', 'Props']]
       .map(([p, label]) => ({ label, on: page === p ? '1' : '0', sel: page === p ? 'true' : 'false',
         pick: () => { this.initial = this.state.values; this.setState({ page: p, view: 'all', item: null, prompt: '', attachOpen: false, locPopup: null, locPreview: null, stylePreview: null, slot: p === 'PRODUCT' || p === 'WARDROBE' || p === 'LOCATION' || p === 'SETDESIGN' ? 0 : 'front', create: freshCreate(), gen: { ...this.state.gen, error: '' } }); } }));
   }
@@ -2942,7 +2936,7 @@ class Component extends DCLogic {
     const refs = enhance ? this.state.castAtt.filter(Boolean).slice(0, 2) : [...this.state.castAtt, ...this.kfRefs().srcs, sref].filter(Boolean).slice(0, refsMax);
     const id = uid(), shown = p;
     if (!enhance && st) p = p + ' Visual style: ' + (st.desc || st.name) + '.' + (sref ? ' Match the look of the style reference image.' : '');
-    this.setErr(''); this.setState({ prompt: '', castAtt: [] });
+    this.setErr(''); this.setState({ prompt: '', castAtt: [], canvasImage: id });
     this.setX('gallery', a => [{ uid: id, prompt: shown, src: '', status: 'running', aspect, refs: refs.length, at: Date.now() }, ...a]);
     try {
       const url = await HF.generate({ prompt: p, references: refs, aspect, model: o.model, quality: o.quality, resolution: o.resolution, enhancePrompt: enhance, presetId: enhance ? o.presetId : undefined, refsMax });
@@ -3119,7 +3113,7 @@ class Component extends DCLogic {
     (S.products || []).filter(p => p.kind === 'wardrobe').forEach(p => (p.views || []).forEach((v, i) => v && add('Wardrobe', p.name + ' · ' + vlabel(p.type, i), I[v.img])));
     (S.locations || []).filter(l => (l.sect || 'location') === 'location').forEach(l => (l.views || []).forEach((v, i) => v && add('Locations', l.name + ' · ' + (LAI[i] || 'View'), I[v.img])));
     (S.locations || []).filter(l => l.sect === 'set').forEach(l => (l.views || []).forEach((v, i) => v && add('Props', l.name + ' · ' + (LAI[i] || 'View'), I[v.img])));
-    (S.items.KEYFRAMES || []).forEach(t => add('Storyboards', t.name, this.frameSrc(t.n)));
+    (S.items.KEYFRAMES || []).forEach(t => add('Keyframes', t.name, this.frameSrc(t.n)));
     (S.videos || []).forEach(v => v.status === 'done' && add('Videos', v.name, v.url, 'video'));
     (S.edits || []).forEach(e => add('Editing', e.name, e.src, e.kind));
     return out;
@@ -3184,7 +3178,8 @@ class Component extends DCLogic {
       endFrame: 'M5 3v18M5 4h11l-2.5 3L16 10H5',
     };
     const galMenuToggle = (g, e) => { stop(e); this.setState(s => ({ galMenuOpen: s.galMenuOpen === g.uid ? null : g.uid })); };
-    const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map(g => {
+    const activeId = GAL.some(g => g.uid === S.canvasImage) ? S.canvasImage : (GAL[0] && GAL[0].uid);
+    const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map((g, index) => {
       const has = g.status === 'done' && !!g.src;
       const expand = e => { stop(e); this.setState({ galPreview: g.uid, galMenuOpen: null }); };
       const download = e => { stop(e); const a = document.createElement('a'); a.href = g.src; a.download = g.prompt.slice(0, 40).replace(/\W+/g, '-') + '.jpg'; a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); this.setState({ galMenuOpen: null }); };
@@ -3213,10 +3208,20 @@ class Component extends DCLogic {
       menuItems.push({ id: 'reuse', label: 'Reuse prompt', icon: GMENU_ICON.reuse, click: reuse });
       menuItems.push({ id: 'delete', label: 'Delete', icon: GMENU_ICON.delete, click: del });
       const isKf = has && (g.kf !== undefined ? !!g.kf : !!this.kfShotForSrc(g.src));
-      return { kind: g.kind === 'kf' ? 'Key frame' : 'Image', has, bg: fit(g.src || ''), running: g.status === 'running', failed: g.status === 'failed', err: g.error || '', prompt: g.prompt, ar: (g.aspect || '1:1').replace(':', ' / '),
+      return { uid: g.uid, selected: g.uid === activeId ? '1' : '0', selectedBool: g.uid === activeId ? 'true' : 'false', versionLabel: 'V' + String(GAL.length - index).padStart(2, '0'), select: () => this.setState({ canvasImage: g.uid, galMenuOpen: null }), shotLabel: (this.kfShotForSrc(g.src) || {}).name || 'Keyframe', keyframeAction: isKf ? 'Remove keyframe' : 'Set as keyframe', variations: e => { stop(e); this.setState({ prompt: g.prompt, castAtt: [g.src], galMenuOpen: null }, () => this.taRef.current && this.taRef.current.focus()); }, upscale: e => { stop(e); this.setState({ page: 'EDITING', edTool: 'image', ed: { src: g.src, name: g.prompt.slice(0, 40), adj: { b: 100, c: 100, s: 100 } }, galMenuOpen: null }); }, kind: g.kind === 'kf' ? 'Key frame' : 'Image', has, bg: fit(g.src || ''), running: g.status === 'running', failed: g.status === 'failed', err: g.error || '', prompt: g.prompt, ar: (g.aspect || '1:1').replace(':', ' / '),
         expand, download, edit, reuse, del, menuItems, menuOpen: S.galMenuOpen === g.uid, menuOn: S.galMenuOpen === g.uid ? '1' : '0', toggleMenu: e => galMenuToggle(g, e),
         kfOn: isKf ? '1' : '0', kfOnBool: isKf, kfOff: !isKf, kfLabel: isKf ? 'Remove from keyframes' : 'Add to keyframes', toggleKf: e => this.toggleGalKeyframe(g, e) };
     }), ...this.hubModeData() } : {};
+    if (page === 'IMAGES') {
+      const assets = this.kfAssetsAll();
+      Object.assign(hubData, { active: hubData.gal.find(g => g.uid === activeId) || {}, hasActive: !!activeId, versionCount: GAL.length,
+        referencesOpen: !!S.referencesOpen, referenceAction: S.referencesOpen ? 'Done' : '+ Add reference', toggleReferences: () => this.setState(s => ({ referencesOpen: !s.referencesOpen })),
+        refSummary: [['c', 'Character', 'TALENT', NAV_ICON.TALENT || 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 21c0-4 4-6 8-6s8 2 8 6'], ['p', 'Product', 'PRODUCT', 'M12 3l9 5v9l-9 5-9-5V8zM3 8l9 5 9-5M12 13v9'], ['l', 'Location', 'LOCATION', 'M3 11l9-8 9 8M5 9v12h14V9M9 21v-8h6v8']].map(([k,label,pg,icon]) => {
+          const list = assets[k], picks = S.kfPick || {}, selected = list.filter(a => picks[k + ':' + a.id + ':photo'] || picks[k + ':' + a.id + ':sheet']), a = selected[0] || list[0], key = a && k + ':' + a.id + (a.sheet.length ? ':sheet' : ':photo');
+          return { label, icon, has: !!(a && a.photo), empty: !(a && a.photo), bg: a ? bgOf(a.photo) : {}, info: selected.length ? selected.length + ' selected' : list.length ? list.length + ' available' : 'Create or upload', on: selected.length ? '1' : '0', mark: selected.length ? '✓' : '+', action: a ? 'Choose ' + label.toLowerCase() + ' references' : 'Add ' + label.toLowerCase(),
+            open: () => this.setState({ page: pg, view: 'all', item: null, prompt: '' }), pick: () => this.setState(s => ({ referencesOpen: true })) };
+        }) });
+    }
     const galPreviewItem = GAL.find(g => g.uid === S.galPreview);
     Object.assign(hubData, { hasGalPreview: !!(galPreviewItem && galPreviewItem.src), galPreviewBg: galPreviewItem ? fit(galPreviewItem.src || '') : {}, galPreviewLabel: galPreviewItem ? galPreviewItem.prompt : '',
       closeGalPreview: () => this.setState({ galPreview: null }) });
@@ -3566,6 +3571,9 @@ class Component extends DCLogic {
           create: () => { const id = 'p' + Date.now().toString(36); SV.saveRegistry(SV.registry().concat([{ id, created: Date.now(), start: '', end: '' }])); SV.set('solved-current', id); reload(true); } };
       })(),
       projName: proj || 'Untitled project', projColor: proj ? '#f5f5f5' : '#929292', clientName: client || 'No client',
+      openVideos: () => this.setState({ page: 'VIDEOS', view: 'all', item: null }),
+      openKeyframes: () => this.setState({ page: 'KEYFRAMES', view: 'all', item: null }),
+      openEditors: () => this.setState({ page: 'EDITING', edTool: null, view: 'all', item: null }),
       goImages: () => { this.initial = values; this.setState({ page: 'IMAGES', view: 'all', item: null, attachOpen: false }); window.scrollTo(0, 0); },
       libOn: page === 'LIBRARY' ? '1' : '0', libQ: this.state.libQ || '',
       libFilesOpen: this.state.libFilesOpen === true ? '1' : '0',
@@ -3602,6 +3610,7 @@ class Component extends DCLogic {
           hfFields: [['account', 'ACCOUNT LABEL', 'text', ''], ['model', 'IMAGE MODEL', 'text', 'gpt_image_2_5'], ['quality', 'QUALITY (low · medium · high · xhigh · max)', 'text', 'high'], ['resolution', 'RESOLUTION (1k · 2k · 4k)', 'text', '1k']]
             .map(([k, label, type, ph]) => ({ label, type, ph, value: (d && d[k]) || '', set: setD(k) })) }; })(),
       barW: '100%',
+      screenTitle: ({ BRIEF: 'Brief', IMAGES: 'Images', VIDEOS: 'Videos', KEYFRAMES: 'Keyframes', DELIVERY: 'Deliver', LIBRARY: 'Library', TALENT: 'Characters', PRODUCT: 'Products', LOCATION: 'Locations', WARDROBE: 'Wardrobe', SETDESIGN: 'Props', EDITING: 'Editing', OVERVIEW: 'Overview' })[page] || PAGE_LABEL(page),
       pageHint: (isXPage ? (page === 'EDITING' && this.state.edTool ? (this.state.edTool === 'image' ? 'Edit your images' : 'Edit your video') : SIMPLE_PAGE_HINT[page]) : null) || ({ BRIEF: 'Enter your project details', OVERVIEW: 'Open any section to continue', IMAGES: 'Describe a shot, or attach references', KEYFRAMES: inDetail ? 'Create your key frame' : 'Create your key frames' })[page]
         || (isTalent ? (isSheet ? 'Create your character sheet' : 'Create your character images')
         : isProduct ? (isProdSheet ? (pkind === 'wardrobe' ? 'Create your wardrobe sheet' : 'Create your product sheet') : pkind === 'wardrobe' ? 'Create your wardrobe images' : 'Create your product images')
@@ -4120,6 +4129,7 @@ class Component extends DCLogic {
           d };
       })(),
       showGenOpts: isCast || isHub || isVid || (!!gk && !gDetail),
+      quickImageOptions: (() => { const c = this.tcfg('IMAGES:main'), m = IMODELS[c.model] || IMODELS[IMODEL_DEFAULT]; return [['ratio', 'Aspect ratio', m.ratios, m.ratios.includes(c.ratio) ? c.ratio : '1:1'], ['resolution', 'Resolution', ['1k','2k','4k'], c.resolution || '1k']].map(([key,label,list,value]) => ({ label, value, options: list.map(v => ({ value: v, label: key === 'resolution' ? v.toUpperCase() : v })), change: e => this.tset('IMAGES:main', { [key]: e.target.value }) })); })(),
       settingsPanelOpen: !!this.state.settingsPanelOpen,
       toggleSettingsPanel: () => this.setState(s => ({ settingsPanelOpen: !s.settingsPanelOpen })),
       showCreateToggle: isHub, createVideoMode, createImageMode: isHub && !createVideoMode,
@@ -4370,4 +4380,5 @@ class Component extends DCLogic {
 })();
 </script>
 
+<script src="/studio/assets/studio-accessibility.js"></script>
 </body></html>
