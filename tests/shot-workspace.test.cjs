@@ -17,6 +17,7 @@ class ComponentState {
   }
 }
 const requests = [];
+const imageRequests = [];
 const context = vm.createContext({
   console,
   DCLogic: ComponentState,
@@ -30,6 +31,7 @@ const context = vm.createContext({
     SOLVED_HF: {
       get: () => ({ ready: true }),
       connected: () => true,
+      generate: async request => { imageRequests.push(request); return 'local-image.png'; },
       video: async request => { requests.push(request); return 'local-video.mp4'; },
     },
   },
@@ -84,6 +86,30 @@ async function check() {
   assert.equal(app.endFrameSrc(9), '');
   assert.equal(app.frameSrc(9), example + 'A');
   assert.match(app.renderVals().workspaceAssignmentStatus, /Exit/);
+
+  const originalState = app.state;
+  app.state = { ...app.state, store: { ...app.state.store, TALENT: [
+    { uid: 'character', name: 'Mira', main: example + 'portrait', sheet: { front: example + 'front' } },
+  ] },
+  products: [{ uid: 'product', name: 'Ring', views: [{ img: 'ring', source: 'uploaded' }] }],
+  locations: [{ uid: 'location', name: 'Pavilion', views: [{ img: 'pavilion' }] }],
+  imgs: { ring: example + 'ring', pavilion: example + 'pavilion' } };
+  const [characters, products, locations] = app.hubModeData().kfRailGroups;
+  characters.cards[0].primaryAction();
+  characters.cards[0].toggleSheet();
+  products.cards[0].primaryAction();
+  locations.cards[0].primaryAction();
+  let references = app.hubModeData();
+  assert.equal(references.kfSelectedLabel, '3 assets selected');
+  assert.equal(references.kfRailGroups[0].cards[0].primaryPressed, 'true');
+  assert.equal(references.kfChips[0].label, 'Mira · Photo + Sheet');
+  await app.createGen('A ring campaign still');
+  assert.deepEqual(Array.from(imageRequests[0].references), ['portrait', 'front', 'ring', 'pavilion'].map(name => example + name));
+  references.kfChips[0].remove();
+  references = app.hubModeData();
+  assert.equal(references.kfSelectedLabel, '2 assets selected');
+  assert.equal(references.kfRailGroups[0].cards[0].primaryPressed, 'false');
+  app.state = originalState;
 
   app.openWorkspace('STORYBOARDS', 14);
   let workspace = app.renderVals().workspace;

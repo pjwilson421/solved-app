@@ -1110,42 +1110,62 @@ html,body{background:#282828!important}
           </div>
         </sc-if>
         <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
-          <sc-for list="{{ x.kfRailGroups }}" as="g" hint-placeholder-count="3">
-            <div class="x-railgrp">
-              <div class="x-raillabel">{{ g.label }}</div>
-              <div class="x-rail">
-                <sc-for list="{{ g.cards }}" as="a" hint-placeholder-count="0">
-                  <div class="x-railcard">
-                    <div class="x-railthumb" sc-camel-on-click="{{ a.toggleExpand }}">
-                      <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="{{ a.photoBg }}"></div></sc-if>
-                    </div>
-                    <div class="x-railname">{{ a.name }}</div>
-                    <div class="x-railpills">
-                      <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><button type="button" class="{{ a.photoCls }}" sc-camel-on-click="{{ a.togglePhoto }}">{{ a.photoLabel }}</button></sc-if>
-                      <sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}"><button type="button" class="{{ a.sheetCls }}" sc-camel-on-click="{{ a.toggleSheet }}">{{ a.sheetLabel }}</button></sc-if>
-                    </div>
-                  </div>
-                </sc-for>
-                <div class="x-railnew" sc-camel-on-click="{{ g.onNew }}"><div class="x-railnewbox">+</div><span>{{ g.newLabel }}</span></div>
+          <aside class="image-references" aria-label="Image references">
+            <header class="image-reference-summary">
+              <div class="image-reference-heading">
+                <h2>Attach references</h2>
+                <span class="image-reference-count" role="status">{{ x.kfSelectedLabel }}</span>
               </div>
-              <sc-if value="{{ g.expanded }}" hint-placeholder-val="{{ false }}">
-                <div class="x-railsheet">
-                  <div class="x-railsheetname">{{ g.expanded.name }} — sheet</div>
-                  <div class="x-railsheetrow">
-                    <sc-for list="{{ g.expanded.thumbs }}" as="s" hint-placeholder-count="0"><div class="x-railsheetthumb"><div style="{{ s.bg }}"></div></div></sc-for>
-                  </div>
-                  <button type="button" class="x-railmanage" sc-camel-on-click="{{ g.expanded.open }}">Manage →</button>
+              <p>{{ x.kfReferenceHint }}</p>
+              <sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}">
+                <div class="x-refchips">
+                  <sc-for list="{{ x.kfChips }}" as="c" hint-placeholder-count="0">
+                    <button type="button" class="image-reference-chip" aria-label="{{ c.removeLabel }}" sc-camel-on-click="{{ c.remove }}">
+                      <span>{{ c.label }}</span><span aria-hidden="true">×</span>
+                    </button>
+                  </sc-for>
                 </div>
               </sc-if>
-            </div>
-          </sc-for>
-          <sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}">
-            <div class="x-refchips">
-              <sc-for list="{{ x.kfChips }}" as="c" hint-placeholder-count="0">
-                <div class="x-refchip"><span>{{ c.name }}</span><button type="button" aria-label="Remove reference" sc-camel-on-click="{{ c.remove }}">×</button></div>
-              </sc-for>
-            </div>
-          </sc-if>
+            </header>
+            <sc-for list="{{ x.kfRailGroups }}" as="g" hint-placeholder-count="3">
+              <section class="image-reference-group" aria-label="{{ g.label }}">
+                <div class="image-reference-heading">
+                  <h3>{{ g.label }}</h3>
+                  <button type="button" class="image-reference-link" sc-camel-on-click="{{ g.onNew }}">{{ g.newLabel }}</button>
+                </div>
+                <sc-if value="{{ g.empty }}" hint-placeholder-val="{{ false }}"><p>{{ g.emptyLabel }}</p></sc-if>
+                <div class="image-reference-list">
+                  <sc-for list="{{ g.cards }}" as="a" hint-placeholder-count="0">
+                    <article class="image-reference-card">
+                      <button type="button" class="image-reference-asset" aria-label="{{ a.primaryLabel }}" aria-pressed="{{ a.primaryPressed }}" sc-camel-on-click="{{ a.primaryAction }}">
+                        <span class="image-reference-thumb">
+                          <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><span style="{{ a.photoBg }}"></span></sc-if>
+                        </span>
+                        <span class="image-reference-name"><strong>{{ a.name }}</strong><small>{{ a.primaryStatus }}</small></span>
+                      </button>
+                      <sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}">
+                        <div class="image-reference-actions">
+                          <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ true }}">
+                            <button type="button" class="image-reference-option" aria-label="{{ a.sheetLabel }}" aria-pressed="{{ a.sheetOn }}" sc-camel-on-click="{{ a.toggleSheet }}">{{ a.sheetStatus }}</button>
+                          </sc-if>
+                          <button type="button" class="image-reference-link" aria-label="{{ a.previewLabel }}" aria-expanded="{{ a.expanded }}" sc-camel-on-click="{{ a.toggleExpand }}">View sheet</button>
+                        </div>
+                      </sc-if>
+                    </article>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ g.expanded }}" hint-placeholder-val="{{ false }}">
+                  <div class="x-railsheet">
+                    <div class="x-railsheetname">{{ g.expanded.name }} — sheet</div>
+                    <div class="x-railsheetrow">
+                      <sc-for list="{{ g.expanded.thumbs }}" as="s" hint-placeholder-count="0"><div class="x-railsheetthumb"><div style="{{ s.bg }}"></div></div></sc-for>
+                    </div>
+                    <button type="button" class="image-reference-link" sc-camel-on-click="{{ g.expanded.open }}">Open asset</button>
+                  </div>
+                </sc-if>
+              </section>
+            </sc-for>
+          </aside>
         </sc-if>
         <div class="x-hubbody">
           <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
@@ -2986,32 +3006,69 @@ class Component extends DCLogic {
       if (ph || sh) { names.push(a.name); chips.push({ name: a.name, keys: [ph ? kp : null, sh ? ks : null].filter(Boolean) }); } });
     return { srcs: [...new Set(out)], names, chips };
   }
-  // Products/Characters/Locations as always-visible rails on the Create page (not a tabbed
-  // picker) — each card doubles as a reference-picker (Photo/Sheet pills, unchanged from before)
-  // and a browse entry point (click to expand its sheet preview inline, or "New …" to open the
-  // full page's create flow). Deep editing stays on those full pages; this is browse + pick only.
   hubModeData() {
     const S = this.state;
     const A = this.kfAssetsAll(), P = S.kfPick || {}, refs = this.kfRefs();
-    const toggle = key => () => this.setState(s => { const n = { ...(s.kfPick || {}) }; if (n[key]) delete n[key]; else n[key] = true; return { kfPick: n }; });
-    const out = { kfOn: '1', galEmptyText: 'Your images appear here.' };
-    const mkCard = a => { const kp = a.k + ':' + a.id + ':photo', ks = a.k + ':' + a.id + ':sheet', ph = !!P[kp], sh = !!P[ks], key = a.k + ':' + a.id;
-      return { name: a.name, sub: a.sub, hasPhoto: !!a.photo, photoBg: Object.assign(bgOf(a.photo), { backgroundSize: 'cover' }), hasSheet: a.sheet.length > 0,
-        photoOn: ph ? '1' : '0', sheetOn: sh ? '1' : '0', photoLabel: ph ? '✓ Photo' : '+ Photo', sheetLabel: sh ? '✓ Sheet' : '+ Sheet', photoCls: ph ? 'ds-btn ds-on' : 'ds-btn', sheetCls: sh ? 'ds-btn ds-on' : 'ds-btn',
-        togglePhoto: toggle(kp), toggleSheet: toggle(ks),
-        expanded: S.kfExpand === key, toggleExpand: () => this.setState(s => ({ kfExpand: s.kfExpand === key ? null : key })),
-        open: () => this.setState({ page: { c: 'TALENT', p: 'PRODUCT', l: 'LOCATION' }[a.k], view: 'item', item: a.id }) }; };
-    const mkGroup = (label, key, pg, newSlot) => {
-      const cards = A[key].map(mkCard), expandedSrc = A[key].find(a => (a.k + ':' + a.id) === S.kfExpand);
-      return { label, cards, empty: !cards.length, newLabel: 'New ' + label.slice(0, -1).toLowerCase(),
-        onNew: () => this.setState({ page: pg, view: 'all', item: null, prompt: '', slot: newSlot }),
-        expanded: expandedSrc ? { name: expandedSrc.name, open: mkCard(expandedSrc).open, thumbs: (expandedSrc.sheet || []).map(s => ({ bg: Object.assign(bgOf(s), { backgroundSize: 'cover' }) })) } : null };
+    const toggle = key => () => this.setState(s => {
+      const picks = { ...s.kfPick };
+      if (picks[key]) delete picks[key];
+      else picks[key] = true;
+      return { kfPick: picks };
+    });
+    const openAsset = (page, id, slot) => this.setState({ page, view: id ? 'item' : 'all', item: id, slot });
+    const mkGroup = (label, singular, key, page, slot) => {
+      const cards = A[key].map(asset => {
+        const id = key + ':' + asset.id;
+        const photo = id + ':photo', sheet = id + ':sheet';
+        const primary = asset.photo ? photo : asset.sheet.length ? sheet : null;
+        const kind = asset.photo ? 'photo' : 'sheet';
+        return {
+          name: asset.name, hasPhoto: !!asset.photo, photoBg: bgOf(asset.photo), hasSheet: asset.sheet.length > 0,
+          primaryPressed: primary ? String(!!P[primary]) : undefined,
+          primaryLabel: primary ? (P[primary] ? 'Remove ' : 'Attach ') + asset.name + ' ' + kind : 'Open ' + asset.name,
+          primaryStatus: primary ? (P[primary] ? kind[0].toUpperCase() + kind.slice(1) + ' attached' : 'Attach ' + kind) : 'Open to add a reference',
+          primaryAction: primary ? toggle(primary) : () => openAsset(page, asset.id, slot),
+          sheetOn: String(!!P[sheet]), sheetLabel: (P[sheet] ? 'Remove ' : 'Attach ') + asset.name + ' sheet',
+          sheetStatus: P[sheet] ? 'Sheet attached' : 'Attach sheet', toggleSheet: toggle(sheet),
+          expanded: String(S.kfExpand === id), previewLabel: 'View ' + asset.name + ' sheet',
+          toggleExpand: () => this.setState(s => ({ kfExpand: s.kfExpand === id ? null : id })),
+        };
+      });
+      const expanded = A[key].find(asset => key + ':' + asset.id === S.kfExpand);
+      return {
+        label, cards, empty: !cards.length, emptyLabel: 'No ' + label.toLowerCase() + ' in this project yet.',
+        newLabel: 'New ' + singular, onNew: () => openAsset(page, null, slot),
+        expanded: expanded ? {
+          name: expanded.name, open: () => openAsset(page, expanded.id, slot),
+          thumbs: expanded.sheet.map(src => ({ bg: bgOf(src) })),
+        } : null,
+      };
     };
-    out.kfRailGroups = [mkGroup('Products', 'p', 'PRODUCT', 0), mkGroup('Characters', 'c', 'TALENT', 'front'), mkGroup('Locations', 'l', 'LOCATION', 0)];
-    Object.assign(out, {
-      kfRefCount: String(Math.min(8, refs.srcs.length + (S.castAtt || []).length + (this.styleRef() ? 1 : 0))), kfHasRefs: Object.keys(P).length > 0, kfClear: () => this.setState({ kfPick: {} }),
-      kfChips: refs.chips.map(c => ({ name: c.name, remove: () => this.setState(s => { const n = { ...(s.kfPick || {}) }; c.keys.forEach(k => delete n[k]); return { kfPick: n }; }) })) });
-    return out;
+    const settings = this.tcfg('IMAGES:main');
+    const model = IMODELS[settings.model] || IMODELS[IMODEL_DEFAULT];
+    const count = refs.chips.length;
+    return {
+      kfOn: '1', galEmptyText: 'Your images appear here.',
+      kfRailGroups: [mkGroup('Characters', 'character', 'c', 'TALENT', 'front'), mkGroup('Products', 'product', 'p', 'PRODUCT', 0), mkGroup('Locations', 'location', 'l', 'LOCATION', 0)],
+      kfSelectedLabel: count ? count + (count === 1 ? ' asset selected' : ' assets selected') : 'None selected',
+      kfHasRefs: count > 0,
+      kfReferenceHint: settings.enhancePrompt && model.enhance
+        ? 'Enhance Prompt only uses images uploaded in the prompt bar. Turn it off in settings to use these assets.'
+        : (S.castAtt || []).filter(Boolean).length + refs.srcs.length > (model.refsMax || 8)
+          ? 'You’ve selected more reference images than this model can use. Remove some to include all your choices.'
+          : 'Choose a photo or sheet to use in your next image.',
+      kfChips: refs.chips.map(chip => {
+        const label = chip.name + ' · ' + chip.keys.map(key => key.endsWith(':sheet') ? 'Sheet' : 'Photo').join(' + ');
+        return {
+          label, removeLabel: 'Remove ' + label,
+          remove: () => this.setState(s => {
+            const picks = { ...s.kfPick };
+            chip.keys.forEach(key => delete picks[key]);
+            return { kfPick: picks };
+          }),
+        };
+      }),
+    };
   }
   /** Shared tab bar (Products/Characters/Locations/Shots/Keyframes) — same screen set as {@link IMAGE_PAGES_TOP}. */
   imageTabsData() {

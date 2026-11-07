@@ -206,16 +206,54 @@
 [data-workspace="IMAGES"] .x-hub { display: grid; grid-template-columns: minmax(0,1fr) minmax(200px,28%); gap: 12px; align-items: start; }
 [data-workspace="IMAGES"] .x-hub > :is(.x-imgtabs, .x-createtoggle) { grid-column: 1 / -1; }
 [data-workspace="IMAGES"] .x-hubbody { grid-column: 1 / -1; grid-row: 2; }
-[data-workspace="IMAGES"] .x-hub:has(> .x-railgrp) .x-hubbody { grid-column: 1; grid-row: 2 / span 4; }
-[data-workspace="IMAGES"] .x-hub > :is(.x-railgrp, .x-refchips) {
+[data-workspace="IMAGES"] .x-hub:has(> .image-references) .x-hubbody { grid-column: 1; }
+.image-references {
   grid-column: 2;
-  padding: 10px;
+  grid-row: 2;
+  min-width: 0;
+  padding: 14px;
   border: 1px solid var(--shot-border);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--shot-surface);
+  color: var(--shot-text);
 }
-[data-workspace="IMAGES"] .x-railgrp .x-raillabel, [data-workspace="IMAGES"] .x-railname { color: var(--shot-text); }
-[data-workspace="IMAGES"] .x-railnew { color: var(--shot-muted); }
+.image-reference-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+.image-reference-heading h2, .image-reference-heading h3 { margin: 0; }
+.image-reference-heading h2 { font-size: 16px; }
+.image-reference-heading h3 { font-size: 13px; }
+.image-reference-count { color: var(--shot-muted); font-size: 12px; }
+.image-references p { margin: 6px 0 0; color: var(--shot-muted); font-size: 13px; line-height: 1.4; }
+.image-reference-summary .x-refchips { margin-top: 10px; }
+.image-reference-group { border-top: 1px solid var(--shot-border); padding-top: 10px; margin-top: 12px; }
+.image-reference-list { display: grid; gap: 6px; max-height: 200px; overflow-y: auto; margin-top: 6px; }
+.image-reference-card { border: 1px solid var(--shot-border); border-radius: 8px; background: white; }
+.image-reference-asset {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 48px;
+  padding: 5px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  text-align: left;
+}
+.image-reference-thumb { position: relative; flex: 0 0 40px; height: 40px; border-radius: 5px; overflow: hidden; background: var(--shot-background); }
+.image-reference-name { min-width: 0; overflow-wrap: anywhere; }
+.image-reference-name strong, .image-reference-name small { display: block; }
+.image-reference-name small { margin-top: 2px; color: var(--shot-blue); }
+.image-reference-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; padding: 0 5px 5px; }
+.image-references button { color: var(--shot-text); font-family: inherit; cursor: pointer; }
+.image-reference-link { min-height: 32px; padding: 2px 4px; border: 0; background: transparent; }
+.image-references .image-reference-link { color: var(--shot-blue); }
+.image-reference-option, .image-reference-chip { min-height: 32px; padding: 4px 8px; border: 1px solid var(--shot-border); border-radius: 7px; background: white; }
+.image-reference-chip { display: inline-flex; align-items: center; gap: 6px; text-align: left; }
+.image-references button:hover { background: var(--shot-background); }
+.image-references button[aria-pressed="true"], .image-references .image-reference-chip { background: var(--shot-selected); }
+.image-references button:focus-visible { outline: 2px solid var(--shot-blue); outline-offset: -2px; }
+.image-reference-group .x-railsheet { margin-top: 8px; background: var(--shot-background); }
+.image-reference-group .x-railsheetname { color: var(--shot-text); }
 [data-workspace="IMAGES"] .x-galwrap .x-gal {
   display: grid;
   grid-template-columns: repeat(auto-fill,minmax(114px,1fr));
@@ -274,7 +312,6 @@
   .shot-rail-heading { margin-right: 8px; }
   .shot-row img { display: none; }
   [data-workspace="IMAGES"] .x-hub, [data-workspace="VIDEOS"] .x-vcard { display: flex; flex-direction: column; }
-  [data-workspace="IMAGES"] .x-hubbody { order: -1; width: 100%; }
-  [data-workspace="IMAGES"] .x-hub > :is(.x-railgrp,.x-refchips) { box-sizing: border-box; width: 100%; }
+  [data-workspace="IMAGES"] .x-hubbody, .image-references { box-sizing: border-box; width: 100%; }
   [data-workspace="VIDEOS"] .x-vcard > * { width: 100%; box-sizing: border-box; }
 }
