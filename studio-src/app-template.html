@@ -405,7 +405,7 @@ html,body{background:#282828!important}
  [data-sv="bar"]>[data-sv="gobtn"],[data-sv="bar"] [data-sv="gobtn"]{position:static!important;transform:none!important;margin-left:auto!important}
 }
 @media (max-width:560px){[data-sv="homegrid"]{grid-template-columns:minmax(0,1fr)!important}}
-</style></helmet>
+</style><link rel="stylesheet" href="/studio/assets/shot-workspace.css?v=1"></helmet>
 <div data-sv="app" style="display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px;min-height:100vh">
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
 <div data-sv="home" data-screen-label="00 Projects" style="position:fixed;inset:0;z-index:60;overflow:auto;background:#080808;display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:64px">
@@ -481,6 +481,19 @@ html,body{background:#282828!important}
   </main>
 </div>
 </sc-if>
+  <header class="shot-header">
+  <button type="button" class="shot-brand" sc-camel-on-click="{{ goImages }}"><img src="/studio/assets/solved-puzzle.svg" alt=""> <span><b>SOLVED</b> Studio</span></button>
+  <button type="button" class="shot-project" title="All projects" sc-camel-on-click="{{ goHome }}">{{ projName }}</button>
+  <nav class="shot-nav" aria-label="Studio workspaces">
+    <sc-for list="{{ workspaceNav }}" as="tab"><button type="button" data-active="{{ tab.active }}" aria-current="{{ tab.current }}" sc-camel-on-click="{{ tab.open }}">{{ tab.label }}</button></sc-for>
+  </nav>
+  <button type="button" class="shot-library" aria-current="{{ workspaceLibrary }}" sc-camel-on-click="{{ goLib }}">Library</button>
+  <details class="shot-more"><summary>More</summary><div>
+    <sc-for list="{{ workspaceMore }}" as="tab"><button type="button" aria-current="{{ tab.current }}" sc-camel-on-click="{{ tab.open }}">{{ tab.label }}</button></sc-for>
+    <button type="button" sc-camel-on-click="{{ hfOpen }}">Settings &amp; connections</button>
+    <button type="button" sc-camel-on-click="{{ workspaceSearch }}">Search library</button>
+  </div></details>
+</header>
   <aside data-sv="side" style="width:300px;background:#191919;padding:48px;display:flex;flex-direction:column;gap:96px;position:sticky;top:0;height:100vh">
     <div sc-camel-on-click="{{ goImages }}" title="Images" style="height:22px;font:700 22px/1 'SF Mono',SFMono-Regular,ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;cursor:pointer"><img src="/studio/assets/solved-puzzle.svg" alt="SOLVED" width="46" height="44" style="display:block;width:46px;height:44px"></div>
     <div data-sv="sidebody" style="display:flex;flex-direction:column;gap:40px">
@@ -543,9 +556,9 @@ html,body{background:#282828!important}
     </div>
   </sc-if>
 
-  <main data-sv="main" style="width:auto;min-width:0;min-height:100vh;padding:101px 64px 24px 0;display:flex;flex-direction:column;gap:40px">
+  <main data-sv="main" data-workspace="{{ workspacePage }}" style="width:auto;min-width:0;min-height:100vh;padding:101px 64px 24px 0;display:flex;flex-direction:column;gap:40px">
     <input type="file" accept="image/*" multiple="{{ true }}" ref="{{ fileRef }}" sc-camel-on-change="{{ onFiles }}" style="display:none">
-    <div data-sv="crumbs" style="display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:32px;font:400 12px/14px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.03em">
+    <div data-sv="crumbs" class="shot-crumbs" style="display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:32px;font:400 12px/14px 'Helvetica Neue',Helvetica,sans-serif;letter-spacing:.03em">
       <div data-sv="pgback" sc-camel-on-click="{{ pagePrev }}" title="{{ pagePrevTitle }}" aria-label="{{ pagePrevTitle }}" style="flex:none;width:28px;height:28px;margin-left:-6px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:{{ pagePrevCursor }};opacity:{{ pagePrevOpacity }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5f5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
       </div>
@@ -556,6 +569,84 @@ html,body{background:#282828!important}
       </div>
     </div>
 
+    <sc-if value="{{ assetWorkspace.show }}" hint-placeholder-val="{{ false }}">
+      <aside class="shot-asset-rail" aria-label="{{ assetWorkspace.label }}">
+        <div class="shot-rail-heading"><h2>{{ assetWorkspace.label }}</h2><button type="button" sc-camel-on-click="{{ assetWorkspace.browse }}">Browse all</button></div>
+        <sc-for list="{{ assetWorkspace.items }}" as="asset"><button type="button" class="shot-row" data-active="{{ asset.active }}" aria-pressed="{{ asset.active }}" sc-camel-on-click="{{ asset.open }}">
+          <sc-if value="{{ asset.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ asset.image }}" alt=""></sc-if>
+          <span><b>{{ asset.name }}</b><small>{{ asset.detail }}</small></span>
+        </button></sc-for>
+      </aside>
+    </sc-if>
+    <sc-if value="{{ workspace.show }}" hint-placeholder-val="{{ false }}">
+      <div class="shot-layout">
+        <aside class="shot-rail" aria-label="Shot list">
+          <div class="shot-rail-heading"><h2>Shots</h2><button type="button" sc-camel-on-click="{{ workspace.add }}">New shot</button></div>
+          <sc-if value="{{ workspace.showAll }}" hint-placeholder-val="{{ false }}"><button type="button" class="shot-row" data-active="{{ workspace.allActive }}" sc-camel-on-click="{{ workspace.clear }}">All {{ workspace.allLabel }}</button></sc-if>
+          <sc-for list="{{ workspace.shots }}" as="shot"><button type="button" class="shot-row" data-active="{{ shot.active }}" aria-pressed="{{ shot.active }}" sc-camel-on-click="{{ shot.open }}">
+            <sc-if value="{{ shot.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ shot.image }}" alt=""></sc-if>
+            <span><b>{{ shot.label }}</b><small>{{ shot.status }}</small></span>
+          </button></sc-for>
+          <sc-if value="{{ workspace.videoDraft }}" hint-placeholder-val="{{ false }}"><button type="button" sc-camel-on-click="{{ workspace.openVideo }}">Create video for selected shot</button></sc-if>
+        </aside>
+        <sc-if value="{{ workspace.plan }}" hint-placeholder-val="{{ false }}">
+          <section class="shot-canvas">
+            <h2>{{ workspace.title }}</h2>
+            <sc-if value="{{ workspace.board }}" hint-placeholder-val="{{ false }}"><img class="shot-preview" src="{{ workspace.board }}" alt="Storyboard reference for the selected shot"></sc-if>
+            <sc-if value="{{ workspace.noBoard }}" hint-placeholder-val="{{ false }}"><p class="shot-empty">Add a planning image or generate one from the shot direction.</p></sc-if>
+            <sc-if value="{{ workspace.legacyBoard }}" hint-placeholder-val="{{ false }}"><p>Previewing the existing start frame as a reference.</p></sc-if>
+          </section>
+          <section class="shot-inspector">
+            <h2>Storyboard</h2>
+            <sc-if value="{{ workspace.hasShot }}" hint-placeholder-val="{{ false }}">
+              <label>Shot name<input value="{{ workspace.name }}" sc-camel-on-change="{{ workspace.rename }}"></label>
+              <label>Beat<textarea value="{{ workspace.beat }}" sc-camel-on-change="{{ workspace.setBeat }}"></textarea></label>
+              <sc-for list="{{ workspace.fields }}" as="field"><label>{{ field.label }}<input value="{{ field.value }}" placeholder="{{ field.placeholder }}" sc-camel-on-change="{{ field.set }}"></label></sc-for>
+              <div class="shot-actions"><button type="button" disabled="{{ workspace.boardBusy }}" sc-camel-on-click="{{ workspace.pickBoard }}">Upload storyboard image</button><button type="button" disabled="{{ workspace.boardBusy }}" sc-camel-on-click="{{ workspace.generateBoard }}">{{ workspace.boardAction }}</button></div>
+              <div class="shot-actions"><button type="button" disabled="{{ workspace.first }}" sc-camel-on-click="{{ workspace.moveUp }}">Move earlier</button><button type="button" disabled="{{ workspace.last }}" sc-camel-on-click="{{ workspace.moveDown }}">Move later</button></div>
+              <button type="button" class="shot-primary" sc-camel-on-click="{{ workspace.openFrames }}">Open in Keyframes</button>
+            </sc-if>
+            <button type="button" disabled="{{ workspace.writing }}" sc-camel-on-click="{{ workspace.write }}">Add shots from brief</button>
+          </section>
+        </sc-if>
+        <sc-if value="{{ workspace.frames }}" hint-placeholder-val="{{ false }}">
+          <section class="shot-canvas">
+            <h2>{{ workspace.title }}</h2>
+            <div class="shot-pair"><sc-for list="{{ workspace.slots }}" as="frame"><figure><figcaption>{{ frame.label }}</figcaption>
+              <sc-if value="{{ frame.has }}" hint-placeholder-val="{{ false }}"><img src="{{ frame.src }}" alt="{{ frame.label }}"></sc-if>
+              <sc-if value="{{ frame.empty }}" hint-placeholder-val="{{ true }}"><p class="shot-empty">No image assigned</p></sc-if>
+            </figure></sc-for></div>
+          </section>
+          <section class="shot-inspector">
+            <h2>Keyframes</h2>
+            <sc-for list="{{ workspace.slots }}" as="frame"><div class="shot-slot">
+              <b>{{ frame.label }}</b><span>{{ frame.status }}</span>
+              <button type="button" sc-camel-on-click="{{ frame.pick }}">{{ frame.action }}</button>
+            </div></sc-for>
+            <sc-if value="{{ workspace.hasShot }}" hint-placeholder-val="{{ false }}">
+              <button type="button" disabled="{{ workspace.startBusy }}" sc-camel-on-click="{{ workspace.generateStart }}">{{ workspace.startAction }}</button>
+              <button type="button" sc-camel-on-click="{{ workspace.openImages }}">Browse images for this shot</button>
+              <button type="button" class="shot-primary" disabled="{{ workspace.needsStart }}" sc-camel-on-click="{{ workspace.openVideo }}">Open in Video</button>
+            </sc-if>
+            <button type="button" sc-camel-on-click="{{ workspace.manage }}">Manage shots and approvals</button>
+          </section>
+        </sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ workspace.error }}" hint-placeholder-val="{{ false }}"><p class="shot-error" role="alert">{{ workspace.error }}</p></sc-if>
+    <sc-if value="{{ workspaceAssignmentStatus }}" hint-placeholder-val="{{ false }}"><p class="shot-assigned" role="status">{{ workspaceAssignmentStatus }}</p></sc-if>
+    <sc-if value="{{ workspace.assignment.open }}" hint-placeholder-val="{{ false }}">
+      <section class="shot-assignment" aria-label="Assign image to shot">
+        <h2>Assign image to shot</h2>
+        <sc-if value="{{ workspace.assignment.noShots }}" hint-placeholder-val="{{ false }}"><p>Create a shot in Storyboards before assigning a frame.</p></sc-if>
+        <label>Shot<select value="{{ workspace.assignment.shot }}" sc-camel-on-change="{{ workspace.assignment.setShot }}"><option value="">Choose a shot</option>
+          <sc-for list="{{ workspace.assignment.options }}" as="option"><option value="{{ option.id }}">{{ option.label }}</option></sc-for>
+        </select></label>
+        <label>Frame<select value="{{ workspace.assignment.slot }}" sc-camel-on-change="{{ workspace.assignment.setSlot }}"><option value="main">Start frame</option><option value="end">End frame</option></select></label>
+        <sc-if value="{{ workspace.assignment.existing }}" hint-placeholder-val="{{ false }}"><p>This will replace the current frame.</p><img src="{{ workspace.assignment.existing }}" alt="Current frame that will be replaced"></sc-if>
+        <div class="shot-actions"><button type="button" sc-camel-on-click="{{ workspace.assignment.close }}">Cancel</button><button type="button" class="shot-primary" disabled="{{ workspace.assignment.disabled }}" sc-camel-on-click="{{ workspace.assignment.save }}">Assign frame</button></div>
+      </section>
+    </sc-if>
     <sc-if value="{{ x.sbOn }}" hint-placeholder-val="{{ false }}">
       <div data-sv="sbbar" class="x-bar"><div class="x-bar-info">{{ x.sbInfo }}</div>
         <div class="x-bar-btns"><button class="ds-btn" disabled="{{ x.sbBusy }}" sc-camel-on-click="{{ x.sbWrite }}">{{ x.sbWriteLabel }}</button><button class="ds-btn" disabled="{{ x.sbBusy }}" sc-camel-on-click="{{ x.sbGen }}">{{ x.sbGenLabel }}</button><button class="ds-btn ds-on" sc-camel-on-click="{{ x.sbVideos }}">Make videos →</button></div></div>
@@ -1059,14 +1150,19 @@ html,body{background:#282828!important}
         <div class="x-hubbody">
           <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
           <div class="x-galwrap">
+            <div class="shot-canvas shot-gallery-stage">
+              <h2>{{ workspace.title }}</h2>
+              <sc-if value="{{ x.selectedImage }}" hint-placeholder-val="{{ false }}"><img class="shot-preview" src="{{ x.selectedImage }}" alt="Selected image variation"></sc-if>
+              <sc-if value="{{ x.noSelectedImage }}" hint-placeholder-val="{{ true }}"><p class="shot-empty">{{ x.selectedImageStatus }}</p></sc-if>
+            </div>
             <sc-if value="{{ x.galEmpty }}" hint-placeholder-val="{{ true }}"><div class="x-galempty">{{ x.galEmptyText }}</div></sc-if>
             <div class="x-gal"><sc-for list="{{ x.gal }}" as="g" hint-placeholder-count="0">
               <div class="x-gcard" title="{{ g.prompt }}">
-                <div class="x-gimg" style="aspect-ratio:{{ g.ar }}">
+                <button type="button" class="x-gimg" data-active="{{ g.active }}" aria-label="Preview image variation" aria-pressed="{{ g.active }}" sc-camel-on-click="{{ g.select }}" style="aspect-ratio:{{ g.ar }}">
                   <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><div style="{{ g.bg }}"></div></sc-if>
                   <sc-if value="{{ g.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if>
                   <sc-if value="{{ g.failed }}" hint-placeholder-val="{{ false }}"><div class="x-gerr">{{ g.err }}</div></sc-if>
-                </div>
+                </button>
                 <sc-if value="{{ g.has }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-gkf" data-on="{{ g.kfOn }}" aria-label="{{ g.kfLabel }}" aria-pressed="{{ g.kfOn }}" title="{{ g.kfLabel }}" sc-camel-on-click="{{ g.toggleKf }}">
                   <sc-if value="{{ g.kfOnBool }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" sc-camel-view-box="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.86,6.49l-4.34-4.36c-.85-.82-2.18-.82-3.04.01L2.15,6.49c-.4.4-.63.94-.63,1.52s.22,1.11.63,1.52l4.33,4.33c.41.41.95.64,1.52.64s1.11-.23,1.53-.64l4.33-4.33c.4-.4.63-.94.63-1.52,0-.57-.22-1.11-.62-1.51Z"></path></svg></sc-if>
                   <sc-if value="{{ g.kfOff }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" sc-camel-view-box="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8,14.49c-.57,0-1.11-.23-1.52-.64l-4.33-4.33c-.83-.84-.83-2.21,0-3.04L6.46,2.13c.86-.82,2.19-.82,3.04,0l4.49,4.54c.31.38.48.85.48,1.35,0,.57-.22,1.11-.63,1.51l-4.33,4.33c-.41.41-.95.64-1.52.64ZM7.99,2.51c-.29,0-.59.11-.83.34L2.85,7.19c-.45.45-.44,1.17,0,1.63l4.33,4.33c.44.44,1.19.44,1.63,0l4.33-4.33c.22-.22.33-.5.33-.81s-.12-.59-.33-.81l-4.34-4.37c-.23-.22-.52-.33-.81-.33Z"></path></svg></sc-if>
@@ -1113,8 +1209,8 @@ html,body{background:#282828!important}
 
         <sc-if value="{{ x.produceVideos }}" hint-placeholder-val="{{ true }}">
           <div class="x-head"><div class="ds-sub">Videos <i class="ds-dim" style="font-style:normal">· {{ x.vCount }}</i></div>
-            <div class="x-bar-btns"><span class="x-muted">{{ x.vFrameCount }}</span><button class="ds-btn ds-on" sc-camel-on-click="{{ x.vFromSb }}">From storyboard</button><button class="ds-btn" sc-camel-on-click="{{ x.vManual }}">+ Manual video</button></div></div>
-          <sc-if value="{{ x.vEmpty }}" hint-placeholder-val="{{ true }}"><div class="ds-empty"><div><b>No videos yet</b>Click From storyboard to turn every storyboard frame into a video, or + Manual video to start from your own image.</div></div></sc-if>
+            <div class="x-bar-btns"><span class="x-muted">{{ x.vFrameCount }}</span><button class="ds-btn ds-on" sc-camel-on-click="{{ x.vFromSb }}">Create from available shots</button><button class="ds-btn" sc-camel-on-click="{{ x.vManual }}">+ Manual video</button></div></div>
+          <sc-if value="{{ x.vEmpty }}" hint-placeholder-val="{{ true }}"><div class="ds-empty"><div><b>No videos yet</b>Create from an available shot or start a manual video.</div></div></sc-if>
           <div class="x-vgrid">
             <sc-for list="{{ x.vids }}" as="v" hint-placeholder-count="0">
               <div class="x-vcard">
@@ -1123,11 +1219,19 @@ html,body{background:#282828!important}
                   <sc-if value="{{ v.notDone }}" hint-placeholder-val="{{ true }}"><div class="x-vstart" sc-camel-on-click="{{ v.pickStart }}"><sc-if value="{{ v.hasStart }}" hint-placeholder-val="{{ false }}"><div style="{{ v.startBg }}"></div></sc-if><sc-if value="{{ v.running }}" hint-placeholder-val="{{ false }}"><div class="ds-view-busy"></div></sc-if><span class="x-vhint">Start frame · click to change</span></div></sc-if>
                   <sc-if value="{{ v.done }}" hint-placeholder-val="{{ false }}"><button type="button" class="x-vexp" aria-label="Expand" title="Expand" sc-camel-on-click="{{ v.expand }}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></button></sc-if>
                 </div>
-                <div class="x-vrow"><input class="x-vname" value="{{ v.name }}" sc-camel-on-change="{{ v.rename }}" spellcheck="false"><div class="{{ v.approveCls }}" sc-camel-on-click="{{ v.toggleApprove }}">{{ v.approveLabel }}</div></div>
-                <textarea class="x-vprompt" value="{{ v.prompt }}" sc-camel-on-change="{{ v.setPrompt }}" placeholder="Describe the motion: camera move, action, mood…"></textarea>
+                <div class="shot-video-frames"><sc-for list="{{ v.frames }}" as="frame"><figure><figcaption>{{ frame.label }}</figcaption>
+                  <sc-if value="{{ frame.has }}" hint-placeholder-val="{{ false }}"><img src="{{ frame.src }}" alt="{{ frame.label }}"></sc-if>
+                  <sc-if value="{{ frame.empty }}" hint-placeholder-val="{{ false }}"><span>No image assigned</span></sc-if>
+                </figure></sc-for></div>
+                <div class="shot-video-inspector">
+                <div class="x-vrow"><input class="x-vname" aria-label="Video name" value="{{ v.name }}" sc-camel-on-change="{{ v.rename }}" spellcheck="false"><button type="button" class="{{ v.approveCls }}" sc-camel-on-click="{{ v.toggleApprove }}">{{ v.approveLabel }}</button></div>
+                <label>Motion prompt<textarea class="x-vprompt" value="{{ v.prompt }}" sc-camel-on-change="{{ v.setPrompt }}" placeholder="Describe the motion: camera move, action, mood…"></textarea></label>
+                <label>Model<select value="{{ v.model }}" disabled="{{ v.running }}" sc-camel-on-change="{{ v.setModel }}"><sc-for list="{{ v.models }}" as="model"><option value="{{ model.value }}">{{ model.label }}</option></sc-for></select></label>
+                <sc-if value="{{ v.canUseLatest }}" hint-placeholder-val="{{ false }}"><button type="button" class="ds-btn" sc-camel-on-click="{{ v.useLatest }}">Use latest keyframes</button></sc-if>
                 <div class="x-vrow"><label class="x-muted">Length <select value="{{ v.duration }}" sc-camel-on-change="{{ v.setDuration }}"><sc-for list="{{ v.durOpts }}" as="d" hint-placeholder-count="5"><option value="{{ d.value }}">{{ d.label }}</option></sc-for></select></label>
                   <div class="x-bar-btns"><sc-if value="{{ v.canEdit }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.toTimeline }}">Edit</button></sc-if><sc-if value="{{ v.download }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.download }}">Download</button></sc-if><sc-if value="{{ v.share }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.share }}">Share</button></sc-if><button class="ds-btn" sc-camel-on-click="{{ v.del }}">Delete</button><button class="ds-btn ds-on" disabled="{{ v.running }}" sc-camel-on-click="{{ v.go }}">{{ v.goLabel }}</button></div></div>
-                <div class="x-vnote" style="color:{{ v.noteColor }}">{{ v.note }}</div>
+                <div class="x-vnote" role="status">{{ v.note }}</div>
+                </div>
               </div>
             </sc-for>
           </div>
@@ -1594,7 +1698,7 @@ html,body{background:#282828!important}
 <script type="text/x-dc" data-dc-script="">
 const PAGES = ['BRIEF', 'OVERVIEW', 'TALENT', 'PRODUCT', 'WARDROBE', 'LOCATION', 'SETDESIGN', 'KEYFRAMES'];
 // Workflow order (Back / Next arrows).
-const NAV_ORDER = ['BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
+const NAV_ORDER = ['BRIEF', 'IMAGES', 'PRODUCT', 'TALENT', 'LOCATION', 'STORYBOARDS', 'KEYFRAMES', 'VIDEOS', 'EDITING', 'DELIVERY', 'LIBRARY'];
 // Sidebar: main sections only. Brief opens from the Dashboard.
 const NAV_ICON = { BRIEF: 'M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5', OVERVIEW: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z', IMAGES: 'M3 4h18v16H3zM8.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 16l-5-5-9 9', KEYFRAMES: 'M12 3l9 9-9 9-9-9z', VIDEOS: 'M3 6h13v12H3zM16 10l5-3v10l-5-3', EDITING: 'M6 3v18M18 3v18M3 8h6M15 16h6M3 16h6M15 8h6', DELIVERY: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3', LIBRARY: 'M3 7h7l2 2h9v11H3z' };
 // Brief / Images / Keyframes / Produce — collapsed top-level nav. "Images" and "Produce" are
@@ -1607,7 +1711,7 @@ const PRODUCE_PAGES = ['VIDEOS', 'EDITING'];
 const GROUP_PAGES = { IMAGES: IMAGE_PAGES, VIDEOS: PRODUCE_PAGES };
 const GROUP_DEFAULT = { IMAGES: 'PRODUCT', VIDEOS: 'VIDEOS' };
 // Header hint text for the "simple" pages (no breadcrumb drill-down, just a title + hint).
-const SIMPLE_PAGE_HINT = { VIDEOS: 'Make your videos', EDITING: 'Edit your content', DELIVERY: 'Choose your file destination', LIBRARY: 'All files in this project' };
+const SIMPLE_PAGE_HINT = { STORYBOARDS: 'Storyboards', VIDEOS: 'Make your videos', EDITING: 'Edit your content', DELIVERY: 'Choose your file destination', LIBRARY: 'All files in this project' };
 const PAGE_LABEL = p => p === 'BRIEF' ? 'Brief' : p === 'OVERVIEW' ? 'Dashboard' : p === 'KEYFRAMES' ? 'Keyframes' : p === 'PRODUCT' ? 'Products' : p === 'LOCATION' ? 'Locations' : p === 'SETDESIGN' ? 'Props' : p === 'TALENT' ? 'Characters' : p === 'IMAGES' ? 'Create' : p.charAt(0) + p.slice(1).toLowerCase();
 const CFG = {
   TALENT: { one: 'Character', prefix: 'CHR', ph: 'Describe a new character — age, look, expression, wardrobe…', search: 'Search characters by name, ID or appearance…' },
@@ -2449,6 +2553,7 @@ class Component extends DCLogic {
     const id = this.state.item, at = Date.now();
     this.setErr('');
     if (target === 'castatt') return this.castAttachFiles(srcs);
+    if (target.startsWith('kfboard:')) return this.setKf(target.slice(8) + '-board', srcs[0]);
     if (target.startsWith('kf:')) return this.setKf(target.slice(3) + '-main', srcs[0]);
     if (target.startsWith('kfend:')) return this.setKf(target.slice(6) + '-end', srcs[0]);
     if (target === 'kfnew') { const n = this.addShot(''); this.setKf(n + '-main', srcs[0]); return this.setState({ view: 'item', item: n, prompt: '' }); }
@@ -2642,12 +2747,12 @@ class Component extends DCLogic {
 
   // ---- storyboard frames (Storyboards page) ----
   setKf(key, src) {
-    const kfImg = { ...this.state.kfImg }; if (src) kfImg[key] = src; else delete kfImg[key];
-    // kfImg holds full-size image data, which can add up to well past localStorage's ~5-10MB quota —
-    // keep it in IndexedDB (same as gallery/videos) instead, so saves don't silently fail once a
-    // project has enough key frames.
-    idb.set('kf', kfImg).catch(() => this.setErr('Couldn’t save the key frame — browser storage is unavailable.'));
-    this.setState({ kfImg });
+    this.setState(state => {
+      const kfImg = { ...state.kfImg };
+      if (src) kfImg[key] = src;
+      else delete kfImg[key];
+      return { kfImg };
+    }, () => idb.set('kf', this.state.kfImg).catch(() => this.setErr('Couldn’t save the key frame — browser storage is unavailable.')));
   }
   kfFrames(t) {
     const S = this.state, key = t.n + '-main', src = S.kfImg[key] || S.kfImg[t.n + '-start'], busy = !!S.kfBusy[key], sel = S.kfSel === key;
@@ -2664,7 +2769,8 @@ class Component extends DCLogic {
     if (!window.SOLVED_HF || !window.SOLVED_HF.connected()) return this.setErr('Higgsfield isn’t connected, so you can’t generate storyboard frames.');
     const refs = [...this.attachSrcs(), ...this.storyboardRefs()].filter((x, i, a) => x && a.indexOf(x) === i);
     const st = this.storyStyle(), concept = ((this.state.values || {})['CONCEPT'] || '').trim();
-    const prompt = [p, 'Cinematic storyboard frame, 16:9.' + (shot ? ' ' + shot.name + '.' : ''), concept ? 'Concept: ' + concept.slice(0, 400) : '',
+    const frameBrief = key.endsWith('-board') ? 'Storyboard planning sketch in 16:9. Show composition and action with clear grayscale line work.' : 'Cinematic production still in 16:9.';
+    const prompt = [p, frameBrief + (shot ? ' ' + shot.name + '.' : ''), concept ? 'Concept: ' + concept.slice(0, 400) : '',
       st ? 'Visual style: ' + (st.desc || st.name) + '.' : '', refs.length ? 'Use the reference images for the exact products, people (faces, wardrobe), locations and look. Keep every product and person identical to the references.' : ''].filter(Boolean).join(' ');
     this.setState(s => ({ kfBusy: { ...s.kfBusy, [key]: true }, gen: { ...s.gen, error: '' } }));
     try {
@@ -2693,6 +2799,7 @@ class Component extends DCLogic {
     if (kind === 'shot') {
       const src = this.frameSrc(id);
       this.setKf(id + '-main', null);
+      this.setKf(id + '-board', null);
       if (src) this.setX('gallery', a => a.map(y => (y.src === src ? { ...y, kf: false } : y)));
       return this.setItems('KEYFRAMES', (this.state.items.KEYFRAMES || []).filter(x => x.n !== id));
     }
@@ -2717,15 +2824,14 @@ class Component extends DCLogic {
   toggleGalKeyframe(g, e) {
     if (e && e.stopPropagation) e.stopPropagation();
     if (!g.src) return;
-    const cur = g.kf !== undefined ? !!g.kf : !!this.kfShotForSrc(g.src), next = !cur;
-    this.setX('gallery', a => a.map(y => (y.uid === g.uid ? { ...y, kf: next } : y)));
-    if (next) {
-      const n = this.addShot(g.prompt || '');
-      this.setKf(n + '-main', g.src);
-    } else {
-      const existing = this.kfShotForSrc(g.src);
-      if (existing) this.secDel('shot', existing.n);
-    }
+    const existing = g.kfShot != null
+      ? (this.state.items.KEYFRAMES || []).find(shot => shot.n === g.kfShot && this.frameSrc(shot.n) === g.src)
+      : this.kfShotForSrc(g.src);
+    const current = g.kf !== undefined ? !!g.kf : !!existing;
+    const n = current ? null : this.addShot(g.prompt || '');
+    this.setX('gallery', a => a.map(item => item.uid === g.uid ? { ...item, kf: !current, kfShot: n } : item));
+    if (n !== null) this.setKf(n + '-main', g.src);
+    else if (existing) this.secDel('shot', existing.n);
   }
   // one press of the detail page's green button fills in everything that's missing, as a single run
   async secRun(kind, id) {
@@ -2821,7 +2927,7 @@ class Component extends DCLogic {
       'Locations: ' + (names((S.locations || []).filter(l => (l.sect || 'location') === 'location'), l => l.name) || 'none'),
       st ? 'Visual style: ' + (st.desc || st.name) : ''].filter(Boolean).join('\n');
   }
-  async writeFrames() {
+  async writeFrames(append = false) {
     if (this.state.sbBusy) return;
     if (!window.claude || typeof window.claude.complete !== 'function') return this.setErr('The writing assistant isn’t available.');
     this.setState({ sbBusy: 'writing', sbConfirm: false }); this.setErr('');
@@ -2831,7 +2937,13 @@ class Component extends DCLogic {
       const m = String(txt).match(/\[[\s\S]*\]/); const arr = m ? JSON.parse(m[0]) : null;
       if (!Array.isArray(arr) || !arr.length) throw new Error('no frames came back');
       const list = arr.slice(0, 6).map((f, i) => ({ n: i + 1, name: String(f.name || 'Frame ' + (i + 1)).slice(0, 40), desc: String(f.desc || ''), fields: { size: f.size || '', angle: f.angle || '', move: f.move || '', action: f.action || '' } }));
-      const kfImg = {}; this.setItems('KEYFRAMES', list); this.setState({ kfImg }); idb.set('kf', {}).catch(() => {});
+      if (append) {
+        const current = this.state.items.KEYFRAMES || [];
+        const lastID = current.reduce((max, shot) => Math.max(max, shot.n), 0);
+        this.setItems('KEYFRAMES', [...current, ...list.map((shot, i) => ({ ...shot, n: lastID + i + 1 }))]);
+      } else {
+        const kfImg = {}; this.setItems('KEYFRAMES', list); this.setState({ kfImg }); idb.set('kf', {}).catch(() => {});
+      }
     } catch (e) { this.setErr('Frames weren’t written — ' + (e && e.message ? e.message : 'unknown error') + '.'); }
     finally { this.setState({ sbBusy: null }); }
   }
@@ -2940,10 +3052,10 @@ class Component extends DCLogic {
     // A ratio picked under a previously selected model may not be valid for this one — clamp to its actual list.
     const aspect = imod.ratios.includes(o.ratio) ? o.ratio : (imod.ratios.includes('1:1') ? '1:1' : imod.ratios[0] || '1:1');
     const refs = enhance ? this.state.castAtt.filter(Boolean).slice(0, 2) : [...this.state.castAtt, ...this.kfRefs().srcs, sref].filter(Boolean).slice(0, refsMax);
-    const id = uid(), shown = p;
+    const id = uid(), shown = p, shotN = this.state.workspaceShot;
     if (!enhance && st) p = p + ' Visual style: ' + (st.desc || st.name) + '.' + (sref ? ' Match the look of the style reference image.' : '');
     this.setErr(''); this.setState({ prompt: '', castAtt: [] });
-    this.setX('gallery', a => [{ uid: id, prompt: shown, src: '', status: 'running', aspect, refs: refs.length, at: Date.now() }, ...a]);
+    this.setX('gallery', a => [{ uid: id, prompt: shown, src: '', status: 'running', aspect, refs: refs.length, shotN, at: Date.now() }, ...a]);
     try {
       const url = await HF.generate({ prompt: p, references: refs, aspect, model: o.model, quality: o.quality, resolution: o.resolution, enhancePrompt: enhance, presetId: enhance ? o.presetId : undefined, refsMax });
       let keep = url; try { const r = await fetch(url); if (r.ok) { const b = await r.blob(); keep = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); } } catch (e) {}
@@ -2961,7 +3073,7 @@ class Component extends DCLogic {
     const ex = (this.state.videos || []).find(v => v.frameN === n);
     const v = ex || this.newVideo({ name: t.name, frameN: n, start: src, end: this.endFrameSrc(n), prompt: [t.desc, (t.fields || {}).move, (t.fields || {}).action].filter(Boolean).join('. ') });
     if (!ex) this.setX('videos', a => [...a, v]);
-    this.setState({ page: 'VIDEOS', view: 'all', item: null });
+    this.setState({ page: 'VIDEOS', view: 'all', item: null, workspaceShot: n, produceSub: 'VIDEOS' });
     if (run) setTimeout(() => this.runVideo(v.uid), 50);
   }
   videosFromStoryboard() {
@@ -3173,7 +3285,8 @@ class Component extends DCLogic {
   buildX(v) {
     const S = this.state, page = S.page, stop = e => { if (e && e.stopPropagation) e.stopPropagation(); };
     const fit = src => Object.assign(bgOf(src), { backgroundSize: 'contain', backgroundRepeat: 'no-repeat' });
-    const GAL = S.gallery || [];
+    const GAL = (S.gallery || []).filter(g => page !== 'IMAGES' || !S.workspaceShot || g.shotN === S.workspaceShot);
+    const activeImage = GAL.find(g => g.uid === S.workspaceImage) || GAL[0];
     const GMENU_ICON = {
       expand: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',
       download: 'M12 3v12M7 10l5 5 5-5M4 19h16',
@@ -3184,7 +3297,12 @@ class Component extends DCLogic {
       endFrame: 'M5 3v18M5 4h11l-2.5 3L16 10H5',
     };
     const galMenuToggle = (g, e) => { stop(e); this.setState(s => ({ galMenuOpen: s.galMenuOpen === g.uid ? null : g.uid })); };
-    const hubData = page === 'IMAGES' ? { galEmpty: !GAL.length, gal: GAL.map(g => {
+    const hubData = page === 'IMAGES' ? {
+      galEmpty: !GAL.length,
+      selectedImage: activeImage && activeImage.status === 'done' ? activeImage.src : '',
+      noSelectedImage: !activeImage || activeImage.status !== 'done' || !activeImage.src,
+      selectedImageStatus: activeImage ? (activeImage.error || 'Creating your image…') : 'Generated images appear here.',
+      gal: GAL.map(g => {
       const has = g.status === 'done' && !!g.src;
       const expand = e => { stop(e); this.setState({ galPreview: g.uid, galMenuOpen: null }); };
       const download = e => { stop(e); const a = document.createElement('a'); a.href = g.src; a.download = g.prompt.slice(0, 40).replace(/\W+/g, '-') + '.jpg'; a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); this.setState({ galMenuOpen: null }); };
@@ -3198,22 +3316,22 @@ class Component extends DCLogic {
         const a = this.createAsset('TALENT', { name, main: g.src, original: g.src, events: [{ text: 'Saved from a generated image', at: Date.now() }] });
         this.setState({ page: 'TALENT', view: 'item', item: a.uid, tab: 'identity', confirmDelete: false, create: freshCreate(), gen: { running: false, status: '', count: 0, error: '' } });
       };
-      // Pair this image as the end frame of the most-recently-added keyframe shot (shots are
-      // prepended newest-first), wiring it into runVideo()'s already-working lastImage param.
-      const latestShot = (this.state.items.KEYFRAMES || [])[0];
-      const useAsEnd = e => { stop(e); this.setState({ galMenuOpen: null }); if (latestShot) this.setKf(latestShot.n + '-end', g.src); };
+      const assign = e => {
+        stop(e);
+        this.setState({ galMenuOpen: null, frameAssignment: { image: g.uid, shot: S.workspaceShot || '', slot: 'main' } });
+      };
       const menuItems = [];
       if (has) {
         menuItems.push({ id: 'expand', label: 'Expand', icon: GMENU_ICON.expand, click: expand });
         menuItems.push({ id: 'download', label: 'Download', icon: GMENU_ICON.download, click: download });
         menuItems.push({ id: 'edit', label: 'Edit Image', icon: GMENU_ICON.edit, click: edit });
         menuItems.push({ id: 'character', label: 'Save as character', icon: GMENU_ICON.character, click: saveAsCharacter });
-        if (latestShot) menuItems.push({ id: 'end', label: 'Use as end frame', icon: GMENU_ICON.endFrame, click: useAsEnd });
+        menuItems.push({ id: 'assign', label: 'Assign to shot', icon: GMENU_ICON.endFrame, click: assign });
       }
       menuItems.push({ id: 'reuse', label: 'Reuse prompt', icon: GMENU_ICON.reuse, click: reuse });
       menuItems.push({ id: 'delete', label: 'Delete', icon: GMENU_ICON.delete, click: del });
       const isKf = has && (g.kf !== undefined ? !!g.kf : !!this.kfShotForSrc(g.src));
-      return { kind: g.kind === 'kf' ? 'Key frame' : 'Image', has, bg: fit(g.src || ''), running: g.status === 'running', failed: g.status === 'failed', err: g.error || '', prompt: g.prompt, ar: (g.aspect || '1:1').replace(':', ' / '),
+      return { active: g === activeImage ? 'true' : 'false', select: () => this.setState({ workspaceImage: g.uid }), kind: g.kind === 'kf' ? 'Key frame' : 'Image', has, bg: fit(g.src || ''), running: g.status === 'running', failed: g.status === 'failed', err: g.error || '', prompt: g.prompt, ar: (g.aspect || '1:1').replace(':', ' / '),
         expand, download, edit, reuse, del, menuItems, menuOpen: S.galMenuOpen === g.uid, menuOn: S.galMenuOpen === g.uid ? '1' : '0', toggleMenu: e => galMenuToggle(g, e),
         kfOn: isKf ? '1' : '0', kfOnBool: isKf, kfOff: !isKf, kfLabel: isKf ? 'Remove from keyframes' : 'Add to keyframes', toggleKf: e => this.toggleGalKeyframe(g, e) };
     }), ...this.hubModeData() } : {};
@@ -3225,7 +3343,7 @@ class Component extends DCLogic {
     const producePage = page === 'VIDEOS';
     const sharedProduceHeader = producePage ? { showProduceTabs: true, produceTabs: this.produceTabsData() } : {};
     const createVideoMode = page === 'IMAGES' && S.createMode === 'video';
-    const X = { ...sharedImgHeader, ...sharedProduceHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
+    const X = { ...sharedImgHeader, ...sharedProduceHeader, ...hubData, hubOn: page === 'IMAGES', sbOn: page === 'KEYFRAMES' && S.workspaceLegacy && S.view === 'all', vidOn: page === 'VIDEOS', edHub: page === 'EDITING' && !S.edTool, edImg: page === 'EDITING' && S.edTool === 'image', edVid: page === 'EDITING' && S.edTool === 'video', dlOn: page === 'DELIVERY', libOn: page === 'LIBRARY' };
     const vidPreviewItem = (S.videos || []).find(v => v.uid === S.vidPreview);
     Object.assign(X, { hasVidPreview: !!(vidPreviewItem && vidPreviewItem.url), vidPreviewUrl: vidPreviewItem ? vidPreviewItem.url : '', vidPreviewLabel: vidPreviewItem ? vidPreviewItem.name : '',
       closeVidPreview: () => this.setState({ vidPreview: null }) });
@@ -3238,18 +3356,31 @@ class Component extends DCLogic {
         sbVideos: () => { this.videosFromStoryboard(); this.setState({ page: 'VIDEOS', view: 'all', item: null }); } });
     }
     if (X.vidOn || createVideoMode) {
-      const V = S.videos || [], FR = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n));
+      const V = (S.videos || []).filter(v => !producePage || !S.workspaceShot || v.frameN === S.workspaceShot), FR = (S.items.KEYFRAMES || []).filter(t => this.frameSrc(t.n));
       const dl = (src, name) => e => { stop(e); const a = document.createElement('a'); a.href = src; a.download = (name || 'file').replace(/[^\w .-]+/g, ''); a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove(); };
       const produceSub = S.produceSub || 'VIDEOS';
       Object.assign(X, { produceVideos: producePage && produceSub === 'VIDEOS', producePhotos: producePage && produceSub === 'PHOTOS',
         vCount: String(V.length), vEmpty: !V.length,
-        vFromSb: () => this.videosFromStoryboard(), vManual: () => this.setX('videos', a => [...a, this.newVideo({ name: 'Video ' + (a.length + 1) })]),
-        vFrameCount: FR.length + ' storyboard frame' + (FR.length === 1 ? '' : 's') + ' ready',
+        vFromSb: () => { this.setState({ workspaceShot: null }); this.videosFromStoryboard(); },
+        vManual: () => { this.setState({ workspaceShot: null }); this.setX('videos', a => [...a, this.newVideo({ name: 'Video ' + (a.length + 1) })]); },
+        vFrameCount: FR.length + ' shot' + (FR.length === 1 ? '' : 's') + ' with a start frame',
         vids: V.map(x => { const set = k => e => { const val = e.target.value; this.updVideo(x.uid, y => { y[k] = k === 'duration' ? +val : val; return y; }); };
           const done = x.status === 'done' && !!x.url;
-          return { uid: x.uid, name: x.name, done, url: x.url, notDone: !done, hasStart: !!x.start, startBg: fit(x.start || ''),
+          const currentStart = x.frameN && this.frameSrc(x.frameN), currentEnd = x.frameN && this.endFrameSrc(x.frameN);
+          const model = x.model || VMODEL_DEFAULT;
+          return {
+            model, models: Object.entries(VMODELS).filter(([key, m]) => m.mode === 'image-to-video' || key === model || !x.frameN).map(([value, m]) => ({ value, label: m.label })),
+            setModel: e => {
+              const model = e.target.value, config = VMODELS[model];
+              if (!config) return;
+              this.updVideo(x.uid, v => ({ ...v, model, duration: Math.min(config.durationMax, Math.max(config.durationMin, v.duration || 5)) }));
+            },
+            frames: [['Start frame', x.start], ['End frame', x.end]].map(([label, src]) => ({ label, src, has: !!src, empty: !src })),
+            canUseLatest: !!currentStart && x.status !== 'running' && (currentStart !== x.start || currentEnd !== x.end),
+            useLatest: () => this.updVideo(x.uid, v => ({ ...v, start: this.frameSrc(v.frameN), end: this.endFrameSrc(v.frameN) })),
+            uid: x.uid, name: x.name, done, url: x.url, notDone: !done, hasStart: !!x.start, startBg: fit(x.start || ''),
             expand: e => { stop(e); if (done) this.setState({ vidPreview: x.uid }); },
-            running: x.status === 'running', note: x.status === 'running' ? (x.note || 'Rendering') + '…' : x.error || (x.status === 'done' ? 'Ready' : x.frameN ? 'From storyboard frame ' + x.frameN : 'Manual video'),
+            running: x.status === 'running', note: x.status === 'running' ? (x.note || 'Rendering') + '…' : x.error || (x.status === 'done' ? 'Ready' : x.frameN ? 'From shot ' + x.frameN : 'Manual video'),
             noteColor: x.error ? '#ef6b61' : x.status === 'done' ? '#1985FF' : '#a3a3a3', prompt: x.prompt, setPrompt: set('prompt'), rename: set('name'),
             duration: String(x.duration || 5), setDuration: set('duration'),
             durOpts: vidDurations(VMODELS[x.model] || VMODELS[VMODEL_DEFAULT]).map(d => ({ value: String(d), label: d + ' s' })),
@@ -3318,10 +3449,121 @@ class Component extends DCLogic {
     }
     return X;
   }
+  workspaceNavigation(page, entries) {
+    return entries.map(([target, label]) => ({
+      label, active: String(page === target), current: page === target ? 'page' : 'false',
+      open: () => this.openWorkspace(target),
+    }));
+  }
+  openWorkspace(page, shot = this.state.workspaceShot) {
+    this.initial = this.state.values;
+    this.setState({
+      page, view: 'all', item: null, workspaceShot: shot, workspaceLegacy: false, frameAssignment: null,
+      attachOpen: false, locPopup: null, locPreview: null, stylePreview: null,
+      slot: ['PRODUCT', 'WARDROBE', 'LOCATION', 'SETDESIGN'].includes(page) ? 0 : 'front',
+      create: freshCreate(), gen: { ...this.state.gen, error: '' },
+    });
+    window.scrollTo(0, 0);
+  }
+  workspaceData() {
+    const S = this.state, page = S.page, shots = S.items.KEYFRAMES || [];
+    const plan = page === 'STORYBOARDS', frames = page === 'KEYFRAMES' && !S.workspaceLegacy;
+    const showAll = page === 'IMAGES' || page === 'VIDEOS';
+    const selected = shots.find(shot => shot.n === S.workspaceShot) || (!showAll ? shots[0] : null);
+    const n = selected && selected.n;
+    const first = shots.indexOf(selected) === 0, last = shots.indexOf(selected) === shots.length - 1;
+    const start = n && this.frameSrc(n), end = n && this.endFrameSrc(n);
+    const savedBoard = n && S.kfImg[n + '-board'], board = savedBoard || start;
+    const update = (set) => e => {
+      const value = e.target.value;
+      this.secUpd('shot', n, record => set(record, value));
+    };
+    const add = () => {
+      const id = this.addShot('');
+      this.openWorkspace('STORYBOARDS', id);
+    };
+    const draft = S.frameAssignment, image = draft && (S.gallery || []).find(g => g.uid === draft.image);
+    const draftShot = draft && shots.find(shot => String(shot.n) === String(draft.shot));
+    const existing = draftShot && (draft.slot === 'end' ? this.endFrameSrc(draftShot.n) : this.frameSrc(draftShot.n));
+    const draftBusy = !!(draftShot && S.kfBusy[draftShot.n + '-' + draft.slot]);
+    return {
+      show: plan || frames || showAll, plan, frames, showAll, allActive: String(!n), allLabel: page === 'VIDEOS' ? 'videos' : 'images',
+      clear: () => this.setState({ workspaceShot: null }), add,
+      shots: shots.map((shot, index) => {
+        const start = this.frameSrc(shot.n), end = this.endFrameSrc(shot.n), image = start || S.kfImg[shot.n + '-board'];
+        return { label: String(index + 1).padStart(2, '0') + ' · ' + shot.name, image, hasImage: !!image,
+          status: start ? (end ? 'Start and end ready' : 'Start frame ready') : 'No start frame',
+          active: String(n === shot.n),
+          open: () => this.setState({ workspaceShot: shot.n, view: 'all', item: null }) };
+      }),
+      title: selected ? selected.name : (showAll ? (page === 'VIDEOS' ? 'All videos' : 'Image preview') : 'No shots yet'),
+      videoDraft: page === 'VIDEOS' && !!start && !(S.videos || []).some(clip => clip.frameN === n),
+      hasShot: !!selected, name: selected && selected.name, beat: selected && (selected.desc || ''), first, last,
+      rename: update((shot, value) => { if (value.trim()) shot.name = value.trim(); return shot; }),
+      setBeat: update((shot, value) => ({ ...shot, desc: value })),
+      fields: selected ? SHOTF.map(([key, label, placeholder]) => ({ label, placeholder, value: (selected.fields || {})[key] || '',
+        set: update((shot, value) => ({ ...shot, fields: { ...shot.fields, [key]: value } })) })) : [],
+      moveUp: () => this.moveShot(n, -1), moveDown: () => this.moveShot(n, 1),
+      board, noBoard: !board, legacyBoard: !!(board && !savedBoard), boardBusy: !!S.kfBusy[n + '-board'],
+      boardAction: S.kfBusy[n + '-board'] ? 'Generating…' : 'Generate storyboard image',
+      pickBoard: () => this.pick('kfboard:' + n),
+      generateBoard: () => this.genKf(n + '-board', this.shotPrompt(selected), this.secOpts('KEYFRAMES', 'sheet')),
+      write: () => this.writeFrames(true), writing: !!S.sbBusy,
+      slots: selected ? [['Start frame', start, 'kf:'], ['End frame', end, 'kfend:']].map(([label, src, target]) => ({
+        label, src, has: !!src, empty: !src, status: src ? 'Ready' : 'Missing', action: (src ? 'Replace ' : 'Add ') + label.toLowerCase(),
+        pick: () => this.pick(target + n),
+      })) : [],
+      startBusy: !!S.kfBusy[n + '-main'], startAction: S.kfBusy[n + '-main'] ? 'Generating…' : start ? 'Regenerate start frame' : 'Generate start frame',
+      generateStart: () => this.secRun('shot', n), needsStart: !start,
+      openFrames: () => this.openWorkspace('KEYFRAMES', n), openImages: () => this.openWorkspace('IMAGES', n), openVideo: () => this.videoFromFrame(n, false),
+      manage: () => this.setState({ workspaceLegacy: true, view: 'all', item: null }),
+      error: (plan || frames) && (S.gen.error || ''),
+      assignment: {
+        open: !!image, shot: draft ? String(draft.shot) : '', slot: draft ? draft.slot : 'main',
+        options: shots.map((shot, i) => ({ id: String(shot.n), label: String(i + 1).padStart(2, '0') + ' · ' + shot.name })),
+        noShots: !shots.length, existing, disabled: !draftShot || draftBusy,
+        setShot: e => this.setState({ frameAssignment: { ...draft, shot: e.target.value } }),
+        setSlot: e => this.setState({ frameAssignment: { ...draft, slot: e.target.value } }),
+        close: () => this.setState({ frameAssignment: null }),
+        save: () => {
+          if (!draftShot || !image || !image.src || draftBusy) return;
+          const prior = this.kfShotForSrc(image.src);
+          this.setKf(draftShot.n + '-' + draft.slot, image.src);
+          if (image.kf === undefined) this.setX('gallery', a => a.map(item => item.uid === image.uid ? { ...item, kf: !!prior, kfShot: prior ? prior.n : null } : item));
+          this.setState({ frameAssignment: null, workspaceAssignmentStatus: (draft.slot === 'end' ? 'End frame' : 'Start frame') + ' assigned to ' + draftShot.name + '.' });
+        },
+      },
+    };
+  }
   renderVals() {
     const v = this.renderVals0();
     const ds = this.buildDs(v);
     v.x = this.buildX(v);
+    const page = this.state.page;
+    v.workspacePage = page;
+    v.workspaceLibrary = page === 'LIBRARY' ? 'page' : 'false';
+    v.workspaceSearch = () => this.openWorkspace('LIBRARY');
+    v.workspaceNav = this.workspaceNavigation(page, [['IMAGES', 'Images'], ['TALENT', 'Characters'], ['LOCATION', 'Locations'], ['STORYBOARDS', 'Storyboards'], ['KEYFRAMES', 'Keyframes'], ['VIDEOS', 'Video']]);
+    v.workspaceMore = this.workspaceNavigation(page, [['BRIEF', 'Brief'], ['PRODUCT', 'Products'], ['WARDROBE', 'Wardrobe'], ['SETDESIGN', 'Props'], ['EDITING', 'Editing'], ['DELIVERY', 'Deliver']]);
+    v.workspace = this.workspaceData();
+    const isCastWorkspace = page === 'TALENT', isLocationWorkspace = page === 'LOCATION';
+    const assets = isCastWorkspace ? this.assets('TALENT') : isLocationWorkspace ? this.state.locations.filter(loc => (loc.sect || 'location') === 'location') : [];
+    v.assetWorkspace = {
+      show: isCastWorkspace || isLocationWorkspace,
+      label: isCastWorkspace ? 'Cast' : 'Locations',
+      browse: () => this.openWorkspace(page),
+      items: assets.map(asset => {
+        const image = isCastWorkspace ? (asset.sheet || {}).front || asset.main : this.imgOfView(asset);
+        return {
+          name: asset.name, image, hasImage: !!image, active: String(this.state.item === asset.uid),
+          detail: isCastWorkspace ? (asset.profile || {}).Role || 'Character' : asset.kind === 'ai' ? 'AI location' : 'Real location',
+          open: () => this.openSheet(asset.uid),
+        };
+      }),
+    };
+    v.workspaceAssignmentStatus = page === 'IMAGES' && this.state.workspaceAssignmentStatus;
+    if (page === 'STORYBOARDS' || v.workspace.frames) v.showPrompt = false;
+    if (v.workspace.frames) { v.showTalentBar = false; if (v.g) v.g = { ...v.g, isAll: false, isDetail: false }; }
     if (v.g && v.g.cards && this.state.page === 'KEYFRAMES') { const L = this.state.items.KEYFRAMES || []; v.g = { ...v.g, cards: v.g.cards.map((c, i) => { const t = L[i]; return { ...c, hasVideo: !!(t && this.frameSrc(t.n)), makeVideo: e => { if (e && e.stopPropagation) e.stopPropagation(); if (t) this.videoFromFrame(t.n, false); } }; }) }; }
     v.ds = ds; v.oldCharSheet = v.isSheet && !ds.on;
     if (v.g) v.g = { ...v.g, isDetailOld: v.g.isDetail && !ds.on };
