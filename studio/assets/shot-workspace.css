@@ -205,7 +205,8 @@
 :is([data-workspace="IMAGES"],[data-workspace="VIDEOS"],[data-workspace="TALENT"],[data-workspace="LOCATION"]) > :is(.x-page, .ds, [data-screen-label], [data-sv="bar"]) { grid-column: 2; min-width: 0; }
 [data-workspace="IMAGES"] .x-hub { display: grid; grid-template-columns: minmax(0,1fr) minmax(200px,28%); gap: 12px; align-items: start; }
 [data-workspace="IMAGES"] .x-hub > :is(.x-imgtabs, .x-createtoggle) { grid-column: 1 / -1; }
-[data-workspace="IMAGES"] .x-hubbody { grid-column: 1; grid-row: 3 / span 7; }
+[data-workspace="IMAGES"] .x-hubbody { grid-column: 1 / -1; grid-row: 2; }
+[data-workspace="IMAGES"] .x-hub:has(> .x-railgrp) .x-hubbody { grid-column: 1; grid-row: 2 / span 4; }
 [data-workspace="IMAGES"] .x-hub > :is(.x-railgrp, .x-refchips) {
   grid-column: 2;
   padding: 10px;
@@ -244,6 +245,21 @@
 [data-workspace] .ds-right { background: var(--shot-canvas); color: #f5f5f5; border-radius: 12px; padding: 14px; }
 [data-workspace] .ds-right :is(h2,h3,.ds-view-label) { color: #f5f5f5; }
 [data-workspace] .ds-right small { color: #cbd0da; }
+
+/* Legacy card text was styled for a dark workspace. Use the light workspace palette. */
+:is([data-screen-label="02 Talent All"], [data-screen-label="Section All"])
+  input:is([title="Character name"], [title="Name"]) { color: var(--shot-text) !important; }
+:is([data-screen-label="02 Talent All"], [data-screen-label="Section All"])
+  input[placeholder] { color: var(--shot-muted) !important; }
+:is([data-screen-label="02 Talent All"], [data-screen-label="Section All"])
+  input[placeholder]::placeholder { color: var(--shot-muted); opacity: 1; }
+:is([data-screen-label="02 Talent All"], [data-screen-label="Section All"])
+  :is([data-sv="newlabel"] + div, [title^="Temporary: stands in for the client view"]),
+:is([data-screen-label="02 Talent All"], [data-screen-label="Section All"])
+  div:has(> input:is([title="Character name"], [title="Name"])) ~ div {
+  color: var(--shot-muted) !important;
+}
+
 @media (max-width: 1100px) {
   .shot-header { flex-wrap: wrap; gap: 8px; }
   .shot-nav { order: 5; flex: 1 0 100%; justify-content: flex-start; }
