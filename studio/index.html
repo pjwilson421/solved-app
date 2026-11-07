@@ -570,25 +570,31 @@ html,body{background:#282828!important}
     </div>
 
     <sc-if value="{{ assetWorkspace.show }}" hint-placeholder-val="{{ false }}">
-      <aside class="shot-asset-rail" aria-label="{{ assetWorkspace.label }}">
-        <div class="shot-rail-heading"><h2>{{ assetWorkspace.label }}</h2><button type="button" sc-camel-on-click="{{ assetWorkspace.browse }}">Browse all</button></div>
-        <sc-for list="{{ assetWorkspace.items }}" as="asset"><button type="button" class="shot-row" data-active="{{ asset.active }}" aria-pressed="{{ asset.active }}" sc-camel-on-click="{{ asset.open }}">
-          <sc-if value="{{ asset.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ asset.image }}" alt=""></sc-if>
-          <span><b>{{ asset.name }}</b><small>{{ asset.detail }}</small></span>
-        </button></sc-for>
-      </aside>
+      <details class="studio-dropdown studio-dropdown--left" name="studio-panels">
+        <summary>{{ assetWorkspace.label }}</summary>
+        <aside class="shot-asset-rail" aria-label="{{ assetWorkspace.label }}">
+          <div class="shot-rail-heading"><h2>{{ assetWorkspace.label }}</h2><button type="button" sc-camel-on-click="{{ assetWorkspace.browse }}">Browse all</button></div>
+          <sc-for list="{{ assetWorkspace.items }}" as="asset"><button type="button" class="shot-row" data-active="{{ asset.active }}" aria-pressed="{{ asset.active }}" sc-camel-on-click="{{ asset.open }}">
+            <sc-if value="{{ asset.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ asset.image }}" alt=""></sc-if>
+            <span><b>{{ asset.name }}</b><small>{{ asset.detail }}</small></span>
+          </button></sc-for>
+        </aside>
+      </details>
     </sc-if>
     <sc-if value="{{ workspace.show }}" hint-placeholder-val="{{ false }}">
       <div class="shot-layout">
-        <aside class="shot-rail" aria-label="Shot list">
-          <div class="shot-rail-heading"><h2>Shots</h2><button type="button" sc-camel-on-click="{{ workspace.add }}">New shot</button></div>
-          <sc-if value="{{ workspace.showAll }}" hint-placeholder-val="{{ false }}"><button type="button" class="shot-row" data-active="{{ workspace.allActive }}" sc-camel-on-click="{{ workspace.clear }}">All {{ workspace.allLabel }}</button></sc-if>
-          <sc-for list="{{ workspace.shots }}" as="shot"><button type="button" class="shot-row" data-active="{{ shot.active }}" aria-pressed="{{ shot.active }}" sc-camel-on-click="{{ shot.open }}">
-            <sc-if value="{{ shot.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ shot.image }}" alt=""></sc-if>
-            <span><b>{{ shot.label }}</b><small>{{ shot.status }}</small></span>
-          </button></sc-for>
-          <sc-if value="{{ workspace.videoDraft }}" hint-placeholder-val="{{ false }}"><button type="button" sc-camel-on-click="{{ workspace.openVideo }}">Create video for selected shot</button></sc-if>
-        </aside>
+        <details class="studio-dropdown studio-dropdown--left" name="studio-panels">
+          <summary>Shots</summary>
+          <aside class="shot-rail" aria-label="Shot list">
+            <div class="shot-rail-heading"><h2>Shots</h2><button type="button" sc-camel-on-click="{{ workspace.add }}">New shot</button></div>
+            <sc-if value="{{ workspace.showAll }}" hint-placeholder-val="{{ false }}"><button type="button" class="shot-row" data-active="{{ workspace.allActive }}" sc-camel-on-click="{{ workspace.clear }}">All {{ workspace.allLabel }}</button></sc-if>
+            <sc-for list="{{ workspace.shots }}" as="shot"><button type="button" class="shot-row" data-active="{{ shot.active }}" aria-pressed="{{ shot.active }}" sc-camel-on-click="{{ shot.open }}">
+              <sc-if value="{{ shot.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ shot.image }}" alt=""></sc-if>
+              <span><b>{{ shot.label }}</b><small>{{ shot.status }}</small></span>
+            </button></sc-for>
+            <sc-if value="{{ workspace.videoDraft }}" hint-placeholder-val="{{ false }}"><button type="button" sc-camel-on-click="{{ workspace.openVideo }}">Create video for selected shot</button></sc-if>
+          </aside>
+        </details>
         <sc-if value="{{ workspace.plan }}" hint-placeholder-val="{{ false }}">
           <section class="shot-canvas">
             <h2>{{ workspace.title }}</h2>
@@ -596,18 +602,21 @@ html,body{background:#282828!important}
             <sc-if value="{{ workspace.noBoard }}" hint-placeholder-val="{{ false }}"><p class="shot-empty">Add a planning image or generate one from the shot direction.</p></sc-if>
             <sc-if value="{{ workspace.legacyBoard }}" hint-placeholder-val="{{ false }}"><p>Previewing the existing start frame as a reference.</p></sc-if>
           </section>
-          <section class="shot-inspector">
-            <h2>Storyboard</h2>
-            <sc-if value="{{ workspace.hasShot }}" hint-placeholder-val="{{ false }}">
-              <label>Shot name<input value="{{ workspace.name }}" sc-camel-on-change="{{ workspace.rename }}"></label>
-              <label>Beat<textarea value="{{ workspace.beat }}" sc-camel-on-change="{{ workspace.setBeat }}"></textarea></label>
-              <sc-for list="{{ workspace.fields }}" as="field"><label>{{ field.label }}<input value="{{ field.value }}" placeholder="{{ field.placeholder }}" sc-camel-on-change="{{ field.set }}"></label></sc-for>
-              <div class="shot-actions"><button type="button" disabled="{{ workspace.boardBusy }}" sc-camel-on-click="{{ workspace.pickBoard }}">Upload storyboard image</button><button type="button" disabled="{{ workspace.boardBusy }}" sc-camel-on-click="{{ workspace.generateBoard }}">{{ workspace.boardAction }}</button></div>
-              <div class="shot-actions"><button type="button" disabled="{{ workspace.first }}" sc-camel-on-click="{{ workspace.moveUp }}">Move earlier</button><button type="button" disabled="{{ workspace.last }}" sc-camel-on-click="{{ workspace.moveDown }}">Move later</button></div>
-              <button type="button" class="shot-primary" sc-camel-on-click="{{ workspace.openFrames }}">Open in Keyframes</button>
-            </sc-if>
-            <button type="button" disabled="{{ workspace.writing }}" sc-camel-on-click="{{ workspace.write }}">Add shots from brief</button>
-          </section>
+          <details class="studio-dropdown studio-dropdown--right" name="studio-panels">
+            <summary>Storyboard settings</summary>
+            <section class="shot-inspector">
+              <h2>Storyboard</h2>
+              <sc-if value="{{ workspace.hasShot }}" hint-placeholder-val="{{ false }}">
+                <label>Shot name<input value="{{ workspace.name }}" sc-camel-on-change="{{ workspace.rename }}"></label>
+                <label>Beat<textarea value="{{ workspace.beat }}" sc-camel-on-change="{{ workspace.setBeat }}"></textarea></label>
+                <sc-for list="{{ workspace.fields }}" as="field"><label>{{ field.label }}<input value="{{ field.value }}" placeholder="{{ field.placeholder }}" sc-camel-on-change="{{ field.set }}"></label></sc-for>
+                <div class="shot-actions"><button type="button" disabled="{{ workspace.boardBusy }}" sc-camel-on-click="{{ workspace.pickBoard }}">Upload storyboard image</button><button type="button" disabled="{{ workspace.boardBusy }}" sc-camel-on-click="{{ workspace.generateBoard }}">{{ workspace.boardAction }}</button></div>
+                <div class="shot-actions"><button type="button" disabled="{{ workspace.first }}" sc-camel-on-click="{{ workspace.moveUp }}">Move earlier</button><button type="button" disabled="{{ workspace.last }}" sc-camel-on-click="{{ workspace.moveDown }}">Move later</button></div>
+                <button type="button" class="shot-primary" sc-camel-on-click="{{ workspace.openFrames }}">Open in Keyframes</button>
+              </sc-if>
+              <button type="button" disabled="{{ workspace.writing }}" sc-camel-on-click="{{ workspace.write }}">Add shots from brief</button>
+            </section>
+          </details>
         </sc-if>
         <sc-if value="{{ workspace.frames }}" hint-placeholder-val="{{ false }}">
           <section class="shot-canvas">
@@ -617,19 +626,22 @@ html,body{background:#282828!important}
               <sc-if value="{{ frame.empty }}" hint-placeholder-val="{{ true }}"><p class="shot-empty">No image assigned</p></sc-if>
             </figure></sc-for></div>
           </section>
-          <section class="shot-inspector">
-            <h2>Keyframes</h2>
-            <sc-for list="{{ workspace.slots }}" as="frame"><div class="shot-slot">
-              <b>{{ frame.label }}</b><span>{{ frame.status }}</span>
-              <button type="button" sc-camel-on-click="{{ frame.pick }}">{{ frame.action }}</button>
-            </div></sc-for>
-            <sc-if value="{{ workspace.hasShot }}" hint-placeholder-val="{{ false }}">
-              <button type="button" disabled="{{ workspace.startBusy }}" sc-camel-on-click="{{ workspace.generateStart }}">{{ workspace.startAction }}</button>
-              <button type="button" sc-camel-on-click="{{ workspace.openImages }}">Browse images for this shot</button>
-              <button type="button" class="shot-primary" disabled="{{ workspace.needsStart }}" sc-camel-on-click="{{ workspace.openVideo }}">Open in Video</button>
-            </sc-if>
-            <button type="button" sc-camel-on-click="{{ workspace.manage }}">Manage shots and approvals</button>
-          </section>
+          <details class="studio-dropdown studio-dropdown--right" name="studio-panels">
+            <summary>Keyframe controls</summary>
+            <section class="shot-inspector">
+              <h2>Keyframes</h2>
+              <sc-for list="{{ workspace.slots }}" as="frame"><div class="shot-slot">
+                <b>{{ frame.label }}</b><span>{{ frame.status }}</span>
+                <button type="button" sc-camel-on-click="{{ frame.pick }}">{{ frame.action }}</button>
+              </div></sc-for>
+              <sc-if value="{{ workspace.hasShot }}" hint-placeholder-val="{{ false }}">
+                <button type="button" disabled="{{ workspace.startBusy }}" sc-camel-on-click="{{ workspace.generateStart }}">{{ workspace.startAction }}</button>
+                <button type="button" sc-camel-on-click="{{ workspace.openImages }}">Browse images for this shot</button>
+                <button type="button" class="shot-primary" disabled="{{ workspace.needsStart }}" sc-camel-on-click="{{ workspace.openVideo }}">Open in Video</button>
+              </sc-if>
+              <button type="button" sc-camel-on-click="{{ workspace.manage }}">Manage shots and approvals</button>
+            </section>
+          </details>
         </sc-if>
       </div>
     </sc-if>
@@ -1110,62 +1122,65 @@ html,body{background:#282828!important}
           </div>
         </sc-if>
         <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
-          <aside class="image-references" aria-label="Image references">
-            <header class="image-reference-summary">
-              <div class="image-reference-heading">
-                <h2>Attach references</h2>
-                <span class="image-reference-count" role="status">{{ x.kfSelectedLabel }}</span>
-              </div>
-              <p>{{ x.kfReferenceHint }}</p>
-              <sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}">
-                <div class="x-refchips">
-                  <sc-for list="{{ x.kfChips }}" as="c" hint-placeholder-count="0">
-                    <button type="button" class="image-reference-chip" aria-label="{{ c.removeLabel }}" sc-camel-on-click="{{ c.remove }}">
-                      <span>{{ c.label }}</span><span aria-hidden="true">×</span>
-                    </button>
-                  </sc-for>
-                </div>
-              </sc-if>
-            </header>
-            <sc-for list="{{ x.kfRailGroups }}" as="g" hint-placeholder-count="3">
-              <section class="image-reference-group" aria-label="{{ g.label }}">
+          <details class="studio-dropdown studio-dropdown--right" name="studio-panels">
+            <summary>References · {{ x.kfSelectedLabel }}</summary>
+            <aside class="image-references" aria-label="Image references">
+              <header class="image-reference-summary">
                 <div class="image-reference-heading">
-                  <h3>{{ g.label }}</h3>
-                  <button type="button" class="image-reference-link" sc-camel-on-click="{{ g.onNew }}">{{ g.newLabel }}</button>
+                  <h2>Attach references</h2>
+                  <span class="image-reference-count" role="status">{{ x.kfSelectedLabel }}</span>
                 </div>
-                <sc-if value="{{ g.empty }}" hint-placeholder-val="{{ false }}"><p>{{ g.emptyLabel }}</p></sc-if>
-                <div class="image-reference-list">
-                  <sc-for list="{{ g.cards }}" as="a" hint-placeholder-count="0">
-                    <article class="image-reference-card">
-                      <button type="button" class="image-reference-asset" aria-label="{{ a.primaryLabel }}" aria-pressed="{{ a.primaryPressed }}" sc-camel-on-click="{{ a.primaryAction }}">
-                        <span class="image-reference-thumb">
-                          <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><span style="{{ a.photoBg }}"></span></sc-if>
-                        </span>
-                        <span class="image-reference-name"><strong>{{ a.name }}</strong><small>{{ a.primaryStatus }}</small></span>
+                <p>{{ x.kfReferenceHint }}</p>
+                <sc-if value="{{ x.kfHasRefs }}" hint-placeholder-val="{{ false }}">
+                  <div class="x-refchips">
+                    <sc-for list="{{ x.kfChips }}" as="c" hint-placeholder-count="0">
+                      <button type="button" class="image-reference-chip" aria-label="{{ c.removeLabel }}" sc-camel-on-click="{{ c.remove }}">
+                        <span>{{ c.label }}</span><span aria-hidden="true">×</span>
                       </button>
-                      <sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}">
-                        <div class="image-reference-actions">
-                          <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ true }}">
-                            <button type="button" class="image-reference-option" aria-label="{{ a.sheetLabel }}" aria-pressed="{{ a.sheetOn }}" sc-camel-on-click="{{ a.toggleSheet }}">{{ a.sheetStatus }}</button>
-                          </sc-if>
-                          <button type="button" class="image-reference-link" aria-label="{{ a.previewLabel }}" aria-expanded="{{ a.expanded }}" sc-camel-on-click="{{ a.toggleExpand }}">View sheet</button>
-                        </div>
-                      </sc-if>
-                    </article>
-                  </sc-for>
-                </div>
-                <sc-if value="{{ g.expanded }}" hint-placeholder-val="{{ false }}">
-                  <div class="x-railsheet">
-                    <div class="x-railsheetname">{{ g.expanded.name }} — sheet</div>
-                    <div class="x-railsheetrow">
-                      <sc-for list="{{ g.expanded.thumbs }}" as="s" hint-placeholder-count="0"><div class="x-railsheetthumb"><div style="{{ s.bg }}"></div></div></sc-for>
-                    </div>
-                    <button type="button" class="image-reference-link" sc-camel-on-click="{{ g.expanded.open }}">Open asset</button>
+                    </sc-for>
                   </div>
                 </sc-if>
-              </section>
-            </sc-for>
-          </aside>
+              </header>
+              <sc-for list="{{ x.kfRailGroups }}" as="g" hint-placeholder-count="3">
+                <section class="image-reference-group" aria-label="{{ g.label }}">
+                  <div class="image-reference-heading">
+                    <h3>{{ g.label }}</h3>
+                    <button type="button" class="image-reference-link" sc-camel-on-click="{{ g.onNew }}">{{ g.newLabel }}</button>
+                  </div>
+                  <sc-if value="{{ g.empty }}" hint-placeholder-val="{{ false }}"><p>{{ g.emptyLabel }}</p></sc-if>
+                  <div class="image-reference-list">
+                    <sc-for list="{{ g.cards }}" as="a" hint-placeholder-count="0">
+                      <article class="image-reference-card">
+                        <button type="button" class="image-reference-asset" aria-label="{{ a.primaryLabel }}" aria-pressed="{{ a.primaryPressed }}" sc-camel-on-click="{{ a.primaryAction }}">
+                          <span class="image-reference-thumb">
+                            <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ false }}"><span style="{{ a.photoBg }}"></span></sc-if>
+                          </span>
+                          <span class="image-reference-name"><strong>{{ a.name }}</strong><small>{{ a.primaryStatus }}</small></span>
+                        </button>
+                        <sc-if value="{{ a.hasSheet }}" hint-placeholder-val="{{ false }}">
+                          <div class="image-reference-actions">
+                            <sc-if value="{{ a.hasPhoto }}" hint-placeholder-val="{{ true }}">
+                              <button type="button" class="image-reference-option" aria-label="{{ a.sheetLabel }}" aria-pressed="{{ a.sheetOn }}" sc-camel-on-click="{{ a.toggleSheet }}">{{ a.sheetStatus }}</button>
+                            </sc-if>
+                            <button type="button" class="image-reference-link" aria-label="{{ a.previewLabel }}" aria-expanded="{{ a.expanded }}" sc-camel-on-click="{{ a.toggleExpand }}">View sheet</button>
+                          </div>
+                        </sc-if>
+                      </article>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ g.expanded }}" hint-placeholder-val="{{ false }}">
+                    <div class="x-railsheet">
+                      <div class="x-railsheetname">{{ g.expanded.name }} — sheet</div>
+                      <div class="x-railsheetrow">
+                        <sc-for list="{{ g.expanded.thumbs }}" as="s" hint-placeholder-count="0"><div class="x-railsheetthumb"><div style="{{ s.bg }}"></div></div></sc-for>
+                      </div>
+                      <button type="button" class="image-reference-link" sc-camel-on-click="{{ g.expanded.open }}">Open asset</button>
+                    </div>
+                  </sc-if>
+                </section>
+              </sc-for>
+            </aside>
+          </details>
         </sc-if>
         <div class="x-hubbody">
           <sc-if value="{{ createImageMode }}" hint-placeholder-val="{{ true }}">
@@ -1243,15 +1258,18 @@ html,body{background:#282828!important}
                   <sc-if value="{{ frame.has }}" hint-placeholder-val="{{ false }}"><img src="{{ frame.src }}" alt="{{ frame.label }}"></sc-if>
                   <sc-if value="{{ frame.empty }}" hint-placeholder-val="{{ false }}"><span>No image assigned</span></sc-if>
                 </figure></sc-for></div>
-                <div class="shot-video-inspector">
-                <div class="x-vrow"><input class="x-vname" aria-label="Video name" value="{{ v.name }}" sc-camel-on-change="{{ v.rename }}" spellcheck="false"><button type="button" class="{{ v.approveCls }}" sc-camel-on-click="{{ v.toggleApprove }}">{{ v.approveLabel }}</button></div>
-                <label>Motion prompt<textarea class="x-vprompt" value="{{ v.prompt }}" sc-camel-on-change="{{ v.setPrompt }}" placeholder="Describe the motion: camera move, action, mood…"></textarea></label>
-                <label>Model<select value="{{ v.model }}" disabled="{{ v.running }}" sc-camel-on-change="{{ v.setModel }}"><sc-for list="{{ v.models }}" as="model"><option value="{{ model.value }}">{{ model.label }}</option></sc-for></select></label>
-                <sc-if value="{{ v.canUseLatest }}" hint-placeholder-val="{{ false }}"><button type="button" class="ds-btn" sc-camel-on-click="{{ v.useLatest }}">Use latest keyframes</button></sc-if>
-                <div class="x-vrow"><label class="x-muted">Length <select value="{{ v.duration }}" sc-camel-on-change="{{ v.setDuration }}"><sc-for list="{{ v.durOpts }}" as="d" hint-placeholder-count="5"><option value="{{ d.value }}">{{ d.label }}</option></sc-for></select></label>
-                  <div class="x-bar-btns"><sc-if value="{{ v.canEdit }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.toTimeline }}">Edit</button></sc-if><sc-if value="{{ v.download }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.download }}">Download</button></sc-if><sc-if value="{{ v.share }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.share }}">Share</button></sc-if><button class="ds-btn" sc-camel-on-click="{{ v.del }}">Delete</button><button class="ds-btn ds-on" disabled="{{ v.running }}" sc-camel-on-click="{{ v.go }}">{{ v.goLabel }}</button></div></div>
-                <div class="x-vnote" role="status">{{ v.note }}</div>
-                </div>
+                <details class="studio-dropdown studio-dropdown--right" name="studio-panels">
+                  <summary>Video settings</summary>
+                  <div class="shot-video-inspector">
+                  <div class="x-vrow"><input class="x-vname" aria-label="Video name" value="{{ v.name }}" sc-camel-on-change="{{ v.rename }}" spellcheck="false"><button type="button" class="{{ v.approveCls }}" sc-camel-on-click="{{ v.toggleApprove }}">{{ v.approveLabel }}</button></div>
+                  <label>Motion prompt<textarea class="x-vprompt" value="{{ v.prompt }}" sc-camel-on-change="{{ v.setPrompt }}" placeholder="Describe the motion: camera move, action, mood…"></textarea></label>
+                  <label>Model<select value="{{ v.model }}" disabled="{{ v.running }}" sc-camel-on-change="{{ v.setModel }}"><sc-for list="{{ v.models }}" as="model"><option value="{{ model.value }}">{{ model.label }}</option></sc-for></select></label>
+                  <sc-if value="{{ v.canUseLatest }}" hint-placeholder-val="{{ false }}"><button type="button" class="ds-btn" sc-camel-on-click="{{ v.useLatest }}">Use latest keyframes</button></sc-if>
+                  <div class="x-vrow"><label class="x-muted">Length <select value="{{ v.duration }}" sc-camel-on-change="{{ v.setDuration }}"><sc-for list="{{ v.durOpts }}" as="d" hint-placeholder-count="5"><option value="{{ d.value }}">{{ d.label }}</option></sc-for></select></label>
+                    <div class="x-bar-btns"><sc-if value="{{ v.canEdit }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.toTimeline }}">Edit</button></sc-if><sc-if value="{{ v.download }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.download }}">Download</button></sc-if><sc-if value="{{ v.share }}" hint-placeholder-val="{{ false }}"><button class="ds-btn" sc-camel-on-click="{{ v.share }}">Share</button></sc-if><button class="ds-btn" sc-camel-on-click="{{ v.del }}">Delete</button><button class="ds-btn ds-on" disabled="{{ v.running }}" sc-camel-on-click="{{ v.go }}">{{ v.goLabel }}</button></div></div>
+                  <div class="x-vnote" role="status">{{ v.note }}</div>
+                  </div>
+                </details>
               </div>
             </sc-for>
           </div>
