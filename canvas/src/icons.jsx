@@ -1,0 +1,30 @@
+const S = ({ children, size = 16, sw = 1.6 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
+);
+export const I = {
+  search: p => <S {...p}><circle cx="11" cy="11" r="6.5" /><path d="m20 20-4-4" /></S>,
+  home: p => <S {...p}><path d="M4 11 12 4l8 7v8.5a.5.5 0 0 1-.5.5H15v-6H9v6H4.5a.5.5 0 0 1-.5-.5Z" /></S>,
+  clock: p => <S {...p}><circle cx="12" cy="12" r="8" /><path d="M12 8v4l2.5 2.5" /></S>,
+  folder: p => <S {...p}><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2h8a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5Z" /></S>,
+  board: p => <S {...p}><rect x="4" y="6" width="16" height="13" rx="3" /><path d="M7 3.5h10" /></S>,
+  image: p => <S {...p}><rect x="4" y="5" width="16" height="14" rx="2.5" /><circle cx="9" cy="10" r="1.5" /><path d="m5 17 5-4.5 4 3.5 2.5-2 3.5 3" /></S>,
+  video: p => <S {...p}><rect x="4" y="5" width="16" height="14" rx="2.5" /><path d="m10.5 9.5 4 2.5-4 2.5Z" fill="currentColor" /></S>,
+  pointer: p => <S {...p}><path d="M6 4l12 6.5-5.5 1.5L10 18Z" fill="currentColor" /></S>,
+  text: p => <S {...p}><path d="M5 7V5h14v2M12 5v14M9 19h6" /></S>,
+  note: p => <S {...p}><path d="M5 5h14v9l-5 5H5Z" /><path d="M14 19v-5h5" /></S>,
+  upload: p => <S {...p}><path d="M12 15V5m-4 4 4-4 4 4" /><path d="M5 15v3.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V15" /></S>,
+  plus: p => <S {...p}><path d="M12 5v14M5 12h14" /></S>,
+  back: p => <S {...p}><path d="M19 12H5m6-6-6 6 6 6" /></S>,
+  chev: p => <S {...p}><path d="m7 10 5 5 5-5" /></S>,
+  right: p => <S {...p}><path d="m10 7 5 5-5 5" /></S>,
+  dots: p => <S {...p}><circle cx="12" cy="6" r="1" fill="currentColor" /><circle cx="12" cy="12" r="1" fill="currentColor" /><circle cx="12" cy="18" r="1" fill="currentColor" /></S>,
+  grid: p => <S {...p}><rect x="4" y="4" width="7" height="7" rx="1.5" /><rect x="13" y="4" width="7" height="7" rx="1.5" /><rect x="4" y="13" width="7" height="7" rx="1.5" /><rect x="13" y="13" width="7" height="7" rx="1.5" /></S>,
+  list: p => <S {...p}><path d="M5 8h14M5 12h14M5 16h14" /></S>,
+  chat: p => <S {...p}><path d="M5 5h14v10H10l-4 4v-4H5Z" fill="currentColor" stroke="none" /></S>,
+  send: p => <S {...p}><path d="M12 19V6m-5 5 5-5 5 5" /></S>,
+  close: p => <S {...p}><path d="M6 6l12 12M18 6 6 18" /></S>,
+  download: p => <S {...p}><path d="M12 5v10m-4-4 4 4 4-4M5 19h14" /></S>,
+  trash: p => <S {...p}><path d="M5 7h14M10 7V5h4v2m-7 0 1 12h8l1-12" /></S>,
+  sparkle: p => <S {...p}><path d="M12 4v4m0 8v4M4 12h4m8 0h4M7 7l2 2m6 6 2 2M17 7l-2 2m-6 6-2 2" /></S>,
+  fit: p => <S {...p}><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></S>,
+};

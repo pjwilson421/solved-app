@@ -43,7 +43,7 @@ const context = vm.createContext({
   URL,
 });
 const root = path.join(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'studio/index.html'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'studio/classic.html'), 'utf8');
 assert.equal(html, fs.readFileSync(path.join(root, 'studio-src/app-template.html'), 'utf8'));
 const script = html.match(/<script type="text\/x-dc"[^>]*>([\s\S]*?)<\/script>/)[1];
 vm.runInContext(script + '\nglobalThis.Studio = Component;', context);

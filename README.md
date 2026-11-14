@@ -17,6 +17,10 @@ One simple studio to go from a prompt to a finished image or video:
 
 Not yet built (and not shown as dead "Coming soon" tiles): Motion Designer, 3D Animator, Sound Designer, Colorist, and cloud delivery destinations (Google Drive, Dropbox, Frame.io). The Editing page shows one honest line instead: "3D & motion graphics — desktop / render queue (planned)."
 
+## Board layout (branch `luma-canvas`)
+
+`/studio` now opens a Luma-style workspace: Projects list → project page of boards → an infinite canvas board with Create image / Create video blocks, text, notes, uploads, and a chat panel that can add blocks. Source is in `canvas/` (Vite + React + React Flow); `cd canvas && npm i && npx vite build` writes the built app to `studio/index.html` and `studio/assets/canvas/`. Commit the build output — Vercel serves it as static files. The previous single-file app is kept at `/studio/classic` (`studio/classic.html`, still mirrored at `studio-src/app-template.html`). Boards are saved in this browser for now (not cloud-synced yet).
+
 ## Repo layout
 
 - `studio/index.html` (mirrored byte-for-byte at `studio-src/app-template.html`) — the entire frontend: a single-file SPA using a small custom templating runtime (`studio/assets/*.js`). Both copies must stay identical; always edit one and `cp` over the other.
