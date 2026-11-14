@@ -47,3 +47,55 @@ export async function claude(messages, max_tokens = 1500) {
   const j = await api('/claude', { messages, max_tokens });
   return j.text || '';
 }
+
+// Same-origin copy of a remote file (see api/media.js).
+export const mediaUrl = (url, name) => '/studio/api/media?url=' + encodeURIComponent(url) + (name ? '&name=' + encodeURIComponent(name) : '');
+export async function loadBlob(url) {
+  if (url.startsWith('blob:') || url.startsWith('data:')) return (await fetch(url)).blob();
+  const r = await fetch(mediaUrl(url));
+  if (!r.ok) throw new Error('Could not load the image.');
+  return r.blob();
+}
+export async function loadImage(url) {
+  const bmp = await createImageBitmap(await loadBlob(url));
+  return bmp;
+}
+export function canvasBlob(canvas, type = 'image/png', q = 0.92) {
+  return new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('Export failed.')), type, q));
+}
+export async function convert(url, type) {
+  const bmp = await loadImage(url);
+  const c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height;
+  const g = c.getContext('2d'); if (type === 'image/jpeg') { g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); }
+  g.drawImage(bmp, 0, 0);
+  return canvasBlob(c, type);
+}
+export async function downloadUrl(url, name, format = 'original') {
+  let blob;
+  if (format === 'png') blob = await convert(url, 'image/png');
+  else if (format === 'jpg') blob = await convert(url, 'image/jpeg');
+  else blob = await loadBlob(url);
+  const ext = format !== 'original' ? format : (blob.type.split('/')[1] || 'bin').replace('jpeg', 'jpg').replace('quicktime', 'mov');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = (name || 'solved').replace(/[^\w.-]+/g, '-').slice(0, 60) + '.' + ext;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+// Dominant colors (simple median-ish bucketing).
+export async function palette(url, n = 6) {
+  const bmp = await loadImage(url);
+  const c = document.createElement('canvas'); const s = 80; c.width = s; c.height = Math.round(s * bmp.height / bmp.width) || s;
+  const g = c.getContext('2d'); g.drawImage(bmp, 0, 0, c.width, c.height);
+  const d = g.getImageData(0, 0, c.width, c.height).data, buckets = new Map();
+  for (let i = 0; i < d.length; i += 4) {
+    const k = (d[i] >> 5) + ',' + (d[i + 1] >> 5) + ',' + (d[i + 2] >> 5);
+    const b = buckets.get(k) || [0, 0, 0, 0]; b[0] += d[i]; b[1] += d[i + 1]; b[2] += d[i + 2]; b[3]++; buckets.set(k, b);
+  }
+  const hex = v => Math.round(v).toString(16).padStart(2, '0');
+  const picked = [];
+  [...buckets.values()].sort((a, b) => b[3] - a[3]).forEach(b => {
+    const rgb = [b[0] / b[3], b[1] / b[3], b[2] / b[3]];
+    if (picked.length < n && picked.every(p => Math.hypot(p[0] - rgb[0], p[1] - rgb[1], p[2] - rgb[2]) > 48)) picked.push(rgb);
+  });
+  return picked.map(p => '#' + p.map(hex).join(''));
+}
